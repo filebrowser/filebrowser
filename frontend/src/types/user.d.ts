@@ -9,6 +9,7 @@ interface IUser {
   rules: IRule[];
   lockPassword: boolean;
   hideDotfiles: boolean;
+  showDirectorySizes: boolean;
   singleClick: boolean;
   redirectAfterCopyMove: boolean;
   dateFormat: boolean;
@@ -30,6 +31,7 @@ interface IUserForm {
   rules?: IRule[];
   lockPassword?: boolean;
   hideDotfiles?: boolean;
+  showDirectorySizes?: boolean;
   singleClick?: boolean;
   redirectAfterCopyMove?: boolean;
   dateFormat?: boolean;

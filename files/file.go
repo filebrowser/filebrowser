@@ -55,15 +55,16 @@ type FileInfo struct {
 
 // FileOptions are the options when getting a file info.
 type FileOptions struct {
-	Fs         afero.Fs
-	Path       string
-	Modify     bool
-	Expand     bool
-	ReadHeader bool
-	CalcImgRes bool
-	Token      string
-	Checker    rules.Checker
-	Content    bool
+	Fs                 afero.Fs
+	Path               string
+	Modify             bool
+	Expand             bool
+	ReadHeader         bool
+	CalcImgRes         bool
+	ShowDirectorySizes bool
+	Token              string
+	Checker            rules.Checker
+	Content            bool
 }
 
 type ImageResolution struct {
@@ -91,7 +92,7 @@ func NewFileInfo(opts *FileOptions) (*FileInfo, error) {
 
 	if opts.Expand {
 		if file.IsDir {
-			if err := file.readListing(opts.Checker, opts.ReadHeader, opts.CalcImgRes); err != nil {
+			if err := file.readListing(opts.Checker, opts.ReadHeader, opts.CalcImgRes, opts.ShowDirectorySizes); err != nil {
 				return nil, err
 			}
 			return file, nil
@@ -390,7 +391,52 @@ func (i *FileInfo) addSubtitle(fPath string) {
 	i.Subtitles = append(i.Subtitles, fPath)
 }
 
-func (i *FileInfo) readListing(checker rules.Checker, readHeader bool, calcImgRes bool) error {
+func calculateDirectorySize(fSys afero.Fs, dirPath string, checker rules.Checker) (int64, error) {
+	dir, err := afero.ReadDir(fSys, dirPath)
+	if err != nil {
+		return 0, err
+	}
+
+	var size int64
+	for _, entry := range dir {
+		entryPath := path.Join(dirPath, entry.Name())
+		if !checker.Check(entryPath) {
+			continue
+		}
+
+		entrySize, err := calculateEntrySize(fSys, entryPath, entry, checker)
+		if err != nil {
+			return 0, err
+		}
+
+		size += entrySize
+	}
+
+	return size, nil
+}
+
+func calculateEntrySize(fSys afero.Fs, filePath string, info os.FileInfo, checker rules.Checker) (int64, error) {
+	if IsSymlink(info.Mode()) {
+		resolved, err := fSys.Stat(filePath)
+		if err != nil {
+			return 0, nil
+		}
+
+		if resolved.IsDir() {
+			return 0, nil
+		}
+
+		return resolved.Size(), nil
+	}
+
+	if !info.IsDir() {
+		return info.Size(), nil
+	}
+
+	return calculateDirectorySize(fSys, filePath, checker)
+}
+
+func (i *FileInfo) readListing(checker rules.Checker, readHeader bool, calcImgRes bool, showDirectorySizes bool) error {
 	afs := &afero.Afero{Fs: i.Fs}
 	dir, err := afs.ReadDir(i.Path)
 	if err != nil {
@@ -402,6 +448,7 @@ func (i *FileInfo) readListing(checker rules.Checker, readHeader bool, calcImgRe
 		NumDirs:  0,
 		NumFiles: 0,
 	}
+	var totalSize int64
 
 	for _, f := range dir {
 		name := f.Name()
@@ -448,6 +495,14 @@ func (i *FileInfo) readListing(checker rules.Checker, readHeader bool, calcImgRe
 
 		if file.IsDir {
 			listing.NumDirs++
+			if showDirectorySizes {
+				dirSize, err := calculateDirectorySize(file.Fs, file.Path, checker)
+				if err != nil {
+					log.Printf("Error calculating directory size for %s: %v", file.Path, err)
+				} else {
+					file.Size = dirSize
+				}
+			}
 		} else {
 			listing.NumFiles++
 
@@ -461,9 +516,13 @@ func (i *FileInfo) readListing(checker rules.Checker, readHeader bool, calcImgRe
 			}
 		}
 
+		totalSize += file.Size
 		listing.Items = append(listing.Items, file)
 	}
 
 	i.Listing = listing
+	if showDirectorySizes {
+		i.Size = totalSize
+	}
 	return nil
 }

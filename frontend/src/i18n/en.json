@@ -261,6 +261,8 @@
     "shareDuration": "Share Duration",
     "shareManagement": "Share Management",
     "shareDeleted": "Share deleted!",
+    "showDirectorySizes": "Show directory sizes in listings",
+    "showDirectorySizesHelp": "Calculating directory sizes can slow down large folders.",
     "singleClick": "Use single clicks to open files and directories",
     "themes": {
       "default": "System default",

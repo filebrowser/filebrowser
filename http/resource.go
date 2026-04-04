@@ -24,13 +24,14 @@ import (
 
 var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	file, err := files.NewFileInfo(&files.FileOptions{
-		Fs:         d.user.Fs,
-		Path:       r.URL.Path,
-		Modify:     d.user.Perm.Modify,
-		Expand:     true,
-		ReadHeader: d.server.TypeDetectionByHeader,
-		Checker:    d,
-		Content:    true,
+		Fs:                 d.user.Fs,
+		Path:               r.URL.Path,
+		Modify:             d.user.Perm.Modify,
+		Expand:             true,
+		ReadHeader:         d.server.TypeDetectionByHeader,
+		ShowDirectorySizes: d.user.ShowDirectorySizes,
+		Checker:            d,
+		Content:            true,
 	})
 	if err != nil {
 		return errToStatus(err), err

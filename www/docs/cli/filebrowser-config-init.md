@@ -66,6 +66,7 @@ filebrowser config init [flags]
       --scope string                     scope for users (default ".")
       --shell string                     shell command to which other commands should be appended
   -s, --signup                           allow users to signup
+      --showDirectorySizes               show directory sizes in listings
       --singleClick                      use single clicks only
       --socket string                    socket to listen to (cannot be used with address, port, cert nor key flags)
       --sorting.asc                      sorting by ascending order
@@ -86,4 +87,3 @@ filebrowser config init [flags]
 ## See Also
 
 * [filebrowser config](filebrowser-config.md)	 - Configuration management utility
-
