@@ -33,6 +33,10 @@ var withHashFile = func(fn handleFunc) handleFunc {
 			return errToStatus(err), err
 		}
 
+		if !user.Perm.Share || !user.Perm.Download {
+			return http.StatusForbidden, nil
+		}
+
 		d.user = user
 
 		file, err := files.NewFileInfo(&files.FileOptions{
