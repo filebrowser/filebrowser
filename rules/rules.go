@@ -31,7 +31,16 @@ func (r *Rule) Matches(path string) bool {
 		return r.Regexp.MatchString(path)
 	}
 
-	return strings.HasPrefix(path, r.Path)
+	if path == r.Path {
+		return true
+	}
+
+	prefix := r.Path
+	if prefix != "/" && !strings.HasSuffix(prefix, "/") {
+		prefix += "/"
+	}
+
+	return strings.HasPrefix(path, prefix)
 }
 
 // Regexp is a wrapper to the native regexp type where we
