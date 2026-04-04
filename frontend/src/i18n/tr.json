@@ -245,7 +245,7 @@
       "execute": "Komutları çalıştır",
       "modify": "Dosyaları değiştir",
       "rename": "Dosyaları ve dizinleri yeniden adlandırın veya taşıyın",
-      "share": "Dosyaları paylaş"
+      "share": "Share files (require download permission)"
     },
     "permissions": "İzinler",
     "permissionsHelp": "Kullanıcıyı yönetici olarak ayarlayabilir veya izinleri ayrı ayrı seçebilirsiniz. \"Yönetici\"yi seçerseniz, diğer tüm seçenekler otomatik olarak kontrol edilecektir. Kullanıcıların yönetimi, bir yöneticinin yetkisi olarak kalır.\n",
