@@ -245,7 +245,7 @@
       "execute": "コマンドの実行",
       "modify": "ファイルの編集",
       "rename": "ファイルやフォルダーの編集・移動",
-      "share": "ファイルの共有"
+      "share": "Share files (require download permission)"
     },
     "permissions": "権限",
     "permissionsHelp": "ユーザーを管理者に設定するか、その他の権限を個別に選択することができます。「管理者」を選択すると、他のオプションはすべて自動的にチェックされます。ユーザーを管理するには管理者権限が必要です。\n",
