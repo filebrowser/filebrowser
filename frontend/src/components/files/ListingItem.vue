@@ -210,7 +210,7 @@ const drop = async (event: Event) => {
     layoutStore.showHover({
       prompt: "resolve-conflict",
       props: {
-        conflict: conflict, // TODO add a boolean to hide show resumeTransfert
+        conflict: conflict,
       },
       confirm: (event: Event, result: Array<ConflictingResource>) => {
         event.preventDefault();

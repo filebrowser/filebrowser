@@ -30,7 +30,7 @@
     "replace": "Remplacer",
     "reportIssue": "Signaler un problème",
     "resumeTransfer": "Reprendre un transfert précedement interrompu",
-    "resumeTransferTooltip": "Ne renvoie que les fichiers plus petits sur le serveur, ceux déjà entièrement transférés sont ignorés.",
+    "resumeTransferTooltip": "Ignorer tous les fichiers en conflit, sauf ceux qui sont plus petits sur le serveur, car nous supposons que leur transfert a été interrompu.",
     "save": "Enregistrer",
     "schedule": "Planifier",
     "search": "Rechercher",
