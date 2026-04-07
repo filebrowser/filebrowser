@@ -115,7 +115,7 @@
           <button @click="(e) => resume(e)">
             <i class="material-icons">replay</i>
             {{ $t("buttons.resumeTransfer") }}
-            <span class="info-tooltip">
+            <span class="info-tooltip" @click.stop="() => {}">
               <i class="material-icons info-icon">info_outline</i>
               <span class="info-tooltip-text">
                 {{ $t("buttons.resumeTransferTooltip") }}
