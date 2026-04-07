@@ -73,9 +73,9 @@ export async function checkConflict(
   files: UploadList,
   basePath: string
 ): Promise<ConflictingResource[]> {
-  console.log("Starting deepCheck conflict");
-  console.debug(files.length + " possible conflict found:");
-  console.debug(files);
+  console.log(
+    "Starting conflict check, " + files.length + " possible conflict found."
+  );
 
   const forest = flatToForest(files, basePath);
   if (forest.length === 0) return [];
@@ -155,8 +155,7 @@ export async function checkConflict(
   // Check all root nodes against the base destination
   await recursiveCheckConflict(forest, basePath);
 
-  console.debug(conflicts.length + " conflicts found:");
-  console.debug(conflicts);
+  console.log(conflicts.length + " conflicts found.");
 
   conflicts.sort((a, b) => a.index - b.index);
 
