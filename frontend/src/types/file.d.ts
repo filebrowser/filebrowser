@@ -79,3 +79,11 @@ interface CsvData {
   headers: string[];
   rows: string[][];
 }
+
+interface RecursiveEntry {
+  path: string;
+  name: string;
+  size: number;
+  modified: string;
+  isDir: boolean;
+}

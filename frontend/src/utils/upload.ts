@@ -2,6 +2,7 @@ import { useLayoutStore } from "@/stores/layout";
 import { useUploadStore } from "@/stores/upload";
 import url from "@/utils/url";
 import { files as api } from "@/api";
+import { removePrefix } from "@/api/utils";
 
 interface UploadEntryWithChild extends UploadEntry {
   children?: UploadEntryWithChild[];
@@ -80,80 +81,77 @@ export async function checkConflict(
   const forest = flatToForest(files, basePath);
   if (forest.length === 0) return [];
 
+  // Single API call: fetch the entire server tree under basePath.
+  let serverEntries: RecursiveEntry[] = [];
+  try {
+    serverEntries = await api.fetchAll(basePath);
+  } catch {
+    console.error(
+      `Failed to fetch recursive server listing for ${basePath}. ` +
+        `Assuming directory doesn't exist and skipping conflict check.`
+    );
+    return [];
+  }
+
+  // Build a lookup map keyed by the normalised server path for O(1) access.
+  // The server returns paths relative to the user's scope (e.g. "/uploads/foo.txt").
+  // We strip the basePath prefix so the key matches the upload entry's fullPath.
+  const normBase = removePrefix(basePath).replace(/\/+$/, "");
+  const serverMap = new Map<string, RecursiveEntry>();
+  for (const entry of serverEntries) {
+    // entry.path is absolute from server root, e.g. "/uploads/sub/file.txt"
+    // We need the relative part after normBase, e.g. "sub/file.txt"
+    let rel = entry.path;
+    if (rel.startsWith(normBase)) {
+      rel = rel.slice(normBase.length);
+    }
+    // Strip leading slash so it matches fullPath format ("sub/file.txt")
+    rel = rel.replace(/^\/+/, "");
+    serverMap.set(rel, entry);
+  }
+
   const conflicts: ConflictingResource[] = [];
 
   /**
-   * Check a list of sibling nodes against the server listing at the given path.
-   * For directories that exist on the server, recurse into their children.
-   * @param nodes   - sibling nodes to check at this level
-   * @param serverPath - the server directory path to fetch (must end with "/")
+   * Walk the upload tree and compare each file node against the
+   * pre-fetched server map.  Directories only need to be recursed
+   * when they appear in the map (otherwise no child can conflict).
    */
-  async function recursiveCheckConflict(
-    nodes: UploadEntryWithChild[],
-    serverPath: string
-  ): Promise<void> {
-    let serverItems: ResourceItem[] = [];
-
-    try {
-      const res = await api.fetch(serverPath);
-      serverItems = res.items || [];
-    } catch {
-      // Directory doesn't exist on server, no conflicts possible
-      console.error(
-        `Failed to fetch server listing for ${serverPath}. ` +
-          `Assuming directory doesn't exist and skipping conflict check for this branch.`
-      );
-      return;
-    }
-
+  function recursiveCheckConflict(nodes: UploadEntryWithChild[]): void {
     for (const node of nodes) {
       if (node.isDir && node.children) {
-        // Check if this directory exists on the server before recursing
-        const dirExists = serverItems.some(
-          (item) =>
-            item.url.replaceAll("/", "") ===
-            `${serverPath}${node.name}`.replaceAll("/", "")
-        );
-
-        if (dirExists) {
-          await recursiveCheckConflict(
-            node.children,
-            serverPath + encodeURIComponent(node.name) + "/"
-          );
+        // Only recurse if this directory exists on the server
+        const dirKey = node.fullPath!.replace(/^\/+/, "");
+        if (serverMap.has(dirKey)) {
+          recursiveCheckConflict(node.children);
         }
       } else {
-        // File – check for a conflict against the server listing
-        const cleanFullPath = `${basePath}${node.fullPath!}`.replaceAll(
-          "/",
-          ""
-        );
-        const serverItem =
-          serverItems.find(
-            (item) => item.url.replaceAll("/", "") === cleanFullPath
-          ) ?? null;
+        // File – check for a conflict against the server map
+        const fileKey = node.fullPath!.replace(/^\/+/, "");
+        const serverEntry = serverMap.get(fileKey);
 
-        if (serverItem) {
+        if (serverEntry) {
           conflicts.push({
             index: node.originalIndex,
-            name: serverItem.path,
+            name: serverEntry.path,
             origin: {
               lastModified: node.file?.lastModified,
               size: node.size,
             },
             dest: {
-              lastModified: serverItem.modified,
-              size: serverItem.size,
+              lastModified: serverEntry.modified,
+              size: serverEntry.size,
             },
             checked: ["origin"],
-            isSmallerOnServer: node.size > serverItem.size,
+            isSmallerOnServer: node.size > serverEntry.size,
           });
         }
       }
     }
   }
 
-  // Check all root nodes against the base destination
-  await recursiveCheckConflict(forest, basePath);
+  // Walk all root nodes synchronously against the pre-fetched data
+  recursiveCheckConflict(forest);
 
   console.log(conflicts.length + " conflicts found.");
 
