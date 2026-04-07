@@ -32,4 +32,4 @@ if [ -z "$config_file" ]; then
   set -- --config=/config/settings.json "$@"                                                                                                       
 fi                                                                                                                                                                                                                                                                                                                                                             
 
-exec /bin/filebrowser "$@"
+exec filebrowser "$@"
