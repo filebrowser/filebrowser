@@ -23,7 +23,11 @@ function flatToForest(
 
   // First pass: create all nodes
   flatArray.forEach((item, index) => {
-    const fullPathOrTo = item.fullPath || item.to?.replace(basePath, "");
+    // File list is created from very different action and info available are not always the same.
+    // By doing a drag and drop or upload a folder (both from the browser or from the OS) we have the fullPath property available
+    // By uploading a single file using the file input, we only have the "name" property
+    // By doing drag and drop from filebrowser to filebrowser, we have the "to" property available but not the fullPath
+    const fullPathOrTo = item.fullPath || item.to?.replace(basePath, "") || item.name;
     nodeMap[fullPathOrTo!] = {
       fullPath: fullPathOrTo,
       isDir: item.isDir,
@@ -39,7 +43,9 @@ function flatToForest(
 
   // Second pass: build hierarchy
   flatArray.forEach((item) => {
-    const fullPathOrTo = item.fullPath || item.to?.replace(basePath, "");
+    // see comment before to explanation
+    const fullPathOrTo =
+      item.fullPath || item.to?.replace(basePath, "") || item.name;
 
     const node = nodeMap[fullPathOrTo!];
     const lastSlash = fullPathOrTo!.lastIndexOf("/");
