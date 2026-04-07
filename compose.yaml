@@ -1,12 +1,7 @@
-# Run using:
-#   docker compose up --build
-
 services:
   filebrowser:
     container_name: filebrowser
-    build:
-      dockerfile: Dockerfile
-      context: .
+    image: filebrowser/filebrowser:latest
     networks:
       - filebrowser
     ports:

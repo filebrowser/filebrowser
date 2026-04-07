@@ -46,6 +46,9 @@ func (a ProxyAuth) createUser(usr users.Store, setting *settings.Settings, srv *
 		LockPassword: true,
 	}
 	setting.Defaults.Apply(user)
+	user.Perm.Admin = false
+	user.Perm.Execute = false
+	user.Commands = []string{}
 
 	var userHome string
 	userHome, err = setting.MakeUserDir(user.Username, user.Scope, srv.Root)

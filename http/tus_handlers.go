@@ -105,7 +105,7 @@ func tusPostHandler(cache UploadCache) handleFunc {
 		}
 
 		uploadLength, err := getUploadLength(r)
-		if err != nil {
+		if err != nil || uploadLength < 0 {
 			return http.StatusBadRequest, fmt.Errorf("invalid upload length: %w", err)
 		}
 
