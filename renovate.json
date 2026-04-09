@@ -1,0 +1,15 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "group:allNonMajor",
+    "group:allDigest",
+    ":disableDependencyDashboard",
+    ":semanticCommitTypeAll(chore)"
+  ],
+  "postUpdateOptions": [
+    "gomodUpdateImportPaths",
+    "gomodTidy"
+  ],
+  "schedule": "* * * * 0,6"
+}

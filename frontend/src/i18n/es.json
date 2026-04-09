@@ -42,8 +42,17 @@
     "update": "Actualizar",
     "upload": "Subir",
     "openFile": "Abrir archivo",
+    "openDirect": "View raw",
     "discardChanges": "Discard",
-    "saveChanges": "Guardar cambios"
+    "stopSearch": "Stop searching",
+    "saveChanges": "Guardar cambios",
+    "editAsText": "Edit as Text",
+    "increaseFontSize": "Increase font size",
+    "decreaseFontSize": "Decrease font size",
+    "overrideAll": "Replace all files in destination folder",
+    "skipAll": "Skip all conflicting files",
+    "renameAll": "Rename all files (create a copy)",
+    "singleDecision": "Decide for each conflicting file"
   },
   "download": {
     "downloadFile": "Descargar fichero",
@@ -75,7 +84,17 @@
     "sortByLastModified": "Ordenar por última modificación",
     "sortByName": "Ordenar por nombre",
     "sortBySize": "Ordenar por tamaño",
-    "noPreview": "La vista previa no está disponible para este archivo."
+    "noPreview": "La vista previa no está disponible para este archivo.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file.",
+    "showingRows": "Showing {count} row(s)",
+    "columnSeparator": "Column Separator",
+    "csvSeparators": {
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "both": "Both (,) and (;)"
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "seleccionar archivo o carpeta",
@@ -102,6 +121,7 @@
     "username": "Usuario",
     "usernameTaken": "Nombre usuario no disponible",
     "wrongCredentials": "Usuario y/o contraseña incorrectos",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
@@ -145,7 +165,19 @@
     "uploadMessage": "Seleccione una opción para subir.",
     "optionalPassword": "Contraseña opcional",
     "resolution": "Resolution",
-    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
+    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?",
+    "replaceOrSkip": "Replace or skip files",
+    "resolveConflict": "Which files do you want to keep?",
+    "singleConflictResolve": "If you select both versions, a number will be added to the name of the copied file.",
+    "fastConflictResolve": "The destination folder there are {count} files with same name.",
+    "uploadingFiles": "Uploading files",
+    "filesInOrigin": "Files in origin",
+    "filesInDest": "Files in destination",
+    "override": "Overwrite",
+    "skip": "Skip",
+    "forbiddenError": "Forbidden Error",
+    "currentPassword": "Your password",
+    "currentPasswordMessage": "Enter your password to validate this action."
   },
   "search": {
     "images": "Imágenes",
@@ -166,6 +198,7 @@
     "allowNew": "Crear nuevos archivos y carpetas",
     "allowPublish": "Publicar nuevos posts y páginas",
     "allowSignup": "Permitir registro de usuarios",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(dejar en blanco para evitar cambios)",
     "branding": "Marca",
     "brandingDirectoryPath": "Ruta de la carpeta de personalizacion de marca",
@@ -217,6 +250,7 @@
     "permissions": "Permisos",
     "permissionsHelp": "Puedes nombrar al usuario como administrador o elegir los permisos individualmente. Si seleccionas \"Administrador\", todas las otras opciones serán activadas automáticamente. La administración de usuarios es un privilegio de administrador.\n",
     "profileSettings": "Ajustes del perfil",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "previene el acceso a una extensión de archivo (Como .git) en cada carpeta.\n",
     "ruleExample2": "bloquea el acceso al archivo llamado Caddyfile en la carpeta raíz.",
     "rules": "Reglas",
@@ -243,7 +277,8 @@
     "userManagement": "Administración de usuarios",
     "userUpdated": "¡Usuario actualizado!",
     "username": "Usuario",
-    "users": "Usuarios"
+    "users": "Usuarios",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Ayuda",

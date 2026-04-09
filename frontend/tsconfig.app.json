@@ -1,13 +1,29 @@
 {
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
-  "exclude": ["src/**/__tests__/*"],
+  "exclude": [
+    "src/**/__tests__/*",
+    // Excluding non-TS Vue files which use the old Options API.
+    // This can be removed once those files are properly migrated to
+    // the new Composition API with TS support.
+    "src/components/Shell.vue",
+    "src/components/prompts/Copy.vue",
+    "src/components/prompts/Move.vue",
+    "src/components/prompts/Delete.vue",
+    "src/components/prompts/FileList.vue",
+    "src/components/prompts/Rename.vue",
+    "src/components/prompts/Share.vue"
+  ],
   "compilerOptions": {
     "composite": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "types": ["vite/client", "@intlify/unplugin-vue-i18n/messages"],
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    // Version 0.8.0 of @vue/tsconfig enabled this automatically.
+    // Disabling for now since it's causing quite a lot of errors.
+    // Should be revisited.
+    "noUncheckedIndexedAccess": false
   }
 }

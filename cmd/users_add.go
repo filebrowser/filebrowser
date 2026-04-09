@@ -16,12 +16,13 @@ var usersAddCmd = &cobra.Command{
 	Short: "Create a new user",
 	Long:  `Create a new user and add it to the database.`,
 	Args:  cobra.ExactArgs(2),
-	RunE: python(func(cmd *cobra.Command, args []string, d *pythonData) error {
-		s, err := d.store.Settings.Get()
+	RunE: withStore(func(cmd *cobra.Command, args []string, st *store) error {
+		flags := cmd.Flags()
+		s, err := st.Settings.Get()
 		if err != nil {
 			return err
 		}
-		err = getUserDefaults(cmd.Flags(), &s.Defaults, false)
+		err = getUserDefaults(flags, &s.Defaults, false)
 		if err != nil {
 			return err
 		}
@@ -31,39 +32,36 @@ var usersAddCmd = &cobra.Command{
 			return err
 		}
 
-		lockPassword, err := getBool(cmd.Flags(), "lockPassword")
-		if err != nil {
-			return err
-		}
-
-		dateFormat, err := getBool(cmd.Flags(), "dateFormat")
-		if err != nil {
-			return err
-		}
-
-		hideDotfiles, err := getBool(cmd.Flags(), "hideDotfiles")
-		if err != nil {
-			return err
-		}
-
 		user := &users.User{
-			Username:     args[0],
-			Password:     password,
-			LockPassword: lockPassword,
-			DateFormat:   dateFormat,
-			HideDotfiles: hideDotfiles,
+			Username: args[0],
+			Password: password,
+		}
+
+		user.LockPassword, err = flags.GetBool("lockPassword")
+		if err != nil {
+			return err
+		}
+
+		user.DateFormat, err = flags.GetBool("dateFormat")
+		if err != nil {
+			return err
+		}
+
+		user.HideDotfiles, err = flags.GetBool("hideDotfiles")
+		if err != nil {
+			return err
 		}
 
 		s.Defaults.Apply(user)
 
-		servSettings, err := d.store.Settings.GetServer()
+		servSettings, err := st.Settings.GetServer()
 		if err != nil {
 			return err
 		}
 		// since getUserDefaults() polluted s.Defaults.Scope
 		// which makes the Scope not the one saved in the db
 		// we need the right s.Defaults.Scope here
-		s2, err := d.store.Settings.Get()
+		s2, err := st.Settings.Get()
 		if err != nil {
 			return err
 		}
@@ -74,11 +72,11 @@ var usersAddCmd = &cobra.Command{
 		}
 		user.Scope = userHome
 
-		err = d.store.Users.Save(user)
+		err = st.Users.Save(user)
 		if err != nil {
 			return err
 		}
 		printUsers([]*users.User{user})
 		return nil
-	}, pythonConfig{}),
+	}, storeOptions{}),
 }

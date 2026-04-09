@@ -301,7 +301,7 @@ import { pub as api } from "@/api";
 import { filesize } from "@/utils";
 import dayjs from "dayjs";
 import { Base64 } from "js-base64";
-
+import { createURL } from "@/api/utils";
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import Action from "@/components/header/Action.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
@@ -354,14 +354,11 @@ const icon = computed(() => {
 
 const link = computed(() => (req.value ? api.getDownloadURL(req.value) : ""));
 const raw = computed(() => {
-  return req.value
-    ? req.value.items[fileStore.selected[0]].url.replace(
-        /share/,
-        "api/public/dl"
-      ) +
-        "?token=" +
-        token.value
-    : "";
+  if (!req.value || !req.value.items[fileStore.selected[0]]) return "";
+  return createURL(
+    `api/public/dl/${hash.value}${req.value.items[fileStore.selected[0]].path}`,
+    { token: token.value }
+  );
 });
 const inlineLink = computed(() =>
   req.value ? api.getDownloadURL(req.value, true) : ""

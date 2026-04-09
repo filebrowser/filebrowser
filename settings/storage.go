@@ -1,7 +1,7 @@
 package settings
 
 import (
-	"github.com/filebrowser/filebrowser/v2/errors"
+	fberrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/rules"
 	"github.com/filebrowser/filebrowser/v2/users"
 )
@@ -30,24 +30,34 @@ func (s *Storage) Get() (*Settings, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	if set.UserHomeBasePath == "" {
 		set.UserHomeBasePath = DefaultUsersHomeBasePath
 	}
+
+	if set.LogoutPage == "" {
+		set.LogoutPage = DefaultLogoutPage
+	}
+
 	if set.MinimumPasswordLength == 0 {
 		set.MinimumPasswordLength = DefaultMinimumPasswordLength
 	}
+
 	if set.Tus == (Tus{}) {
 		set.Tus = Tus{
 			ChunkSize:  DefaultTusChunkSize,
 			RetryCount: DefaultTusRetryCount,
 		}
 	}
+
 	if set.FileMode == 0 {
 		set.FileMode = DefaultFileMode
 	}
+
 	if set.DirMode == 0 {
 		set.DirMode = DefaultDirMode
 	}
+
 	return set, nil
 }
 
@@ -62,7 +72,7 @@ var defaultEvents = []string{
 // Save saves the settings for the current instance.
 func (s *Storage) Save(set *Settings) error {
 	if len(set.Key) == 0 {
-		return errors.ErrEmptyKey
+		return fberrors.ErrEmptyKey
 	}
 
 	if set.Defaults.Locale == "" {

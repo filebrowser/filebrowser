@@ -4,7 +4,7 @@ File Browser is a single binary and can be used as standalone executable. Howeve
 
 ## Binary
 
-The quickest and easiest way to install File Browser is to use a package manager, or our download script, which automatically fetches the latest version of File Browser for your platform.
+The quickest and easiest way to install File Browser is to use a package manager, or our download script, which automatically fetches the latest version of File Browser for your platform. Alternatively, you can manually download the binary from the [releases page](https://github.com/filebrowser/filebrowser/releases).
 
 === "Brew"
 
@@ -88,6 +88,6 @@ Your instance is now up and running. File Browser will automatically bootstrap a
 >
 > The automatically generated password for the user `admin` is only displayed once. If you fail to remember it, you will need to manually delete the database and start File Browser again.
 
-Although this is the fastest way to bootstrap an instance, we recommend you to take a look at other possible options, by checking `config init --help` and `config set --help`, to make the installation as safe and customized as it can be.
+Although this is the fastest way to bootstrap an instance, we recommend you to take a look at other possible options, by checking [`config init`](cli/filebrowser-config-init.md) and [`config set`](cli/filebrowser-config-set.md), to make the installation as safe and customized as it can be.
 
 If your goal is to have a public-facing deployment, we recommend taking a look at the [deployment](deployment.md) page for more information on how you can secure your installation.

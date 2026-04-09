@@ -1,4 +1,4 @@
-package http
+package fbhttp
 
 import (
 	"bufio"
@@ -28,7 +28,6 @@ var (
 	cmdNotAllowed = []byte("Command not allowed.")
 )
 
-//nolint:unparam
 func wsErr(ws *websocket.Conn, r *http.Request, status int, err error) {
 	txt := http.StatusText(status)
 	if err != nil || status >= 400 {
@@ -49,7 +48,7 @@ var commandsHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *d
 	var raw string
 
 	for {
-		_, msg, err := conn.ReadMessage() //nolint:govet
+		_, msg, err := conn.ReadMessage()
 		if err != nil {
 			wsErr(conn, r, http.StatusInternalServerError, err)
 			return 0, nil
@@ -63,7 +62,7 @@ var commandsHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *d
 
 	// Fail fast
 	if !d.server.EnableExec || !d.user.Perm.Execute {
-		if err := conn.WriteMessage(websocket.TextMessage, cmdNotAllowed); err != nil { //nolint:govet
+		if err := conn.WriteMessage(websocket.TextMessage, cmdNotAllowed); err != nil {
 			wsErr(conn, r, http.StatusInternalServerError, err)
 		}
 
@@ -72,21 +71,21 @@ var commandsHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *d
 
 	command, name, err := runner.ParseCommand(d.settings, raw)
 	if err != nil {
-		if err := conn.WriteMessage(websocket.TextMessage, []byte(err.Error())); err != nil { //nolint:govet
+		if err := conn.WriteMessage(websocket.TextMessage, []byte(err.Error())); err != nil {
 			wsErr(conn, r, http.StatusInternalServerError, err)
 		}
 		return 0, nil
 	}
 
 	if !slices.Contains(d.user.Commands, name) {
-		if err := conn.WriteMessage(websocket.TextMessage, cmdNotAllowed); err != nil { //nolint:govet
+		if err := conn.WriteMessage(websocket.TextMessage, cmdNotAllowed); err != nil {
 			wsErr(conn, r, http.StatusInternalServerError, err)
 		}
 
 		return 0, nil
 	}
 
-	cmd := exec.Command(command[0], command[1:]...) //nolint:gosec
+	cmd := exec.Command(command[0], command[1:]...)
 	cmd.Dir = d.user.FullPath(r.URL.Path)
 
 	stdout, err := cmd.StdoutPipe()

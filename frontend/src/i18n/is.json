@@ -42,8 +42,17 @@
     "update": "Vista",
     "upload": "Hlaða upp",
     "openFile": "Open file",
+    "openDirect": "View raw",
     "discardChanges": "Discard",
-    "saveChanges": "Save changes"
+    "stopSearch": "Stop searching",
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text",
+    "increaseFontSize": "Increase font size",
+    "decreaseFontSize": "Decrease font size",
+    "overrideAll": "Replace all files in destination folder",
+    "skipAll": "Skip all conflicting files",
+    "renameAll": "Rename all files (create a copy)",
+    "singleDecision": "Decide for each conflicting file"
   },
   "download": {
     "downloadFile": "Sækja skjal",
@@ -75,7 +84,17 @@
     "sortByLastModified": "Flokka eftir Seinast breytt",
     "sortByName": "Flokka eftir nafni",
     "sortBySize": "Flokka eftir stærð",
-    "noPreview": "Preview is not available for this file."
+    "noPreview": "Preview is not available for this file.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file.",
+    "showingRows": "Showing {count} row(s)",
+    "columnSeparator": "Column Separator",
+    "csvSeparators": {
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "both": "Both (,) and (;)"
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "velja skjal eða möppu",
@@ -102,6 +121,7 @@
     "username": "Notendanafn",
     "usernameTaken": "Þetta norendanafn er þegar í notkun",
     "wrongCredentials": "Rangar notendaupplýsingar",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
@@ -145,7 +165,19 @@
     "uploadMessage": "Select an option to upload.",
     "optionalPassword": "Optional password",
     "resolution": "Resolution",
-    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
+    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?",
+    "replaceOrSkip": "Replace or skip files",
+    "resolveConflict": "Which files do you want to keep?",
+    "singleConflictResolve": "If you select both versions, a number will be added to the name of the copied file.",
+    "fastConflictResolve": "The destination folder there are {count} files with same name.",
+    "uploadingFiles": "Uploading files",
+    "filesInOrigin": "Files in origin",
+    "filesInDest": "Files in destination",
+    "override": "Overwrite",
+    "skip": "Skip",
+    "forbiddenError": "Forbidden Error",
+    "currentPassword": "Your password",
+    "currentPasswordMessage": "Enter your password to validate this action."
   },
   "search": {
     "images": "Myndir",
@@ -166,6 +198,7 @@
     "allowNew": "Búa til ný skjöl og möppur",
     "allowPublish": "Gefa út nýjar færslur og síður",
     "allowSignup": "Leyfa nýjum notendum að skrá sig",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(engar breytingar ef ekkert er skrifað)",
     "branding": "Útlit",
     "brandingDirectoryPath": "Mappa fyrir branding-skjöl",
@@ -217,6 +250,7 @@
     "permissions": "Heimildir",
     "permissionsHelp": "Þú getur stillt notenda sem stjórnanda eða valið einstaklingsbundnar heimildir. Ef þú velur \"Stjórnandi\", þá verða allir aðrir valmöguleikar valdir sjálfrafa. Aðgangstýring notenda er á hendi stjórnenda. \n",
     "profileSettings": "Stilla prófíl",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "kemur í veg fyrir aðgang að dot-skjali (t.d. .git, .gitignore) í öllum möppum. \n",
     "ruleExample2": "kemur í veg fyrir aðgang að Caddyfile-skjalinu í root-möppu í sýn notandans. ",
     "rules": "Reglur",
@@ -243,7 +277,8 @@
     "userManagement": "Notendastýring",
     "userUpdated": "Notandastillingar vistaðar!",
     "username": "Notendanafn",
-    "users": "Notendur"
+    "users": "Notendur",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Hjálp",

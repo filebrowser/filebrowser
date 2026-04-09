@@ -21,19 +21,20 @@ var usersUpdateCmd = &cobra.Command{
 	Long: `Updates an existing user. Set the flags for the
 options you want to change.`,
 	Args: cobra.ExactArgs(1),
-	RunE: python(func(cmd *cobra.Command, args []string, d *pythonData) error {
-		username, id := parseUsernameOrID(args[0])
+	RunE: withStore(func(cmd *cobra.Command, args []string, st *store) error {
 		flags := cmd.Flags()
-		password, err := getString(flags, "password")
-		if err != nil {
-			return err
-		}
-		newUsername, err := getString(flags, "username")
+		username, id := parseUsernameOrID(args[0])
+		password, err := flags.GetString("password")
 		if err != nil {
 			return err
 		}
 
-		s, err := d.store.Settings.Get()
+		newUsername, err := flags.GetString("username")
+		if err != nil {
+			return err
+		}
+
+		s, err := st.Settings.Get()
 		if err != nil {
 			return err
 		}
@@ -41,46 +42,50 @@ options you want to change.`,
 		var (
 			user *users.User
 		)
-
 		if id != 0 {
-			user, err = d.store.Users.Get("", id)
+			user, err = st.Users.Get("", id)
 		} else {
-			user, err = d.store.Users.Get("", username)
+			user, err = st.Users.Get("", username)
 		}
-
 		if err != nil {
 			return err
 		}
 
 		defaults := settings.UserDefaults{
-			Scope:       user.Scope,
-			Locale:      user.Locale,
-			ViewMode:    user.ViewMode,
-			SingleClick: user.SingleClick,
-			Perm:        user.Perm,
-			Sorting:     user.Sorting,
-			Commands:    user.Commands,
+			Scope:                 user.Scope,
+			Locale:                user.Locale,
+			ViewMode:              user.ViewMode,
+			SingleClick:           user.SingleClick,
+			RedirectAfterCopyMove: user.RedirectAfterCopyMove,
+			Perm:                  user.Perm,
+			Sorting:               user.Sorting,
+			Commands:              user.Commands,
 		}
+
 		err = getUserDefaults(flags, &defaults, false)
 		if err != nil {
 			return err
 		}
+
 		user.Scope = defaults.Scope
 		user.Locale = defaults.Locale
 		user.ViewMode = defaults.ViewMode
 		user.SingleClick = defaults.SingleClick
+		user.RedirectAfterCopyMove = defaults.RedirectAfterCopyMove
 		user.Perm = defaults.Perm
 		user.Commands = defaults.Commands
 		user.Sorting = defaults.Sorting
-		user.LockPassword, err = getBool(flags, "lockPassword")
+		user.LockPassword, err = flags.GetBool("lockPassword")
 		if err != nil {
 			return err
 		}
-		user.DateFormat, err = getBool(flags, "dateFormat")
+
+		user.DateFormat, err = flags.GetBool("dateFormat")
 		if err != nil {
 			return err
 		}
-		user.HideDotfiles, err = getBool(flags, "hideDotfiles")
+
+		user.HideDotfiles, err = flags.GetBool("hideDotfiles")
 		if err != nil {
 			return err
 		}
@@ -96,11 +101,11 @@ options you want to change.`,
 			}
 		}
 
-		err = d.store.Users.Update(user)
+		err = st.Users.Update(user)
 		if err != nil {
 			return err
 		}
 		printUsers([]*users.User{user})
 		return nil
-	}, pythonConfig{}),
+	}, storeOptions{}),
 }

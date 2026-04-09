@@ -42,8 +42,17 @@
     "update": "Update",
     "upload": "Upload",
     "openFile": "Open file",
+    "openDirect": "View raw",
     "discardChanges": "Discard",
-    "saveChanges": "Save changes"
+    "stopSearch": "Stop searching",
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text",
+    "increaseFontSize": "Increase font size",
+    "decreaseFontSize": "Decrease font size",
+    "overrideAll": "Replace all files in destination folder",
+    "skipAll": "Skip all conflicting files",
+    "renameAll": "Rename all files (create a copy)",
+    "singleDecision": "Decide for each conflicting file"
   },
   "download": {
     "downloadFile": "Download File",
@@ -75,7 +84,17 @@
     "sortByLastModified": "Sort by last modified",
     "sortByName": "Sort by name",
     "sortBySize": "Sort by size",
-    "noPreview": "Preview is not available for this file."
+    "noPreview": "Preview is not available for this file.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file.",
+    "showingRows": "Showing {count} row(s)",
+    "columnSeparator": "Column Separator",
+    "csvSeparators": {
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "both": "Both (,) and (;)"
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "select file or directory",
@@ -102,6 +121,7 @@
     "username": "Username",
     "usernameTaken": "Username already taken",
     "wrongCredentials": "Wrong credentials",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
@@ -145,7 +165,19 @@
     "uploadMessage": "Select an option to upload.",
     "optionalPassword": "Optional password",
     "resolution": "Resolution",
-    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
+    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?",
+    "replaceOrSkip": "Replace or skip files",
+    "resolveConflict": "Which files do you want to keep?",
+    "singleConflictResolve": "If you select both versions, a number will be added to the name of the copied file.",
+    "fastConflictResolve": "The destination folder there are {count} files with same name.",
+    "uploadingFiles": "Uploading files",
+    "filesInOrigin": "Files in origin",
+    "filesInDest": "Files in destination",
+    "override": "Overwrite",
+    "skip": "Skip",
+    "forbiddenError": "Forbidden Error",
+    "currentPassword": "Your password",
+    "currentPasswordMessage": "Enter your password to validate this action."
   },
   "search": {
     "images": "Images",
@@ -166,6 +198,7 @@
     "allowNew": "Create new files and directories",
     "allowPublish": "Publish new posts and pages",
     "allowSignup": "Allow users to signup",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(leave blank to avoid changes)",
     "branding": "Branding",
     "brandingDirectoryPath": "Branding directory path",
@@ -212,11 +245,12 @@
       "execute": "Execute commands",
       "modify": "Edit files",
       "rename": "Rename or move files and directories",
-      "share": "Share files"
+      "share": "Share files (require download permission)"
     },
     "permissions": "Permissions",
     "permissionsHelp": "You can set the user to be an administrator or choose the permissions individually. If you select \"Administrator\", all of the other options will be automatically checked. The management of users remains a privilege of an administrator.\n",
     "profileSettings": "Profile Settings",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "prevents the access to any dotfile (such as .git, .gitignore) in every folder.\n",
     "ruleExample2": "blocks the access to the file named Caddyfile on the root of the scope.",
     "rules": "Rules",
@@ -243,7 +277,8 @@
     "userManagement": "User Management",
     "userUpdated": "User updated!",
     "username": "Username",
-    "users": "Users"
+    "users": "Users",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Help",

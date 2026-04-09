@@ -42,8 +42,17 @@
     "update": "Обновить",
     "upload": "Загрузить",
     "openFile": "Открыть файл",
+    "openDirect": "View raw",
     "discardChanges": "Отказаться",
-    "saveChanges": "Save changes"
+    "stopSearch": "Stop searching",
+    "saveChanges": "Сохранить",
+    "editAsText": "Редактировать как текст",
+    "increaseFontSize": "Увеличить размер шрифта",
+    "decreaseFontSize": "Уменьшить размер шрифта",
+    "overrideAll": "Replace all files in destination folder",
+    "skipAll": "Skip all conflicting files",
+    "renameAll": "Rename all files (create a copy)",
+    "singleDecision": "Decide for each conflicting file"
   },
   "download": {
     "downloadFile": "Скачать файл",
@@ -75,7 +84,17 @@
     "sortByLastModified": "Сортировка по дате изменения",
     "sortByName": "Сортировка по имени",
     "sortBySize": "Сортировка по размеру",
-    "noPreview": "Предварительный просмотр для этого файла недоступен."
+    "noPreview": "Предварительный просмотр для этого файла недоступен.",
+    "csvTooLarge": "Этот CSV файл слишком большой для предпросмотра (>5 МБ). Скачайте и откройте его локально.",
+    "csvLoadFailed": "Не удалось загрузить этот CSV.",
+    "showingRows": "Отображается {count} строк(а)",
+    "columnSeparator": "Разделитель столбцов",
+    "csvSeparators": {
+      "comma": "Запятая (,)",
+      "semicolon": "Точка с запятой (;)",
+      "both": "Оба варианта — (,) и (;)"
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "выбрать файл или каталог",
@@ -102,8 +121,9 @@
     "username": "Имя пользователя",
     "usernameTaken": "Данное имя пользователя уже занято",
     "wrongCredentials": "Неверные данные",
+    "passwordTooShort": "Пароль должен состоять как минимум из {min} символов",
     "logout_reasons": {
-      "inactivity": "You have been logged out due to inactivity."
+      "inactivity": "Сессия завершена после долгого отсутствия."
     }
   },
   "permanent": "Постоянный",
@@ -145,7 +165,19 @@
     "uploadMessage": "Выберите вариант для загрузки.",
     "optionalPassword": "Необязательный пароль",
     "resolution": "Разрешение",
-    "discardEditorChanges": "Вы действительно желаете отменить ваши правки?"
+    "discardEditorChanges": "Вы действительно желаете отменить ваши правки?",
+    "replaceOrSkip": "Replace or skip files",
+    "resolveConflict": "Which files do you want to keep?",
+    "singleConflictResolve": "If you select both versions, a number will be added to the name of the copied file.",
+    "fastConflictResolve": "The destination folder there are {count} files with same name.",
+    "uploadingFiles": "Uploading files",
+    "filesInOrigin": "Files in origin",
+    "filesInDest": "Files in destination",
+    "override": "Overwrite",
+    "skip": "Skip",
+    "forbiddenError": "Forbidden Error",
+    "currentPassword": "Your password",
+    "currentPasswordMessage": "Enter your password to validate this action."
   },
   "search": {
     "images": "Изображения",
@@ -158,7 +190,7 @@
     "video": "Видео"
   },
   "settings": {
-    "aceEditorTheme": "Ace editor theme",
+    "aceEditorTheme": "Тема редактора Ace",
     "admin": "Админ",
     "administrator": "Администратор",
     "allowCommands": "Запуск команд",
@@ -166,6 +198,7 @@
     "allowNew": "Создание новых файлов или каталогов",
     "allowPublish": "Публикация новых записей и страниц",
     "allowSignup": "Разрешить пользователям регистрироваться",
+    "hideLoginButton": "Спрятать кнопку входа с публичных страниц",
     "avoidChanges": "(оставьте поле пустым, чтобы избежать изменений)",
     "branding": "Брендинг",
     "brandingDirectoryPath": "Путь к каталогу брендов",
@@ -175,7 +208,7 @@
     "commandRunnerHelp": "Здесь вы можете установить команды, которые будут выполняться в указанных событиях. Вы должны указать по одной команде в каждой строке. Переменные среды {0} и {1} будут доступны, будучи {0} относительно {1}. Дополнительные сведения об этой функции и доступных переменных среды см. В {2}.",
     "commandsUpdated": "Команды обновлены!",
     "createUserDir": "Автоматическое создание домашнего каталога пользователя при добавлении нового пользователя",
-    "minimumPasswordLength": "Minimum password length",
+    "minimumPasswordLength": "Минимальная длина пароля",
     "tusUploads": "Загруженные файлы",
     "tusUploadsHelp": " File Browser поддерживает загрузку файлов по частям, что позволяет работать в сетях низкого качества.",
     "tusUploadsChunkSize": "Указывает максимальный размер запроса (мелкие загрузки пойдут напрямую). Вы можете ввести простое целое число, обозначающее размер ввода в байтах, или строку, например 10MB, 1GB и т. д.",
@@ -217,6 +250,7 @@
     "permissions": "Права доступа",
     "permissionsHelp": "Можно настроить пользователя как администратора или выбрать разрешения индивидуально. При выборе \"Администратор\", все остальные параметры будут автоматически выбраны. Управление пользователями - привилегия администратора.\n",
     "profileSettings": "Настройки профиля",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "предотвратить доступ к любому скрытому файлу (например: .git, .gitignore) в каждой папке.\n",
     "ruleExample2": "блокирует доступ к файлу с именем Caddyfile в корневой области.",
     "rules": "Права",
@@ -243,7 +277,8 @@
     "userManagement": "Управление пользователями",
     "userUpdated": "Пользователь изменен!",
     "username": "Имя пользователя",
-    "users": "Пользователи"
+    "users": "Пользователи",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Помощь",

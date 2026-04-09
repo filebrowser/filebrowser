@@ -42,8 +42,17 @@
     "update": "Aktualizuj",
     "upload": "Wyślij",
     "openFile": "Otwórz plik",
+    "openDirect": "Otwórz bezpośrednio",
     "discardChanges": "Odrzuć",
-    "saveChanges": "Zapisz zmiany"
+    "stopSearch": "Zatrzymaj wyszukiwanie",
+    "saveChanges": "Zapisz zmiany",
+    "editAsText": "Edytuj jako tekst",
+    "increaseFontSize": "Zwiększ rozmiar czcionki",
+    "decreaseFontSize": "Zmniejsz rozmiar czcionki",
+    "overrideAll": "Zastąp wszystkie pliki w folderze docelowym",
+    "skipAll": "Pomiń wszystkie pliki powodujące konflikty",
+    "renameAll": "Zmień nazwy wszystkich plików (utwórz kopię)",
+    "singleDecision": "Podejmij decyzję dla każdego pliku powodującego konflikt"
   },
   "download": {
     "downloadFile": "Pobierz plik",
@@ -75,7 +84,17 @@
     "sortByLastModified": "Sortuj wg ostatniej modyfikacji",
     "sortByName": "Sortuj wg nazwy",
     "sortBySize": "Sortuj wg rozmiaru",
-    "noPreview": "Podgląd tego pliku jest niedostępny."
+    "noPreview": "Podgląd tego pliku jest niedostępny.",
+    "csvTooLarge": "Plik CSV jest za duży do podglądu (>5 MB). Pobierz, aby wyświetlić.",
+    "csvLoadFailed": "Nie udało się załadować pliku CSV.",
+    "showingRows": "Wyświetlanie wierszy: {count}",
+    "columnSeparator": "Separator kolumn",
+    "csvSeparators": {
+      "comma": "Przecinek (,)",
+      "semicolon": "Średnik (;)",
+      "both": "Zarówno (,), jak i (;)"
+    },
+    "fileEncoding": "Kodowanie pliku"
   },
   "help": {
     "click": "zaznacz plik lub folder",
@@ -102,6 +121,7 @@
     "username": "Nazwa użytkownika",
     "usernameTaken": "Ta nazwa użytkownika jest zajęta",
     "wrongCredentials": "Błędne dane logowania",
+    "passwordTooShort": "Wymagana minimalna liczba znaków hasła: {min}",
     "logout_reasons": {
       "inactivity": "Wylogowano z powodu braku aktywności."
     }
@@ -145,7 +165,19 @@
     "uploadMessage": "Wybierz opcję przesyłania.",
     "optionalPassword": "Opcjonalne hasło",
     "resolution": "Rozdzielczość",
-    "discardEditorChanges": "Czy na pewno chcesz odrzucić wprowadzone zmiany?"
+    "discardEditorChanges": "Czy na pewno chcesz odrzucić wprowadzone zmiany?",
+    "replaceOrSkip": "Zastąp lub pomiń pliki",
+    "resolveConflict": "Które pliki chcesz zachować?",
+    "singleConflictResolve": "Jeśli wybierzesz obie wersje, do nazwy kopiowanego pliku zostanie dodany numer.",
+    "fastConflictResolve": "W folderze docelowym liczba plików o tej samej nazwie to {count}.",
+    "uploadingFiles": "Wysyłanie plików",
+    "filesInOrigin": "Pliki w miejscu pochodzenia",
+    "filesInDest": "Pliki w miejscu docelowym",
+    "override": "Zastąp",
+    "skip": "Pomiń",
+    "forbiddenError": "Błąd zabronionego dostępu",
+    "currentPassword": "Twoje hasło",
+    "currentPasswordMessage": "Wpisz swoje hasło, aby zatwierdzić tę czynność."
   },
   "search": {
     "images": "Obrazy",
@@ -158,7 +190,7 @@
     "video": "Wideo"
   },
   "settings": {
-    "aceEditorTheme": "Ace editor theme",
+    "aceEditorTheme": "Motyw edytora Ace",
     "admin": "Admin",
     "administrator": "Administrator",
     "allowCommands": "Wykonaj polecenie",
@@ -166,6 +198,7 @@
     "allowNew": "Tworzenie nowych plików lub folderów",
     "allowPublish": "Tworzenie nowych wpisów i stron",
     "allowSignup": "Pozwól użytkownikom na rejestrację",
+    "hideLoginButton": "Ukryj przycisk logowania na stronach publicznych",
     "avoidChanges": "(pozostaw puste, aby uniknąć zmian)",
     "branding": "Personalizacja",
     "brandingDirectoryPath": "Ścieżka do folderu personalizacji",
@@ -216,7 +249,8 @@
     },
     "permissions": "Uprawnienia",
     "permissionsHelp": "Możesz ustawić użytkownika jako administratora lub wybrać uprawnienia indywidualnie. Jeśli wybierzesz „Administrator”, wszystkie pozostałe opcje zostaną automatycznie zaznaczone. Zarządzanie użytkownikami pozostaje przywilejem administratora.\n",
-    "profileSettings": "Twój profil",
+    "profileSettings": "Ustawienia profilu",
+    "redirectAfterCopyMove": "Przekieruj do miejsca docelowego po skopiowaniu lub przeniesieniu",
     "ruleExample1": "uniemożliwia dostęp do plików poprzedzonych kropką (takich jak .git, .gitignore) we wszystkich folderach.\n",
     "ruleExample2": "blokuje dostęp do pliku o nazwie Caddyfile w katalogu głównym zakresu.",
     "rules": "Uprawnienia",
@@ -243,7 +277,8 @@
     "userManagement": "Zarządzanie użytkownikami",
     "userUpdated": "Użytkownik zapisany!",
     "username": "Nazwa użytkownika",
-    "users": "Użytkownicy"
+    "users": "Użytkownicy",
+    "currentPassword": "Twoje aktualne hasło"
   },
   "sidebar": {
     "help": "Pomoc",

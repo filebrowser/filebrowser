@@ -42,7 +42,7 @@ func (s *Settings) MakeUserDir(username, userScope, serverRoot string) (string, 
 func cleanUsername(s string) string {
 	// Remove any trailing space to avoid ending on -
 	s = strings.Trim(s, " ")
-	s = strings.Replace(s, "..", "", -1)
+	s = strings.ReplaceAll(s, "..", "")
 
 	// Replace all characters which not in the list `0-9A-Za-z@_\-.` with a dash
 	s = invalidFilenameChars.ReplaceAllString(s, "-")

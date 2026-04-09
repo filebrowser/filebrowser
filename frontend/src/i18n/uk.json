@@ -42,8 +42,17 @@
     "update": "Оновити",
     "upload": "Вивантажити",
     "openFile": "Відкрити файл",
+    "openDirect": "View raw",
     "discardChanges": "Скасувати",
-    "saveChanges": "Save changes"
+    "stopSearch": "Stop searching",
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text",
+    "increaseFontSize": "Increase font size",
+    "decreaseFontSize": "Decrease font size",
+    "overrideAll": "Replace all files in destination folder",
+    "skipAll": "Skip all conflicting files",
+    "renameAll": "Rename all files (create a copy)",
+    "singleDecision": "Decide for each conflicting file"
   },
   "download": {
     "downloadFile": "Завантажити файл",
@@ -75,7 +84,17 @@
     "sortByLastModified": "Сортувати за останнім зміненням",
     "sortByName": "Сортувати за іменем",
     "sortBySize": "Сортувати за розміром",
-    "noPreview": "Попередній перегляд для цього файлу недоступний."
+    "noPreview": "Попередній перегляд для цього файлу недоступний.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file.",
+    "showingRows": "Showing {count} row(s)",
+    "columnSeparator": "Column Separator",
+    "csvSeparators": {
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "both": "Both (,) and (;)"
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "вибрати файл чи каталог",
@@ -102,6 +121,7 @@
     "username": "Ім'я користувача",
     "usernameTaken": "Ім'я користувача вже використовується",
     "wrongCredentials": "Неправильне ім'я користувача або пароль",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
@@ -145,7 +165,19 @@
     "uploadMessage": "Виберіть варіант для вивантаження.",
     "optionalPassword": "Необов'язковий пароль",
     "resolution": "Розширення",
-    "discardEditorChanges": "Чи дійсно ви хочете скасувати поточні зміни?"
+    "discardEditorChanges": "Чи дійсно ви хочете скасувати поточні зміни?",
+    "replaceOrSkip": "Replace or skip files",
+    "resolveConflict": "Which files do you want to keep?",
+    "singleConflictResolve": "If you select both versions, a number will be added to the name of the copied file.",
+    "fastConflictResolve": "The destination folder there are {count} files with same name.",
+    "uploadingFiles": "Uploading files",
+    "filesInOrigin": "Files in origin",
+    "filesInDest": "Files in destination",
+    "override": "Overwrite",
+    "skip": "Skip",
+    "forbiddenError": "Forbidden Error",
+    "currentPassword": "Your password",
+    "currentPasswordMessage": "Enter your password to validate this action."
   },
   "search": {
     "images": "Зображення",
@@ -166,6 +198,7 @@
     "allowNew": "Створення нових файлів або каталогів",
     "allowPublish": "Публікація нових записів та сторінок",
     "allowSignup": "Дозволити користувачам реєструватися",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(залишіть поле порожнім, щоб уникнути змін)",
     "branding": "Брендинг",
     "brandingDirectoryPath": "Шлях до каталогу брендів",
@@ -217,6 +250,7 @@
     "permissions": "Дозволи",
     "permissionsHelp": "Можна налаштувати користувача як адміністратора чи вибрати індивідуальні дозволи. При виборі \"Адміністратор\" всі інші параметри будуть автоматично вибрані. Керування користувачами - привілей адміністратора.\n",
     "profileSettings": "Налаштування профілю",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "запобігти доступу до будь-якого прихованого файлу (наприклад: .git, .gitignore) у кожній папці.\n",
     "ruleExample2": "блокує доступ до файлу з ім'ям Caddyfile у кореневій області.",
     "rules": "Права",
@@ -243,7 +277,8 @@
     "userManagement": "Керування користувачами",
     "userUpdated": "Користувача змінено!",
     "username": "Ім'я користувача",
-    "users": "Користувачі"
+    "users": "Користувачі",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Допомога",

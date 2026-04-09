@@ -42,8 +42,17 @@
     "update": "Aktualizovat",
     "upload": "Nahrát",
     "openFile": "Otevřít soubor",
+    "openDirect": "View raw",
     "discardChanges": "Zrušit změny",
-    "saveChanges": "Save changes"
+    "stopSearch": "Stop searching",
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text",
+    "increaseFontSize": "Increase font size",
+    "decreaseFontSize": "Decrease font size",
+    "overrideAll": "Replace all files in destination folder",
+    "skipAll": "Skip all conflicting files",
+    "renameAll": "Rename all files (create a copy)",
+    "singleDecision": "Decide for each conflicting file"
   },
   "download": {
     "downloadFile": "Stáhnout soubor",
@@ -75,7 +84,17 @@
     "sortByLastModified": "Seřadit podle poslední změny",
     "sortByName": "Seřadit podle názvu",
     "sortBySize": "Seřadit podle velikosti",
-    "noPreview": "Náhled pro tento soubor není k dispozici."
+    "noPreview": "Náhled pro tento soubor není k dispozici.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file.",
+    "showingRows": "Showing {count} row(s)",
+    "columnSeparator": "Column Separator",
+    "csvSeparators": {
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "both": "Both (,) and (;)"
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "vyberte soubor nebo adresář",
@@ -102,6 +121,7 @@
     "username": "Uživatelské jméno",
     "usernameTaken": "Uživatelské jméno již existuje",
     "wrongCredentials": "Nesprávné přihlašovací údaje",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
@@ -145,7 +165,19 @@
     "uploadMessage": "Vyberte možnost pro nahrání.",
     "optionalPassword": "Volitelné heslo",
     "resolution": "Rozlišení",
-    "discardEditorChanges": "Opravdu chcete zrušit provedené změny?"
+    "discardEditorChanges": "Opravdu chcete zrušit provedené změny?",
+    "replaceOrSkip": "Replace or skip files",
+    "resolveConflict": "Which files do you want to keep?",
+    "singleConflictResolve": "If you select both versions, a number will be added to the name of the copied file.",
+    "fastConflictResolve": "The destination folder there are {count} files with same name.",
+    "uploadingFiles": "Uploading files",
+    "filesInOrigin": "Files in origin",
+    "filesInDest": "Files in destination",
+    "override": "Overwrite",
+    "skip": "Skip",
+    "forbiddenError": "Forbidden Error",
+    "currentPassword": "Your password",
+    "currentPasswordMessage": "Enter your password to validate this action."
   },
   "search": {
     "images": "Obrázky",
@@ -166,6 +198,7 @@
     "allowNew": "Vytvářet nové soubory a adresáře",
     "allowPublish": "Publikovat nové příspěvky a stránky",
     "allowSignup": "Povolit uživatelům registraci",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(ponechte prázdné pro zabránění změnám)",
     "branding": "Branding",
     "brandingDirectoryPath": "Cesta ke složce s brandingem",
@@ -217,6 +250,7 @@
     "permissions": "Oprávnění",
     "permissionsHelp": "Můžete nastavit uživatele jako administrátora nebo zvolit jednotlivá oprávnění. Pokud vyberete \"Administrátor\", všechny ostatní možnosti budou automaticky zaškrtnuty. Správa uživatelů zůstává výsadou administrátora.\n",
     "profileSettings": "Nastavení profilu",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "zabraňuje přístupu k jakémukoli skrytému souboru (např. .git, .gitignore) v každé složce.\n",
     "ruleExample2": "blokuje přístup k souboru s názvem Caddyfile v kořenovém adresáři.",
     "rules": "Pravidla",
@@ -243,7 +277,8 @@
     "userManagement": "Správa uživatelů",
     "userUpdated": "Uživatel aktualizován!",
     "username": "Uživatelské jméno",
-    "users": "Uživatelé"
+    "users": "Uživatelé",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Nápověda",

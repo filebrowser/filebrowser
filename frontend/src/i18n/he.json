@@ -42,8 +42,17 @@
     "update": "עדכון",
     "upload": "העלאה",
     "openFile": "פתח קובץ",
+    "openDirect": "View raw",
     "discardChanges": "זריקת השינויים",
-    "saveChanges": "Save changes"
+    "stopSearch": "Stop searching",
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text",
+    "increaseFontSize": "Increase font size",
+    "decreaseFontSize": "Decrease font size",
+    "overrideAll": "Replace all files in destination folder",
+    "skipAll": "Skip all conflicting files",
+    "renameAll": "Rename all files (create a copy)",
+    "singleDecision": "Decide for each conflicting file"
   },
   "download": {
     "downloadFile": "הורד קובץ",
@@ -75,7 +84,17 @@
     "sortByLastModified": "מיין לפי השינוי האחרון",
     "sortByName": "מיין לפי שם",
     "sortBySize": "מיין לפי גודל",
-    "noPreview": "לא זמינה תצוגה מקדימה לקובץ זה"
+    "noPreview": "לא זמינה תצוגה מקדימה לקובץ זה",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file.",
+    "showingRows": "Showing {count} row(s)",
+    "columnSeparator": "Column Separator",
+    "csvSeparators": {
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "both": "Both (,) and (;)"
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "בחר קובץ או תיקייה",
@@ -102,6 +121,7 @@
     "username": "שם משתמש",
     "usernameTaken": "שם המשתמש כבר קיים",
     "wrongCredentials": "פרטי התחברות שגויים",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
@@ -145,7 +165,19 @@
     "uploadMessage": "בחר אפשרות העלאה.",
     "optionalPassword": "סיסמא אופציונלית",
     "resolution": "Resolution",
-    "discardEditorChanges": "האם אתה בטוח שברצונך לבטל את השינויים שביצעת?"
+    "discardEditorChanges": "האם אתה בטוח שברצונך לבטל את השינויים שביצעת?",
+    "replaceOrSkip": "Replace or skip files",
+    "resolveConflict": "Which files do you want to keep?",
+    "singleConflictResolve": "If you select both versions, a number will be added to the name of the copied file.",
+    "fastConflictResolve": "The destination folder there are {count} files with same name.",
+    "uploadingFiles": "Uploading files",
+    "filesInOrigin": "Files in origin",
+    "filesInDest": "Files in destination",
+    "override": "Overwrite",
+    "skip": "Skip",
+    "forbiddenError": "Forbidden Error",
+    "currentPassword": "Your password",
+    "currentPasswordMessage": "Enter your password to validate this action."
   },
   "search": {
     "images": "תמונות",
@@ -166,6 +198,7 @@
     "allowNew": "יצירת קבצים ותיקיות חדשות",
     "allowPublish": "פרסום פוסטים ודפים חדשים",
     "allowSignup": "אפשר למשתמשים חדשים להירשם",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(השאר ריק כדי למנוע שינויים)",
     "branding": "מיתוג",
     "brandingDirectoryPath": "נתיב תיקיית מיתוג",
@@ -217,6 +250,7 @@
     "permissions": "הרשאות",
     "permissionsHelp": "אתה יכול להגדיר את המשתמש להיות מנהל מערכת או לבחור את ההרשאות בנפרד. אם תבחר \"מנהל מערכת\", כל ההרשאות יינתנו אוטומטית. ניהול המשתמשים נשאר הרשאה של מנהל מערכת.\n",
     "profileSettings": "הגדרות פרופיל",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "מנע גישה לקבצים נסתרים (כל קובץ/תיקייה שמתחיל בנקודה, לדוגמא .git)",
     "ruleExample2": "חסימת גישה לקובץ בשם Caddyfile בהיקף הראשי.",
     "rules": "חוקים",
@@ -243,7 +277,8 @@
     "userManagement": "ניהול משתמש",
     "userUpdated": "המשתמש עודכן!",
     "username": "שם משתמש",
-    "users": "משתמשים"
+    "users": "משתמשים",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "עזרה",

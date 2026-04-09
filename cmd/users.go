@@ -27,16 +27,17 @@ var usersCmd = &cobra.Command{
 
 func printUsers(usrs []*users.User) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-	fmt.Fprintln(w, "ID\tUsername\tScope\tLocale\tV. Mode\tS.Click\tAdmin\tExecute\tCreate\tRename\tModify\tDelete\tShare\tDownload\tPwd Lock")
+	fmt.Fprintln(w, "ID\tUsername\tScope\tLocale\tV. Mode\tS.Click\tRed. After C/M\tAdmin\tExecute\tCreate\tRename\tModify\tDelete\tShare\tDownload\tPwd Lock")
 
 	for _, u := range usrs {
-		fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t\n",
+		fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t%t\t\n",
 			u.ID,
 			u.Username,
 			u.Scope,
 			u.Locale,
 			u.ViewMode,
 			u.SingleClick,
+			u.RedirectAfterCopyMove,
 			u.Perm.Admin,
 			u.Perm.Execute,
 			u.Perm.Create,
@@ -77,67 +78,74 @@ func addUserFlags(flags *pflag.FlagSet) {
 	flags.String("locale", "en", "locale for users")
 	flags.String("viewMode", string(users.ListViewMode), "view mode for users")
 	flags.Bool("singleClick", false, "use single clicks only")
+	flags.Bool("redirectAfterCopyMove", false, "redirect to destination after copy/move")
 	flags.Bool("dateFormat", false, "use date format (true for absolute time, false for relative)")
 	flags.Bool("hideDotfiles", false, "hide dotfiles")
 	flags.String("aceEditorTheme", "", "ace editor's syntax highlighting theme for users")
 }
 
-func getViewMode(flags *pflag.FlagSet) (users.ViewMode, error) {
-	viewModeStr, err := getString(flags, "viewMode")
+func getAndParseViewMode(flags *pflag.FlagSet) (users.ViewMode, error) {
+	viewModeStr, err := flags.GetString("viewMode")
 	if err != nil {
 		return "", err
 	}
+
 	viewMode := users.ViewMode(viewModeStr)
 	if viewMode != users.ListViewMode && viewMode != users.MosaicViewMode {
 		return "", errors.New("view mode must be \"" + string(users.ListViewMode) + "\" or \"" + string(users.MosaicViewMode) + "\"")
 	}
+
 	return viewMode, nil
 }
 
-//nolint:gocyclo
 func getUserDefaults(flags *pflag.FlagSet, defaults *settings.UserDefaults, all bool) error {
-	var visitErr error
+	errs := []error{}
+
 	visit := func(flag *pflag.Flag) {
-		if visitErr != nil {
-			return
-		}
 		var err error
 		switch flag.Name {
 		case "scope":
-			defaults.Scope, err = getString(flags, flag.Name)
+			defaults.Scope, err = flags.GetString(flag.Name)
 		case "locale":
-			defaults.Locale, err = getString(flags, flag.Name)
+			defaults.Locale, err = flags.GetString(flag.Name)
 		case "viewMode":
-			defaults.ViewMode, err = getViewMode(flags)
+			defaults.ViewMode, err = getAndParseViewMode(flags)
 		case "singleClick":
-			defaults.SingleClick, err = getBool(flags, flag.Name)
+			defaults.SingleClick, err = flags.GetBool(flag.Name)
+		case "redirectAfterCopyMove":
+			defaults.RedirectAfterCopyMove, err = flags.GetBool(flag.Name)
 		case "aceEditorTheme":
-			defaults.AceEditorTheme, err = getString(flags, flag.Name)
+			defaults.AceEditorTheme, err = flags.GetString(flag.Name)
 		case "perm.admin":
-			defaults.Perm.Admin, err = getBool(flags, flag.Name)
+			defaults.Perm.Admin, err = flags.GetBool(flag.Name)
 		case "perm.execute":
-			defaults.Perm.Execute, err = getBool(flags, flag.Name)
+			defaults.Perm.Execute, err = flags.GetBool(flag.Name)
 		case "perm.create":
-			defaults.Perm.Create, err = getBool(flags, flag.Name)
+			defaults.Perm.Create, err = flags.GetBool(flag.Name)
 		case "perm.rename":
-			defaults.Perm.Rename, err = getBool(flags, flag.Name)
+			defaults.Perm.Rename, err = flags.GetBool(flag.Name)
 		case "perm.modify":
-			defaults.Perm.Modify, err = getBool(flags, flag.Name)
+			defaults.Perm.Modify, err = flags.GetBool(flag.Name)
 		case "perm.delete":
-			defaults.Perm.Delete, err = getBool(flags, flag.Name)
+			defaults.Perm.Delete, err = flags.GetBool(flag.Name)
 		case "perm.share":
-			defaults.Perm.Share, err = getBool(flags, flag.Name)
+			defaults.Perm.Share, err = flags.GetBool(flag.Name)
 		case "perm.download":
-			defaults.Perm.Download, err = getBool(flags, flag.Name)
+			defaults.Perm.Download, err = flags.GetBool(flag.Name)
 		case "commands":
 			defaults.Commands, err = flags.GetStringSlice(flag.Name)
 		case "sorting.by":
-			defaults.Sorting.By, err = getString(flags, flag.Name)
+			defaults.Sorting.By, err = flags.GetString(flag.Name)
 		case "sorting.asc":
-			defaults.Sorting.Asc, err = getBool(flags, flag.Name)
+			defaults.Sorting.Asc, err = flags.GetBool(flag.Name)
+		case "dateFormat":
+			defaults.DateFormat, err = flags.GetBool(flag.Name)
+		case "hideDotfiles":
+			defaults.HideDotfiles, err = flags.GetBool(flag.Name)
 		}
+
 		if err != nil {
-			visitErr = err
+			errs = append(errs, err)
 		}
 	}
 
@@ -146,5 +154,6 @@ func getUserDefaults(flags *pflag.FlagSet, defaults *settings.UserDefaults, all 
 	} else {
 		flags.Visit(visit)
 	}
-	return visitErr
+
+	return errors.Join(errs...)
 }

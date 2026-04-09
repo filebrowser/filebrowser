@@ -69,6 +69,12 @@ const currentView = computed(() => {
 
   if (fileStore.req.isDir) {
     return FileListing;
+  } else if (fileStore.req.extension.toLowerCase() === ".csv") {
+    // CSV files use Preview for table view, unless ?edit=true
+    if (route.query.edit === "true") {
+      return Editor;
+    }
+    return Preview;
   } else if (
     fileStore.req.type === "text" ||
     fileStore.req.type === "textImmutable"

@@ -51,6 +51,20 @@ export function copy(data: ClipboardArgs, opts?: ClipboardOpts) {
   });
 }
 
+export function read() {
+  return new Promise<string>((resolve, reject) => {
+    if (
+      // Clipboard API requires secure context
+      window.isSecureContext &&
+      typeof navigator.clipboard !== "undefined"
+    ) {
+      navigator.clipboard.readText().then(resolve).catch(reject);
+    } else {
+      reject();
+    }
+  });
+}
+
 function getPermission(name: string) {
   return new Promise<void>((resolve, reject) => {
     typeof navigator.permissions !== "undefined" &&

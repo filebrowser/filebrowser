@@ -9,7 +9,6 @@ import (
 var assets embed.FS
 var commonPasswords map[string]struct{}
 
-//nolint:gochecknoinits
 func init() {
 	// Password list sourced from:
 	// https://github.com/danielmiessler/SecLists/blob/master/Passwords/Common-Credentials/100k-most-used-passwords-NCSC.txt

@@ -42,8 +42,17 @@
     "update": "Actualitzar",
     "upload": "Pujar",
     "openFile": "Obrir fitxer",
+    "openDirect": "View raw",
     "discardChanges": "Descartar",
-    "saveChanges": "Save changes"
+    "stopSearch": "Stop searching",
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text",
+    "increaseFontSize": "Increase font size",
+    "decreaseFontSize": "Decrease font size",
+    "overrideAll": "Replace all files in destination folder",
+    "skipAll": "Skip all conflicting files",
+    "renameAll": "Rename all files (create a copy)",
+    "singleDecision": "Decide for each conflicting file"
   },
   "download": {
     "downloadFile": "Descarregar fitxer",
@@ -75,7 +84,17 @@
     "sortByLastModified": "Ordenar per última modificació",
     "sortByName": "Ordenar per nom",
     "sortBySize": "Ordenar per mida",
-    "noPreview": "La vista prèvia no està disponible per a aquest fitxer."
+    "noPreview": "La vista prèvia no està disponible per a aquest fitxer.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file.",
+    "showingRows": "Showing {count} row(s)",
+    "columnSeparator": "Column Separator",
+    "csvSeparators": {
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "both": "Both (,) and (;)"
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "seleccionar fitxer o carpeta",
@@ -102,6 +121,7 @@
     "username": "Usuari",
     "usernameTaken": "Nom d'usuari no disponible",
     "wrongCredentials": "Usuari i/o contrasenya incorrectes",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
@@ -145,7 +165,19 @@
     "uploadMessage": "Seleccioneu una opció per pujar.",
     "optionalPassword": "Contrasenya opcional",
     "resolution": "Resolució",
-    "discardEditorChanges": "Esteu segur que voleu descartar els canvis que heu fet?"
+    "discardEditorChanges": "Esteu segur que voleu descartar els canvis que heu fet?",
+    "replaceOrSkip": "Replace or skip files",
+    "resolveConflict": "Which files do you want to keep?",
+    "singleConflictResolve": "If you select both versions, a number will be added to the name of the copied file.",
+    "fastConflictResolve": "The destination folder there are {count} files with same name.",
+    "uploadingFiles": "Uploading files",
+    "filesInOrigin": "Files in origin",
+    "filesInDest": "Files in destination",
+    "override": "Overwrite",
+    "skip": "Skip",
+    "forbiddenError": "Forbidden Error",
+    "currentPassword": "Your password",
+    "currentPasswordMessage": "Enter your password to validate this action."
   },
   "search": {
     "images": "Imatges",
@@ -166,6 +198,7 @@
     "allowNew": "Crear nous fitxers i carpetes",
     "allowPublish": "Publicar nous posts i pàgines",
     "allowSignup": "Permetre registre d'usuaris",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(deixar en blanc per evitar canvis)",
     "branding": "Marca",
     "brandingDirectoryPath": "Ruta de la carpeta de personalització de marca",
@@ -217,6 +250,7 @@
     "permissions": "Permisos",
     "permissionsHelp": "Pots nomenar l'usuari com a administrador o triar els permisos individualment. Si selecciones \"Administrador\", totes les altres opcions s'activaran automàticament. L'administració d'usuaris és un privilegi d'administrador.\n",
     "profileSettings": "Ajustos del perfil",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "prevé l'accés a una extensió de fitxer (Com .git) en cada carpeta.\n",
     "ruleExample2": "bloqueja l'accés al fitxer anomenat Caddyfile a la carpeta arrel.",
     "rules": "Regles",
@@ -243,7 +277,8 @@
     "userManagement": "Administració d'usuaris",
     "userUpdated": "Usuari actualitzat!",
     "username": "Usuari",
-    "users": "Usuaris"
+    "users": "Usuaris",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Ajuda",

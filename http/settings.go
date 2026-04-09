@@ -1,4 +1,4 @@
-package http
+package fbhttp
 
 import (
 	"encoding/json"
@@ -10,10 +10,12 @@ import (
 
 type settingsData struct {
 	Signup                bool                  `json:"signup"`
+	HideLoginButton       bool                  `json:"hideLoginButton"`
 	CreateUserDir         bool                  `json:"createUserDir"`
 	MinimumPasswordLength uint                  `json:"minimumPasswordLength"`
 	UserHomeBasePath      string                `json:"userHomeBasePath"`
 	Defaults              settings.UserDefaults `json:"defaults"`
+	AuthMethod            settings.AuthMethod   `json:"authMethod"`
 	Rules                 []rules.Rule          `json:"rules"`
 	Branding              settings.Branding     `json:"branding"`
 	Tus                   settings.Tus          `json:"tus"`
@@ -24,10 +26,12 @@ type settingsData struct {
 var settingsGetHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	data := &settingsData{
 		Signup:                d.settings.Signup,
+		HideLoginButton:       d.settings.HideLoginButton,
 		CreateUserDir:         d.settings.CreateUserDir,
 		MinimumPasswordLength: d.settings.MinimumPasswordLength,
 		UserHomeBasePath:      d.settings.UserHomeBasePath,
 		Defaults:              d.settings.Defaults,
+		AuthMethod:            d.settings.AuthMethod,
 		Rules:                 d.settings.Rules,
 		Branding:              d.settings.Branding,
 		Tus:                   d.settings.Tus,
@@ -55,6 +59,7 @@ var settingsPutHandler = withAdmin(func(_ http.ResponseWriter, r *http.Request, 
 	d.settings.Tus = req.Tus
 	d.settings.Shell = req.Shell
 	d.settings.Commands = req.Commands
+	d.settings.HideLoginButton = req.HideLoginButton
 
 	err = d.store.Settings.Save(d.settings)
 	return errToStatus(err), err

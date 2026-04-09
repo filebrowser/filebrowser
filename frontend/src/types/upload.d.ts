@@ -17,6 +17,7 @@ interface UploadEntry {
   isDir: boolean;
   fullPath?: string;
   file?: File;
+  overwrite?: boolean;
 }
 
 type UploadList = UploadEntry[];

@@ -15,11 +15,23 @@ We encourage you to use git to manage your fork. To clone the main repository, j
 git clone https://github.com/filebrowser/filebrowser
 ```
 
+We use [Taskfile](https://taskfile.dev/) to manage the different processes (building, releasing, etc) automatically.
+
 ## Build
+
+You can fully build the project in order to produce a binary by running:
+
+```bash
+task build
+```
+
+## Development
+
+For development, there are a few things to have in mind.
 
 ### Frontend
 
-We are using [Node.js](https://nodejs.org/en/) on the frontend to manage the build process. The steps to build it are:
+We use [Node.js](https://nodejs.org/en/) on the frontend to manage the build process. Prepare the frontend environment:
 
 ```bash
 # From the root of the repo, go to frontend/
@@ -27,37 +39,62 @@ cd frontend
 
 # Install the dependencies
 pnpm install
+```
 
-# Build the frontend
+If you just want to develop the backend, you can create a static build of the frontend:
+
+```bash
 pnpm run build
 ```
 
-This will install the dependencies and build the frontend so you can then embed it into the Go app. Although, if you want to play with it, you'll get bored of building it after every change you do. So, you can run the command below to watch for changes:
+If you want to develop the frontend, start a development server which watches for changes:
 
 ```bash
 pnpm run dev
 ```
 
+Please note that you need to access File Browser's interface through the development server of the frontend.
+
 ### Backend
 
-First of all, you need to download the required dependencies. We are using the built-in `go mod` tool for dependency management. To get the modules, run:
+First prepare the backend environment by downloading all required dependencies:
 
 ```bash
 go mod download
 ```
 
-The magic of File Browser is that the static assets are bundled into the final binary. For that, we use [Go embed.FS](https://golang.org/pkg/embed/). The files from `frontend/dist` will be embedded during the build process.
-
-To build File Browser is just like any other Go program:
+You can now build or run File Browser as any other Go project:
 
 ```bash
+# Build
 go build
+
+# Run
+go run .
 ```
 
-To create a development build use the "dev" tag, this way the content inside the frontend folder will not be embedded in the binary but will be reloaded at every change:
+## Documentation
+
+We rely on Docker to abstract all the dependencies required for building the documentation.
+
+To build the documentation to `www/public`:
 
 ```bash
-go build -tags dev
+task docs
+```
+
+To start a local server on port `8000` to view the built documentation:
+
+```bash
+task docs:serve
+```
+
+## Release
+
+To make a release, just run:
+
+```bash
+task release
 ```
 
 ## Translations

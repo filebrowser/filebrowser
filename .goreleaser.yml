@@ -17,6 +17,7 @@ builds:
       - linux
       - windows
       - freebsd
+      - openbsd
     goarch:
       - amd64
       - "386"
@@ -30,6 +31,12 @@ builds:
     ignore:
       - goos: darwin
         goarch: "386"
+      # Experimental, may not work properly
+      - goos: openbsd
+        goarch: riscv64
+      # Broken as of Go 1.24, deprecated as of Go 1.26
+      - goos: windows
+        goarch: arm
       - goos: freebsd
         goarch: arm
 

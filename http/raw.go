@@ -1,4 +1,4 @@
-package http
+package fbhttp
 
 import (
 	"errors"
@@ -32,7 +32,7 @@ func parseQueryFiles(r *http.Request, f *files.FileInfo, _ *users.User) ([]strin
 		fileSlice = append(fileSlice, f.Path)
 	} else {
 		for _, name := range names {
-			name, err := url.QueryUnescape(strings.Replace(name, "+", "%2B", -1)) //nolint:govet
+			name, err := url.QueryUnescape(strings.ReplaceAll(name, "+", "%2B"))
 			if err != nil {
 				return nil, err
 			}
@@ -72,7 +72,8 @@ func parseQueryAlgorithm(r *http.Request) (string, archives.Archival, error) {
 
 func setContentDisposition(w http.ResponseWriter, r *http.Request, file *files.FileInfo) {
 	if r.URL.Query().Get("inline") == "true" {
-		w.Header().Set("Content-Disposition", "inline")
+		// As per RFC6266 section 4.3
+		w.Header().Set("Content-Disposition", "inline; filename*=utf-8''"+url.PathEscape(file.Name))
 	} else {
 		// As per RFC6266 section 4.3
 		w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.PathEscape(file.Name))
@@ -123,6 +124,7 @@ func getFiles(d *data, path, commonPath string) ([]archives.FileInfo, error) {
 	if path != commonPath {
 		nameInArchive := strings.TrimPrefix(path, commonPath)
 		nameInArchive = strings.TrimPrefix(nameInArchive, string(filepath.Separator))
+		nameInArchive = filepath.ToSlash(nameInArchive)
 
 		archiveFiles = append(archiveFiles, archives.FileInfo{
 			FileInfo:      info,

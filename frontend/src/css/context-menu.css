@@ -1,0 +1,21 @@
+.context-menu {
+  position: absolute;
+  background: var(--surfacePrimary);
+  min-width: 180px;
+  max-width: 220px;
+  border: 1px solid var(--borderSecondary);
+  box-shadow: 0 2px 4px var(--borderPrimary);
+  z-index: 999;
+}
+
+.context-menu .action {
+  display: block;
+  width: 100%;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+}
+
+.context-menu .action .counter {
+  left: 1.75em;
+}

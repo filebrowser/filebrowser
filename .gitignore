@@ -35,10 +35,5 @@ build/
 /frontend/dist/*
 !/frontend/dist/.gitkeep
 
-# Playwright files
-/frontend/test-results/
-/frontend/playwright-report/
-/frontend/playwright/.cache/
-
 default.nix
 Dockerfile.dev

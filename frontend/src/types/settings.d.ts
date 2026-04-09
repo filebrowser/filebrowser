@@ -1,9 +1,11 @@
 interface ISettings {
   signup: boolean;
   createUserDir: boolean;
+  hideLoginButton: boolean;
   minimumPasswordLength: number;
   userHomeBasePath: string;
   defaults: SettingsDefaults;
+  authMethod: string;
   rules: any[];
   branding: SettingsBranding;
   tus: SettingsTus;
@@ -16,6 +18,7 @@ interface SettingsDefaults {
   locale: string;
   viewMode: ViewModeType;
   singleClick: boolean;
+  redirectAfterCopyMove: boolean;
   sorting: Sorting;
   perm: Permissions;
   commands: any[];

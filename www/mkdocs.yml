@@ -34,8 +34,6 @@ theme:
   features:
     - navigation.tabs
     - navigation.tabs.sticky
-    - navigation.sections
-    - navigation.expand
     - navigation.indexes
     - navigation.top
     - navigation.instant
@@ -44,7 +42,6 @@ theme:
     - search.share
     - content.code.copy
     - toc.follow
-    - toc.integrate
 
   icon:
     repo: fontawesome/brands/github
@@ -97,10 +94,45 @@ extra:
 
 nav:
   - Home: index.md
-  - Getting Started:
+  - Documentation:
     - Installation: installation.md
-    - Configuration: configuration.md
+    - Configuration:
+      - customization.md
+      - authentication.md
+      - command-execution.md
+    - Troubleshooting: troubleshooting.md
     - Deployment: deployment.md
+    - Command Line Usage:
+      - cli/filebrowser.md
+      - cli/filebrowser-cmds.md
+      - cli/filebrowser-cmds-add.md
+      - cli/filebrowser-cmds-ls.md
+      - cli/filebrowser-cmds-rm.md
+      - cli/filebrowser-completion.md
+      - cli/filebrowser-completion-bash.md
+      - cli/filebrowser-completion-fish.md
+      - cli/filebrowser-completion-powershell.md
+      - cli/filebrowser-completion-zsh.md
+      - cli/filebrowser-config.md
+      - cli/filebrowser-config-cat.md
+      - cli/filebrowser-config-export.md
+      - cli/filebrowser-config-import.md
+      - cli/filebrowser-config-init.md
+      - cli/filebrowser-config-set.md
+      - cli/filebrowser-hash.md
+      - cli/filebrowser-rules.md
+      - cli/filebrowser-rules-add.md
+      - cli/filebrowser-rules-ls.md
+      - cli/filebrowser-rules-rm.md
+      - cli/filebrowser-users.md
+      - cli/filebrowser-users-add.md
+      - cli/filebrowser-users-export.md
+      - cli/filebrowser-users-find.md
+      - cli/filebrowser-users-import.md
+      - cli/filebrowser-users-ls.md
+      - cli/filebrowser-users-rm.md
+      - cli/filebrowser-users-update.md
+      - cli/filebrowser-version.md
   - Contributing:
     - Contributing: contributing.md
     - Code of Conduct: code-of-conduct.md

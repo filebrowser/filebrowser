@@ -6,7 +6,7 @@
     @mousemove="toggleNavigation"
     @touchstart="toggleNavigation"
   >
-    <header-bar v-if="isPdf || isEpub || showNav">
+    <header-bar v-if="isPdf || isEpub || isCsv || showNav">
       <action icon="close" :label="$t('buttons.close')" @action="close()" />
       <title>{{ name }}</title>
       <action
@@ -26,6 +26,13 @@
         />
         <action
           :disabled="layoutStore.loading"
+          v-if="isCsv && authStore.user?.perm.modify"
+          icon="edit_note"
+          :label="t('buttons.editAsText')"
+          @action="editAsText"
+        />
+        <action
+          :disabled="layoutStore.loading"
           v-if="authStore.user?.perm.delete"
           icon="delete"
           :label="$t('buttons.delete')"
@@ -38,6 +45,16 @@
           icon="file_download"
           :label="$t('buttons.download')"
           @action="download"
+        />
+        <action
+          :disabled="layoutStore.loading"
+          v-if="
+            ['image', 'audio', 'video'].includes(fileStore.req?.type || '') &&
+            authStore.user?.perm.download
+          "
+          icon="open_in_new"
+          :label="t('buttons.openDirect')"
+          @action="openDirect"
         />
         <action
           :disabled="layoutStore.loading"
@@ -67,7 +84,6 @@
             }"
             :epubOptions="{
               allowPopups: true,
-              allowScriptedContent: true,
             }"
             @update:location="locationChange"
           />
@@ -87,6 +103,7 @@
             <span>{{ size }}%</span>
           </div>
         </div>
+        <CsvViewer v-else-if="isCsv" :content="csvContent" :error="csvError" />
         <ExtendedImage
           v-else-if="fileStore.req?.type == 'image'"
           :src="previewUrl"
@@ -176,11 +193,17 @@ import HeaderBar from "@/components/header/HeaderBar.vue";
 import Action from "@/components/header/Action.vue";
 import ExtendedImage from "@/components/files/ExtendedImage.vue";
 import VideoPlayer from "@/components/files/VideoPlayer.vue";
+import CsvViewer from "@/components/files/CsvViewer.vue";
 import { VueReader } from "vue-reader";
 import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import type { Rendition } from "epubjs";
 import { getTheme } from "@/utils/theme";
+import { useI18n } from "vue-i18n";
+
+// CSV file size limit for preview (5MB)
+// Prevents browser memory issues with large files
+const CSV_MAX_SIZE = 5 * 1024 * 1024;
 
 const location = useStorage("book-progress", 0, undefined, {
   serializer: {
@@ -239,6 +262,8 @@ const hoverNav = ref<boolean>(false);
 const autoPlay = ref<boolean>(false);
 const previousRaw = ref<string>("");
 const nextRaw = ref<string>("");
+const csvContent = ref<ArrayBuffer | string>("");
+const csvError = ref<string>("");
 
 const player = ref<HTMLVideoElement | HTMLAudioElement | null>(null);
 
@@ -247,6 +272,8 @@ const $showError = inject<IToastError>("$showError")!;
 const authStore = useAuthStore();
 const fileStore = useFileStore();
 const layoutStore = useLayoutStore();
+
+const { t } = useI18n();
 
 const route = useRoute();
 const router = useRouter();
@@ -257,6 +284,10 @@ const hasNext = computed(() => nextLink.value !== "");
 
 const downloadUrl = computed(() =>
   fileStore.req ? api.getDownloadURL(fileStore.req, false) : ""
+);
+
+const directUrl = computed(() =>
+  fileStore.req ? api.getDownloadURL(fileStore.req, true) : ""
 );
 
 const previewUrl = computed(() => {
@@ -278,6 +309,11 @@ const previewUrl = computed(() => {
 const isPdf = computed(() => fileStore.req?.extension.toLowerCase() == ".pdf");
 const isEpub = computed(
   () => fileStore.req?.extension.toLowerCase() == ".epub"
+);
+const isCsv = computed(
+  () =>
+    fileStore.req?.extension.toLowerCase() == ".csv" &&
+    fileStore.req.size <= CSV_MAX_SIZE
 );
 
 const isResizeEnabled = computed(() => resizePreview);
@@ -366,6 +402,22 @@ const updatePreview = async () => {
   const dirs = route.fullPath.split("/");
   name.value = decodeURIComponent(dirs[dirs.length - 1]);
 
+  // Load CSV content if it's a CSV file
+  if (isCsv.value && fileStore.req) {
+    csvContent.value = "";
+    csvError.value = "";
+
+    if (fileStore.req.size > CSV_MAX_SIZE) {
+      csvError.value = t("files.csvTooLarge");
+    } else {
+      if (fileStore.req.rawContent != null) {
+        csvContent.value = fileStore.req.rawContent;
+      } else {
+        csvContent.value = fileStore.req.content ?? "";
+      }
+    }
+  }
+
   if (!listing.value) {
     try {
       const path = url.removeLastDir(route.path);
@@ -435,4 +487,9 @@ const close = () => {
 };
 
 const download = () => window.open(downloadUrl.value);
+const openDirect = () => window.open(directUrl.value);
+
+const editAsText = () => {
+  router.push({ path: route.path, query: { edit: "true" } });
+};
 </script>

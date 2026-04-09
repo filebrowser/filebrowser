@@ -42,8 +42,17 @@
     "update": "Updaten",
     "upload": "Uploaden",
     "openFile": "Open file",
+    "openDirect": "View raw",
     "discardChanges": "Discard",
-    "saveChanges": "Save changes"
+    "stopSearch": "Stop searching",
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text",
+    "increaseFontSize": "Increase font size",
+    "decreaseFontSize": "Decrease font size",
+    "overrideAll": "Replace all files in destination folder",
+    "skipAll": "Skip all conflicting files",
+    "renameAll": "Rename all files (create a copy)",
+    "singleDecision": "Decide for each conflicting file"
   },
   "download": {
     "downloadFile": "Bestand downloaden",
@@ -75,7 +84,17 @@
     "sortByLastModified": "Sorteren op laatst bewerkt",
     "sortByName": "Sorteren op naam",
     "sortBySize": "Sorteren op grootte",
-    "noPreview": "Preview is not available for this file."
+    "noPreview": "Preview is not available for this file.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file.",
+    "showingRows": "Showing {count} row(s)",
+    "columnSeparator": "Column Separator",
+    "csvSeparators": {
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "both": "Both (,) and (;)"
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "selecteer bestand of map",
@@ -102,6 +121,7 @@
     "username": "Gebruikersnaam",
     "usernameTaken": "Gebruikersnaam reeds in gebruik",
     "wrongCredentials": "Verkeerde inloggegevens",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
@@ -145,7 +165,19 @@
     "uploadMessage": "Select an option to upload.",
     "optionalPassword": "Optional password",
     "resolution": "Resolution",
-    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
+    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?",
+    "replaceOrSkip": "Replace or skip files",
+    "resolveConflict": "Which files do you want to keep?",
+    "singleConflictResolve": "If you select both versions, a number will be added to the name of the copied file.",
+    "fastConflictResolve": "The destination folder there are {count} files with same name.",
+    "uploadingFiles": "Uploading files",
+    "filesInOrigin": "Files in origin",
+    "filesInDest": "Files in destination",
+    "override": "Overwrite",
+    "skip": "Skip",
+    "forbiddenError": "Forbidden Error",
+    "currentPassword": "Your password",
+    "currentPasswordMessage": "Enter your password to validate this action."
   },
   "search": {
     "images": "Afbeeldingen",
@@ -166,6 +198,7 @@
     "allowNew": "Nieuwe bestanden of mappen aanmaken",
     "allowPublish": "Publiceer nieuwe berichten en pagina's",
     "allowSignup": "Sta gebruikers toe om zich te registreren",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(laat leeg om wijzigingen te voorkomen)",
     "branding": "Branding",
     "brandingDirectoryPath": "Branding directory path",
@@ -217,6 +250,7 @@
     "permissions": "Permissies",
     "permissionsHelp": "U kunt de gebruiker instellen als beheerder of de machtigingen afzonderlijk kiezen. Als u \"Beheerder\" selecteert, worden alle andere opties automatisch gecontroleerd. Het beheer van gebruikers blijft een privilege van een beheerder.\n",
     "profileSettings": "Profielinstellingen",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "voorkomt de toegang tot elk puntbestand (zoals .git, .gitignore) in elke map.\n",
     "ruleExample2": "blokkeert de toegang tot het bestand met de naam Caddyfile in de hoofdmap van het bereik.",
     "rules": "Regels",
@@ -243,7 +277,8 @@
     "userManagement": "Gebruikersbeheer",
     "userUpdated": "Gebruiker bijgewerkt!",
     "username": "Gebruikersnaam",
-    "users": "Gebruikers"
+    "users": "Gebruikers",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Help",

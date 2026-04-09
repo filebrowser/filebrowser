@@ -42,8 +42,17 @@
     "update": "更新",
     "upload": "アップロード",
     "openFile": "ファイルを開く",
+    "openDirect": "View raw",
     "discardChanges": "Discard",
-    "saveChanges": "Save changes"
+    "stopSearch": "Stop searching",
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text",
+    "increaseFontSize": "Increase font size",
+    "decreaseFontSize": "Decrease font size",
+    "overrideAll": "Replace all files in destination folder",
+    "skipAll": "Skip all conflicting files",
+    "renameAll": "Rename all files (create a copy)",
+    "singleDecision": "Decide for each conflicting file"
   },
   "download": {
     "downloadFile": "ファイルのダウンロード",
@@ -75,7 +84,17 @@
     "sortByLastModified": "更新日時で並べ替え",
     "sortByName": "名前で並べ替え",
     "sortBySize": "サイズで並べ替え",
-    "noPreview": "プレビューはこのファイルでは利用できません"
+    "noPreview": "プレビューはこのファイルでは利用できません",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file.",
+    "showingRows": "Showing {count} row(s)",
+    "columnSeparator": "Column Separator",
+    "csvSeparators": {
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "both": "Both (,) and (;)"
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "ファイルやフォルダーを選択",
@@ -102,6 +121,7 @@
     "username": "ユーザー名",
     "usernameTaken": "ユーザー名はすでに取得されています",
     "wrongCredentials": "ユーザー名またはパスワードが間違っています",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
@@ -145,7 +165,19 @@
     "uploadMessage": "アップロードするオプションを選択してください。",
     "optionalPassword": "パスワード（オプション）",
     "resolution": "Resolution",
-    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
+    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?",
+    "replaceOrSkip": "Replace or skip files",
+    "resolveConflict": "Which files do you want to keep?",
+    "singleConflictResolve": "If you select both versions, a number will be added to the name of the copied file.",
+    "fastConflictResolve": "The destination folder there are {count} files with same name.",
+    "uploadingFiles": "Uploading files",
+    "filesInOrigin": "Files in origin",
+    "filesInDest": "Files in destination",
+    "override": "Overwrite",
+    "skip": "Skip",
+    "forbiddenError": "Forbidden Error",
+    "currentPassword": "Your password",
+    "currentPasswordMessage": "Enter your password to validate this action."
   },
   "search": {
     "images": "画像",
@@ -166,6 +198,7 @@
     "allowNew": "ファイルやフォルダーの新規作成",
     "allowPublish": "新しい投稿やページの公開",
     "allowSignup": "ユーザーの新規登録を許可",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "（変更しない場合は空白のままにしてください）",
     "branding": "ブランディング",
     "brandingDirectoryPath": "ブランディングのディレクトリへのパス",
@@ -217,6 +250,7 @@
     "permissions": "権限",
     "permissionsHelp": "ユーザーを管理者に設定するか、その他の権限を個別に選択することができます。「管理者」を選択すると、他のオプションはすべて自動的にチェックされます。ユーザーを管理するには管理者権限が必要です。\n",
     "profileSettings": "プロフィール設定",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": ".git や .gitignore のようなドットから始まるファイルへのアクセスを禁止します。\n",
     "ruleExample2": "スコープのルートにある Caddyfile という名前のファイルへのアクセスを禁止します。",
     "rules": "ルール",
@@ -243,7 +277,8 @@
     "userManagement": "ユーザー管理",
     "userUpdated": "ユーザーを更新しました！",
     "username": "ユーザー名",
-    "users": "ユーザー"
+    "users": "ユーザー",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "ヘルプ",

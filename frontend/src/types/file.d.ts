@@ -21,6 +21,7 @@ interface Resource extends ResourceBase {
   index: number;
   subtitles?: string[];
   content?: string;
+  rawContent?: ArrayBuffer;
 }
 
 interface ResourceItem extends ResourceBase {
@@ -51,9 +52,29 @@ type DownloadFormat =
 interface ClipItem {
   from: string;
   name: string;
+  size?: number;
+  modified?: string;
 }
 
 interface BreadCrumb {
   name: string;
   url: string;
+}
+
+interface ConflictingItem {
+  lastModified: number | string | undefined;
+  size: number | undefined;
+}
+
+interface ConflictingResource {
+  index: number;
+  name: string;
+  origin: ConflictingItem;
+  dest: ConflictingItem;
+  checked: Array<"origin" | "dest">;
+}
+  
+interface CsvData {
+  headers: string[];
+  rows: string[][];
 }

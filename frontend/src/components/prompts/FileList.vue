@@ -168,7 +168,13 @@ export default {
       this.showHover({
         prompt: "newDir",
         action: null,
-        confirm: null,
+        confirm: (url) => {
+          const paths = url.split("/");
+          this.items.push({
+            name: paths[paths.length - 2],
+            url: url,
+          });
+        },
         props: {
           redirect: false,
           base: this.current === this.$route.path ? null : this.current,

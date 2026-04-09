@@ -2,7 +2,7 @@ package diskcache
 
 import (
 	"context"
-	"crypto/sha1" //nolint:gosec
+	"crypto/sha1"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -103,7 +103,7 @@ func (f *FileCache) getScopedLocks(key string) (lock sync.Locker) {
 }
 
 func (f *FileCache) getFileName(key string) string {
-	hasher := sha1.New() //nolint:gosec
+	hasher := sha1.New()
 	_, _ = hasher.Write([]byte(key))
 	hash := hex.EncodeToString(hasher.Sum(nil))
 	return fmt.Sprintf("%s/%s/%s", hash[:1], hash[1:3], hash)

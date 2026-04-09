@@ -13,7 +13,7 @@ var rulesLsCommand = &cobra.Command{
 	Short: "List global rules or user specific rules",
 	Long:  `List global rules or user specific rules.`,
 	Args:  cobra.NoArgs,
-	RunE: python(func(cmd *cobra.Command, _ []string, d *pythonData) error {
-		return runRules(d.store, cmd, nil, nil)
-	}, pythonConfig{}),
+	RunE: withStore(func(cmd *cobra.Command, _ []string, st *store) error {
+		return runRules(st.Storage, cmd, nil, nil)
+	}, storeOptions{}),
 }

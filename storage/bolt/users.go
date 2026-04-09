@@ -6,8 +6,9 @@ import (
 	"reflect"
 
 	"github.com/asdine/storm/v3"
+	bolt "go.etcd.io/bbolt"
 
-	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
+	fberrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/users"
 )
 
@@ -25,14 +26,14 @@ func (st usersBackend) GetBy(i interface{}) (user *users.User, err error) {
 	case string:
 		arg = "Username"
 	default:
-		return nil, fbErrors.ErrInvalidDataType
+		return nil, fberrors.ErrInvalidDataType
 	}
 
 	err = st.db.One(arg, i, user)
 
 	if err != nil {
 		if errors.Is(err, storm.ErrNotFound) {
-			return nil, fbErrors.ErrNotExist
+			return nil, fberrors.ErrNotExist
 		}
 		return nil, err
 	}
@@ -44,7 +45,7 @@ func (st usersBackend) Gets() ([]*users.User, error) {
 	var allUsers []*users.User
 	err := st.db.All(&allUsers)
 	if errors.Is(err, storm.ErrNotFound) {
-		return nil, fbErrors.ErrNotExist
+		return nil, fberrors.ErrNotExist
 	}
 
 	if err != nil {
@@ -76,7 +77,7 @@ func (st usersBackend) Update(user *users.User, fields ...string) error {
 func (st usersBackend) Save(user *users.User) error {
 	err := st.db.Save(user)
 	if errors.Is(err, storm.ErrAlreadyExists) {
-		return fbErrors.ErrExist
+		return fberrors.ErrExist
 	}
 	return err
 }
@@ -92,4 +93,30 @@ func (st usersBackend) DeleteByUsername(username string) error {
 	}
 
 	return st.db.DeleteStruct(user)
+}
+
+func (st usersBackend) CountAdmins() (int, error) {
+	count := 0
+
+	err := st.db.Bolt.View(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte(reflect.TypeOf(users.User{}).Name()))
+		if bucket == nil {
+			return nil
+		}
+
+		c := bucket.Cursor()
+		for _, v := c.First(); v != nil; _, v = c.Next() {
+			var u users.User
+			if err := st.db.Codec().Unmarshal(v, &u); err != nil {
+				return err
+			}
+			if u.Perm.Admin {
+				count++
+			}
+		}
+
+		return nil
+	})
+
+	return count, err
 }

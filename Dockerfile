@@ -1,5 +1,5 @@
 ## Multistage build: First stage fetches dependencies
-FROM alpine:3.22 AS fetcher
+FROM alpine:3.23 AS fetcher
 
 # install and copy ca-certificates, mailcap, and tini-static; download JSON.sh
 RUN apk update && \

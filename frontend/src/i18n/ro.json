@@ -42,8 +42,17 @@
     "update": "Actualizează",
     "upload": "Încarcă",
     "openFile": "Open file",
+    "openDirect": "View raw",
     "discardChanges": "Discard",
-    "saveChanges": "Save changes"
+    "stopSearch": "Stop searching",
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text",
+    "increaseFontSize": "Increase font size",
+    "decreaseFontSize": "Decrease font size",
+    "overrideAll": "Replace all files in destination folder",
+    "skipAll": "Skip all conflicting files",
+    "renameAll": "Rename all files (create a copy)",
+    "singleDecision": "Decide for each conflicting file"
   },
   "download": {
     "downloadFile": "Descarcă fișier",
@@ -75,7 +84,17 @@
     "sortByLastModified": "Ordonează dup ultima modificare",
     "sortByName": "Ordonează după nume",
     "sortBySize": "Ordonează după dimensiune",
-    "noPreview": "Preview is not available for this file."
+    "noPreview": "Preview is not available for this file.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file.",
+    "showingRows": "Showing {count} row(s)",
+    "columnSeparator": "Column Separator",
+    "csvSeparators": {
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "both": "Both (,) and (;)"
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "alege fișier sau director",
@@ -102,6 +121,7 @@
     "username": "Utilizator",
     "usernameTaken": "Utilizatorul există",
     "wrongCredentials": "Informații greșite",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
@@ -145,7 +165,19 @@
     "uploadMessage": "Select an option to upload.",
     "optionalPassword": "Optional password",
     "resolution": "Resolution",
-    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?"
+    "discardEditorChanges": "Are you sure you wish to discard the changes you've made?",
+    "replaceOrSkip": "Replace or skip files",
+    "resolveConflict": "Which files do you want to keep?",
+    "singleConflictResolve": "If you select both versions, a number will be added to the name of the copied file.",
+    "fastConflictResolve": "The destination folder there are {count} files with same name.",
+    "uploadingFiles": "Uploading files",
+    "filesInOrigin": "Files in origin",
+    "filesInDest": "Files in destination",
+    "override": "Overwrite",
+    "skip": "Skip",
+    "forbiddenError": "Forbidden Error",
+    "currentPassword": "Your password",
+    "currentPasswordMessage": "Enter your password to validate this action."
   },
   "search": {
     "images": "Imagini",
@@ -166,6 +198,7 @@
     "allowNew": "Crează noi fișiere sau directoare",
     "allowPublish": "Publică noi pagini și postări",
     "allowSignup": "Permite utilizatorilor să se înregistreze",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(lasă gol pentru a nu schimba)",
     "branding": "Branding",
     "brandingDirectoryPath": "Calea către directorul de branding",
@@ -217,6 +250,7 @@
     "permissions": "Permisiuni",
     "permissionsHelp": "Poți alege ca un utilizator să fie administrator sau să-i alegi permisiunile individual. Dacă alegi \"Administrator\", toate celelalte opțiuni vor fi bifate automat. Gestionarea utilizatorilor rămâne un privilegiu exclusiv al administratorilor.\n",
     "profileSettings": "Setări profil",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "împiedică accesul la fisiere cu punct in față (.), cum ar fi .git, .gitignore în orice director.\n",
     "ruleExample2": "împiedică accesul la fișierul Caddyfile din rădăcina domeniului.",
     "rules": "Reguli",
@@ -243,7 +277,8 @@
     "userManagement": "Gestionare utilizatori",
     "userUpdated": "Utilizator actualizat!",
     "username": "Utilizator",
-    "users": "Utilizatori"
+    "users": "Utilizatori",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Ajutor",

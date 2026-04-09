@@ -12,6 +12,7 @@ import (
 
 const DefaultUsersHomeBasePath = "/users"
 const DefaultMinimumPasswordLength = 6 // nduc custom: reduce from 12 to 6
+const DefaultLogoutPage = "/login"
 const DefaultFileMode = 0640
 const DefaultDirMode = 0750
 
@@ -22,10 +23,12 @@ type AuthMethod string
 type Settings struct {
 	Key                   []byte              `json:"key"`
 	Signup                bool                `json:"signup"`
+	HideLoginButton       bool                `json:"hideLoginButton"`
 	CreateUserDir         bool                `json:"createUserDir"`
 	UserHomeBasePath      string              `json:"userHomeBasePath"`
 	Defaults              UserDefaults        `json:"defaults"`
 	AuthMethod            AuthMethod          `json:"authMethod"`
+	LogoutPage            string              `json:"logoutPage"`
 	Branding              Branding            `json:"branding"`
 	Tus                   Tus                 `json:"tus"`
 	Commands              map[string][]string `json:"commands"`
@@ -34,6 +37,7 @@ type Settings struct {
 	MinimumPasswordLength uint                `json:"minimumPasswordLength"`
 	FileMode              fs.FileMode         `json:"fileMode"`
 	DirMode               fs.FileMode         `json:"dirMode"`
+	HideDotfiles          bool                `json:"hideDotfiles"`
 }
 
 // GetRules implements rules.Provider.
@@ -55,6 +59,7 @@ type Server struct {
 	ResizePreview         bool   `json:"resizePreview"`
 	EnableExec            bool   `json:"enableExec"`
 	TypeDetectionByHeader bool   `json:"typeDetectionByHeader"`
+	ImageResolutionCal    bool   `json:"imageResolutionCalculation"`
 	AuthHook              string `json:"authHook"`
 	TokenExpirationTime   string `json:"tokenExpirationTime"`
 }

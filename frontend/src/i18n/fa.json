@@ -42,8 +42,17 @@
     "update": "به روز سانی",
     "upload": "آپلود",
     "openFile": "باز کردن فایل",
+    "openDirect": "View raw",
     "discardChanges": "لغو کردن",
-    "saveChanges": "Save changes"
+    "stopSearch": "Stop searching",
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text",
+    "increaseFontSize": "Increase font size",
+    "decreaseFontSize": "Decrease font size",
+    "overrideAll": "Replace all files in destination folder",
+    "skipAll": "Skip all conflicting files",
+    "renameAll": "Rename all files (create a copy)",
+    "singleDecision": "Decide for each conflicting file"
   },
   "download": {
     "downloadFile": "دانلود فایل",
@@ -75,7 +84,17 @@
     "sortByLastModified": "مرتب سازی آخرین ویرایش",
     "sortByName": "مرتب سازی نام",
     "sortBySize": "مرتب سازی اندازه",
-    "noPreview": "این فایل قابل نمایش نیست"
+    "noPreview": "این فایل قابل نمایش نیست",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file.",
+    "showingRows": "Showing {count} row(s)",
+    "columnSeparator": "Column Separator",
+    "csvSeparators": {
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "both": "Both (,) and (;)"
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "انتخاب فایل یا پوشه",
@@ -102,6 +121,7 @@
     "username": "نام کاربری",
     "usernameTaken": "نام کاربری تکراری",
     "wrongCredentials": "خطا در اعتبارسنجی",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
       "inactivity": "You have been logged out due to inactivity."
     }
@@ -145,7 +165,19 @@
     "uploadMessage": "یک گزینه برای آپلود انتخاب کنید.",
     "optionalPassword": "رمز عبور اختیاری",
     "resolution": "وضوح تصویر",
-    "discardEditorChanges": "آیا مطمئن هستید که می‌خواهید تغییراتی را که ایجاد کرده‌اید، لغو کنید؟"
+    "discardEditorChanges": "آیا مطمئن هستید که می‌خواهید تغییراتی را که ایجاد کرده‌اید، لغو کنید؟",
+    "replaceOrSkip": "Replace or skip files",
+    "resolveConflict": "Which files do you want to keep?",
+    "singleConflictResolve": "If you select both versions, a number will be added to the name of the copied file.",
+    "fastConflictResolve": "The destination folder there are {count} files with same name.",
+    "uploadingFiles": "Uploading files",
+    "filesInOrigin": "Files in origin",
+    "filesInDest": "Files in destination",
+    "override": "Overwrite",
+    "skip": "Skip",
+    "forbiddenError": "Forbidden Error",
+    "currentPassword": "Your password",
+    "currentPasswordMessage": "Enter your password to validate this action."
   },
   "search": {
     "images": "تصاویر",
@@ -166,6 +198,7 @@
     "allowNew": "ایجاد فایلها و پوشه های جدید",
     "allowPublish": "انتشار پست ها و صفحات جدید",
     "allowSignup": "اجاره دادن به کاربران برای ثبت نام",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(خالی بگذارید تا تغییر ایجاد نشود)",
     "branding": "برندسازی",
     "brandingDirectoryPath": "مسیر پوشه برند",
@@ -217,6 +250,7 @@
     "permissions": "دسترسی ها",
     "permissionsHelp": "شما می‌توانید کاربر را به عنوان مدیر تنظیم کنید یا دسترسی‌ها را به صورت جداگانه انتخاب کنید. اگر \"مدیر\" را انتخاب کنید، تمام گزینه‌های دیگر به طور خودکار اعمال می‌شوند. مدیریت کاربران همچنان از اختیارات مدیر است.",
     "profileSettings": "تنظیمات ناحیه کاربری",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "از دسترسی به هرگونه فایل نقطه‌ای (مانند .git، .gitignore) در هر پوشه جلوگیری می‌کند.",
     "ruleExample2": "دسترسی به فایلی به نام Caddyfile را در ریشه دامنه مسدود می‌کند.",
     "rules": "قواعد",
@@ -243,7 +277,8 @@
     "userManagement": "مدیریت کاربران",
     "userUpdated": "کاربر به روز شد!",
     "username": "نام کاربری",
-    "users": "کاربران"
+    "users": "کاربران",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "راهنما",

@@ -1,6 +1,436 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
+
+## [2.63.1](https://github.com/filebrowser/filebrowser/compare/v2.63.0...v2.63.1) (2026-04-04)
+
+
+### Bug Fixes
+
+* check download permission in resource handler ([#5891](https://github.com/filebrowser/filebrowser/issues/5891)) ([1e03fea](https://github.com/filebrowser/filebrowser/commit/1e03feadb550e4414b5589a6a8df57f538efba15))
+* check share owner permissions on public share access ([#5888](https://github.com/filebrowser/filebrowser/issues/5888)) ([7dbf7a3](https://github.com/filebrowser/filebrowser/commit/7dbf7a3528234b2a9ee9c4115e8ecf58d258ca51))
+* enforce directory boundary in rule path matching ([#5889](https://github.com/filebrowser/filebrowser/issues/5889)) ([8adf127](https://github.com/filebrowser/filebrowser/commit/8adf127c7d33585333b8030869f6f318e6517179))
+* restrict default permissions for proxy-auth auto-provisioned users ([#5890](https://github.com/filebrowser/filebrowser/issues/5890)) ([f13c7c8](https://github.com/filebrowser/filebrowser/commit/f13c7c8cffd6d58ff29c4a6763ced1385f69961e))
+
+## [2.63.0](https://github.com/filebrowser/filebrowser/compare/v2.62.2...v2.63.0) (2026-04-04)
+
+
+### Features
+
+* enable copy operation on drag‑and‑drop with ctrl key ([#5882](https://github.com/filebrowser/filebrowser/issues/5882)) ([876cdb3](https://github.com/filebrowser/filebrowser/commit/876cdb34265b090c2a74a69509f4106f2c5e8726))
+
+
+### Bug Fixes
+
+* check download permission when sharing permission is enabled ([#5875](https://github.com/filebrowser/filebrowser/issues/5875)) ([0f39bd0](https://github.com/filebrowser/filebrowser/commit/0f39bd055efdadc15abd2f8146cf5da3793f8318))
+* **tus:** reject negative upload-length to prevent inconsistent cache entry ([#5876](https://github.com/filebrowser/filebrowser/issues/5876)) ([7a16129](https://github.com/filebrowser/filebrowser/commit/7a16129bfc07dbdc2fa52b99d2985c1bc0ea12e2))
+
+## [2.62.2](https://github.com/filebrowser/filebrowser/compare/v2.62.1...v2.62.2) (2026-03-28)
+
+
+### Bug Fixes
+
+* disable scripted content in epub ([126227b](https://github.com/filebrowser/filebrowser/commit/126227bb2754eee15cd7c722916c3bb8821084a2))
+* double slash in TUS upload path when readEntries returns multiple batches ([#5848](https://github.com/filebrowser/filebrowser/issues/5848)) ([432f3e6](https://github.com/filebrowser/filebrowser/commit/432f3e60ffdf92af6f8f56119a1bac8084f52a60))
+* include filename in Content-Disposition header for inline downloads ([#5860](https://github.com/filebrowser/filebrowser/issues/5860)) ([8f81b77](https://github.com/filebrowser/filebrowser/commit/8f81b77cf2a3da0a445f3700fbf4a0091ea46c07))
+* json escaping ([c406bda](https://github.com/filebrowser/filebrowser/commit/c406bda0c73ac8b187e23a97c05521edc77efa84))
+* self-registered users don't get execute perms ([b6a4fb1](https://github.com/filebrowser/filebrowser/commit/b6a4fb1f27f4d894b384c0f3acacda276d1338a5))
+* shares listing ([a8fc165](https://github.com/filebrowser/filebrowser/commit/a8fc1657b796c5da7190466beff13e680721b6d3))
+* touch Redis upload cache key on GetLength to prevent TTL expiry ([#5850](https://github.com/filebrowser/filebrowser/issues/5850)) ([4812536](https://github.com/filebrowser/filebrowser/commit/48125365551ce2b27790aaafd7594cf5ce52f1ba))
+* use html/template ([d9f9460](https://github.com/filebrowser/filebrowser/commit/d9f9460c1e51d10a25065e10358c12d5ced66ad9))
+
+## [2.62.1](https://github.com/filebrowser/filebrowser/compare/v2.62.0...v2.62.1) (2026-03-14)
+
+
+### Bug Fixes
+
+* base url/reverse proxy redirect ([fc80f4f](https://github.com/filebrowser/filebrowser/commit/fc80f4f44c856ddc19df3024c245990fffd55630))
+
+## [2.62.0](https://github.com/filebrowser/filebrowser/compare/v2.61.2...v2.62.0) (2026-03-14)
+
+
+### Features
+
+* Updates for project File Browser ([#5807](https://github.com/filebrowser/filebrowser/issues/5807)) ([858eb42](https://github.com/filebrowser/filebrowser/commit/858eb426515ec55172e9cca47bdf1e25a0d0d81d))
+
+
+### Bug Fixes
+
+* allow deleting the user's own account ([#5820](https://github.com/filebrowser/filebrowser/issues/5820)) ([f04af0c](https://github.com/filebrowser/filebrowser/commit/f04af0cac6c808b8e7c9a9651380c252c4de9132))
+* around languages ([c21af07](https://github.com/filebrowser/filebrowser/commit/c21af0791a5df458c2ddb81ce9ae44b772b6d82d))
+* clean path in patch handler ([4bd7d69](https://github.com/filebrowser/filebrowser/commit/4bd7d69c82163b201a987e99c0c50d7ecc6ee5f1))
+* make perm.share depend on share.download ([09a2616](https://github.com/filebrowser/filebrowser/commit/09a26166b4f79446e7174c017380f6db45444e32))
+* properly surface config parse errors ([#5822](https://github.com/filebrowser/filebrowser/issues/5822)) ([ef2e999](https://github.com/filebrowser/filebrowser/commit/ef2e9992dc3098f6c4722c2a98966cd8abf8bab5))
+* signup handler shouldn't create admins ([a63573b](https://github.com/filebrowser/filebrowser/commit/a63573b67eb302167b4c4f218361a2d0c138deab))
+* **tus:** preserve percent-encoded upload paths in Location header ([#5817](https://github.com/filebrowser/filebrowser/issues/5817)) ([0542fc0](https://github.com/filebrowser/filebrowser/commit/0542fc0ba43740c967414eebd156bac86ad80376))
+* **upload:** avoid skipping whole folder upload on conflict modal ([#5814](https://github.com/filebrowser/filebrowser/issues/5814)) ([f5f8b60](https://github.com/filebrowser/filebrowser/commit/f5f8b60b331a07729a1fed1ed065cb6fc20930ea))
+* **upload:** don't mark every folder-upload file as conflicting ([#5813](https://github.com/filebrowser/filebrowser/issues/5813)) ([6dcef07](https://github.com/filebrowser/filebrowser/commit/6dcef07f40d550acee63dd01e0a3bcf78532f690))
+
+## [2.61.2](https://github.com/filebrowser/filebrowser/compare/v2.61.1...v2.61.2) (2026-03-06)
+
+
+### Bug Fixes
+
+* added dateFormat to getUserDefaults so this is respected in the … ([#5804](https://github.com/filebrowser/filebrowser/issues/5804)) ([8598db2](https://github.com/filebrowser/filebrowser/commit/8598db2accccf5b87353e5e718b2ad1c946e5c44))
+* avoid sending the same name in the file/folder rename modal ([#5806](https://github.com/filebrowser/filebrowser/issues/5806)) ([d7b00ce](https://github.com/filebrowser/filebrowser/commit/d7b00ce5f672b7ce0b26ce31abdfc74f8b00b939))
+* **csv-viewer:** add support for missing text encodings in dropdown list ([#5795](https://github.com/filebrowser/filebrowser/issues/5795)) ([4af3f85](https://github.com/filebrowser/filebrowser/commit/4af3f85e64e795e8ae1d87d4caee8185028294ac))
+* **frontend:** do not delete original assets ([4d9e6b8](https://github.com/filebrowser/filebrowser/commit/4d9e6b821852203cef67233791a922013bd5b64d))
+* **frontend:** input password type ([8ee5576](https://github.com/filebrowser/filebrowser/commit/8ee55761a1aa9bc091d8466c44f03c2043a8ca79))
+* validate current password with a modal ([#5805](https://github.com/filebrowser/filebrowser/issues/5805)) ([177c7cf](https://github.com/filebrowser/filebrowser/commit/177c7cfcce36779e2c5ebaa4b59a055dd1e17648))
+
+## [2.61.1](https://github.com/filebrowser/filebrowser/compare/v2.61.0...v2.61.1) (2026-03-04)
+
+
+### Bug Fixes
+
+* check for correct permission in TUS Delete ([7ed1425](https://github.com/filebrowser/filebrowser/commit/7ed1425115be602c2b23236c410098ea2d74b42f))
+
+## [2.61.0](https://github.com/filebrowser/filebrowser/compare/v2.60.0...v2.61.0) (2026-02-28)
+
+
+### Features
+
+* improved conflict resolution when uploading/copying/moving files ([#5765](https://github.com/filebrowser/filebrowser/issues/5765)) ([aa80909](https://github.com/filebrowser/filebrowser/commit/aa809096eb35fdfbdeb6784b1ebfe2ca1e42f52b))
+
+
+### Bug Fixes
+
+* correctly clean path ([31194fb](https://github.com/filebrowser/filebrowser/commit/31194fb57a5b92e7155219d7ec7273028fcb2e83))
+
+## [2.60.0](https://github.com/filebrowser/filebrowser/compare/v2.59.0...v2.60.0) (2026-02-21)
+
+
+### Features
+
+* Updates for project File Browser ([#5764](https://github.com/filebrowser/filebrowser/issues/5764)) ([9940bdd](https://github.com/filebrowser/filebrowser/commit/9940bdd663ff5141110778524b8a22c957036e78))
+
+
+### Bug Fixes
+
+* always show separators and encoding list in the CSV viewer ([#5774](https://github.com/filebrowser/filebrowser/issues/5774)) ([3169a14](https://github.com/filebrowser/filebrowser/commit/3169a14a4d63a0a11a5288f4f3a674c0a0edb972))
+* modal lifecycle issues, multiple modals, new directory creation and discard changes behavior ([#5773](https://github.com/filebrowser/filebrowser/issues/5773)) ([200d501](https://github.com/filebrowser/filebrowser/commit/200d5015472c79d5caa683ea291ebf500356a39f))
+
+## [2.59.0](https://github.com/filebrowser/filebrowser/compare/v2.58.0...v2.59.0) (2026-02-15)
+
+
+### Features
+
+* add 'Open direct' button to images ([#5678](https://github.com/filebrowser/filebrowser/issues/5678)) ([804b14b](https://github.com/filebrowser/filebrowser/commit/804b14b698aa218fa5c2aaba687e72c5f7617f0f))
+* Updates for project File Browser ([#5760](https://github.com/filebrowser/filebrowser/issues/5760)) ([63a76ef](https://github.com/filebrowser/filebrowser/commit/63a76ef18c51121e08634810a894c1e22a870428))
+
+
+### Bug Fixes
+
+* render equations in markdown preview ([#5745](https://github.com/filebrowser/filebrowser/issues/5745)) ([0467326](https://github.com/filebrowser/filebrowser/commit/0467326d5c082c42c0ede88ee2d3472f5fb65600))
+
+## [2.58.0](https://github.com/filebrowser/filebrowser/compare/v2.57.1...v2.58.0) (2026-02-14)
+
+
+### Features
+
+* nederlands ([88b97de](https://github.com/filebrowser/filebrowser/commit/88b97def9ee72fe6e8094209aebb71830b7305be))
+* support for multiple encodings in CSV files ([#5756](https://github.com/filebrowser/filebrowser/issues/5756)) ([f67bccf](https://github.com/filebrowser/filebrowser/commit/f67bccf8c5470cb280fe854d92aa2666c270bcf5))
+* Updates for project File Browser ([#5749](https://github.com/filebrowser/filebrowser/issues/5749)) ([c94870f](https://github.com/filebrowser/filebrowser/commit/c94870fcfe1b4acb2db9ab897b9f7d35e3b75770))
+* Updates for project File Browser ([#5759](https://github.com/filebrowser/filebrowser/issues/5759)) ([5e8f5be](https://github.com/filebrowser/filebrowser/commit/5e8f5be245fd0126545ef5ca61c2d428ac128ad5))
+
+
+### Bug Fixes
+
+* **frontend:** pnpm lock ([b09960e](https://github.com/filebrowser/filebrowser/commit/b09960e538387ff29371c80be1584720f65181e7))
+* ignore version.go ([1f7904d](https://github.com/filebrowser/filebrowser/commit/1f7904dad21a87f04e1543ee10b60ce79e5eebe9))
+* respect Accept-Encoding for pre-compressed JS ([#5750](https://github.com/filebrowser/filebrowser/issues/5750)) ([6a76dfe](https://github.com/filebrowser/filebrowser/commit/6a76dfeba9254a938e320928c67d110f73f83715))
+* wrap response text in Error before reject ([#5753](https://github.com/filebrowser/filebrowser/issues/5753)) ([e5bc0d3](https://github.com/filebrowser/filebrowser/commit/e5bc0d3cce18fa7b069688b176b99efbb67382d2))
+
+## [2.57.1](https://github.com/filebrowser/filebrowser/compare/v2.57.0...v2.57.1) (2026-02-08)
+
+
+### Bug Fixes
+
+* normalize fields capitalization ([ff2f004](https://github.com/filebrowser/filebrowser/commit/ff2f00498cff151e2fb1f5f0b16963bf33c3d6d4))
+* remove skip clean ([489af40](https://github.com/filebrowser/filebrowser/commit/489af403a19057f6b6b4b1dc0e48cbb26a202ef9))
+
+## [2.57.0](https://github.com/filebrowser/filebrowser/compare/v2.56.0...v2.57.0) (2026-02-01)
+
+
+### Features
+
+* Add Redis upload cache for multi-replica deployments ([#5724](https://github.com/filebrowser/filebrowser/issues/5724)) ([08d7a15](https://github.com/filebrowser/filebrowser/commit/08d7a1504c42c115fdd82d3845694fe87147f1db))
+* Updates for project File Browser ([#5725](https://github.com/filebrowser/filebrowser/issues/5725)) ([8fee256](https://github.com/filebrowser/filebrowser/commit/8fee2561afbf968ed577bc4139562a42b2278243))
+
+
+### Bug Fixes
+
+* adjust yaml config decodification to yaml.v3 ([#5722](https://github.com/filebrowser/filebrowser/issues/5722)) ([b594d4d](https://github.com/filebrowser/filebrowser/commit/b594d4d4e28a1b35e69d81d2c35948fe0d629888))
+* avoid 409 conflict when renaming files differing only by case ([#5729](https://github.com/filebrowser/filebrowser/issues/5729)) ([d441b28](https://github.com/filebrowser/filebrowser/commit/d441b28f432c3448a29ac828400321f1f4ed32d9))
+
+## [2.56.0](https://github.com/filebrowser/filebrowser/compare/v2.55.0...v2.56.0) (2026-01-24)
+
+
+### Features
+
+* Updates for project File Browser ([#5698](https://github.com/filebrowser/filebrowser/issues/5698)) ([f0f2f1f](https://github.com/filebrowser/filebrowser/commit/f0f2f1ff069aae566d8bf25ec275da59f29a96bc))
+
+
+### Bug Fixes
+
+* adjust columns of the table from the "users ls" command ([#5716](https://github.com/filebrowser/filebrowser/issues/5716)) ([3032a1f](https://github.com/filebrowser/filebrowser/commit/3032a1fade43737c51c49b5ccda34f336394c2ed))
+* avoid clearing selection when clicking elements outside the empty area ([#5715](https://github.com/filebrowser/filebrowser/issues/5715)) ([004488c](https://github.com/filebrowser/filebrowser/commit/004488c15b3c30784e1ea564b3ca9feec7bcad08))
+
+## [2.55.0](https://github.com/filebrowser/filebrowser/compare/v2.54.0...v2.55.0) (2026-01-18)
+
+
+### Features
+
+* added cut, copy, paste and show command palette functions in header ([#5648](https://github.com/filebrowser/filebrowser/issues/5648)) ([785b7ab](https://github.com/filebrowser/filebrowser/commit/785b7abb7ba7a86cc0deae1052c319ff714c222c))
+* update translations ([#5677](https://github.com/filebrowser/filebrowser/issues/5677)) ([e7ea1ad](https://github.com/filebrowser/filebrowser/commit/e7ea1ad27d3d17e249489d3338be40bfea15e2a1))
+
+
+### Bug Fixes
+
+* prevent context menu clicks from clearing file selection ([#5681](https://github.com/filebrowser/filebrowser/issues/5681)) ([59ca0c3](https://github.com/filebrowser/filebrowser/commit/59ca0c340afc7774747c70ede9a5a5a3c9349d6b))
+* request current password when deleting users ([#5667](https://github.com/filebrowser/filebrowser/issues/5667)) ([cfa6c58](https://github.com/filebrowser/filebrowser/commit/cfa6c5864e5e7673aa9f3180e4964e0db92cc4da))
+* retain file selection when closing the editor ([#5693](https://github.com/filebrowser/filebrowser/issues/5693)) ([4094fb3](https://github.com/filebrowser/filebrowser/commit/4094fb359babac70e88d0ed4bfe3bd100744aad6))
+
+## [2.54.0](https://github.com/filebrowser/filebrowser/compare/v2.53.1...v2.54.0) (2026-01-10)
+
+
+### Features
+
+* add "redirect after copy/move" user setting ([#5662](https://github.com/filebrowser/filebrowser/issues/5662)) ([fda8a99](https://github.com/filebrowser/filebrowser/commit/fda8a992929b1466e75fb2813f2c4e293c12d244))
+* force file sync while uploading file ([#5668](https://github.com/filebrowser/filebrowser/issues/5668)) ([4fd18a3](https://github.com/filebrowser/filebrowser/commit/4fd18a382c31bbe7059d6733ffa371e70051865b))
+* update translations ([#5659](https://github.com/filebrowser/filebrowser/issues/5659)) ([464b581](https://github.com/filebrowser/filebrowser/commit/464b581953139c17e3276b774e381e4052827125))
+
+
+### Bug Fixes
+
+* clear selection by clicking on empty area ([#5663](https://github.com/filebrowser/filebrowser/issues/5663)) ([208535a](https://github.com/filebrowser/filebrowser/commit/208535a8cc23254de0013dfab9008486707ee6c2))
+* hide "change password form" in noauth setting ([#5652](https://github.com/filebrowser/filebrowser/issues/5652)) ([219582c](https://github.com/filebrowser/filebrowser/commit/219582c0b03fd90979b1d1398dba7919d086a23f))
+
+## [2.53.1](https://github.com/filebrowser/filebrowser/compare/v2.53.0...v2.53.1) (2026-01-03)
+
+
+### Bug Fixes
+
+* download path encoding file paths ([#5655](https://github.com/filebrowser/filebrowser/issues/5655)) ([ffa893e](https://github.com/filebrowser/filebrowser/commit/ffa893e9ac387a49dba5917a41df7c3b7ce120fc))
+* request a password to change sensitive user data ([#5629](https://github.com/filebrowser/filebrowser/issues/5629)) ([b8151a0](https://github.com/filebrowser/filebrowser/commit/b8151a038a1ea55afae8073b439b74e364cac12f))
+
+## [2.53.0](https://github.com/filebrowser/filebrowser/compare/v2.52.0...v2.53.0) (2025-12-29)
+
+
+### Features
+
+* add "disable image resolution calculation" flag ([#5638](https://github.com/filebrowser/filebrowser/issues/5638)) ([a2d80c6](https://github.com/filebrowser/filebrowser/commit/a2d80c62c1c17962e566f68fb7cac6960ed3e4cb))
+* support streaming response for search results ([#5630](https://github.com/filebrowser/filebrowser/issues/5630)) ([20bfd13](https://github.com/filebrowser/filebrowser/commit/20bfd131c6a4fca48a645b52171c2d1cc3ce92b7))
+* update translations ([a12a612](https://github.com/filebrowser/filebrowser/commit/a12a612970d6cc3dfbca1b35ef3a60a887a4effb))
+* update translations ([#5626](https://github.com/filebrowser/filebrowser/issues/5626)) ([f899756](https://github.com/filebrowser/filebrowser/commit/f89975603e29b9f1fc05aec58afb42bbd56ed696))
+* update translations ([#5631](https://github.com/filebrowser/filebrowser/issues/5631)) ([032d6c7](https://github.com/filebrowser/filebrowser/commit/032d6c7520a64686c9d9b1218562256f629b4703))
+
+
+### Bug Fixes
+
+* conversion of backslashes in file paths for archive creation ([#5637](https://github.com/filebrowser/filebrowser/issues/5637)) ([9595f39](https://github.com/filebrowser/filebrowser/commit/9595f3939c1c129ed875a47adcc4fbcfad9a0e65))
+* Don't crash on invalid config import ([#5640](https://github.com/filebrowser/filebrowser/issues/5640)) ([79d1aa9](https://github.com/filebrowser/filebrowser/commit/79d1aa9229b076ee8e3b71d6cf061fc90738f4da))
+* fix nil deref in config set command ([#5641](https://github.com/filebrowser/filebrowser/issues/5641)) ([60b1ee8](https://github.com/filebrowser/filebrowser/commit/60b1ee8bb9e18b21d7f2c04cb1cc90046cecd3e1))
+
+## [2.52.0](https://github.com/filebrowser/filebrowser/compare/v2.51.2...v2.52.0) (2025-12-13)
+
+
+### Features
+
+* sync translations with Transifex ([7fa3432](https://github.com/filebrowser/filebrowser/commit/7fa3432f25610bbb55a718bc709b9a7bf41d92f0))
+* update translations ([#5615](https://github.com/filebrowser/filebrowser/issues/5615)) ([3fdca6d](https://github.com/filebrowser/filebrowser/commit/3fdca6dfd9a18c3f4895b4ef3cbd216824dbb57a))
+
+
+### Bug Fixes
+
+* display the directory name in the shared folder view ([#5617](https://github.com/filebrowser/filebrowser/issues/5617)) ([6d4c867](https://github.com/filebrowser/filebrowser/commit/6d4c86767239dad4f09f30f48678f2f3a716eb12))
+* hide the context menu when changing the route ([#5613](https://github.com/filebrowser/filebrowser/issues/5613)) ([cf96657](https://github.com/filebrowser/filebrowser/commit/cf966578d8c6beab111b74f495bac6bdec173f41))
+
+## [2.51.2](https://github.com/filebrowser/filebrowser/compare/v2.51.1...v2.51.2) (2025-12-07)
+
+
+### Bug Fixes
+
+* **frontend:** add missing i18n strings ([c171599](https://github.com/filebrowser/filebrowser/commit/c1715992bda46517f801c1aa496df8a3b42a4e4d))
+
+## [2.51.1](https://github.com/filebrowser/filebrowser/compare/v2.51.0...v2.51.1) (2025-12-07)
+
+
+### Bug Fixes
+
+* **frontend:** csv viewer i18n strings ([4cbb4b7](https://github.com/filebrowser/filebrowser/commit/4cbb4b73af816104475f15c1d996640b56203602))
+* prevent the right-click from selecting multiple items when the "single-click" option is active ([#5608](https://github.com/filebrowser/filebrowser/issues/5608)) ([152f830](https://github.com/filebrowser/filebrowser/commit/152f8302f7cda21bde37692b175c22c124233f45))
+
+## [2.51.0](https://github.com/filebrowser/filebrowser/compare/v2.50.0...v2.51.0) (2025-12-06)
+
+
+### Features
+
+* update translations ([2d88c06](https://github.com/filebrowser/filebrowser/commit/2d88c067611e936056dbbf04247f1c1c709b2a09))
+
+
+### Bug Fixes
+
+* added column separator select (comma, semicolon and both) in CSV viewer ([#5604](https://github.com/filebrowser/filebrowser/issues/5604)) ([204a3f0](https://github.com/filebrowser/filebrowser/commit/204a3f0eeaa0c68781b60651bf27c4b27eac44e6))
+
+
+### Refactorings
+
+* cleanup package names ([#5605](https://github.com/filebrowser/filebrowser/issues/5605)) ([f029c30](https://github.com/filebrowser/filebrowser/commit/f029c3005e450cfbebb074c42dbdf65db9c8d56a))
+
+## [2.50.0](https://github.com/filebrowser/filebrowser/compare/v2.49.0...v2.50.0) (2025-11-30)
+
+
+### Features
+
+* configurable logout page URL for proxy/hook auth ([#3884](https://github.com/filebrowser/filebrowser/issues/3884)) ([b9ac45d](https://github.com/filebrowser/filebrowser/commit/b9ac45d5dac4b4eb2ba364629090fbf306cffd2b))
+* render CSVs as table ([#5569](https://github.com/filebrowser/filebrowser/issues/5569)) ([982405e](https://github.com/filebrowser/filebrowser/commit/982405ec944f94baf43594b0ed2f06329ff4e9ed))
+* update frontend/src/i18n/hr.json ([279a5cc](https://github.com/filebrowser/filebrowser/commit/279a5ccd1e8d7bde4568b63cb3c506af48b6c618))
+* update translations ([78e0395](https://github.com/filebrowser/filebrowser/commit/78e039596070a3a9e643a693cc99960c69dcfe92))
+
+
+### Bug Fixes
+
+* do not close editor if save failed ([701522a](https://github.com/filebrowser/filebrowser/commit/701522a0600cfa542469540ed764630c0ba1a732)), closes [#5591](https://github.com/filebrowser/filebrowser/issues/5591)
+
+## [2.49.0](https://github.com/filebrowser/filebrowser/compare/v2.48.2...v2.49.0) (2025-11-22)
+
+
+### Features
+
+* add "copy download link to clipboard" button to Share prompt ([#5173](https://github.com/filebrowser/filebrowser/issues/5173)) ([d48f566](https://github.com/filebrowser/filebrowser/commit/d48f5665d6975c4cbbdf9be20dc2e0106db02f01))
+* add Bulgarian language ([8db2411](https://github.com/filebrowser/filebrowser/commit/8db2411cd43a23ae3292a817e3524cfdb5ae9b86))
+* Updates for project File Browser ([#5566](https://github.com/filebrowser/filebrowser/issues/5566)) ([54306bd](https://github.com/filebrowser/filebrowser/commit/54306bdc8700fac489326ae81e28ac5db0580d13))
+
+
+### Bug Fixes
+
+* display friendly error message for password validation on signup ([#5563](https://github.com/filebrowser/filebrowser/issues/5563)) ([6d5aa35](https://github.com/filebrowser/filebrowser/commit/6d5aa355e433d613e5a3ae137f410c63baeddf0f))
+
+## [2.48.2](https://github.com/filebrowser/filebrowser/compare/v2.48.1...v2.48.2) (2025-11-18)
+
+
+### Bug Fixes
+
+* add transitionary support for FB_BASEURL ([984ea7b](https://github.com/filebrowser/filebrowser/commit/984ea7b569e3bd33b6f91ebdf63684a618d51e94))
+
+
+### Refactorings
+
+* rename python for clarification ([fd7b70c](https://github.com/filebrowser/filebrowser/commit/fd7b70cf38ac67c8c9ff79f2e7fde5e2ec45a1de))
+
+## [2.48.1](https://github.com/filebrowser/filebrowser/compare/v2.48.0...v2.48.1) (2025-11-17)
+
+
+### Bug Fixes
+
+* options should only override if set ([420adea](https://github.com/filebrowser/filebrowser/commit/420adea7e61a1c182cddd6fb2544a0752e5709f7))
+
+## [2.48.0](https://github.com/filebrowser/filebrowser/compare/v2.47.0...v2.48.0) (2025-11-17)
+
+
+### Features
+
+* consistent flags and environment variables ([#5549](https://github.com/filebrowser/filebrowser/issues/5549)) ([0a0cb80](https://github.com/filebrowser/filebrowser/commit/0a0cb8046fce52f1ff926171b34bcdb7cd39aab3))
+
+
+### Bug Fixes
+
+* add tokenExpirationTime to `config init` and troubleshoot docs ([#5546](https://github.com/filebrowser/filebrowser/issues/5546)) ([8c5dc76](https://github.com/filebrowser/filebrowser/commit/8c5dc7641e6f8aadd9e5d5d3b25a2ad9f1ec9a1e))
+* use all available flags in quick setup ([f41585f](https://github.com/filebrowser/filebrowser/commit/f41585f0392d65c08c01ab65b62d3eeb04c03b7d))
+
+
+### Refactorings
+
+* reuse logic for config init and set ([89be0b1](https://github.com/filebrowser/filebrowser/commit/89be0b1873527987dd2dddac746e93b8bc684d46))
+
+## [2.47.0](https://github.com/filebrowser/filebrowser/compare/v2.46.1...v2.47.0) (2025-11-16)
+
+
+### Features
+
+* add TUS settings to the command line ([#5556](https://github.com/filebrowser/filebrowser/issues/5556)) ([e24e1f1](https://github.com/filebrowser/filebrowser/commit/e24e1f1abae9e80add620c4ad65660ca1b575a49))
+* remove importer of v1 config ([#5550](https://github.com/filebrowser/filebrowser/issues/5550)) ([ceb5e72](https://github.com/filebrowser/filebrowser/commit/ceb5e723f3ee2c966bb561a804015246450280ca))
+
+
+### Bug Fixes
+
+* exit 0 when gracefully shutting down ([#5555](https://github.com/filebrowser/filebrowser/issues/5555)) ([5de4099](https://github.com/filebrowser/filebrowser/commit/5de4099cba2cf012d4a213c8eb29c412fc72c151))
+
+## [2.46.1](https://github.com/filebrowser/filebrowser/compare/v2.46.0...v2.46.1) (2025-11-15)
+
+
+### Bug Fixes
+
+* env key replacer and remove unused function ([#5547](https://github.com/filebrowser/filebrowser/issues/5547)) ([13814e1](https://github.com/filebrowser/filebrowser/commit/13814e11197ebd9101940883e3ca85998f86d442))
+* remove duplicated 'hide-defaults' flag (is 'hideDefaults') ([#5548](https://github.com/filebrowser/filebrowser/issues/5548)) ([ffc8504](https://github.com/filebrowser/filebrowser/commit/ffc850454e4cb8f10b970511681d6c627340afc7))
+
+## [2.46.0](https://github.com/filebrowser/filebrowser/compare/v2.45.3...v2.46.0) (2025-11-14)
+
+
+### Features
+
+* add 'hide-dotfiles' as command line parameter ([#3802](https://github.com/filebrowser/filebrowser/issues/3802)) ([0d973d3](https://github.com/filebrowser/filebrowser/commit/0d973d3aad70ceb88950f2cd9c297fc76e7955b1))
+* add context menu ([#3343](https://github.com/filebrowser/filebrowser/issues/3343)) ([1ace579](https://github.com/filebrowser/filebrowser/commit/1ace579a553486bb15af2d11f537414156606434))
+* add option to hide the login button from public-facing pages ([#3922](https://github.com/filebrowser/filebrowser/issues/3922)) ([ac7b49c](https://github.com/filebrowser/filebrowser/commit/ac7b49c1484b4e27a1149310542ccd1e90659ee2))
+* Updates for project File Browser ([#5544](https://github.com/filebrowser/filebrowser/issues/5544)) ([fb5d099](https://github.com/filebrowser/filebrowser/commit/fb5d099f8514516216f407be012d2e3f25de2441))
+
+## [2.45.3](https://github.com/filebrowser/filebrowser/compare/v2.45.2...v2.45.3) (2025-11-13)
+
+This is a test release to ensure the updated workflow works.
+
+## [2.45.2](https://github.com/filebrowser/filebrowser/compare/v2.45.1...v2.45.2) (2025-11-13)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/shirou/gopsutil/v3 to v4 ([#5536](https://github.com/filebrowser/filebrowser/issues/5536)) ([fdff7a3](https://github.com/filebrowser/filebrowser/commit/fdff7a38f4711f2b58dfdd60bebbb057bd3a478d))
+* **deps:** update module gopkg.in/yaml.v2 to v3 ([#5537](https://github.com/filebrowser/filebrowser/issues/5537)) ([f26a685](https://github.com/filebrowser/filebrowser/commit/f26a68587d8432b536453093f42dc255d19d10fa))
+
+### [2.45.1](https://github.com/filebrowser/filebrowser/compare/v2.45.0...v2.45.1) (2025-11-11)
+
+
+### Bug Fixes
+
+* share page preview items to contain baseUrl ([#5510](https://github.com/filebrowser/filebrowser/issues/5510)) ([6950c2e](https://github.com/filebrowser/filebrowser/commit/6950c2e4d2868f06235f93c0a18b303b4095ca0a))
+
+## [2.45.0](https://github.com/filebrowser/filebrowser/compare/v2.44.2...v2.45.0) (2025-11-01)
+
+
+### Features
+
+* update translations ([#5458](https://github.com/filebrowser/filebrowser/issues/5458)) ([b9a03fa](https://github.com/filebrowser/filebrowser/commit/b9a03fabd98119d6588882f5ba2a7d29b012d729))
+
+
+### Bug Fixes
+
+* support croatian ([#5502](https://github.com/filebrowser/filebrowser/issues/5502)) ([93fe31c](https://github.com/filebrowser/filebrowser/commit/93fe31cc55c9d9d27c634993619a768fa700da1d))
+
+### [2.44.2](https://github.com/filebrowser/filebrowser/compare/v2.44.1...v2.44.2) (2025-10-22)
+
+
+### Bug Fixes
+
+* **http:** remove auth query parameter ([57db25d](https://github.com/filebrowser/filebrowser/commit/57db25d08a1ef2cd0b41f34e312b7b7c35c7ed38))
+
+
+### Build
+
+* **deps-dev:** bump vite from 6.3.6 to 6.4.1 in /frontend ([b8f64a1](https://github.com/filebrowser/filebrowser/commit/b8f64a1c1bc235df784d7f52abd3a9e84c6db6ce))
+
+### [2.44.1](https://github.com/filebrowser/filebrowser/compare/v2.44.0...v2.44.1) (2025-10-17)
+
+
+### Bug Fixes
+
+* **auth:** prevent integer overflow in logout timer using safeTimeout ([#5470](https://github.com/filebrowser/filebrowser/issues/5470)) ([dd88398](https://github.com/filebrowser/filebrowser/commit/dd883985bb484af9dfea2677a40d56999fdc72f3))
+* editor discard prompt doesn't save nor discard ([a397e73](https://github.com/filebrowser/filebrowser/commit/a397e7305d1572baf67823413f97a29eea38f0cc))
+* wrong url on settings branding link ([d0039af](https://github.com/filebrowser/filebrowser/commit/d0039afbb76a9364c1e6ac9715ccc3c239dc8cb6))
+
+
+### Refactorings
+
+* use slices.Contains to simplify code ([#5483](https://github.com/filebrowser/filebrowser/issues/5483)) ([97b8911](https://github.com/filebrowser/filebrowser/commit/97b8911ba8a65456091cbec0202f6b5209fcf363))
 
 ## [2.44.0](https://github.com/filebrowser/filebrowser/compare/v2.43.0...v2.44.0) (2025-09-25)
 

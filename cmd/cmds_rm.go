@@ -35,8 +35,8 @@ including 'index_end'.`,
 
 		return nil
 	},
-	RunE: python(func(_ *cobra.Command, args []string, d *pythonData) error {
-		s, err := d.store.Settings.Get()
+	RunE: withStore(func(_ *cobra.Command, args []string, st *store) error {
+		s, err := st.Settings.Get()
 		if err != nil {
 			return err
 		}
@@ -55,11 +55,11 @@ including 'index_end'.`,
 		}
 
 		s.Commands[evt] = append(s.Commands[evt][:i], s.Commands[evt][f+1:]...)
-		err = d.store.Settings.Save(s)
+		err = st.Settings.Save(s)
 		if err != nil {
 			return err
 		}
 		printEvents(s.Commands)
 		return nil
-	}, pythonConfig{}),
+	}, storeOptions{}),
 }

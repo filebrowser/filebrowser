@@ -1,9 +1,12 @@
-package http
+package fbhttp
 
 import (
+	"compress/gzip"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"html/template"
+	"io"
 	"io/fs"
 	"log"
 	"net/http"
@@ -11,7 +14,6 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
-	"text/template"
 
 	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/filebrowser/filebrowser/v2/settings"
@@ -38,6 +40,7 @@ func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, fSys 
 		"Signup":                d.settings.Signup,
 		"NoAuth":                d.settings.AuthMethod == auth.MethodNoAuth,
 		"AuthMethod":            d.settings.AuthMethod,
+		"LogoutPage":            d.settings.LogoutPage,
 		"LoginPage":             auther.LoginPage(),
 		"CSS":                   false,
 		"ReCaptcha":             false,
@@ -46,11 +49,12 @@ func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, fSys 
 		"ResizePreview":         d.server.ResizePreview,
 		"EnableExec":            d.server.EnableExec,
 		"TusSettings":           d.settings.Tus,
+		"HideLoginButton":       d.settings.HideLoginButton,
 	}
 
 	if d.settings.Branding.Files != "" {
 		fPath := filepath.Join(d.settings.Branding.Files, "custom.css")
-		_, err := os.Stat(fPath) //nolint:govet
+		_, err := os.Stat(fPath)
 
 		if err != nil && !os.IsNotExist(err) {
 			log.Printf("couldn't load custom styles: %v", err)
@@ -62,7 +66,7 @@ func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, fSys 
 	}
 
 	if d.settings.AuthMethod == auth.MethodJSONAuth {
-		raw, err := d.store.Auth.Get(d.settings.AuthMethod) //nolint:govet
+		raw, err := d.store.Auth.Get(d.settings.AuthMethod)
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
@@ -81,7 +85,7 @@ func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, fSys 
 		return http.StatusInternalServerError, err
 	}
 
-	data["Json"] = strings.ReplaceAll(string(b), `'`, `\'`)
+	data["Json"] = template.JS(strings.ReplaceAll(string(b), `'`, `\'`))
 
 	fileContents, err := fs.ReadFile(fSys, file)
 	if err != nil {
@@ -142,16 +146,32 @@ func getStaticHandlers(store *storage.Storage, server *settings.Server, assetsFs
 			return 0, nil
 		}
 
-		fileContents, err := fs.ReadFile(assetsFs, r.URL.Path+".gz")
+		f, err := assetsFs.Open(r.URL.Path + ".gz")
 		if err != nil {
 			return http.StatusNotFound, err
 		}
+		defer f.Close()
 
-		w.Header().Set("Content-Encoding", "gzip")
-		w.Header().Set("Content-Type", "application/javascript; charset=utf-8")
+		acceptEncoding := r.Header.Get("Accept-Encoding")
+		if strings.Contains(acceptEncoding, "gzip") {
+			w.Header().Set("Content-Encoding", "gzip")
+			w.Header().Set("Content-Type", "application/javascript; charset=utf-8")
 
-		if _, err := w.Write(fileContents); err != nil {
-			return http.StatusInternalServerError, err
+			if _, err := io.Copy(w, f); err != nil {
+				return http.StatusInternalServerError, err
+			}
+		} else {
+			gzReader, err := gzip.NewReader(f)
+			if err != nil {
+				return http.StatusInternalServerError, err
+			}
+			defer gzReader.Close()
+
+			w.Header().Set("Content-Type", "application/javascript; charset=utf-8")
+
+			if _, err := io.Copy(w, gzReader); err != nil {
+				return http.StatusInternalServerError, err
+			}
 		}
 
 		return 0, nil

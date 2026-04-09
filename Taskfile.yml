@@ -1,0 +1,83 @@
+version: '3'
+
+vars:
+  SITE_DOCKER_FLAGS: >-
+    -v ./www:/docs
+    -v ./LICENSE:/docs/docs/LICENSE
+    -v ./SECURITY.md:/docs/docs/security.md
+    -v ./CHANGELOG.md:/docs/docs/changelog.md
+    -v ./CODE-OF-CONDUCT.md:/docs/docs/code-of-conduct.md
+    -v ./CONTRIBUTING.md:/docs/docs/contributing.md
+
+tasks:
+  build:frontend:
+    desc: Build frontend assets
+    dir: frontend
+    cmds:
+      - pnpm install --frozen-lockfile
+      - pnpm run build
+
+  build:backend:
+    desc: Build backend binary
+    cmds:
+      - go build -ldflags='-s -w -X "github.com/filebrowser/filebrowser/v2/version.Version={{.VERSION}}" -X "github.com/filebrowser/filebrowser/v2/version.CommitSHA={{.GIT_COMMIT}}"' -o filebrowser .
+    vars:
+      GIT_COMMIT:
+        sh: git log -n 1 --format=%h
+      VERSION:
+        sh: git describe --tags --abbrev=0 --match=v* | cut -c 2-
+
+  build:
+    desc: Build both frontend and backend
+    cmds:
+      - task: build:frontend
+      - task: build:backend
+
+  release:make:
+    internal: true
+    prompt: Do you wish to proceed?
+    cmds:
+      - pnpm dlx commit-and-tag-version -s
+
+  release:dry-run:
+    internal: true
+    cmds:
+      - pnpm dlx commit-and-tag-version --dry-run --skip
+
+  release:
+    desc: Create a new release
+    cmds:
+      - task: docs:cli:generate
+      - git add www/docs/cli
+      - |
+        if [[ `git status www/docs/cli --porcelain` ]]; then
+          git commit -m 'chore(docs): update CLI documentation'
+        fi
+      - task: release:dry-run
+      - task: release:make
+
+  docs:cli:generate:
+    cmds:
+      - rm -rf www/docs/cli
+      - mkdir -p www/docs/cli
+      - go run . docs
+    generates:
+      - www/docs/cli
+
+  docs:docker:generate:
+    internal: true
+    cmds: 
+      - docker build -f www/Dockerfile --progress=plain -t filebrowser.site www
+
+  docs:
+    desc: Generate documentation
+    cmds:
+      - rm -rf www/public
+      - task: docs:docker:generate
+      - docker run --rm {{.SITE_DOCKER_FLAGS}} filebrowser.site build -d "public"
+
+  docs:serve:
+    desc: Serve documentation
+    cmds:
+      - task: docs:docker:generate
+      - docker run --rm -it -p 8000:8000 {{.SITE_DOCKER_FLAGS}} filebrowser.site

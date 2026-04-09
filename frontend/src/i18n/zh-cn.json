@@ -42,8 +42,17 @@
     "update": "更新",
     "upload": "上传",
     "openFile": "打开文件",
+    "openDirect": "View raw",
     "discardChanges": "放弃更改",
-    "saveChanges": "Save changes"
+    "stopSearch": "停止搜索",
+    "saveChanges": "保存更改",
+    "editAsText": "以文本形式编辑",
+    "increaseFontSize": "增大字体大小",
+    "decreaseFontSize": "减小字体大小",
+    "overrideAll": "Replace all files in destination folder",
+    "skipAll": "Skip all conflicting files",
+    "renameAll": "Rename all files (create a copy)",
+    "singleDecision": "Decide for each conflicting file"
   },
   "download": {
     "downloadFile": "下载文件",
@@ -75,7 +84,17 @@
     "sortByLastModified": "按最后修改时间排序",
     "sortByName": "按名称排序",
     "sortBySize": "按大小排序",
-    "noPreview": "此文件无法预览。"
+    "noPreview": "此文件无法预览。",
+    "csvTooLarge": "CSV文件大到无法预览(>5MB)。请下载查看。",
+    "csvLoadFailed": "加载 CSV 文件失败。",
+    "showingRows": "正在显示 {count} 行",
+    "columnSeparator": "列分隔符",
+    "csvSeparators": {
+      "comma": "逗号 (,)",
+      "semicolon": "分号 (;)",
+      "both": "逗号 (,) 和分号 (;)"
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "选择文件或文件夹",
@@ -102,8 +121,9 @@
     "username": "用户名",
     "usernameTaken": "用户名已经被使用",
     "wrongCredentials": "用户名或密码错误",
+    "passwordTooShort": "密码必须至少包含 {min} 个字符",
     "logout_reasons": {
-      "inactivity": "You have been logged out due to inactivity."
+      "inactivity": "由于未活动，您已登出。"
     }
   },
   "permanent": "永久",
@@ -145,7 +165,19 @@
     "uploadMessage": "选择上传选项。",
     "optionalPassword": "密码（选填，不填即无密码）",
     "resolution": "分辨率",
-    "discardEditorChanges": "你确定要放弃所做的更改吗？"
+    "discardEditorChanges": "你确定要放弃所做的更改吗？",
+    "replaceOrSkip": "Replace or skip files",
+    "resolveConflict": "Which files do you want to keep?",
+    "singleConflictResolve": "If you select both versions, a number will be added to the name of the copied file.",
+    "fastConflictResolve": "The destination folder there are {count} files with same name.",
+    "uploadingFiles": "Uploading files",
+    "filesInOrigin": "Files in origin",
+    "filesInDest": "Files in destination",
+    "override": "Overwrite",
+    "skip": "Skip",
+    "forbiddenError": "Forbidden Error",
+    "currentPassword": "Your password",
+    "currentPasswordMessage": "Enter your password to validate this action."
   },
   "search": {
     "images": "图像",
@@ -158,7 +190,7 @@
     "video": "视频"
   },
   "settings": {
-    "aceEditorTheme": "Ace editor theme",
+    "aceEditorTheme": "Ace编辑器主题",
     "admin": "管理员",
     "administrator": "管理员",
     "allowCommands": "执行命令（Shell 命令）",
@@ -166,6 +198,7 @@
     "allowNew": "创建新文件和文件夹",
     "allowPublish": "发布新的帖子与页面",
     "allowSignup": "允许用户注册",
+    "hideLoginButton": "从公开页面隐藏登录按钮",
     "avoidChanges": "（留空以避免更改）",
     "branding": "品牌",
     "brandingDirectoryPath": "品牌信息文件夹路径",
@@ -217,6 +250,7 @@
     "permissions": "权限",
     "permissionsHelp": "你可以将该用户设置为管理员或单独选择各项权限。如果你选择了“管理员”，则其他的选项会被自动选中，同时该用户可以管理其他用户。\n",
     "profileSettings": "个人设置",
+    "redirectAfterCopyMove": "复制/移动后转到目标位置",
     "ruleExample1": "阻止用户访问所有文件夹下任何以 . 开头的文件（隐藏文件, 例如: .git, .gitignore）。\n",
     "ruleExample2": "阻止用户访问其目录范围的根目录下名为 Caddyfile 的文件。",
     "rules": "规则",
@@ -243,7 +277,8 @@
     "userManagement": "用户管理",
     "userUpdated": "用户已更新！",
     "username": "用户名",
-    "users": "用户"
+    "users": "用户",
+    "currentPassword": "您当前的密码"
   },
   "sidebar": {
     "help": "帮助",

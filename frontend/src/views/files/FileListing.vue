@@ -81,7 +81,13 @@
       </template>
     </header-bar>
 
-    <div v-if="isMobile" id="file-selection">
+    <div
+      v-if="isMobile"
+      id="file-selection"
+      :class="{
+        'file-selection-margin-bottom': fileStore.multiple,
+      }"
+    >
       <span v-if="fileStore.selectedCount > 0">
         {{ t("prompts.filesSelected", fileStore.selectedCount) }}
       </span>
@@ -158,7 +164,9 @@
         id="listing"
         ref="listing"
         class="file-icons"
+        data-clear-on-click="true"
         :class="authStore.user?.viewMode ?? ''"
+        @click="handleEmptyAreaClick"
       >
         <div>
           <div class="item header">
@@ -204,10 +212,14 @@
           </div>
         </div>
 
-        <h2 v-if="fileStore.req?.numDirs ?? false">
+        <h2 data-clear-on-click="true" v-if="fileStore.req?.numDirs ?? false">
           {{ t("files.folders") }}
         </h2>
-        <div v-if="fileStore.req?.numDirs ?? false">
+        <div
+          v-if="fileStore.req?.numDirs ?? false"
+          data-clear-on-click="true"
+          @contextmenu="showContextMenu"
+        >
           <item
             v-for="item in dirs"
             :key="base64(item.name)"
@@ -223,8 +235,14 @@
           </item>
         </div>
 
-        <h2 v-if="fileStore.req?.numFiles ?? false">{{ t("files.files") }}</h2>
-        <div v-if="fileStore.req?.numFiles ?? false">
+        <h2 data-clear-on-click="true" v-if="fileStore.req?.numFiles ?? false">
+          {{ t("files.files") }}
+        </h2>
+        <div
+          v-if="fileStore.req?.numFiles ?? false"
+          data-clear-on-click="true"
+          @contextmenu="showContextMenu"
+        >
           <item
             v-for="item in files"
             :key="base64(item.name)"
@@ -239,6 +257,53 @@
           >
           </item>
         </div>
+        <context-menu
+          :show="isContextMenuVisible"
+          :pos="contextMenuPos"
+          @hide="hideContextMenu"
+        >
+          <action
+            v-if="headerButtons.share"
+            icon="share"
+            :label="t('buttons.share')"
+            show="share"
+          />
+          <action
+            v-if="headerButtons.rename"
+            icon="mode_edit"
+            :label="t('buttons.rename')"
+            show="rename"
+          />
+          <action
+            v-if="headerButtons.copy"
+            id="copy-button"
+            icon="content_copy"
+            :label="t('buttons.copyFile')"
+            show="copy"
+          />
+          <action
+            v-if="headerButtons.move"
+            id="move-button"
+            icon="forward"
+            :label="t('buttons.moveFile')"
+            show="move"
+          />
+          <action
+            v-if="headerButtons.delete"
+            id="delete-button"
+            icon="delete"
+            :label="t('buttons.delete')"
+            show="delete"
+          />
+          <action
+            v-if="headerButtons.download"
+            icon="file_download"
+            :label="t('buttons.download')"
+            @action="download"
+            :counter="fileStore.selectedCount"
+          />
+          <action icon="info" :label="t('buttons.info')" show="info" />
+        </context-menu>
 
         <input
           style="display: none"
@@ -291,6 +356,7 @@ import HeaderBar from "@/components/header/HeaderBar.vue";
 import Action from "@/components/header/Action.vue";
 import Search from "@/components/Search.vue";
 import Item from "@/components/files/ListingItem.vue";
+import ContextMenu from "@/components/ContextMenu.vue";
 import {
   computed,
   inject,
@@ -300,7 +366,7 @@ import {
   ref,
   watch,
 } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, onBeforeRouteUpdate } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
 import { removePrefix } from "@/api/utils";
@@ -310,6 +376,8 @@ const columnWidth = ref<number>(280);
 const dragCounter = ref<number>(0);
 const width = ref<number>(window.innerWidth);
 const itemWeight = ref<number>(0);
+const isContextMenuVisible = ref<boolean>(false);
+const contextMenuPos = ref<{ x: number; y: number }>({ x: 0, y: 0 });
 
 const $showError = inject<IToastError>("$showError")!;
 
@@ -321,6 +389,9 @@ const layoutStore = useLayoutStore();
 const { req } = storeToRefs(fileStore);
 
 const route = useRoute();
+onBeforeRouteUpdate(() => {
+  hideContextMenu();
+});
 
 const { t } = useI18n();
 
@@ -409,7 +480,10 @@ const headerButtons = computed(() => {
     shell: authStore.user?.perm.execute && enableExec,
     delete: fileStore.selectedCount > 0 && authStore.user?.perm.delete,
     rename: fileStore.selectedCount === 1 && authStore.user?.perm.rename,
-    share: fileStore.selectedCount === 1 && authStore.user?.perm.share,
+    share:
+      fileStore.selectedCount === 1 &&
+      authStore.user?.perm.share &&
+      authStore.user?.perm.download,
     move: fileStore.selectedCount > 0 && authStore.user?.perm.rename,
     copy: fileStore.selectedCount > 0 && authStore.user?.perm.create,
   };
@@ -438,7 +512,7 @@ watch(req, () => {
 
 onMounted(() => {
   // Check the columns size for the first time.
-  colunmsResize();
+  columnsResize();
 
   // How much every listing item affects the window height
   setItemWeight();
@@ -557,6 +631,8 @@ const copyCut = (event: Event | KeyboardEvent): void => {
     items.push({
       from: fileStore.req.items[i].url,
       name: fileStore.req.items[i].name,
+      size: fileStore.req.items[i].size,
+      modified: fileStore.req.items[i].modified,
     });
   }
 
@@ -580,7 +656,15 @@ const paste = (event: Event) => {
   for (const item of clipboardStore.items) {
     const from = item.from.endsWith("/") ? item.from.slice(0, -1) : item.from;
     const to = route.path + encodeURIComponent(item.name);
-    items.push({ from, to, name: item.name });
+    items.push({
+      from,
+      to,
+      name: item.name,
+      size: item.size,
+      modified: item.modified,
+      overwrite: false,
+      rename: clipboardStore.path == route.path,
+    });
   }
 
   if (items.length === 0) {
@@ -589,7 +673,7 @@ const paste = (event: Event) => {
 
   const preselect = removePrefix(route.path) + items[0].name;
 
-  let action = (overwrite: boolean, rename: boolean) => {
+  let action = (overwrite?: boolean, rename?: boolean) => {
     api
       .copy(items, overwrite, rename)
       .then(() => {
@@ -612,37 +696,40 @@ const paste = (event: Event) => {
     };
   }
 
-  if (clipboardStore.path == route.path) {
-    action(false, true);
-
-    return;
-  }
-
   const conflict = upload.checkConflict(items, fileStore.req!.items);
 
-  let overwrite = false;
-  let rename = false;
-
-  if (conflict) {
+  if (conflict.length > 0) {
     layoutStore.showHover({
-      prompt: "replace-rename",
-      confirm: (event: Event, option: string) => {
-        overwrite = option == "overwrite";
-        rename = option == "rename";
-
+      prompt: "resolve-conflict",
+      props: {
+        conflict: conflict,
+      },
+      confirm: (event: Event, result: Array<ConflictingResource>) => {
         event.preventDefault();
         layoutStore.closeHovers();
-        action(overwrite, rename);
+        for (let i = result.length - 1; i >= 0; i--) {
+          const item = result[i];
+          if (item.checked.length == 2) {
+            items[item.index].rename = true;
+          } else if (item.checked.length == 1 && item.checked[0] == "origin") {
+            items[item.index].overwrite = true;
+          } else {
+            items.splice(item.index, 1);
+          }
+        }
+        if (items.length > 0) {
+          action();
+        }
       },
     });
 
     return;
   }
 
-  action(overwrite, rename);
+  action(false, false);
 };
 
-const colunmsResize = () => {
+const columnsResize = () => {
   // Update the columns size based on the window width.
   const items_ = css(["#listing.mosaic .item", ".mosaic#listing .item"]);
   if (items_ === null) return;
@@ -735,20 +822,30 @@ const drop = async (event: DragEvent) => {
 
   const preselect = removePrefix(path) + (files[0].fullPath || files[0].name);
 
-  if (conflict) {
+  if (conflict.length > 0) {
     layoutStore.showHover({
-      prompt: "replace",
-      action: (event: Event) => {
-        event.preventDefault();
-        layoutStore.closeHovers();
-        upload.handleFiles(files, path, false);
-        fileStore.preselect = preselect;
+      prompt: "resolve-conflict",
+      props: {
+        conflict: conflict,
+        isUploadAction: true,
       },
-      confirm: (event: Event) => {
+      confirm: (event: Event, result: Array<ConflictingResource>) => {
         event.preventDefault();
         layoutStore.closeHovers();
-        upload.handleFiles(files, path, true);
-        fileStore.preselect = preselect;
+        for (let i = result.length - 1; i >= 0; i--) {
+          const item = result[i];
+          if (item.checked.length == 2) {
+            continue;
+          } else if (item.checked.length == 1 && item.checked[0] == "origin") {
+            files[item.index].overwrite = true;
+          } else {
+            files.splice(item.index, 1);
+          }
+        }
+        if (files.length > 0) {
+          upload.handleFiles(files, path, true);
+          fileStore.preselect = preselect;
+        }
       },
     });
 
@@ -781,18 +878,29 @@ const uploadInput = (event: Event) => {
   const path = route.path.endsWith("/") ? route.path : route.path + "/";
   const conflict = upload.checkConflict(uploadFiles, fileStore.req!.items);
 
-  if (conflict) {
+  if (conflict.length > 0) {
     layoutStore.showHover({
-      prompt: "replace",
-      action: (event: Event) => {
-        event.preventDefault();
-        layoutStore.closeHovers();
-        upload.handleFiles(uploadFiles, path, false);
+      prompt: "resolve-conflict",
+      props: {
+        conflict: conflict,
+        isUploadAction: true,
       },
-      confirm: (event: Event) => {
+      confirm: (event: Event, result: Array<ConflictingResource>) => {
         event.preventDefault();
         layoutStore.closeHovers();
-        upload.handleFiles(uploadFiles, path, true);
+        for (let i = result.length - 1; i >= 0; i--) {
+          const item = result[i];
+          if (item.checked.length == 2) {
+            continue;
+          } else if (item.checked.length == 1 && item.checked[0] == "origin") {
+            uploadFiles[item.index].overwrite = true;
+          } else {
+            uploadFiles.splice(item.index, 1);
+          }
+        }
+        if (uploadFiles.length > 0) {
+          upload.handleFiles(uploadFiles, path, true);
+        }
       },
     });
 
@@ -850,7 +958,7 @@ const toggleMultipleSelection = () => {
 };
 
 const windowsResize = throttle(() => {
-  colunmsResize();
+  columnsResize();
   width.value = window.innerWidth;
 
   // Listing element is not displayed
@@ -977,4 +1085,35 @@ const revealPreviousItem = () => {
 
   return true;
 };
+
+const showContextMenu = (event: MouseEvent) => {
+  event.preventDefault();
+  isContextMenuVisible.value = true;
+  contextMenuPos.value = {
+    x: event.clientX + 8,
+    y: event.clientY + Math.floor(window.scrollY),
+  };
+};
+
+const hideContextMenu = () => {
+  isContextMenuVisible.value = false;
+};
+
+const handleEmptyAreaClick = (e: MouseEvent) => {
+  const target = e.target;
+  if (!(target instanceof HTMLElement)) return;
+
+  if (target.dataset.clearOnClick === "true") {
+    fileStore.selected = [];
+  }
+};
 </script>
+<style scoped>
+#listing {
+  min-height: calc(100vh - 8rem);
+}
+
+.file-selection-margin-bottom {
+  margin-bottom: 3.5rem;
+}
+</style>
