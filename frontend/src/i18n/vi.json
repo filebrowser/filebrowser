@@ -245,7 +245,7 @@
       "execute": "Thực thi lệnh",
       "modify": "Chỉnh sửa tệp",
       "rename": "Đổi tên hoặc di chuyển tệp và thư mục",
-      "share": "Share files (require download permission)"
+      "share": "Chia sẻ tệp"
     },
     "permissions": "Quyền",
     "permissionsHelp": "Bạn có thể đặt người dùng làm quản trị viên hoặc chọn quyền riêng lẻ. Nếu chọn \"Người quản trị\", tất cả các tùy chọn khác sẽ tự động được chọn. Việc quản lý người dùng vẫn là đặc quyền của quản trị viên.\n",
