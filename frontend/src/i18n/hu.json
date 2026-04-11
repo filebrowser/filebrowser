@@ -245,7 +245,7 @@
       "execute": "Parancsok futtatása",
       "modify": "Fájlok szerkesztése",
       "rename": "Fájlok és mappák átnevezése vagy mozgatása",
-      "share": "Share files (require download permission)"
+      "share": "Fájlok megosztása"
     },
     "permissions": "Jogosultságok",
     "permissionsHelp": "A felhasználót beállíthatja rendszergazdának, vagy egyénileg is kiválaszthatja a jogosultságokat. Ha a \"Rendszergazda\" lehetőséget választja, az összes többi opció automatikusan be lesz jelölve. A felhasználók kezelése továbbra is a rendszergazda kiváltsága marad.\n",
