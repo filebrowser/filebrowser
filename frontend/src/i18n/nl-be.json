@@ -245,7 +245,7 @@
       "execute": "Commando's uitvoeren",
       "modify": "Bestanden aanpassen",
       "rename": "Bestanden of mappen hernoemen of verplaatsen",
-      "share": "Share files (require download permission)"
+      "share": "Bestanden delen"
     },
     "permissions": "Permissies",
     "permissionsHelp": "U kunt de gebruiker instellen als beheerder of de machtigingen afzonderlijk kiezen. Als u \"Beheerder\" selecteert, worden alle andere opties automatisch gecontroleerd. Het beheer van gebruikers blijft een privilege van een beheerder.\n",
