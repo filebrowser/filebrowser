@@ -30,7 +30,7 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 		Expand:     true,
 		ReadHeader: d.server.TypeDetectionByHeader,
 		Checker:    d,
-		Content:    true,
+		Content:    d.user.Perm.Download,
 	})
 	if err != nil {
 		return errToStatus(err), err
@@ -42,6 +42,9 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 		file.ApplySort()
 		return renderJSON(w, r, file)
 	} else if encoding == "true" {
+		if !d.user.Perm.Download {
+			return http.StatusAccepted, nil
+		}
 		if file.Type != "text" {
 			return renderJSON(w, r, file)
 		}

@@ -17,7 +17,11 @@
       {{ $t("settings.perm.delete") }}
     </p>
     <p>
-      <input type="checkbox" :disabled="admin" v-model="perm.download" />
+      <input
+        type="checkbox"
+        :disabled="admin || perm.share"
+        v-model="perm.download"
+      />
       {{ $t("settings.perm.download") }}
     </p>
     <p>
@@ -60,6 +64,16 @@ export default {
       },
     },
     isExecEnabled: () => enableExec,
+  },
+  watch: {
+    perm: {
+      deep: true,
+      handler() {
+        if (this.perm.share === true) {
+          this.perm.download = true;
+        }
+      },
+    },
   },
 };
 </script>

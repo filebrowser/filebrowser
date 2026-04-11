@@ -23,37 +23,65 @@ func TestPublicShareHandlerAuthentication(t *testing.T) {
 	testCases := map[string]struct {
 		share              *share.Link
 		req                *http.Request
+		sharePerm          bool
+		downloadPerm       bool
 		expectedStatusCode int
 	}{
 		"Public share, no auth required": {
 			share:              &share.Link{Hash: "h", UserID: 1},
 			req:                newHTTPRequest(t),
+			sharePerm:          true,
+			downloadPerm:       true,
 			expectedStatusCode: 200,
 		},
 		"Private share, no auth provided, 401": {
 			share:              &share.Link{Hash: "h", UserID: 1, PasswordHash: passwordBcrypt, Token: "123"},
 			req:                newHTTPRequest(t),
+			sharePerm:          true,
+			downloadPerm:       true,
 			expectedStatusCode: 401,
 		},
 		"Private share, authentication via token": {
 			share:              &share.Link{Hash: "h", UserID: 1, PasswordHash: passwordBcrypt, Token: "123"},
 			req:                newHTTPRequest(t, func(r *http.Request) { r.URL.RawQuery = "token=123" }),
+			sharePerm:          true,
+			downloadPerm:       true,
 			expectedStatusCode: 200,
 		},
 		"Private share, authentication via invalid token, 401": {
 			share:              &share.Link{Hash: "h", UserID: 1, PasswordHash: passwordBcrypt, Token: "123"},
 			req:                newHTTPRequest(t, func(r *http.Request) { r.URL.RawQuery = "token=1234" }),
+			sharePerm:          true,
+			downloadPerm:       true,
 			expectedStatusCode: 401,
 		},
 		"Private share, authentication via password": {
 			share:              &share.Link{Hash: "h", UserID: 1, PasswordHash: passwordBcrypt, Token: "123"},
 			req:                newHTTPRequest(t, func(r *http.Request) { r.Header.Set("X-SHARE-PASSWORD", "password") }),
+			sharePerm:          true,
+			downloadPerm:       true,
 			expectedStatusCode: 200,
 		},
 		"Private share, authentication via invalid password, 401": {
 			share:              &share.Link{Hash: "h", UserID: 1, PasswordHash: passwordBcrypt, Token: "123"},
 			req:                newHTTPRequest(t, func(r *http.Request) { r.Header.Set("X-SHARE-PASSWORD", "wrong-password") }),
+			sharePerm:          true,
+			downloadPerm:       true,
 			expectedStatusCode: 401,
+		},
+		"Share owner lost share permission, 403": {
+			share:              &share.Link{Hash: "h", UserID: 1},
+			req:                newHTTPRequest(t),
+			sharePerm:          false,
+			downloadPerm:       true,
+			expectedStatusCode: 403,
+		},
+		"Share owner lost download permission, 403": {
+			share:              &share.Link{Hash: "h", UserID: 1},
+			req:                newHTTPRequest(t),
+			sharePerm:          true,
+			downloadPerm:       false,
+			expectedStatusCode: 403,
 		},
 	}
 
@@ -82,7 +110,14 @@ func TestPublicShareHandlerAuthentication(t *testing.T) {
 				if err := storage.Share.Save(tc.share); err != nil {
 					t.Fatalf("failed to save share: %v", err)
 				}
-				if err := storage.Users.Save(&users.User{Username: "username", Password: "pw"}); err != nil {
+				if err := storage.Users.Save(&users.User{
+					Username: "username",
+					Password: "pw",
+					Perm: users.Permissions{
+						Share:    tc.sharePerm,
+						Download: tc.downloadPerm,
+					},
+				}); err != nil {
 					t.Fatalf("failed to save user: %v", err)
 				}
 				if err := storage.Settings.Save(&settings.Settings{Key: []byte("key")}); err != nil {
