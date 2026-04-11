@@ -245,7 +245,7 @@
       "execute": "Exekvera kommandon",
       "modify": "Ändra fil",
       "rename": "Byta namn på eller flytta filer och kataloger",
-      "share": "Share files (require download permission)"
+      "share": "Dela filer"
     },
     "permissions": "Rättigheter",
     "permissionsHelp": "Du kan ange att användaren ska vara administratör eller välja behörigheterna individuellt. Om du väljer \"administratör \" kommer alla andra alternativ att kontrolleras automatiskt. Hanteringen av användare är fortfarande ett privilegium för en administratör.\n",
