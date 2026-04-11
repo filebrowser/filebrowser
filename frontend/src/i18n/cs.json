@@ -245,7 +245,7 @@
       "execute": "Spouštět příkazy",
       "modify": "Upravit soubory",
       "rename": "Přejmenovat nebo přesunout soubory a adresáře",
-      "share": "Share files (require download permission)"
+      "share": "Sdílet soubory"
     },
     "permissions": "Oprávnění",
     "permissionsHelp": "Můžete nastavit uživatele jako administrátora nebo zvolit jednotlivá oprávnění. Pokud vyberete \"Administrátor\", všechny ostatní možnosti budou automaticky zaškrtnuty. Správa uživatelů zůstává výsadou administrátora.\n",
