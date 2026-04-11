@@ -245,7 +245,7 @@
       "execute": "Vykonávať príkazy",
       "modify": "Upravovať súbory",
       "rename": "Premenovať a presúvať súbory a priečinky",
-      "share": "Share files (require download permission)"
+      "share": "Zdieľať súbory"
     },
     "permissions": "Práva",
     "permissionsHelp": "Môžete nastaviť používateľa, aby bol administrátorom alebo vybrať práva jednotlivo. Ak zvolíte \"Administrator\", všetky ďalšie budú automaticky zaškrtnuté. Manažment používateľov ostáva v správe administrátora.\n",
