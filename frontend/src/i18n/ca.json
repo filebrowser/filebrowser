@@ -245,7 +245,7 @@
       "execute": "Executar comandes",
       "modify": "Editar fitxers",
       "rename": "Reanomenar o moure fitxers i directoris",
-      "share": "Share files (require download permission)"
+      "share": "Compartir fitxers"
     },
     "permissions": "Permisos",
     "permissionsHelp": "Pots nomenar l'usuari com a administrador o triar els permisos individualment. Si selecciones \"Administrador\", totes les altres opcions s'activaran automàticament. L'administració d'usuaris és un privilegi d'administrador.\n",
