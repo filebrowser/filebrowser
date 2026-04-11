@@ -245,7 +245,7 @@
       "execute": "Utfør kommandoer",
       "modify": "Endre filer",
       "rename": "Gi nytt navn eller flytt filer og direktorater",
-      "share": "Share files (require download permission)"
+      "share": "Del filer"
     },
     "permissions": "Tilaterser",
     "permissionsHelp": "Du kan angi brukeren som administrator eller velge tillatelsene individuelt. Hvis du velger «Administrator», vil alle de andre alternativene bli automatisk avkrysset. Administrasjon av brukere er fortsatt et privilegium for en administrator.\n",
