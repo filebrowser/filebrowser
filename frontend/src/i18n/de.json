@@ -245,7 +245,7 @@
       "execute": "Befehle ausführen",
       "modify": "Dateien bearbeiten",
       "rename": "Dateien und Verzeichnisse umbenennen oder verschieben",
-      "share": "Dateien teilen"
+      "share": "Dateien freigeben (Download-Berechtigung erforderlich)"
     },
     "permissions": "Berechtigungen",
     "permissionsHelp": "Du kannst den Benutzer zum Administrator machen oder die Berechtigungen einzeln festlegen. Wenn du \"Administrator\" wählst, werden automatisch alle anderen Optionen aktiviert. Die Benutzerverwaltung bleibt ein Administratorrecht.\n",

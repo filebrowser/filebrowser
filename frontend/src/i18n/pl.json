@@ -245,7 +245,7 @@
       "execute": "Wykonywanie poleceń",
       "modify": "Edytowanie plików",
       "rename": "Zmienianie nazwy lub przenoszenie plików i katalogów",
-      "share": "Udostępnianie plików"
+      "share": "Udostępnianie plików (wymaga uprawnienia do pobierania)"
     },
     "permissions": "Uprawnienia",
     "permissionsHelp": "Możesz ustawić użytkownika jako administratora lub wybrać uprawnienia indywidualnie. Jeśli wybierzesz „Administrator”, wszystkie pozostałe opcje zostaną automatycznie zaznaczone. Zarządzanie użytkownikami pozostaje przywilejem administratora.\n",

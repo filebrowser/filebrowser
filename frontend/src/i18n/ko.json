@@ -245,7 +245,7 @@
       "execute": "명령 실행",
       "modify": "파일 편집",
       "rename": "파일 및 디렉터리의 이름 변경 또는 이동",
-      "share": "파일 공유하기"
+      "share": "Share files (require download permission)"
     },
     "permissions": "권한",
     "permissionsHelp": "사용자를 관리자로 설정하거나 개별적으로 권한을 지정할 수 있습니다. \"관리자\"를 선택하면 다른 모든 옵션이 자동으로 선택됩니다. 사용자 관리는 관리자의 권한입니다.\n",

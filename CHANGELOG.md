@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.63.2](https://github.com/filebrowser/filebrowser/compare/v2.63.1...v2.63.2) (2026-04-11)
+
+
+### Bug Fixes
+
+* **preview:** let arrow keys seek video instead of switching files ([#5895](https://github.com/filebrowser/filebrowser/issues/5895)) ([0fadf28](https://github.com/filebrowser/filebrowser/commit/0fadf28b18e506ddca0027e83ebe567ac57932bf))
+
 ## [2.63.1](https://github.com/filebrowser/filebrowser/compare/v2.63.0...v2.63.1) (2026-04-04)
 
 
