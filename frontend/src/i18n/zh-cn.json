@@ -245,7 +245,7 @@
       "execute": "执行命令",
       "modify": "编辑",
       "rename": "重命名或移动文件和文件夹",
-      "share": "分享文件"
+      "share": "Share files (require download permission)"
     },
     "permissions": "权限",
     "permissionsHelp": "你可以将该用户设置为管理员或单独选择各项权限。如果你选择了“管理员”，则其他的选项会被自动选中，同时该用户可以管理其他用户。\n",

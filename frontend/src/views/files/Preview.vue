@@ -383,11 +383,19 @@ const key = (event: KeyboardEvent) => {
   if (layoutStore.currentPrompt !== null) {
     return;
   }
-  if (event.which === 13 || event.which === 39) {
+  // When previewing a video, let arrow keys fall through to video.js for
+  // seeking instead of switching to the prev/next file. Enter still advances.
+  const isVideo = fileStore.req?.type === "video";
+  if (event.which === 13) {
+    // enter
+    if (hasNext.value) next();
+  } else if (event.which === 39) {
     // right arrow
+    if (isVideo) return;
     if (hasNext.value) next();
   } else if (event.which === 37) {
     // left arrow
+    if (isVideo) return;
     if (hasPrevious.value) prev();
   } else if (event.which === 27) {
     // esc
