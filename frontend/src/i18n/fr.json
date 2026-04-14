@@ -119,7 +119,7 @@
     "signup": "S'inscrire",
     "submit": "Se connecter",
     "username": "Utilisateur",
-    "usernameTaken": "Le nom d'utilisateur·ice est déjà pris",
+    "usernameTaken": "Le nom d'utilisateur est déjà pris",
     "wrongCredentials": "Identifiants incorrects !",
     "passwordTooShort": "Le mot de passe doit contenir au moins {min} caractères",
     "logout_reasons": {
