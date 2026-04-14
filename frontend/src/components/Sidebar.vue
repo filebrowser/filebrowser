@@ -16,6 +16,28 @@
         <span>{{ $t("sidebar.myFiles") }}</span>
       </button>
 
+      <div v-if="user.favorites && user.favorites.length > 0">
+        <p class="title">{{ $t("sidebar.favorites") }}</p>
+        <button
+          v-for="fav in user.favorites"
+          :key="fav"
+          class="action"
+          :class="{ active: isFavorite(fav) }"
+          @click="toPath(fav)"
+          :title="fav"
+        >
+          <i class="material-icons">{{
+            isFavorite(fav) ? "star" : "star_border"
+          }}</i>
+          <div class="fav-info">
+            <span class="fav-name">{{
+              fav === "/" ? $t("sidebar.myFiles") : fav.split("/").pop() || "/"
+            }}</span>
+            <span class="fav-path">{{ fav }}</span>
+          </div>
+        </button>
+      </div>
+
       <div v-if="user.perm.create">
         <button
           @click="showHover('newDir')"
@@ -161,6 +183,15 @@ export default {
     disableExternal: () => disableExternal,
     disableUsedPercentage: () => disableUsedPercentage,
     canLogout: () => !noAuth && (loginPage || logoutPage !== "/login"),
+    isFavorite() {
+      return (path) => {
+        const currentPath = this.$route.path.replace(/\/$/, "") || "/";
+        const normalizedFav = path.replace(/\/$/, "") || "/";
+        const normalizedCurrent =
+          currentPath.replace(/^\/files/, "") || "/";
+        return normalizedFav === (normalizedCurrent === "" ? "/" : normalizedCurrent);
+      };
+    },
   },
   methods: {
     ...mapActions(useLayoutStore, ["closeHovers", "showHover"]),
@@ -192,6 +223,10 @@ export default {
       this.$router.push({ path: "/files" });
       this.closeHovers();
     },
+    toPath(path) {
+      this.$router.push({ path: "/files" + path });
+      this.closeHovers();
+    },
     toAccountSettings() {
       this.$router.push({ path: "/settings/profile" });
       this.closeHovers();
@@ -220,3 +255,41 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.title {
+  font-size: 0.8em;
+  font-weight: bold;
+  padding: 0 2.5em;
+  margin: 1.5em 0 0.5em;
+  text-transform: uppercase;
+  color: var(--textSecondary);
+  opacity: 0.8;
+}
+
+.fav-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  overflow: hidden;
+}
+
+.fav-name {
+  font-weight: normal;
+  display: block;
+}
+
+.fav-path {
+  font-size: 0.7em;
+  opacity: 0.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+nav .action {
+  display: flex;
+  align-items: center;
+}
+</style>
