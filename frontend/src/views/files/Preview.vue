@@ -124,7 +124,24 @@
           :options="videoOptions"
         >
         </VideoPlayer>
-        <object v-else-if="isPdf" class="pdf" :data="previewUrl"></object>
+        <div v-else-if="isPdf" class="info">
+          <div class="title">
+            <i class="material-icons">picture_as_pdf</i>
+            {{ name }}
+          </div>
+          <div>
+            <a target="_blank" :href="directUrl" class="button button--flat">
+              <div>
+                <i class="material-icons">open_in_new</i>{{ $t("buttons.openFile") }}
+              </div>
+            </a>
+            <a target="_blank" :href="downloadUrl" class="button button--flat">
+              <div>
+                <i class="material-icons">file_download</i>{{ $t("buttons.download") }}
+              </div>
+            </a>
+          </div>
+        </div>
         <div v-else-if="fileStore.req?.type == 'blob'" class="info">
           <div class="title">
             <i class="material-icons">feedback</i>
