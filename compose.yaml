@@ -9,7 +9,7 @@ services:
     volumes:
       - filebrowser:/flux/vault
     environment:
-      - REDIS_CACHE_URL=redis://default:filebrowser@redis:6379 # Use rediss:// for ssl
+      - FB_REDIS_CACHE_URL=redis://default:filebrowser@redis:6379 # Use rediss:// for ssl
 
   redis:
     container_name: redis
