@@ -281,6 +281,7 @@
     "currentPassword": "Vaša trenutna lozinka"
   },
   "sidebar": {
+    "diskUsed": "{used} of {total} used",
     "help": "Pomoć",
     "hugoNew": "Hugo New",
     "login": "Prijava",
