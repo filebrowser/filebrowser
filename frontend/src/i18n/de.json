@@ -281,6 +281,7 @@
     "currentPassword": "Dein aktuelles Passwort"
   },
   "sidebar": {
+    "diskUsed": "{used} of {total} used",
     "help": "Hilfe",
     "hugoNew": "Hugo Neu",
     "login": "Anmelden",
