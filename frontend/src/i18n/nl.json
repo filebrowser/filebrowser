@@ -281,7 +281,7 @@
     "currentPassword": "Uw huidige wachtwoord"
   },
   "sidebar": {
-    "diskUsed": "{used} of {total} used",
+    "diskUsed": "{used} van {total} gebruikt",
     "help": "Hulp",
     "hugoNew": "Hugo Nieuw",
     "login": "Inloggen",
