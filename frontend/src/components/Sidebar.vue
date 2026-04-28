@@ -92,7 +92,7 @@
     >
       <progress-bar :val="usage.usedPercentage" size="small"></progress-bar>
       <br />
-      {{ usage.used }} of {{ usage.total }} used
+      {{ $t("sidebar.diskUsed", { used: usage.used, total: usage.total }) }}
     </div>
 
     <p class="credits">
