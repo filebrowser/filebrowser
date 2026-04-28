@@ -45,11 +45,11 @@ importers:
         specifier: ^4.17.21
         version: 4.18.1
       marked:
-        specifier: ^17.0.0
-        version: 17.0.6
+        specifier: ^18.0.0
+        version: 18.0.2
       marked-katex-extension:
         specifier: ^5.1.6
-        version: 5.1.8(katex@0.16.28)(marked@17.0.6)
+        version: 5.1.8(katex@0.16.28)(marked@18.0.2)
       material-icons:
         specifier: ^1.13.14
         version: 1.13.14
@@ -2461,8 +2461,8 @@ packages:
       katex: '>=0.16 <0.17'
       marked: '>=4 <19'
 
-  marked@17.0.6:
-    resolution: {integrity: sha512-gB0gkNafnonOw0obSTEGZTT86IuhILt2Wfx0mWH/1Au83kybTayroZ/V6nS25mN7u8ASy+5fMhgB3XPNrOZdmA==}
+  marked@18.0.2:
+    resolution: {integrity: sha512-NsmlUYBS/Zg57rgDWMYdnre6OTj4e+qq/JS2ot3KrYLSoHLw+sDu0Nm1ZGpRgYAq6c+b1ekaY5NzVchMCQnzcg==}
     engines: {node: '>= 20'}
     hasBin: true
 
@@ -5413,12 +5413,12 @@ snapshots:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  marked-katex-extension@5.1.8(katex@0.16.28)(marked@17.0.6):
+  marked-katex-extension@5.1.8(katex@0.16.28)(marked@18.0.2):
     dependencies:
       katex: 0.16.28
-      marked: 17.0.6
+      marked: 18.0.2
 
-  marked@17.0.6: {}
+  marked@18.0.2: {}
 
   marks-pane@1.0.9: {}
 

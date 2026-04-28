@@ -30,7 +30,7 @@
     "js-base64": "^3.7.7",
     "jwt-decode": "^4.0.0",
     "lodash-es": "^4.17.21",
-    "marked": "^17.0.0",
+    "marked": "^18.0.0",
     "marked-katex-extension": "^5.1.6",
     "material-icons": "^1.13.14",
     "normalize.css": "^8.0.1",
