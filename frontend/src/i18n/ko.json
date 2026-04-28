@@ -281,6 +281,7 @@
     "currentPassword": "현재 비밀번호"
   },
   "sidebar": {
+    "diskUsed": "{used} of {total} used",
     "help": "도움말",
     "hugoNew": "Hugo New",
     "login": "로그인",
