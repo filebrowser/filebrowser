@@ -435,60 +435,63 @@ const handleViewerLineSelect = (lineIndex: number) => {
 
 <style>
 /*
- * G-code syntax highlighting for ace-gcode.js
+ * G-code syntax highlighting for ace-gcode.js.
  *
- * N-codes use `color: inherit` so they adapt to whatever Ace theme is active
- * (readable in both light and dark). Other tokens use !important to beat
- * Ace theme specificity. Bare numbers fall back to opacity.
+ * Colors picked in OKLCH at ~60% lightness so they read on both light and
+ * dark Ace themes without per-theme overrides. N-codes inherit the theme's
+ * own foreground color, just dimmed, so they're always legible.
  */
 
 .ace_gcode.ace_comment {
-  color: #4b754b !important;
+  color: oklch(55% 0.1 140) !important;
   font-style: italic;
 }
 
 .ace_gcode.ace_block {
-  color: inherit;
-  opacity: 0.55;
+  /* N-codes track the theme's foreground color, slightly dimmed.
+     Works in any theme — dark or light, monokai or solarized — without
+     enumerating each one. */
+  color: currentColor;
+  opacity: 0.65;
 }
 
 .ace_gcode.ace_marker {
-  color: #e06c75 !important;
+  color: oklch(60% 0.21 25) !important;
   font-weight: bold;
 }
 
 .ace_gcode.ace_gword {
-  color: #c586c0 !important;
+  color: oklch(60% 0.18 305) !important;
   font-weight: bold;
 }
 
 .ace_gcode.ace_mcode {
-  color: #dcdcaa !important;
+  color: oklch(65% 0.13 85) !important;
   font-weight: bold;
 }
 
 .ace_gcode.ace_xparam {
-  color: #ce9178 !important;
+  color: oklch(62% 0.15 50) !important;
 }
 
 .ace_gcode.ace_yparam {
-  color: #4ec9b0 !important;
+  color: oklch(58% 0.13 175) !important;
 }
 
 .ace_gcode.ace_zparam {
-  color: #569cd6 !important;
+  color: oklch(58% 0.16 245) !important;
 }
 
 .ace_gcode.ace_feedspeed {
-  color: #9cdcfe !important;
+  color: oklch(62% 0.13 230) !important;
 }
 
 .ace_gcode.ace_subprog {
-  color: #9cdcfe !important;
+  color: oklch(62% 0.13 230) !important;
 }
 
 .ace_constant.ace_numeric {
-  opacity: 0.5;
+  opacity: 0.6;
 }
 
 #editor-container {
