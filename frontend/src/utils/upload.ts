@@ -28,7 +28,8 @@ function flatToForest(
     // By doing a drag and drop or upload a folder (both from the browser or from the OS) we have the fullPath property available
     // By uploading a single file using the file input, we only have the "name" property
     // By doing drag and drop from filebrowser to filebrowser, we have the "to" property available but not the fullPath
-    const fullPathOrTo = item.fullPath || item.to?.replace(basePath, "") || item.name;
+    const fullPathOrTo =
+      item.fullPath || item.to?.replace(basePath, "") || item.name;
     nodeMap[fullPathOrTo!] = {
       fullPath: fullPathOrTo,
       isDir: item.isDir,

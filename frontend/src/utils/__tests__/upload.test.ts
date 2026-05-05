@@ -12,10 +12,7 @@ import { describe, it, expect } from "vitest";
 
 type Entry = { name: string; isFile: boolean; isDirectory: boolean };
 
-function simulateScanFiles(
-  dirName: string,
-  entryBatches: Entry[][]
-): string[] {
+function simulateScanFiles(dirName: string, entryBatches: Entry[][]): string[] {
   const paths: string[] = [];
   let batchIndex = 0;
 
@@ -28,7 +25,8 @@ function simulateScanFiles(
 
   // Mirrors readReaderContent() from upload.ts lines 118-138
   function readReaderContent(directory: string): void {
-    const entries = batchIndex < entryBatches.length ? entryBatches[batchIndex] : [];
+    const entries =
+      batchIndex < entryBatches.length ? entryBatches[batchIndex] : [];
     batchIndex++;
 
     if (entries.length > 0) {
@@ -56,9 +54,7 @@ describe("scanFiles path construction", () => {
         { name: "file1.xlsx", isFile: true, isDirectory: false },
         { name: "file2.xlsx", isFile: true, isDirectory: false },
       ],
-      [
-        { name: "file3.xlsx", isFile: true, isDirectory: false },
-      ],
+      [{ name: "file3.xlsx", isFile: true, isDirectory: false }],
     ]);
 
     expect(paths).toHaveLength(3);
@@ -70,9 +66,7 @@ describe("scanFiles path construction", () => {
 
   it("single batch should work fine (no regression)", () => {
     const paths = simulateScanFiles("TestFolder", [
-      [
-        { name: "file1.xlsx", isFile: true, isDirectory: false },
-      ],
+      [{ name: "file1.xlsx", isFile: true, isDirectory: false }],
     ]);
 
     expect(paths).toEqual(["TestFolder/file1.xlsx"]);
