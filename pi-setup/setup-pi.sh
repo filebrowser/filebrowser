@@ -2,23 +2,22 @@
 #
 # setup-pi.sh — interactive installer for the CNC-USB-bridge Pi.
 #
-# What it does, in order:
-#   1. Asks for a share folder on the Pi (default ~/cnc/files).
-#   2. Asks for a mode:
-#        a) USB mass-storage gadget — pretend to be a thumb drive to a CNC controller.
-#        b) G-code streaming server  — stretch goal, currently a stub.
-#   3. Sets up filebrowser as a systemd service rooted at the share folder.
-#   4. For mode (a):
-#        - enables dwc2 OTG, creates a FAT32 backing image, loop-mounts it at
-#          the share path so filebrowser writes go straight into the image,
-#        - loads g_mass_storage exposing that image to the controller,
-#        - installs a debounced watcher that does an eject+reattach on file
-#          changes so the controller sees fresh contents without operator action.
+# Single-command bring-up on a fresh Pi. Walks through:
+#   1. Share folder on the Pi (default ~/cnc/files)
+#   2. Mode:
+#        a) USB mass-storage gadget — pretend to be a thumb drive to a CNC controller
+#        b) G-code streaming server — stretch, stub
+#   3. Auto-installs build prereqs (Node 24, corepack, Go 1.25) — first run only
+#   4. Builds the filebrowser binary (frontend + Go backend)
+#   5. For mode (a): dwc2 OTG, FAT32 backing image, g_mass_storage gadget,
+#                    debounced eject+reattach watcher
+#   6. filebrowser systemd service, points at the share, starts on boot
+#   7. Optional reboot (required first run only, for dwc2 OTG to take effect)
 #
-# Idempotent: re-running prefills answers from /etc/cnc-pi.conf and lets you
-# change them. Re-running with the same answers is safe.
+# Idempotent: re-running prefills answers from /etc/cnc-pi.conf, skips
+# already-installed prereqs, and is safe to re-run with the same answers.
 #
-# Usage: bash pi-setup/setup-pi.sh   (will sudo itself if needed)
+# Usage:  sudo bash pi-setup/setup-pi.sh   (auto-sudo-elevates if needed)
 
 set -euo pipefail
 
@@ -27,6 +26,8 @@ LIB_DIR="$REPO_DIR/pi-setup/lib"
 
 # shellcheck source=lib/common.sh
 . "$LIB_DIR/common.sh"
+# shellcheck source=lib/prereqs.sh
+. "$LIB_DIR/prereqs.sh"
 # shellcheck source=lib/usb_mass_storage.sh
 . "$LIB_DIR/usb_mass_storage.sh"
 # shellcheck source=lib/gcode_stream.sh
@@ -86,11 +87,6 @@ ask FB_USER "User filebrowser will run as" "$FB_USER"
 # ── Resolve binary location ────────────────────────────────────────────────
 FB_BIN="$REPO_DIR/filebrowser"
 FB_WORKDIR="$REPO_DIR"
-if [[ ! -x $FB_BIN ]]; then
-  warn "$FB_BIN does not exist or isn't executable."
-  warn "Run rebuild-filebrowser.sh first to compile the binary, then re-run this script."
-  warn "(setup-pi.sh will still write the systemd unit — it just won't start the service.)"
-fi
 
 # ── Persist config ──────────────────────────────────────────────────────────
 step "Saving configuration to $CONF_PATH"
@@ -108,6 +104,12 @@ write_conf \
   "FB_BIN=$FB_BIN" \
   "FB_WORKDIR=$FB_WORKDIR" \
   "FB_DB=$FB_DB"
+
+# ── Build prereqs + filebrowser binary (slow, automated) ────────────────────
+# Done after prompts so the user can walk away while the install runs, and
+# before the systemd unit step so we know the binary exists when we enable it.
+install_build_prereqs
+build_filebrowser
 
 # ── Mode-specific install ───────────────────────────────────────────────────
 case $MODE in
@@ -136,7 +138,7 @@ if [[ -x $FB_BIN ]]; then
   ok "filebrowser running on http://$(hostname -I | awk '{print $1}'):8080"
 else
   systemctl daemon-reload
-  warn "skipping filebrowser start — binary not built yet"
+  warn "skipping filebrowser start — binary not built (build step failed?)"
 fi
 
 # ── Done ────────────────────────────────────────────────────────────────────
@@ -150,5 +152,11 @@ log "  USB mass-storage:   journalctl -u cnc-usb-mass-storage -f"
 log ""
 if (( REBOOT_REQUIRED )); then
   warn "A reboot is required for dwc2 OTG changes to take effect."
-  warn "Reboot now: sudo reboot"
+  ask_yes_no REBOOT_NOW "Reboot now?" y
+  if [[ $REBOOT_NOW == y ]]; then
+    log "rebooting…"
+    systemctl reboot
+  else
+    warn "Reboot when ready:  sudo reboot"
+  fi
 fi
