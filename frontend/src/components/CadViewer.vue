@@ -1,9 +1,7 @@
 <template>
   <div class="cad-viewer">
     <div v-if="error" class="cad-error">{{ error }}</div>
-    <div v-else-if="loading" class="cad-loading">
-      Loading {{ filename }}…
-    </div>
+    <div v-else-if="loading" class="cad-loading">Loading {{ filename }}…</div>
     <div ref="canvasContainer" class="cad-canvas"></div>
   </div>
 </template>
@@ -101,7 +99,13 @@ async function loadFile() {
   error.value = null;
 
   try {
-    if (e === "step" || e === "stp" || e === "iges" || e === "igs" || e === "brep") {
+    if (
+      e === "step" ||
+      e === "stp" ||
+      e === "iges" ||
+      e === "igs" ||
+      e === "brep"
+    ) {
       // TODO(occt-import-js): once `occt-import-js` is added to package.json
       // and the WASM blob is reachable, replace this stub with:
       //
@@ -111,10 +115,13 @@ async function loadFile() {
       //   for (const mesh of result.meshes) addMesh(mesh);
       //
       // See docs/CAD_VIEWER_TODO.md for the full plan.
-      throw new Error("STEP/IGES viewer not wired in yet — see docs/CAD_VIEWER_TODO.md");
+      throw new Error(
+        "STEP/IGES viewer not wired in yet — see docs/CAD_VIEWER_TODO.md"
+      );
     }
     if (e === "stl") {
-      const { STLLoader } = await import("three/examples/jsm/loaders/STLLoader.js");
+      const { STLLoader } =
+        await import("three/examples/jsm/loaders/STLLoader.js");
       const geom = new STLLoader().parse(props.data);
       addRawMesh(geom);
       return;
@@ -137,7 +144,11 @@ function addRawMesh(geom: any) {
     });
   }
   meshGroup = new THREE.Group();
-  const mat = new THREE.MeshStandardMaterial({ color: 0x9aa5b1, metalness: 0.1, roughness: 0.7 });
+  const mat = new THREE.MeshStandardMaterial({
+    color: 0x9aa5b1,
+    metalness: 0.1,
+    roughness: 0.7,
+  });
   meshGroup.add(new THREE.Mesh(geom, mat));
   scene.add(meshGroup);
   fitCameraToObject(meshGroup);
@@ -183,7 +194,10 @@ onBeforeUnmount(() => {
   controls?.dispose();
   if (renderer) {
     renderer.dispose();
-    if (renderer.domElement && canvasContainer.value?.contains(renderer.domElement)) {
+    if (
+      renderer.domElement &&
+      canvasContainer.value?.contains(renderer.domElement)
+    ) {
       canvasContainer.value.removeChild(renderer.domElement);
     }
   }

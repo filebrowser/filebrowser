@@ -6,7 +6,9 @@
         {{ pointCount.toLocaleString() }} pts
         <span v-if="lastTruncated" class="truncated-badge">truncated</span>
       </span>
-      <button class="viewer-btn" @click="resetCamera" title="Reset camera">⌂</button>
+      <button class="viewer-btn" @click="resetCamera" title="Reset camera">
+        ⌂
+      </button>
     </div>
     <div ref="canvasContainer" class="gcode-canvas"></div>
   </div>
@@ -33,8 +35,8 @@ const canvasContainer = ref<HTMLDivElement | null>(null);
 let scene: any = null;
 let camera: any = null;
 let renderer: any = null;
-let rapidLines: any = null;   // G0 moves — gray
-let feedLines: any = null;    // G1/G2/G3 moves — blue
+let rapidLines: any = null; // G0 moves — gray
+let feedLines: any = null; // G1/G2/G3 moves — blue
 let controls: any = null;
 let highlightCross: any = null;
 let animationId: number | null = null;
@@ -43,8 +45,8 @@ let animationId: number | null = null;
 let sceneCenter: any = null;
 let sceneDist = 200;
 
-let rapidLineSrc: number[] = [];   // rapidLineSrc[i] = original file line for rapidPoints[i]
-let feedLineSrc: number[] = [];    // feedLineSrc[i]  = original file line for feedPoints[i]
+let rapidLineSrc: number[] = []; // rapidLineSrc[i] = original file line for rapidPoints[i]
+let feedLineSrc: number[] = []; // feedLineSrc[i]  = original file line for feedPoints[i]
 let resizeHandler: (() => void) | null = null;
 let clickHandler: ((e: MouseEvent) => void) | null = null;
 
@@ -55,8 +57,8 @@ const webglError = ref<string | null>(null);
 
 // Caps: input that exceeds these is sampled (and the "truncated" badge shown).
 // Routine decimation for snappy interaction does NOT trigger the badge.
-const MAX_LINES   = 1_500_000;
-const MAX_POINTS  = 750_000;
+const MAX_LINES = 1_500_000;
+const MAX_POINTS = 750_000;
 const TARGET_POINTS = 250_000;
 // Click radius in screen pixels — clicks farther than this don't snap to a point.
 const CLICK_PICK_PIXELS = 30;
@@ -103,7 +105,9 @@ function parseGcode(raw: string): ParseResult | null {
   const rSrc: number[] = []; // source line per rapid point
   const fSrc: number[] = []; // source line per feed point
 
-  let x = 0, y = 0, z = 0;
+  let x = 0,
+    y = 0,
+    z = 0;
   let currentMode = 1; // default to G1 if no G word seen yet
   let totalPoints = 0;
 
@@ -141,8 +145,8 @@ function parseGcode(raw: string): ParseResult | null {
     if (!hasMotion) continue;
 
     const isRapid = currentMode === 0;
-    const target    = isRapid ? rapidPoints : feedPoints;
-    const targetSrc = isRapid ? rSrc        : fSrc;
+    const target = isRapid ? rapidPoints : feedPoints;
+    const targetSrc = isRapid ? rSrc : fSrc;
 
     // seed first point of this array with the start position
     if (target.length === 0) {
@@ -166,7 +170,8 @@ function parseGcode(raw: string): ParseResult | null {
       const endAngle = Math.atan2(endVecY, endVecX);
 
       let delta = endAngle - startAngle;
-      if (currentMode === 2 && delta > 0) delta -= Math.PI * 2; // CW
+      if (currentMode === 2 && delta > 0)
+        delta -= Math.PI * 2; // CW
       else if (currentMode === 3 && delta < 0) delta += Math.PI * 2; // CCW
 
       const arcLen = Math.abs(delta * r);
@@ -184,7 +189,10 @@ function parseGcode(raw: string): ParseResult | null {
         );
         fSrc.push(origLine);
         totalPoints++;
-        if (totalPoints >= MAX_POINTS) { truncated = true; break; }
+        if (totalPoints >= MAX_POINTS) {
+          truncated = true;
+          break;
+        }
       }
     } else {
       target.push(new THREE.Vector3(x, y, z));
@@ -192,7 +200,10 @@ function parseGcode(raw: string): ParseResult | null {
       totalPoints++;
     }
 
-    if (totalPoints >= MAX_POINTS) { truncated = true; break; }
+    if (totalPoints >= MAX_POINTS) {
+      truncated = true;
+      break;
+    }
   }
 
   if (rapidPoints.length + feedPoints.length < 2) {
@@ -215,13 +226,13 @@ function parseGcode(raw: string): ParseResult | null {
   }
 
   const { pts: finalRapid, src: finalRapidSrc } = decimate(rapidPoints, rSrc);
-  const { pts: finalFeed,  src: finalFeedSrc  } = decimate(feedPoints,  fSrc);
+  const { pts: finalFeed, src: finalFeedSrc } = decimate(feedPoints, fSrc);
 
   return {
     rapidPoints: finalRapid,
-    feedPoints:  finalFeed,
+    feedPoints: finalFeed,
     rapidLineSrc: finalRapidSrc,
-    feedLineSrc:  finalFeedSrc,
+    feedLineSrc: finalFeedSrc,
     totalSourceLines: srcTotal,
     truncated,
   };
@@ -278,9 +289,9 @@ function clearGeometry() {
     }
   }
   rapidLines = null;
-  feedLines  = null;
+  feedLines = null;
   rapidLineSrc = [];
-  feedLineSrc  = [];
+  feedLineSrc = [];
 }
 
 // ── Three.js init ────────────────────────────────────────────────────────────
@@ -288,7 +299,7 @@ function initThree() {
   const el = canvasContainer.value;
   if (!el) return;
 
-  const width  = el.clientWidth  || 400;
+  const width = el.clientWidth || 400;
   const height = el.clientHeight || 300;
 
   scene = new THREE.Scene();
@@ -304,7 +315,7 @@ function initThree() {
 
   try {
     renderer = new THREE.WebGLRenderer({ antialias: true });
-  } catch (e) {
+  } catch {
     webglError.value = "WebGL is not available in this browser.";
     return;
   }
@@ -313,14 +324,14 @@ function initThree() {
   el.appendChild(renderer.domElement);
 
   controls = new OrbitControls(camera, renderer.domElement);
-  controls.enableDamping    = true;
-  controls.dampingFactor    = 0.1;
-  controls.enablePan        = true;
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.1;
+  controls.enablePan = true;
   controls.screenSpacePanning = true;
 
   resizeHandler = () => {
     if (!renderer || !camera || !canvasContainer.value) return;
-    const w = canvasContainer.value.clientWidth  || 400;
+    const w = canvasContainer.value.clientWidth || 400;
     const h = canvasContainer.value.clientHeight || 300;
     renderer.setSize(w, h);
     camera.aspect = w / h;
@@ -343,7 +354,7 @@ function initThree() {
     const cy = event.clientY - rect.top;
 
     const targets: any[] = [];
-    if (feedLines)  targets.push(feedLines);
+    if (feedLines) targets.push(feedLines);
     if (rapidLines) targets.push(rapidLines);
     if (!targets.length) return;
 
@@ -354,7 +365,7 @@ function initThree() {
 
     for (const obj of targets) {
       const posAttr = obj.geometry.getAttribute("position") as any;
-      const count   = posAttr.count;
+      const count = posAttr.count;
       for (let i = 0; i < count; i++) {
         tmp.set(posAttr.getX(i), posAttr.getY(i), posAttr.getZ(i));
         tmp.project(camera);
@@ -408,16 +419,22 @@ function updateGeometry(gcode: string) {
   const result = parseGcode(gcode || "");
   if (!result) return;
 
-  const { rapidPoints, feedPoints, rapidLineSrc: rSrc, feedLineSrc: fSrc, truncated } = result;
+  const {
+    rapidPoints,
+    feedPoints,
+    rapidLineSrc: rSrc,
+    feedLineSrc: fSrc,
+    truncated,
+  } = result;
   rapidLineSrc = rSrc;
-  feedLineSrc      = fSrc;
+  feedLineSrc = fSrc;
   lastTruncated.value = truncated;
-  pointCount.value       = rapidPoints.length + feedPoints.length;
+  pointCount.value = rapidPoints.length + feedPoints.length;
 
   // G0 rapids — dashed gray
   if (rapidPoints.length >= 2) {
     const geom = new THREE.BufferGeometry().setFromPoints(rapidPoints);
-    const mat  = new THREE.LineDashedMaterial({
+    const mat = new THREE.LineDashedMaterial({
       color: 0x888888,
       dashSize: 2,
       gapSize: 1,
@@ -430,7 +447,7 @@ function updateGeometry(gcode: string) {
   // G1/G2/G3 feeds — blue
   if (feedPoints.length >= 2) {
     const geom = new THREE.BufferGeometry().setFromPoints(feedPoints);
-    const mat  = new THREE.LineBasicMaterial({ color: 0x4287f5 });
+    const mat = new THREE.LineBasicMaterial({ color: 0x4287f5 });
     feedLines = new THREE.Line(geom, mat);
     scene.add(feedLines);
   }
@@ -442,14 +459,14 @@ function updateGeometry(gcode: string) {
   const bbox = new THREE.Box3();
   for (const p of allPoints) bbox.expandByPoint(p);
 
-  const size   = new THREE.Vector3();
+  const size = new THREE.Vector3();
   const center = new THREE.Vector3();
   bbox.getSize(size);
   bbox.getCenter(center);
 
   sceneCenter = center.clone();
   const maxDim = Math.max(size.x || 1, size.y || 1, size.z || 1);
-  sceneDist    = maxDim * 2.5;
+  sceneDist = maxDim * 2.5;
 
   camera.position.set(
     center.x + sceneDist,
@@ -457,7 +474,7 @@ function updateGeometry(gcode: string) {
     center.z + sceneDist
   );
   camera.near = maxDim * 0.0001;
-  camera.far  = maxDim * 100;
+  camera.far = maxDim * 100;
   camera.lookAt(center);
   camera.updateProjectionMatrix();
 
@@ -481,11 +498,12 @@ function highlightLine(line: number | null | undefined) {
   if (!obj) return;
 
   const posAttr = obj.geometry.getAttribute("position") as any;
-  const count   = posAttr.count || 0;
+  const count = posAttr.count || 0;
   if (!count) return;
 
   const lineSrc = feedLines ? feedLineSrc : rapidLineSrc;
-  let lo = 0, hi = lineSrc.length - 1;
+  let lo = 0,
+    hi = lineSrc.length - 1;
   while (lo < hi) {
     const mid = (lo + hi) >> 1;
     if (lineSrc[mid] < line) lo = mid + 1;
@@ -561,12 +579,17 @@ onBeforeUnmount(() => {
 
   if (renderer) {
     renderer.dispose();
-    if (renderer.domElement && canvasContainer.value?.contains(renderer.domElement)) {
+    if (
+      renderer.domElement &&
+      canvasContainer.value?.contains(renderer.domElement)
+    ) {
       canvasContainer.value.removeChild(renderer.domElement);
     }
   }
 
-  scene = null; camera = null; renderer = null;
+  scene = null;
+  camera = null;
+  renderer = null;
   controls = null;
 });
 </script>
