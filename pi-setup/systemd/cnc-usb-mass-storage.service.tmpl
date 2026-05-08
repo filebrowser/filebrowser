@@ -10,10 +10,26 @@ Type=oneshot
 RemainAfterExit=yes
 # Stale-load guard: if the module is already loaded with a different file, unload first.
 ExecStartPre=/bin/sh -c 'modprobe -r g_mass_storage 2>/dev/null || true'
+#
+# CRITICAL: ro=1 — the controller mounts the stick READ-ONLY.
+#
+# This is the documented-safe mode for sharing a FAT32 image between Linux
+# (which loop-mounts it for filebrowser writes) and the USB host
+# simultaneously. From Documentation/usb/mass-storage.rst:
+#
+#   "If the file is opened for both reading and writing and is accessed via
+#   the host and via the local Linux system at the same time then the
+#   contents of the file may be corrupted."
+#
+# Letting both sides write the same FAT corrupts directory entries and
+# crosses file contents — exactly the symptom we hit. With ro=1 only
+# Linux writes; the controller reads. The watcher's eject + reattach is
+# how the controller picks up new files after Linux flushes a write.
+#
 ExecStart=/sbin/modprobe g_mass_storage \
   file=@@IMAGE_PATH@@ \
   removable=1 \
-  ro=0 \
+  ro=1 \
   stall=0 \
   cdrom=0 \
   nofua=1 \

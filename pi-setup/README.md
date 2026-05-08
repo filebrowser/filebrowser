@@ -16,11 +16,39 @@ with no panel input.
 - A **FAT32 image file** is loop-mounted at that folder, so filebrowser
   writes land directly in the image — no rsync, no drift between "what
   you uploaded" and "what the controller sees", they're the same bytes.
-- **`g_mass_storage`** exports that image to the controller as a USB drive.
+- **`g_mass_storage`** exports that image to the controller as a USB drive,
+  **read-only to the controller** (more on this below).
 - **`cnc-usb-watcher`** debounces file events and re-exports the LUN
   (`echo "" > …/lun0/file` then `echo $IMAGE_PATH > …/lun0/file`), which
   the controller's USB stack handles like an unplug + replug. New
   contents show up automatically.
+
+### Why the controller mounts the stick read-only
+
+This is the part that bites hard if you don't get it right. The kernel
+docs (`Documentation/usb/mass-storage.rst`) say:
+
+> If the file is opened for both reading and writing and is accessed
+> via the host and via the local Linux system at the same time then
+> the contents of the file may be corrupted.
+
+We need to write to the image from Linux (filebrowser uploads), and
+the controller needs to read it. If we let the controller also write,
+both sides cache the FAT separately and fight — directory entries get
+corrupted, file contents end up at the wrong sectors, files look
+garbled when you try to open them.
+
+The fix the kernel docs describe is the one we use: pass `ro=1` to
+`g_mass_storage`. Linux writes freely, the controller reads only.
+Edits happen at the office workstation and travel through filebrowser;
+the controller is a consumer.
+
+If your workflow needs the controller to write back to the stick
+(rare but possible — DPRNT logs, edited offsets), you'll need to
+either flip `ro=1` → `ro=0` in
+`/etc/systemd/system/cnc-usb-mass-storage.service` and accept the
+corruption risk, or wait for a v2 that detaches the LUN, syncs via
+`mtools`, and re-attaches (no shared mount, no race).
 
 ## First run
 
