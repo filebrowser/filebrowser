@@ -65,6 +65,9 @@ importers:
       qrcode.vue:
         specifier: ^3.6.0
         version: 3.9.0(vue@3.5.33(typescript@5.9.3))
+      three:
+        specifier: ^0.181.2
+        version: 0.181.2
       tus-js-client:
         specifier: ^4.3.1
         version: 4.3.1
@@ -2810,6 +2813,9 @@ packages:
     resolution: {integrity: sha512-uxfo9fPcSgLDYob/w1FuL0c99MWiJDnv+5qXSQc5+Ki5NjVNsYi66INnMFBjf6uFz6OnX12piJQPF4IpjJTNTw==}
     engines: {node: '>=10'}
     hasBin: true
+
+  three@0.181.2:
+    resolution: {integrity: sha512-k/CjiZ80bYss6Qs7/ex1TBlPD11whT9oKfT8oTGiHa34W4JRd1NiH/Tr1DbHWQ2/vMUypxksLnF2CfmlmM5XFQ==}
 
   tinybench@2.9.0:
     resolution: {integrity: sha512-0+DUvqWMValLmha6lr4kD8iAMK1HzV0/aKnCtWb9v9641TnP/MFb7Pc2bxoxQjTXAErryXVgUOfv2YqNllqGeg==}
@@ -5765,6 +5771,8 @@ snapshots:
       acorn: 8.16.0
       commander: 2.20.3
       source-map-support: 0.5.21
+
+  three@0.181.2: {}
 
   tinybench@2.9.0: {}
 
