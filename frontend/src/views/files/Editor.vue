@@ -76,16 +76,34 @@
       ></div>
 
       <!-- editor + (optional) 3D viewer -->
-      <div v-show="!isPreview || !isMarkdownFile" class="editor-layout">
+      <div
+        v-show="!isPreview || !isMarkdownFile"
+        class="editor-layout"
+        :style="
+          isGcodeFile
+            ? { '--editor-pct': editorPct + '%' }
+            : { '--editor-pct': '100%' }
+        "
+      >
         <div class="editor-pane" id="editor"></div>
 
-        <div v-if="isGcodeFile" class="viewer-pane">
-          <GCode3DViewer
-            :gcode="debouncedGcode"
-            :cursor-line="cursorLine"
-            @select-line="handleViewerLineSelect"
-          />
-        </div>
+        <template v-if="isGcodeFile">
+          <div
+            class="splitter"
+            role="separator"
+            aria-orientation="vertical"
+            @mousedown="startResize"
+            @dblclick="resetSplit"
+            :title="t('buttons.dragToResize') || 'Drag to resize · double-click to reset'"
+          ></div>
+          <div class="viewer-pane">
+            <GCode3DViewer
+              :gcode="debouncedGcode"
+              :cursor-line="cursorLine"
+              @select-line="handleViewerLineSelect"
+            />
+          </div>
+        </template>
       </div>
     </template>
   </div>
@@ -176,6 +194,52 @@ const katexOptions = {
 marked.use(markedKatex(katexOptions));
 
 const isSelectionEmpty = ref(true);
+
+// ── Splitter between code + 3D viewer ──────────────────────────────────────
+// Width is stored as a percent of the .editor-layout flexbox row.
+// Default is 1/3 (code on the left), persisted per-browser in localStorage.
+const SPLIT_KEY = "gcodeEditorSplitPct";
+const SPLIT_DEFAULT = 33;
+const SPLIT_MIN = 15;
+const SPLIT_MAX = 85;
+const editorPct = ref<number>(
+  (() => {
+    const v = parseFloat(localStorage.getItem(SPLIT_KEY) || "");
+    return Number.isFinite(v) && v >= SPLIT_MIN && v <= SPLIT_MAX
+      ? v
+      : SPLIT_DEFAULT;
+  })()
+);
+
+const startResize = (e: MouseEvent) => {
+  e.preventDefault();
+  const layout = (e.currentTarget as HTMLElement).parentElement;
+  if (!layout) return;
+  const rect = layout.getBoundingClientRect();
+  const onMove = (ev: MouseEvent) => {
+    const pct = ((ev.clientX - rect.left) / rect.width) * 100;
+    editorPct.value = Math.min(SPLIT_MAX, Math.max(SPLIT_MIN, pct));
+    editor.value?.resize();
+  };
+  const onUp = () => {
+    document.removeEventListener("mousemove", onMove);
+    document.removeEventListener("mouseup", onUp);
+    document.body.style.cursor = "";
+    document.body.style.userSelect = "";
+    localStorage.setItem(SPLIT_KEY, String(editorPct.value));
+    editor.value?.resize();
+  };
+  document.body.style.cursor = "col-resize";
+  document.body.style.userSelect = "none";
+  document.addEventListener("mousemove", onMove);
+  document.addEventListener("mouseup", onUp);
+};
+
+const resetSplit = () => {
+  editorPct.value = SPLIT_DEFAULT;
+  localStorage.setItem(SPLIT_KEY, String(SPLIT_DEFAULT));
+  editor.value?.resize();
+};
 
 // Debounced gcode — only updates after the user stops typing for 600ms,
 // preventing the parser + Three.js geometry rebuild from running on every keystroke.
@@ -468,17 +532,47 @@ const handleViewerLineSelect = (lineIndex: number) => {
   display: flex;
   flex: 1;
   min-height: 0;
+  /* Default split is owned by the inline style on the row; this fallback
+     keeps the editor visible if the script is somehow late binding. */
+  --editor-pct: 33%;
 }
 
 .editor-pane {
-  flex: 1 1 75%;
+  flex: 0 0 var(--editor-pct);
   min-width: 0;
 }
 
 .viewer-pane {
-  flex: 0 0 25%;
-  min-width: 280px;
-  max-width: 480px;
+  flex: 1 1 0;
+  min-width: 0;
   border-left: 1px solid var(--border-color, #333);
+}
+
+/* 6px hit area, 1px visible line. Hover/drag highlights it so the user
+   can find the grip. */
+.splitter {
+  flex: 0 0 6px;
+  cursor: col-resize;
+  background: transparent;
+  position: relative;
+  user-select: none;
+  z-index: 1;
+}
+
+.splitter::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: var(--border-color, #333);
+  transform: translateX(-50%);
+}
+
+.splitter:hover::before,
+.splitter:active::before {
+  background: var(--primaryColor, #2196f3);
+  width: 2px;
 }
 </style>
