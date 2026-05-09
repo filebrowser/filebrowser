@@ -19,6 +19,29 @@ const DefaultDirMode = 0750
 // AuthMethod describes an authentication method.
 type AuthMethod string
 
+// DefaultHaasPort is the Waveshare RS-232↔TCP bridge port the Pi opens
+// to drip-feed and query the Haas. Override per-instance via the Machine
+// settings tab.
+const DefaultHaasPort = 4196
+
+// Cnc holds the per-instance machine integration config that the
+// /api/cnc/* endpoints read and the Machine settings tab edits.
+//
+// Stored on the same Settings record (single Bolt JSON blob) — adding a
+// nested struct is forward-compatible: pre-existing DBs decode it as the
+// zero value, and Storage.Get fills sensible defaults.
+type Cnc struct {
+	HaasHost         string `json:"haasHost"`
+	HaasPort         int    `json:"haasPort"`
+	CameraURL        string `json:"cameraUrl"`
+	HaasDashboardURL string `json:"haasDashboardUrl"`
+	// MachineToken is an opaque random secret pasted into the
+	// haas-dashboard env so its server-to-server calls into
+	// /api/cnc/qcode authenticate without a user session. Empty until
+	// the admin clicks "Regenerate" in the UI.
+	MachineToken string `json:"machineToken"`
+}
+
 // Settings contain the main settings of the application.
 type Settings struct {
 	Key                   []byte              `json:"key"`
@@ -38,6 +61,7 @@ type Settings struct {
 	FileMode              fs.FileMode         `json:"fileMode"`
 	DirMode               fs.FileMode         `json:"dirMode"`
 	HideDotfiles          bool                `json:"hideDotfiles"`
+	Cnc                   Cnc                 `json:"cnc"`
 }
 
 // GetRules implements rules.Provider.

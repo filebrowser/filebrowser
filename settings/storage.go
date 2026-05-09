@@ -58,6 +58,10 @@ func (s *Storage) Get() (*Settings, error) {
 		set.DirMode = DefaultDirMode
 	}
 
+	if set.Cnc.HaasPort == 0 {
+		set.Cnc.HaasPort = DefaultHaasPort
+	}
+
 	return set, nil
 }
 

@@ -8,6 +8,7 @@ import Users from "@/views/settings/Users.vue";
 import User from "@/views/settings/User.vue";
 import Settings from "@/views/Settings.vue";
 import GlobalSettings from "@/views/settings/Global.vue";
+import MachineSettings from "@/views/settings/Machine.vue";
 import ProfileSettings from "@/views/settings/Profile.vue";
 import Shares from "@/views/settings/Shares.vue";
 import Errors from "@/views/Errors.vue";
@@ -25,6 +26,7 @@ const titles = {
   ProfileSettings: "settings.profileSettings",
   Shares: "settings.shareManagement",
   GlobalSettings: "settings.globalSettings",
+  MachineSettings: "settings.machineSettings",
   Users: "settings.users",
   User: "settings.user",
   Forbidden: "errors.forbidden",
@@ -92,6 +94,14 @@ const routes = [
             path: "global",
             name: "GlobalSettings",
             component: GlobalSettings,
+            meta: {
+              requiresAdmin: true,
+            },
+          },
+          {
+            path: "machine",
+            name: "MachineSettings",
+            component: MachineSettings,
             meta: {
               requiresAdmin: true,
             },

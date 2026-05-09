@@ -20,6 +20,11 @@
               {{ t("settings.globalSettings") }}
             </li></router-link
           >
+          <router-link to="/settings/machine" v-if="user?.perm.admin"
+            ><li :class="{ active: $route.path === '/settings/machine' }">
+              {{ t("settings.machineSettings") }}
+            </li></router-link
+          >
           <router-link to="/settings/users" v-if="user?.perm.admin"
             ><li
               :class="{
