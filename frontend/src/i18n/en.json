@@ -55,7 +55,9 @@
     "singleDecision": "Decide for each conflicting file",
     "send": "Send",
     "sendToMachine": "Send to machine",
-    "sendingToMachine": "Streaming to machine…"
+    "sendingToMachine": "Streaming to machine…",
+    "followMachineOn": "Following machine",
+    "resumeFollow": "Resume follow"
   },
   "download": {
     "downloadFile": "Download File",

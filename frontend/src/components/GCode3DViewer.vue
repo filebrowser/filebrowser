@@ -22,6 +22,10 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 const props = defineProps<{
   gcode: string;
   cursorLine?: number | null;
+  // Live wire-progress line from the streamer (1-based). Drives the
+  // green "machine tracker" — see Z-10 in the integration plan. Null
+  // when no job is running.
+  machineLine?: number | null;
 }>();
 
 // FIX 1: emit name matches @select-line in Editor.vue
@@ -39,6 +43,7 @@ let rapidLines: any = null; // G0 moves — gray
 let feedLines: any = null; // G1/G2/G3 moves — blue
 let controls: any = null;
 let highlightCross: any = null;
+let machineCross: any = null;
 let animationId: number | null = null;
 
 // bounding box center + size for camera reset
@@ -238,22 +243,17 @@ function parseGcode(raw: string): ParseResult | null {
   };
 }
 
-// ── Highlight crosshair ──────────────────────────────────────────────────────
-// A small 3D cross (three orthogonal segments) that lands on the picked
-// vertex. More visually precise than a sphere for "I picked exactly this point".
-function ensureHighlightCross(size: number) {
-  if (!scene) return;
-  if (highlightCross) {
-    scene.remove(highlightCross);
-    highlightCross.traverse((c: any) => {
-      c.geometry?.dispose();
-      c.material?.dispose();
-    });
-    highlightCross = null;
-  }
+// ── Highlight crosshairs ─────────────────────────────────────────────────────
+// Two small 3D crosses overlaid on the toolpath:
+//   - highlightCross (red-orange) — user cursor / click-picked vertex.
+//   - machineCross (green) — live wire-progress from the streamer.
+// Both rendered on top of geometry (depthTest off) so they're always
+// visible. machineCross is slightly larger so the live marker reads
+// clearly even when both sit at the same point.
+function buildCross(size: number, color: number) {
   const mat = new THREE.LineBasicMaterial({
-    color: 0xff3300,
-    depthTest: false, // always visible on top of toolpath
+    color,
+    depthTest: false,
     transparent: true,
   });
   const group = new THREE.Group();
@@ -269,14 +269,48 @@ function ensureHighlightCross(size: number) {
     ]);
     group.add(new THREE.Line(geom, mat));
   }
-  highlightCross = group;
+  return group;
+}
+
+function ensureHighlightCross(size: number) {
+  if (!scene) return;
+  if (highlightCross) {
+    scene.remove(highlightCross);
+    highlightCross.traverse((c: any) => {
+      c.geometry?.dispose();
+      c.material?.dispose();
+    });
+    highlightCross = null;
+  }
+  if (machineCross) {
+    scene.remove(machineCross);
+    machineCross.traverse((c: any) => {
+      c.geometry?.dispose();
+      c.material?.dispose();
+    });
+    machineCross = null;
+  }
+  highlightCross = buildCross(size, 0xff3300);
   scene.add(highlightCross);
+  machineCross = buildCross(size * 1.4, 0x33ff66);
+  machineCross.visible = false;
+  scene.add(machineCross);
 }
 
 function setHighlightPosition(x: number, y: number, z: number) {
   if (!highlightCross) return;
   highlightCross.position.set(x, y, z);
   highlightCross.visible = true;
+}
+
+function setMachinePosition(x: number, y: number, z: number) {
+  if (!machineCross) return;
+  machineCross.position.set(x, y, z);
+  machineCross.visible = true;
+}
+
+function hideMachineCross() {
+  if (machineCross) machineCross.visible = false;
 }
 
 // ── Geometry management ──────────────────────────────────────────────────────
@@ -491,15 +525,12 @@ function updateGeometry(gcode: string) {
 // Binary-searches the source-line map for the geometry vertex closest to the
 // editor cursor's source line. Accurate even when most source lines produce no
 // geometry (comments, M-codes, etc.) — linear interpolation drifts badly here.
-function highlightLine(line: number | null | undefined) {
-  if (!scene || !highlightCross || line == null || line < 0) return;
-
+function vertexForLine(line: number): { x: number; y: number; z: number } | null {
   const obj = feedLines || rapidLines;
-  if (!obj) return;
-
+  if (!obj) return null;
   const posAttr = obj.geometry.getAttribute("position") as any;
   const count = posAttr.count || 0;
-  if (!count) return;
+  if (!count) return null;
 
   const lineSrc = feedLines ? feedLineSrc : rapidLineSrc;
   let lo = 0,
@@ -510,8 +541,23 @@ function highlightLine(line: number | null | undefined) {
     else hi = mid;
   }
   const idx = Math.min(lo, count - 1);
+  return { x: posAttr.getX(idx), y: posAttr.getY(idx), z: posAttr.getZ(idx) };
+}
 
-  setHighlightPosition(posAttr.getX(idx), posAttr.getY(idx), posAttr.getZ(idx));
+function highlightLine(line: number | null | undefined) {
+  if (!scene || !highlightCross || line == null || line < 0) return;
+  const v = vertexForLine(line);
+  if (v) setHighlightPosition(v.x, v.y, v.z);
+}
+
+function highlightMachineLine(line: number | null | undefined) {
+  if (!scene || !machineCross) return;
+  if (line == null || line <= 0) {
+    hideMachineCross();
+    return;
+  }
+  const v = vertexForLine(line);
+  if (v) setMachinePosition(v.x, v.y, v.z);
 }
 
 // ── Camera reset ─────────────────────────────────────────────────────────────
@@ -551,6 +597,11 @@ watch(
   (line) => highlightLine(line ?? null)
 );
 
+watch(
+  () => props.machineLine,
+  (line) => highlightMachineLine(line ?? null)
+);
+
 onBeforeUnmount(() => {
   if (animationId != null) cancelAnimationFrame(animationId);
 
@@ -573,6 +624,15 @@ onBeforeUnmount(() => {
       c.material?.dispose();
     });
     highlightCross = null;
+  }
+
+  if (machineCross && scene) {
+    scene.remove(machineCross);
+    machineCross.traverse((c: any) => {
+      c.geometry?.dispose();
+      c.material?.dispose();
+    });
+    machineCross = null;
   }
 
   controls?.dispose();

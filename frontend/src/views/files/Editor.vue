@@ -108,8 +108,27 @@
             <GCode3DViewer
               :gcode="debouncedGcode"
               :cursor-line="cursorLine"
+              :machine-line="machineLine"
               @select-line="handleViewerLineSelect"
             />
+            <button
+              v-if="cncRunning"
+              class="follow-machine-btn"
+              :class="{ active: followMachine }"
+              :title="
+                followMachine
+                  ? t('buttons.followMachineOn')
+                  : t('buttons.resumeFollow')
+              "
+              @click="toggleFollowMachine"
+            >
+              <i class="material-icons">precision_manufacturing</i>
+              <span>{{
+                followMachine
+                  ? t("buttons.followMachineOn")
+                  : t("buttons.resumeFollow")
+              }}</span>
+            </button>
           </div>
         </template>
       </div>
@@ -134,6 +153,7 @@ import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import Action from "@/components/header/Action.vue";
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import { useAuthStore } from "@/stores/auth";
+import { useCncStore } from "@/stores/cnc";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 import { getEditorTheme } from "@/utils/theme";
@@ -145,6 +165,7 @@ import {
   onBeforeUnmount,
   onMounted,
   ref,
+  watch,
   watchEffect,
 } from "vue";
 import { useI18n } from "vue-i18n";
@@ -167,6 +188,7 @@ const $showSuccess = inject<IToastSuccess>("$showSuccess")!;
 
 const fileStore = useFileStore();
 const authStore = useAuthStore();
+const cncStore = useCncStore();
 const layoutStore = useLayoutStore();
 
 const { t } = useI18n();
@@ -204,19 +226,53 @@ marked.use(markedKatex(katexOptions));
 
 const isSelectionEmpty = ref(true);
 
-// ── Send-to-Machine (Z-9) ──────────────────────────────────────────────────
-// One-shot status check on mount + after start, plus a re-check when the
-// user pulls the trigger so the prompt can refuse if a job started in
-// another tab. Live updates land with the WS subscriber later (Z-12).
-const cncRunning = ref(false);
+// ── Send-to-Machine (Z-9) + Machine tracker (Z-10) ─────────────────────────
+// cncRunning + machineLine are driven by the global useCncStore — same
+// source the header pill reads, so all surfaces stay in sync via the
+// /api/cnc/stream WebSocket (with the 2 s poll backstop).
 const cncHaasHostLabel = ref<string>("");
+const cncRunning = computed(() => cncStore.running);
 
-const refreshCncStatus = async () => {
-  try {
-    const st = await cncApi.getStatus();
-    cncRunning.value = !!st.running;
-  } catch {
-    cncRunning.value = false;
+// machineLine is null unless the streamer is on THIS file. Without the
+// path check the marker would jump around when a different file is
+// being streamed but the operator is reviewing this one in the editor.
+const isStreamingThisFile = computed(() => {
+  if (!cncStore.running) return false;
+  const here = "/" + (fileStore.req?.path?.replace(/^\/+/, "") ?? "");
+  const there = "/" + (cncStore.filePath?.replace(/^\/+/, "") ?? "");
+  return here === there;
+});
+const machineLine = computed(() =>
+  isStreamingThisFile.value ? cncStore.lineCurrent : null
+);
+
+const refreshCncStatus = () => cncStore.pollOnce();
+
+// Follow-machine: when the user is streaming THIS file, snap the
+// editor cursor + 3D viewer cursor to wherever the machine is. User
+// click/keystroke in either pane breaks the lock; clicking the toggle
+// resumes. The doc explicitly said "approximation is fine" — we don't
+// try to be perfectly synchronous with the wire, just close.
+const followMachine = ref(true);
+let programmaticCursorMove = false;
+
+const snapToLine = (line: number) => {
+  if (!editor.value) return;
+  // Ace lines are 0-indexed; the streamer emits 1-based.
+  const row = Math.max(0, line - 1);
+  programmaticCursorMove = true;
+  editor.value.gotoLine(row + 1, 0, false);
+  cursorLine.value = row;
+  // Clear the flag after Ace's internal events have flushed.
+  setTimeout(() => {
+    programmaticCursorMove = false;
+  }, 0);
+};
+
+const toggleFollowMachine = () => {
+  followMachine.value = !followMachine.value;
+  if (followMachine.value && machineLine.value != null) {
+    snapToLine(machineLine.value);
   }
 };
 
@@ -257,7 +313,10 @@ const promptSendToMachine = async () => {
       layoutStore.closeHovers();
       try {
         await cncApi.start(filePath);
-        cncRunning.value = true;
+        // Trigger an immediate poll so cncRunning (a computed off the
+        // store) flips before the WS broadcasts the status frame.
+        cncStore.pollOnce();
+        followMachine.value = true;
         $showSuccess(t("buttons.sendingToMachine"));
       } catch (e: any) {
         $showError(e);
@@ -433,10 +492,15 @@ const initEditor = (fileContent: string) => {
     isSelectionEmpty.value = selection.isEmpty();
   });
 
-  // sphere highlight in the 3D viewer follows the editor cursor
+  // sphere highlight in the 3D viewer follows the editor cursor.
+  // Any cursor move that wasn't programmatic (i.e. typed in by the
+  // user) breaks the follow-machine lock — Z-10 spec.
   editor.value.getSession().selection.on("changeCursor", () => {
     const pos = editor.value!.getCursorPosition();
     cursorLine.value = pos.row;
+    if (!programmaticCursorMove && followMachine.value) {
+      followMachine.value = false;
+    }
   });
 
   // re-parse for the viewer only after the user pauses typing
@@ -522,7 +586,8 @@ const preview = () => {
   isPreview.value = !isPreview.value;
 };
 
-// click in 3D viewer → jump Ace editor to that line
+// click in 3D viewer → jump Ace editor to that line, and break the
+// follow-machine lock since this is a manual user action.
 const handleViewerLineSelect = (lineIndex: number) => {
   if (!editor.value) return;
   const session = editor.value.getSession();
@@ -530,7 +595,22 @@ const handleViewerLineSelect = (lineIndex: number) => {
   const row = Math.max(0, Math.min(lineIndex, maxRow));
   editor.value.gotoLine(row + 1, 0, true);
   editor.value.centerSelection();
+  if (followMachine.value) followMachine.value = false;
 };
+
+// Z-10: while followMachine is on and a job is streaming this file,
+// snap the cursor to the machine line as it advances. Throttled to
+// prevent thrash on a fast Haas — we only resync if the line moved.
+let lastFollowedLine = -1;
+watch(
+  () => [machineLine.value, followMachine.value] as [number | null, boolean],
+  ([line, follow]: [number | null, boolean]) => {
+    if (!follow || line == null) return;
+    if (line === lastFollowedLine) return;
+    lastFollowedLine = line;
+    snapToLine(line);
+  }
+);
 </script>
 
 <style scoped>
@@ -621,6 +701,44 @@ const handleViewerLineSelect = (lineIndex: number) => {
   flex: 1 1 0;
   min-width: 0;
   border-left: 1px solid var(--border-color, #333);
+  position: relative;
+}
+
+/* Follow-machine toggle floats over the 3D viewer, bottom-right. Only
+   rendered while a job is running, so the placement doesn't compete
+   with the toolbar in the idle state. */
+.follow-machine-btn {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid #333;
+  border-radius: 999px;
+  background: rgba(20, 20, 20, 0.85);
+  color: #ccc;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  z-index: 2;
+  transition: background 0.15s, color 0.15s;
+}
+
+.follow-machine-btn .material-icons {
+  font-size: 1rem;
+}
+
+.follow-machine-btn:hover {
+  background: rgba(40, 40, 40, 0.9);
+  color: #fff;
+}
+
+.follow-machine-btn.active {
+  background: rgba(51, 255, 102, 0.15);
+  border-color: #33ff66;
+  color: #66ff99;
 }
 
 /* 6px hit area, 1px visible line. Hover/drag highlights it so the user
