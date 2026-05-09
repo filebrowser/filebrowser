@@ -354,6 +354,68 @@ POST /api/query          // {"q": 104} or {"q": 600, "var": 5021}
 
 ---
 
+## TODO — Tool-table integration (investigation, far down the line)
+
+User-flagged 2026-05-09: investigate whether the Haas tool table is
+exposable through the same Q-code / RS-232 path we already own, and
+build features on top of it. **Investigation only at this stage** —
+the wire-protocol piece is unconfirmed; everything below assumes we
+can read the table.
+
+Why this is novel: no existing CNC-shop tool I'm aware of correlates
+the **machine's actual loaded tools** with **what a G-code program
+calls for**. Most "tool management" software is offline-only.
+
+### Phase A — read the table
+
+- Find the right Q-code (or macro-variable range) that exposes
+  per-pocket tool data: tool number in pocket, length offset (H),
+  diameter offset (D), tool-life count, expected diameter.
+  Candidates to verify against a real TM-2P:
+  - `Q600 #2001..#2199` (tool length offset table)
+  - `Q600 #2201..#2399` (diameter offset table)
+  - `Q600 #3001..` (tool-life counters)
+  - Setting 9 / Setting 142 may also gate access.
+- Wire a `cnc.toolTable` aggregator endpoint
+  (`GET /api/cnc/tool-table`) that polls the relevant range on a
+  slow ticker (60+ s) and caches.
+
+### Phase B — features on top
+
+- **Live tool index** — sidebar / `/machine` tile showing the current
+  pocket → tool mapping. Highlights the active tool from Q201.
+- **Tool-life check** — surface a warning when a counter is near its
+  configured limit; tie into the recovery banner so it can also
+  block start.
+- **Program vs machine diameter check** — parse the .nc file's tool
+  list (the `( T1 D0.5 in End mill, … )` headers most CAM posts emit)
+  and compare against the table's diameter offset for each Tn. Block
+  Send-to-Machine with a clear error if they disagree by more than
+  ε mm. Operator can override with a confirmation step.
+- **Cutter-comp scan** — advanced; parse the program for `G41`/`G42`
+  blocks and verify the active D offset matches the tool's actual
+  geometry. Far down the line.
+- **Offline tool DB + swap-on-send** — keep a Pi-side library of
+  known tools (diameter, length, flutes, vendor, life expectancy);
+  when the operator clicks Send-to-Machine and the program uses a
+  tool whose D offset differs from the machine's loaded value AND
+  cutter-comp is active, offer a one-click "rewrite the program's
+  Tn lines to use the machine's actual D offset" with a diff view.
+  This is the genuinely novel piece — the Pi already has the
+  program AND the live table state, so it can mediate safely
+  before the file ever leaves the share.
+
+### Order of risk
+
+1. Confirm we can read the table at all (Phase A) — biggest unknown.
+2. Live tool index (read-only) — low risk, big visual win.
+3. Tool-life warnings — simple threshold checks.
+4. Diameter mismatch on Send-to-Machine — modifies the existing
+   block-machine flow, needs a clear UX for override.
+5. Cutter-comp scan + program rewrite — requires a real G-code
+   parser (we currently only highlight syntax; we don't model the
+   semantics). Defer until 1-4 are proven on hardware.
+
 ## Out of scope for v1 (revisit when ready)
 
 - Hardware feed-hold pause via Pi GPIO + opto-isolated relay → Haas's
