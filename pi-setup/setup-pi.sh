@@ -32,6 +32,8 @@ LIB_DIR="$REPO_DIR/pi-setup/lib"
 . "$LIB_DIR/usb_mass_storage.sh"
 # shellcheck source=lib/gcode_stream.sh
 . "$LIB_DIR/gcode_stream.sh"
+# shellcheck source=lib/smb_share.sh
+. "$LIB_DIR/smb_share.sh"
 
 require_root "$@"
 
@@ -53,6 +55,7 @@ FB_USER="$DEFAULT_USER"
 FB_DB="${DEFAULT_HOME}/.config/filebrowser/filebrowser.db"
 ADMIN_USER="admin"
 ADMIN_PASSWORD="cncadmin1234"   # 12+ chars to satisfy upstream's minimum
+ENABLE_SMB="y"                  # serve $SHARE_PATH as SMB so Finder/Explorer can mount it
 
 # Load existing config if present (overrides the defaults above).
 load_conf || true
@@ -96,6 +99,11 @@ while :; do
   warn "must be at least 12 characters"
 done
 
+# SMB share — Pi shows up under "Network" in Finder / Explorer with the
+# share folder mountable as a regular drive. Reuses the filebrowser admin
+# password for the SMB user, so you don't need to remember two.
+ask_yes_no ENABLE_SMB "Expose share over SMB (Finder / Explorer network drive)?" "${ENABLE_SMB:-y}"
+
 # ── Resolve binary location ────────────────────────────────────────────────
 FB_BIN="$REPO_DIR/filebrowser"
 FB_WORKDIR="$REPO_DIR"
@@ -117,7 +125,8 @@ write_conf \
   "FB_WORKDIR=$FB_WORKDIR" \
   "FB_DB=$FB_DB" \
   "ADMIN_USER=$ADMIN_USER" \
-  "ADMIN_PASSWORD=$ADMIN_PASSWORD"
+  "ADMIN_PASSWORD=$ADMIN_PASSWORD" \
+  "ENABLE_SMB=$ENABLE_SMB"
 # Conf has the admin password — restrict to root.
 chmod 0600 "$CONF_PATH" 2>/dev/null || true
 
@@ -180,14 +189,29 @@ else
   warn "skipping filebrowser start — binary not built (build step failed?)"
 fi
 
+# ── SMB share (after filebrowser, so $SHARE_PATH is owned + populated) ──────
+if [[ ${ENABLE_SMB:-y} == y ]]; then
+  install_smb_share
+fi
+
 # ── Done ────────────────────────────────────────────────────────────────────
 step "Done"
 log ""
+PI_IP=$(hostname -I | awk '{print $1}')
+PI_HOST=$(hostname)
 log "Filebrowser:"
-log "  URL:      http://$(hostname -I | awk '{print $1}'):8080"
+log "  URL:      http://$PI_IP:8080"
 log "  Username: $ADMIN_USER"
 log "  Password: $ADMIN_PASSWORD"
 log ""
+if [[ ${ENABLE_SMB:-y} == y ]]; then
+  log "SMB share (Mac Finder / Windows Explorer):"
+  log "  Finder:   smb://$PI_HOST.local/cnc   (or smb://$PI_IP/cnc)"
+  log "  Explorer: \\\\$PI_HOST\\cnc            (or \\\\$PI_IP\\cnc)"
+  log "  Username: $FB_USER"
+  log "  Password: $ADMIN_PASSWORD   (same as filebrowser)"
+  log ""
+fi
 log "Change the password from the user menu once you're logged in (or"
 log "re-run this script to set a new one)."
 log ""
