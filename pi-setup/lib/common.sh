@@ -73,12 +73,23 @@ ask_choice() {
 
 # load_conf — sources $CONF_PATH if it exists, defining vars per the file.
 load_conf() {
-  if [[ -r $CONF_PATH ]]; then
-    # shellcheck disable=SC1090
-    . "$CONF_PATH"
-    return 0
+  [[ -r $CONF_PATH ]] || return 1
+  # Pre-source in a subshell to detect format errors (e.g. an old conf
+  # written before the printf %q quoting fix). A sourced file's stderr
+  # is the only reliable signal — bash returns 0 from a sourced file
+  # even when individual commands inside fail. If stderr is dirty, treat
+  # the conf as unusable rather than spraying noise; the user hits Enter
+  # through the prompts and the next write_conf rewrites it cleanly.
+  local stderr
+  # shellcheck disable=SC1090
+  stderr=$( ( . "$CONF_PATH" ) 2>&1 >/dev/null )
+  if [[ -n $stderr ]]; then
+    warn "$CONF_PATH has format issues (likely from an older setup) — defaults will be used; values will be rewritten cleanly at the end"
+    return 1
   fi
-  return 1
+  # shellcheck disable=SC1090
+  . "$CONF_PATH"
+  return 0
 }
 
 # write_conf — atomically write /etc/cnc-pi.conf. Pass key=value pairs.
