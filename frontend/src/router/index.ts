@@ -8,6 +8,7 @@ import Users from "@/views/settings/Users.vue";
 import User from "@/views/settings/User.vue";
 import Settings from "@/views/Settings.vue";
 import GlobalSettings from "@/views/settings/Global.vue";
+import Machine from "@/views/Machine.vue";
 import MachineSettings from "@/views/settings/Machine.vue";
 import ProfileSettings from "@/views/settings/Profile.vue";
 import Shares from "@/views/settings/Shares.vue";
@@ -26,6 +27,7 @@ const titles = {
   ProfileSettings: "settings.profileSettings",
   Shares: "settings.shareManagement",
   GlobalSettings: "settings.globalSettings",
+  Machine: "sidebar.machine",
   MachineSettings: "settings.machineSettings",
   Users: "settings.users",
   User: "settings.user",
@@ -64,6 +66,14 @@ const routes = [
         component: Files,
       },
     ],
+  },
+  {
+    path: "/machine",
+    name: "Machine",
+    component: Machine,
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
     path: "/settings",

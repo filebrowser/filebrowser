@@ -16,6 +16,16 @@
         <span>{{ $t("sidebar.myFiles") }}</span>
       </button>
 
+      <button
+        class="action"
+        @click="toMachine"
+        :aria-label="$t('sidebar.machine')"
+        :title="$t('sidebar.machine')"
+      >
+        <i class="material-icons">precision_manufacturing</i>
+        <span>{{ $t("sidebar.machine") }}</span>
+      </button>
+
       <div v-if="user.perm.create">
         <button
           @click="showHover('newDir')"
@@ -190,6 +200,10 @@ export default {
     },
     toRoot() {
       this.$router.push({ path: "/files" });
+      this.closeHovers();
+    },
+    toMachine() {
+      this.$router.push({ path: "/machine" });
       this.closeHovers();
     },
     toAccountSettings() {
