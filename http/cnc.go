@@ -16,6 +16,9 @@ import (
 	"net/http"
 	"path"
 	"strings"
+	"time"
+
+	"github.com/gorilla/websocket"
 
 	"github.com/filebrowser/filebrowser/v2/cnc"
 	"github.com/filebrowser/filebrowser/v2/settings"
@@ -192,6 +195,76 @@ func cncQueryHandler(streamer *cnc.Streamer) handleFunc {
 		}
 		return session(w, r, d)
 	}
+}
+
+// cncStreamHandler upgrades to a WebSocket and pushes line/status events
+// from the streamer until the client disconnects. Auth: any logged-in
+// user (operators need to watch from any browser session).
+//
+// Send-only on the server side: we don't expect client messages, but we
+// run a read loop anyway so the WS keep-alive ping/pong works and we
+// notice client disconnects promptly.
+func cncStreamHandler(streamer *cnc.Streamer) handleFunc {
+	return withUser(func(w http.ResponseWriter, r *http.Request, _ *data) (int, error) {
+		conn, err := upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+		defer conn.Close()
+
+		// Send the current status as the first frame so a freshly-
+		// connecting client doesn't have to wait for the next event
+		// to know whether a job is running.
+		if err := writeJSONFrame(conn, cnc.Event{Type: "status", Status: streamer.Status()}); err != nil {
+			return 0, nil
+		}
+
+		events := streamer.Subscribe()
+		defer streamer.Unsubscribe(events)
+
+		// Read pump (drops anything the client sends; closing the
+		// connection on the client side surfaces here as ReadMessage
+		// returning an error).
+		readDone := make(chan struct{})
+		go func() {
+			defer close(readDone)
+			for {
+				if _, _, err := conn.NextReader(); err != nil {
+					return
+				}
+			}
+		}()
+
+		// Heartbeat so a client behind a NAT/proxy that drops idle TCP
+		// gets evicted and reconnects rather than hanging forever.
+		ping := time.NewTicker(30 * time.Second)
+		defer ping.Stop()
+
+		for {
+			select {
+			case ev, ok := <-events:
+				if !ok {
+					return 0, nil
+				}
+				if err := writeJSONFrame(conn, ev); err != nil {
+					return 0, nil
+				}
+			case <-ping.C:
+				_ = conn.WriteControl(websocket.PingMessage, nil, time.Now().Add(WSWriteDeadline))
+			case <-readDone:
+				return 0, nil
+			case <-r.Context().Done():
+				return 0, nil
+			}
+		}
+	})
+}
+
+func writeJSONFrame(conn *websocket.Conn, v any) error {
+	if err := conn.SetWriteDeadline(time.Now().Add(WSWriteDeadline)); err != nil {
+		return err
+	}
+	return conn.WriteJSON(v)
 }
 
 func runQuery(w http.ResponseWriter, r *http.Request, streamer *cnc.Streamer) (int, error) {

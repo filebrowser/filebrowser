@@ -67,6 +67,11 @@ type Streamer struct {
 	// last* are kept across jobs so /status can show the most
 	// recent error after the streamer goes idle. Read with mu held.
 	lastError string
+
+	// Event broadcast — see events.go. Independent mutex so a slow
+	// subscriber's drop logic can't block job state changes.
+	subsMu sync.Mutex
+	subs   []*subscriber
 }
 
 // queryQueueDepth caps in-flight queries against the streaming socket.
@@ -141,9 +146,11 @@ func (s *Streamer) Start(absPath, displayPath string) (*Status, error) {
 	s.lastError = ""
 	s.mu.Unlock()
 
+	st := s.Status()
+	s.emit(Event{Type: "status", Status: st})
 	go s.run(ctx, j, host, port)
 
-	return s.Status(), nil
+	return st, nil
 }
 
 // Stop cancels the in-flight job (if any). Returns true if a job was
@@ -244,6 +251,9 @@ func (s *Streamer) run(ctx context.Context, j *job, host string, port int) {
 		s.mu.Lock()
 		s.job = nil
 		s.mu.Unlock()
+		// Emit the idle status event AFTER s.job has been cleared so
+		// subscribers see the post-job snapshot, not a stale "running".
+		s.emit(Event{Type: "status", Status: s.Status()})
 	}()
 
 	// net.JoinHostPort handles bracketing IPv6 addresses; "%s:%d" doesn't.
@@ -287,7 +297,8 @@ func (s *Streamer) run(ctx context.Context, j *job, host string, port int) {
 			s.recordError(fmt.Errorf("write line %d: %w", j.lineCurrent.Load()+1, err))
 			return
 		}
-		j.lineCurrent.Add(1)
+		n := j.lineCurrent.Add(1)
+		s.emit(Event{Type: "line", N: n, Text: line})
 	}
 	if err := scanner.Err(); err != nil {
 		s.recordError(fmt.Errorf("read source: %w", err))

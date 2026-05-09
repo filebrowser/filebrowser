@@ -88,6 +88,7 @@ func NewHandler(
 	cncRouter.Handle("/start", monkey(cncStartHandler(streamer), "")).Methods("POST")
 	cncRouter.Handle("/stop", monkey(cncStopHandler(streamer), "")).Methods("POST")
 	cncRouter.Handle("/qcode", monkey(cncQueryHandler(streamer), "")).Methods("POST")
+	cncRouter.Handle("/stream", monkey(cncStreamHandler(streamer), "")).Methods("GET")
 
 	api.PathPrefix("/raw").Handler(monkey(rawHandler, "/api/raw")).Methods("GET")
 	api.PathPrefix("/preview/{size}/{path:.*}").
