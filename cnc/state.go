@@ -11,6 +11,7 @@ package cnc
 
 import (
 	"context"
+	"math/rand/v2"
 	"sync"
 	"time"
 )
@@ -127,9 +128,11 @@ func (a *Aggregator) Stop() {
 
 func (a *Aggregator) pollLoop(ctx context.Context, spec metricSpec) {
 	defer a.wg.Done()
-	// Stagger the first tick by a small random fraction of the
-	// interval so we don't fire 16 queries on the same tick.
-	jitter := time.Duration(int64(spec.Interval) % int64(len(spec.Key)+1))
+	// Stagger the first tick by a random fraction of the interval so
+	// we don't fire 16 queries on the same tick. Combined with the
+	// streamer's queryMu serialization this means the initial poll
+	// burst spreads naturally across the slowest interval window.
+	jitter := time.Duration(rand.Int64N(int64(spec.Interval)))
 	timer := time.NewTimer(jitter)
 	defer timer.Stop()
 

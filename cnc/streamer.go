@@ -84,11 +84,29 @@ type Streamer struct {
 	// subscriber's drop logic can't block job state changes.
 	subsMu sync.Mutex
 	subs   []*subscriber
+
+	// queryMu serializes all transient Q-code queries against the
+	// Waveshare bridge. The bridge accepts ONE TCP client at a time;
+	// without this, the aggregator's 16 polling goroutines fan out
+	// concurrent dials and responses cross-contaminate. lastQueryAt
+	// gates a min-spacing pause between back-to-back queries so the
+	// RS-232 side has room to drain.
+	queryMu      sync.Mutex
+	lastQueryAt  time.Time
 }
 
 // queryQueueDepth caps in-flight queries against the streaming socket.
 // 4 is plenty — the dashboard polls one Q-code at a time.
 const queryQueueDepth = 4
+
+// minQuerySpacing is the floor on time between consecutive Q-code
+// round-trips against the Waveshare RS-232↔TCP bridge. The bridge
+// only serves one TCP client at a time AND the underlying RS-232 link
+// has finite bandwidth — without spacing the aggregator's 16 polling
+// goroutines pile responses up in the RS-232 receive buffer and they
+// bleed across connection boundaries (mode==program, work.X==machine.X,
+// G54 X==Y==Z, etc). Mirrors haas_bridge.py's MIN_QUERY_SPACING.
+const minQuerySpacing = 150 * time.Millisecond
 
 type job struct {
 	id          string
@@ -252,7 +270,7 @@ func (s *Streamer) Query(ctx context.Context, qCode int, macroVar *int) (*QueryR
 	j := s.job
 	s.mu.Unlock()
 	if j == nil {
-		return transientQuery(host, port, qCode, macroVar), nil
+		return s.runTransient(ctx, host, port, qCode, macroVar)
 	}
 
 	req := &queryReq{
@@ -266,7 +284,10 @@ func (s *Streamer) Query(ctx context.Context, qCode int, macroVar *int) (*QueryR
 	case <-ctx.Done():
 		return nil, ctx.Err()
 	case <-j.done:
-		return transientQuery(host, port, qCode, macroVar), nil
+		// Job ended while we were trying to enqueue. Fall back to a
+		// transient query — through runTransient so we still get the
+		// queryMu serialization vs. any other concurrent callers.
+		return s.runTransient(ctx, host, port, qCode, macroVar)
 	}
 
 	select {
@@ -275,6 +296,28 @@ func (s *Streamer) Query(ctx context.Context, qCode int, macroVar *int) (*QueryR
 	case <-ctx.Done():
 		return nil, ctx.Err()
 	}
+}
+
+// runTransient is the gated path for transient (no-job) queries. The
+// bridge serves one TCP client at a time, so we serialize on queryMu
+// and enforce a min-spacing pause so the RS-232 side can drain between
+// round-trips. ctx cancellation aborts the spacing wait but never an
+// in-flight transientQuery (those have their own queryTimeout).
+func (s *Streamer) runTransient(ctx context.Context, host string, port, qCode int, macroVar *int) (*QueryResult, error) {
+	s.queryMu.Lock()
+	defer s.queryMu.Unlock()
+	if !s.lastQueryAt.IsZero() {
+		if wait := minQuerySpacing - time.Since(s.lastQueryAt); wait > 0 {
+			select {
+			case <-time.After(wait):
+			case <-ctx.Done():
+				return nil, ctx.Err()
+			}
+		}
+	}
+	res := transientQuery(host, port, qCode, macroVar)
+	s.lastQueryAt = time.Now()
+	return res, nil
 }
 
 // run is the worker goroutine. Owns the TCP socket for the duration of
