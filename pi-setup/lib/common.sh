@@ -6,14 +6,22 @@ CONF_PATH="/etc/cnc-pi.conf"
 c_red()   { printf '\033[31m%s\033[0m' "$*"; }
 c_green() { printf '\033[32m%s\033[0m' "$*"; }
 c_yellow(){ printf '\033[33m%s\033[0m' "$*"; }
+c_cyan()  { printf '\033[36m%s\033[0m' "$*"; }
+c_dim()   { printf '\033[2m%s\033[0m' "$*"; }
 c_bold()  { printf '\033[1m%s\033[0m' "$*"; }
 
 log()  { printf '  %s\n' "$*"; }
-ok()   { printf '  %s %s\n' "$(c_green '✓')" "$*"; }
-warn() { printf '  %s %s\n' "$(c_yellow '!')" "$*" >&2; }
-die()  { printf '  %s %s\n' "$(c_red '✗')" "$*" >&2; exit 1; }
+ok()   { printf '  %s %s\n' "$(c_green '✓')" "$(c_green "$*")"; }
+warn() { printf '  %s %s\n' "$(c_yellow '!')" "$(c_yellow "$*")" >&2; }
+die()  { printf '  %s %s\n' "$(c_red '✗')" "$(c_red "$*")" >&2; exit 1; }
 
-step() { printf '\n%s\n' "$(c_bold "==> $*")"; }
+# Auto-numbered, colorized step header. Counter persists across sourced libs.
+STEP_NUM=${STEP_NUM:-0}
+step() {
+  STEP_NUM=$(( STEP_NUM + 1 ))
+  # Bold cyan "==> [Step N]" + bold white title.
+  printf '\n\033[1;36m==> [Step %d]\033[0m \033[1m%s\033[0m\n' "$STEP_NUM" "$*"
+}
 
 # require_root — re-exec under sudo if not already root.
 require_root() {

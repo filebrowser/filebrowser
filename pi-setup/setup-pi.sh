@@ -56,6 +56,7 @@ FB_DB="${DEFAULT_HOME}/.config/filebrowser/filebrowser.db"
 ADMIN_USER="admin"
 ADMIN_PASSWORD="cncadmin1234"   # 12+ chars to satisfy upstream's minimum
 ENABLE_SMB="y"                  # serve $SHARE_PATH as SMB so Finder/Explorer can mount it
+SMB_GUEST="y"                   # no-auth (guest writable) — fine on a shop LAN
 
 # Load existing config if present (overrides the defaults above).
 load_conf || true
@@ -103,6 +104,12 @@ done
 # share folder mountable as a regular drive. Reuses the filebrowser admin
 # password for the SMB user, so you don't need to remember two.
 ask_yes_no ENABLE_SMB "Expose share over SMB (Finder / Explorer network drive)?" "${ENABLE_SMB:-y}"
+if [[ $ENABLE_SMB == y ]]; then
+  # Guest mode = no password prompt when mounting. Right answer for a
+  # shop-LAN appliance; wrong answer if the box is exposed to a network
+  # you don't trust.
+  ask_yes_no SMB_GUEST "Allow SMB guest access (no password)?" "${SMB_GUEST:-y}"
+fi
 
 # ── Resolve binary location ────────────────────────────────────────────────
 FB_BIN="$REPO_DIR/filebrowser"
@@ -126,7 +133,8 @@ write_conf \
   "FB_DB=$FB_DB" \
   "ADMIN_USER=$ADMIN_USER" \
   "ADMIN_PASSWORD=$ADMIN_PASSWORD" \
-  "ENABLE_SMB=$ENABLE_SMB"
+  "ENABLE_SMB=$ENABLE_SMB" \
+  "SMB_GUEST=$SMB_GUEST"
 # Conf has the admin password — restrict to root.
 chmod 0600 "$CONF_PATH" 2>/dev/null || true
 
@@ -208,8 +216,12 @@ if [[ ${ENABLE_SMB:-y} == y ]]; then
   log "SMB share (Mac Finder / Windows Explorer):"
   log "  Finder:   smb://$PI_HOST.local/cnc   (or smb://$PI_IP/cnc)"
   log "  Explorer: \\\\$PI_HOST\\cnc            (or \\\\$PI_IP\\cnc)"
-  log "  Username: $FB_USER"
-  log "  Password: $ADMIN_PASSWORD   (same as filebrowser)"
+  if [[ ${SMB_GUEST:-y} == y ]]; then
+    log "  Auth:     guest (no password)"
+  else
+    log "  Username: $FB_USER"
+    log "  Password: $ADMIN_PASSWORD   (same as filebrowser)"
+  fi
   log ""
 fi
 log "Change the password from the user menu once you're logged in (or"
