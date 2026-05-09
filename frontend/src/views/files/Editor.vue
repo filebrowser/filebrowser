@@ -32,11 +32,16 @@
       />
 
       <action
-        v-if="isGcodeFile && authStore.user?.perm.modify"
-        :icon="cncRunning ? 'precision_manufacturing' : 'send'"
-        :label="cncRunning ? t('buttons.sendingToMachine') : t('buttons.sendToMachine')"
-        :disabled="cncRunning"
+        v-if="isGcodeFile && authStore.user?.perm.modify && !cncRunning"
+        icon="send"
+        :label="t('buttons.sendToMachine')"
         @action="promptSendToMachine()"
+      />
+      <action
+        v-if="isGcodeFile && authStore.user?.perm.modify && cncRunning"
+        icon="stop_circle"
+        :label="t('buttons.stopMachine')"
+        @action="promptStopMachine()"
       />
     </header-bar>
 
@@ -267,6 +272,26 @@ const snapToLine = (line: number) => {
   setTimeout(() => {
     programmaticCursorMove = false;
   }, 0);
+};
+
+const promptStopMachine = () => {
+  layoutStore.showHover({
+    prompt: "stopMachine",
+    props: {
+      filePath: cncStore.filePath,
+      lineCurrent: cncStore.lineCurrent,
+    },
+    confirm: async (event: Event) => {
+      event.preventDefault();
+      layoutStore.closeHovers();
+      try {
+        await cncApi.stop();
+        cncStore.pollOnce();
+      } catch (e: any) {
+        $showError(e);
+      }
+    },
+  });
 };
 
 const toggleFollowMachine = () => {

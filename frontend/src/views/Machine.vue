@@ -45,6 +45,15 @@
           <span class="card-header__hint" v-else-if="!anyFresh">
             {{ t("machine.waitingFirstPoll") }}
           </span>
+          <button
+            v-if="cncStore.running && canModify"
+            class="stop-btn"
+            @click="promptStopMachine"
+            :title="t('buttons.stopMachine')"
+          >
+            <i class="material-icons">stop_circle</i>
+            {{ t("buttons.stopMachine") }}
+          </button>
         </div>
         <div class="card-body dashboard-body">
           <!-- Hero: program + status + mode -->
@@ -115,14 +124,40 @@
 </template>
 
 <script setup lang="ts">
-import { computed, h, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, h, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { cnc as cncApi } from "@/api";
 import type { CncMetric } from "@/api/cnc";
+import { useAuthStore } from "@/stores/auth";
 import { useCncStore } from "@/stores/cnc";
+import { useLayoutStore } from "@/stores/layout";
 import HeaderBar from "@/components/header/HeaderBar.vue";
 
 const { t } = useI18n();
+const $showError = inject<IToastError>("$showError")!;
+const authStore = useAuthStore();
+const layoutStore = useLayoutStore();
+const canModify = computed(() => !!authStore.user?.perm.modify);
+
+const promptStopMachine = () => {
+  layoutStore.showHover({
+    prompt: "stopMachine",
+    props: {
+      filePath: cncStore.filePath,
+      lineCurrent: cncStore.lineCurrent,
+    },
+    confirm: async (event: Event) => {
+      event.preventDefault();
+      layoutStore.closeHovers();
+      try {
+        await cncApi.stop();
+        cncStore.pollOnce();
+      } catch (e: any) {
+        $showError(e);
+      }
+    },
+  });
+};
 
 // ── Config from /api/cnc/settings ──────────────────────────────────────────
 const cameraURL = ref("");
@@ -317,6 +352,28 @@ const Axis = (props: { label: string; value: unknown }) => {
   font-size: 0.78rem;
   font-weight: 400;
   color: var(--fg-muted, #888);
+}
+
+.stop-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid #c0392b;
+  border-radius: 4px;
+  background: rgba(192, 57, 43, 0.12);
+  color: #c0392b;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.stop-btn:hover {
+  background: rgba(192, 57, 43, 0.22);
+}
+
+.stop-btn .material-icons {
+  font-size: 1rem;
 }
 
 .card-header .material-icons {

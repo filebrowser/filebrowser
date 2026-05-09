@@ -56,6 +56,7 @@
     "send": "Send",
     "sendToMachine": "Send to machine",
     "sendingToMachine": "Streaming to machine…",
+    "stopMachine": "Stop machine",
     "followMachineOn": "Following machine",
     "resumeFollow": "Resume follow"
   },
@@ -204,6 +205,9 @@
     "sendToMachineLines": "{n} lines",
     "sendToMachineDestination": "Destination:",
     "sendToMachineUnknownHost": "(not configured — set in Settings → Machine)",
+    "stopMachineConfirm": "Stop the in-flight job?",
+    "stopMachineAtLine": "currently at line {n}",
+    "stopMachineHint": "The Pi will stop feeding bytes. The Haas will drain its look-ahead buffer and halt within seconds.",
     "replaceOrSkip": "Replace or skip files",
     "resolveConflict": "Which files do you want to keep?",
     "singleConflictResolve": "If you select both versions, a number will be added to the name of the copied file.",
