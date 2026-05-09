@@ -51,6 +51,8 @@ USB_PRODUCT="CNC USB"
 USB_SERIAL="$(hostname | tr -d '\n')"
 FB_USER="$DEFAULT_USER"
 FB_DB="${DEFAULT_HOME}/.config/filebrowser/filebrowser.db"
+ADMIN_USER="admin"
+ADMIN_PASSWORD="cncadmin1234"   # 12+ chars to satisfy upstream's minimum
 
 # Load existing config if present (overrides the defaults above).
 load_conf || true
@@ -84,6 +86,16 @@ fi
 
 ask FB_USER "User filebrowser will run as" "$FB_USER"
 
+# Filebrowser admin password — set deterministically so the user knows what
+# it is from the moment setup ends. Must be at least 12 chars (upstream
+# minimum). Default is fine for shop-LAN use; user changes it from the UI
+# once they're in.
+while :; do
+  ask ADMIN_PASSWORD "Filebrowser admin password (min 12 chars)" "$ADMIN_PASSWORD"
+  (( ${#ADMIN_PASSWORD} >= 12 )) && break
+  warn "must be at least 12 characters"
+done
+
 # ── Resolve binary location ────────────────────────────────────────────────
 FB_BIN="$REPO_DIR/filebrowser"
 FB_WORKDIR="$REPO_DIR"
@@ -103,7 +115,11 @@ write_conf \
   "FB_USER=$FB_USER" \
   "FB_BIN=$FB_BIN" \
   "FB_WORKDIR=$FB_WORKDIR" \
-  "FB_DB=$FB_DB"
+  "FB_DB=$FB_DB" \
+  "ADMIN_USER=$ADMIN_USER" \
+  "ADMIN_PASSWORD=$ADMIN_PASSWORD"
+# Conf has the admin password — restrict to root.
+chmod 0600 "$CONF_PATH" 2>/dev/null || true
 
 # ── Build prereqs + filebrowser binary (slow, automated) ────────────────────
 # Done after prompts so the user can walk away while the install runs, and
@@ -133,9 +149,32 @@ render_template "$REPO_DIR/pi-setup/systemd/filebrowser.service.tmpl" \
                 FB_DB="$FB_DB"
 ok "wrote /etc/systemd/system/filebrowser.service"
 
+# Pre-create the admin user with the chosen password so the box is usable
+# the moment the service starts. Idempotent on re-runs (updates the password
+# if the user already exists) — no journal-grepping for a random string.
+ensure_admin_user() {
+  if [[ ! -x $FB_BIN ]]; then
+    return 0
+  fi
+  step "Configuring filebrowser admin user"
+  # Make sure the DB schema exists (config init is a no-op if it already does).
+  runuser -u "$FB_USER" -- "$FB_BIN" config init --database "$FB_DB" >/dev/null 2>&1 || true
+  # Try update first (covers re-runs where admin already exists).
+  if runuser -u "$FB_USER" -- "$FB_BIN" users update "$ADMIN_USER" \
+       --password "$ADMIN_PASSWORD" --database "$FB_DB" >/dev/null 2>&1; then
+    ok "updated admin password"
+  elif runuser -u "$FB_USER" -- "$FB_BIN" users add "$ADMIN_USER" "$ADMIN_PASSWORD" \
+       --perm.admin --database "$FB_DB" >/dev/null 2>&1; then
+    ok "created admin user"
+  else
+    warn "could not create or update admin user — first start will auto-init with a random password (look in journalctl -u filebrowser)"
+  fi
+}
+ensure_admin_user
+
 if [[ -x $FB_BIN ]]; then
   enable_now filebrowser.service
-  ok "filebrowser running on http://$(hostname -I | awk '{print $1}'):8080"
+  ok "filebrowser running"
 else
   systemctl daemon-reload
   warn "skipping filebrowser start — binary not built (build step failed?)"
@@ -143,6 +182,15 @@ fi
 
 # ── Done ────────────────────────────────────────────────────────────────────
 step "Done"
+log ""
+log "Filebrowser:"
+log "  URL:      http://$(hostname -I | awk '{print $1}'):8080"
+log "  Username: $ADMIN_USER"
+log "  Password: $ADMIN_PASSWORD"
+log ""
+log "Change the password from the user menu once you're logged in (or"
+log "re-run this script to set a new one)."
+log ""
 log "Re-run this script any time to change the share folder, mode, or timings."
 log ""
 log "Logs:"
