@@ -123,10 +123,15 @@ build_filebrowser() {
   local prelude='export PATH="/usr/local/go/bin:$PATH"'
 
   log "  frontend: pnpm install + build  (this may take a few minutes on a fresh Pi)…"
+  # --frozen-lockfile = same behavior as CI: install exactly what's
+  # in pnpm-lock.yaml, fail loudly if package.json drifted, never
+  # mutate the lockfile (was leaving uncommitted changes in users'
+  # working trees and breaking later `git pull`s).
+  local pnpm_install='corepack pnpm install --frozen-lockfile --silent'
   if [[ $build_user == root ]]; then
-    bash -c "$prelude; cd '$REPO_DIR/frontend' && corepack pnpm install --silent && corepack pnpm run build"
+    bash -c "$prelude; cd '$REPO_DIR/frontend' && $pnpm_install && corepack pnpm run build"
   else
-    runuser -u "$build_user" -- bash -c "$prelude; cd '$REPO_DIR/frontend' && corepack pnpm install --silent && corepack pnpm run build"
+    runuser -u "$build_user" -- bash -c "$prelude; cd '$REPO_DIR/frontend' && $pnpm_install && corepack pnpm run build"
   fi
   ok "frontend built"
 
