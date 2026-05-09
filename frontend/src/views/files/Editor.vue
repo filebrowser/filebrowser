@@ -98,9 +98,10 @@ import { files as api } from "@/api";
 import buttons from "@/utils/buttons";
 import url from "@/utils/url";
 
-import ace, { Ace, version as ace_version } from "ace-builds";
+import ace, { Ace } from "ace-builds";
 import "ace-builds/src-noconflict/ext-language_tools";
 import modelist from "ace-builds/src-noconflict/ext-modelist";
+import "@/utils/aceModules";
 import DOMPurify from "dompurify";
 
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
@@ -230,11 +231,6 @@ onMounted(() => {
 
   // seed the debounced value immediately so the viewer has content on first render
   debouncedGcode.value = fileContent;
-
-  ace.config.set(
-    "basePath",
-    `https://cdn.jsdelivr.net/npm/ace-builds@${ace_version}/src-min-noconflict/`
-  );
 
   if (!layoutStore.loading) {
     initEditor(fileContent);
