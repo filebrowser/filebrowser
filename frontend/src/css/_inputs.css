@@ -13,6 +13,15 @@
   border-color: var(--borderSecondary);
 }
 
+/* Placeholders should never be mistakable for a real value — inputs
+ * use --textSecondary at full strength, so without this they render
+ * almost identically to typed text on most themes. */
+.input::placeholder {
+  color: var(--textSecondary);
+  opacity: 0.45;
+  font-style: italic;
+}
+
 .input--block {
   margin-bottom: 0.5em;
   display: block;
