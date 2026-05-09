@@ -90,6 +90,10 @@ func transientQuery(host string, port, qCode int, macroVar *int) *QueryResult {
 	}
 	res.Raw = raw
 	res.Value = stripEchoAndFraming(raw)
+	if err := validateResponseShape(qCode, macroVar, res.Value); err != nil {
+		res.Error = err.Error()
+		return res
+	}
 	res.Parsed = parseValue(res.Value, qCode, macroVar)
 	res.OK = true
 	return res
@@ -198,6 +202,64 @@ func stripEchoAndFraming(raw string) string {
 		return ""
 	}
 	return strings.Join(lines, ", ")
+}
+
+// validateResponseShape returns nil if `value` plausibly answers the
+// query we sent, or an error describing the mismatch. Catches bridge
+// cross-talk: the Waveshare buffers RS-232 responses across TCP
+// connection boundaries, so a fresh dial can return data left over
+// from someone else's last query (or our own previous one, before
+// minQuerySpacing kicked in). Without this check those stale frames
+// would parse and display as truth.
+//
+// Rules are intentionally narrow — match the obvious tag word for
+// each Q-code per haas_bridge.py + Haas docs. Macro queries are
+// stricter: the response must carry the exact macro var number we
+// asked for.
+func validateResponseShape(qCode int, macroVar *int, value string) error {
+	if value == "" {
+		return fmt.Errorf("empty response")
+	}
+	upper := strings.ToUpper(value)
+	switch qCode {
+	case 104: // Mode — single token like MEM/MDI/JOG
+		if strings.Contains(upper, "PROGRAM") ||
+			strings.Contains(upper, "MACRO") ||
+			strings.Contains(upper, "PARTS") ||
+			strings.Contains(upper, "LAST CYCLE") ||
+			strings.Contains(upper, "TOOL") {
+			return fmt.Errorf("Q104 (mode) got cross-talk frame: %q", value)
+		}
+	case 201:
+		if !strings.Contains(upper, "TOOL") {
+			return fmt.Errorf("Q201 expected TOOL prefix, got %q", value)
+		}
+	case 303:
+		if !strings.Contains(upper, "LAST CYCLE") && !strings.Contains(upper, "PREVIOUS CYCLE") {
+			return fmt.Errorf("Q303 expected LAST CYCLE prefix, got %q", value)
+		}
+	case 402:
+		if !strings.Contains(upper, "PARTS") {
+			return fmt.Errorf("Q402 expected PARTS prefix, got %q", value)
+		}
+	case 500:
+		if !strings.Contains(upper, "PROGRAM") {
+			return fmt.Errorf("Q500 expected PROGRAM prefix, got %q", value)
+		}
+	case 600:
+		if !strings.Contains(upper, "MACRO") {
+			return fmt.Errorf("Q600 expected MACRO prefix, got %q", value)
+		}
+		if macroVar != nil {
+			tag := strconv.Itoa(*macroVar)
+			// Tolerate either ", N," or ",N," spacing the bridge happens
+			// to emit. The MACRO frame is comma-delimited.
+			if !strings.Contains(value, ", "+tag+",") && !strings.Contains(value, ","+tag+",") {
+				return fmt.Errorf("Q600 macro var mismatch: asked %d, got %q", *macroVar, value)
+			}
+		}
+	}
+	return nil
 }
 
 // parseValue is best-effort structured parsing — same shape contract as

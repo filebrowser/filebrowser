@@ -439,6 +439,11 @@ func (s *Streamer) serviceQuery(conn net.Conn, req *queryReq) {
 	}
 	res.Raw = raw
 	res.Value = stripEchoAndFraming(raw)
+	if err := validateResponseShape(req.q, req.macroV, res.Value); err != nil {
+		res.Error = err.Error()
+		req.respCh <- res
+		return
+	}
 	res.Parsed = parseValue(res.Value, req.q, req.macroV)
 	res.OK = true
 	req.respCh <- res
