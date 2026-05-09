@@ -11,6 +11,8 @@
 
     <slot />
 
+    <CncStatusPill />
+
     <div
       id="dropdown"
       :class="{ active: layoutStore.currentPromptName === 'more' }"
@@ -40,8 +42,10 @@ import { useLayoutStore } from "@/stores/layout";
 import { logoURL } from "@/utils/constants";
 
 import Action from "@/components/header/Action.vue";
-import { computed, useSlots } from "vue";
+import CncStatusPill from "@/components/header/CncStatusPill.vue";
+import { computed, onMounted, useSlots } from "vue";
 import { useI18n } from "vue-i18n";
+import { useCncStore } from "@/stores/cnc";
 
 defineProps<{
   showLogo?: boolean;
@@ -54,6 +58,14 @@ const slots = useSlots();
 const { t } = useI18n();
 
 const ifActionsSlot = computed(() => (slots.actions ? true : false));
+
+// HeaderBar mounts on every authenticated layout, so this is the
+// natural spot to kick the live CNC status feed. The store's start()
+// is idempotent — extra mounts are no-ops.
+const cncStore = useCncStore();
+onMounted(() => {
+  cncStore.start();
+});
 </script>
 
 <style></style>

@@ -65,6 +65,10 @@
   "upload": {
     "abortUpload": "Are you sure you wish to abort?"
   },
+  "cnc": {
+    "statusTooltip": "Streaming to machine: {path} — click to open the file",
+    "lineN": "line {n}"
+  },
   "errors": {
     "forbidden": "You don't have permissions to access this.",
     "internal": "Something really went wrong.",
