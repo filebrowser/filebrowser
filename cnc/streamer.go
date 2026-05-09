@@ -224,6 +224,17 @@ func (s *Streamer) Stop() bool {
 	return true
 }
 
+// IsRunning returns true while a streaming job holds the socket. The
+// aggregator uses this to pause polling during streams — Q-code reads
+// on the streaming socket pick up G-code line bytes / flow-control
+// chatter instead of clean Q responses, so polling produces garbage
+// and risks consuming bytes the controller depends on (XON/XOFF).
+func (s *Streamer) IsRunning() bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.job != nil
+}
+
 // Status returns a snapshot. Safe to call concurrently with Start/Stop.
 func (s *Streamer) Status() *Status {
 	s.mu.Lock()
@@ -392,11 +403,13 @@ func (s *Streamer) run(ctx context.Context, j *job, host string, port int) {
 		}
 		n := j.lineCurrent.Add(1)
 		s.emit(Event{Type: "line", N: n, Text: line})
-		// Periodic progress beacon to journalctl — every line on the WS
-		// is great for the UI but would drown a 100k-line program in
-		// the system log. One every 100 lines is plenty for postmortems.
+		// Periodic progress beacon — every line on the per-line WS feed
+		// is great for the ticker but would drown a 100k-line program
+		// in the system log AND the activity panel. Every 100 lines we
+		// also push to the log channel so journal + activity panel get
+		// regular "we're at line N" updates.
 		if n%100 == 0 {
-			log.Printf("[cnc:line] %s %d/%d", j.id, n, j.lineTotal)
+			s.logf("info", "wrote line %d/%d", n, j.lineTotal)
 		}
 	}
 	if err := scanner.Err(); err != nil {
@@ -438,13 +451,15 @@ func (s *Streamer) serviceQuery(conn net.Conn, req *queryReq) {
 		return
 	}
 	res.Raw = raw
-	res.Value = stripEchoAndFraming(raw)
-	if err := validateResponseShape(req.q, req.macroV, res.Value); err != nil {
+	v := stripEchoAndFraming(raw)
+	if err := validateResponseShape(req.q, req.macroV, v); err != nil {
+		// Keep Raw, drop Value/Parsed — see same pattern in qcode.go.
 		res.Error = err.Error()
 		req.respCh <- res
 		return
 	}
-	res.Parsed = parseValue(res.Value, req.q, req.macroV)
+	res.Value = v
+	res.Parsed = parseValue(v, req.q, req.macroV)
 	res.OK = true
 	req.respCh <- res
 }

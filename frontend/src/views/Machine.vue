@@ -56,6 +56,25 @@
           </button>
         </div>
         <div class="card-body dashboard-body">
+          <!-- Live send progress (only while a job is streaming) -->
+          <div v-if="cncStore.running" class="send-progress">
+            <div class="send-progress__head">
+              <span class="send-progress__file">{{ cncStore.filePath || "—" }}</span>
+              <span class="send-progress__counter">
+                {{ cncStore.lineCurrent }} / {{ cncStore.lineTotal }}
+                <span v-if="cncStore.lineTotal > 0" class="send-progress__pct">
+                  ({{ ((cncStore.lineCurrent / cncStore.lineTotal) * 100).toFixed(1) }}%)
+                </span>
+              </span>
+            </div>
+            <div class="send-progress__bar">
+              <div
+                class="send-progress__bar-fill"
+                :style="{ width: cncStore.lineTotal > 0 ? `${(cncStore.lineCurrent / cncStore.lineTotal) * 100}%` : '0%' }"
+              />
+            </div>
+          </div>
+
           <!-- Hero: program + status + mode -->
           <div class="hero">
             <div class="hero__program">
@@ -561,6 +580,52 @@ const Axis = (props: { label: string; value: unknown }) => {
   height: 100%;
   object-fit: contain;
   background: #000;
+}
+
+/* Live send progress strip — visible only while streaming */
+.send-progress {
+  background: var(--alt-background, #fafafa);
+  border: 1px solid var(--primaryColor, #2196f3);
+  border-radius: 6px;
+  padding: 0.5rem 0.7rem;
+  margin-bottom: 0.6rem;
+}
+
+.send-progress__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.35rem;
+}
+
+.send-progress__file {
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.send-progress__counter {
+  font-variant-numeric: tabular-nums;
+  color: var(--fg-muted, #888);
+  flex-shrink: 0;
+}
+
+.send-progress__pct {
+  margin-left: 0.25rem;
+}
+
+.send-progress__bar {
+  height: 6px;
+  background: var(--border-color, #eee);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.send-progress__bar-fill {
+  height: 100%;
+  background: var(--primaryColor, #2196f3);
+  transition: width 0.2s ease;
 }
 
 /* Activity log — backend log events + status transitions */

@@ -177,12 +177,18 @@ export const useCncStore = defineStore("cnc", {
         try {
           const ev = JSON.parse(e.data);
           if (ev.type === "status" && ev.status) {
+            // Capture the current counters BEFORE applyStatus overwrites
+            // them. When a job ends the server's status payload zeros
+            // line_current/total, so reading them after applyStatus
+            // would always log "0/0".
             const wasRunning = this.running;
+            const prevLine = this.lineCurrent;
+            const prevTotal = this.lineTotal;
             this.applyStatus(ev.status);
             if (this.running && !wasRunning) {
               this.pushLog("info", `running: ${this.filePath}`);
             } else if (!this.running && wasRunning) {
-              this.pushLog("info", `idle (last: ${this.lineCurrent}/${this.lineTotal})`);
+              this.pushLog("info", `idle (last: ${prevLine}/${prevTotal})`);
             }
             if (ev.status.haas_last_error) {
               // Surface server-side errors on the feed even if the

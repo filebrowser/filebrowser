@@ -153,6 +153,19 @@ func (a *Aggregator) pollOnce(ctx context.Context, spec metricSpec) {
 	if err != nil || set.Cnc.HaasHost == "" {
 		return
 	}
+	// Don't poll while a job is streaming. The streaming socket carries
+	// G-code line traffic + flow control; Q-code responses interleaved
+	// with that come out as garbage (program/mode fields rendering raw
+	// G-code is the obvious symptom). Mark the metric stale so the UI
+	// shows "—" instead of a frozen value, and skip the round-trip.
+	if a.streamer.IsRunning() {
+		a.mu.Lock()
+		if m := a.metrics[spec.Key]; m != nil {
+			m.Stale = true
+		}
+		a.mu.Unlock()
+		return
+	}
 
 	queryCtx, cancel := context.WithTimeout(ctx, 4*time.Second)
 	defer cancel()

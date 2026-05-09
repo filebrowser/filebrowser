@@ -89,12 +89,16 @@ func transientQuery(host string, port, qCode int, macroVar *int) *QueryResult {
 		return res
 	}
 	res.Raw = raw
-	res.Value = stripEchoAndFraming(raw)
-	if err := validateResponseShape(qCode, macroVar, res.Value); err != nil {
+	v := stripEchoAndFraming(raw)
+	if err := validateResponseShape(qCode, macroVar, v); err != nil {
+		// Keep Raw for postmortems but DON'T expose Value/Parsed —
+		// rawValue() in the UI would otherwise render a contaminated
+		// frame as if it were truth.
 		res.Error = err.Error()
 		return res
 	}
-	res.Parsed = parseValue(res.Value, qCode, macroVar)
+	res.Value = v
+	res.Parsed = parseValue(v, qCode, macroVar)
 	res.OK = true
 	return res
 }
@@ -169,13 +173,12 @@ type queryReq struct {
 // frameRe matches `\x02 … \x17` — the canonical Haas STX-framed payload.
 var frameRe = regexp.MustCompile("\x02([^\x17]*)\x17")
 
-// echoRe matches the request line bounced back by Setting 187 (echo on),
-// e.g. "Q104" or "Q600 5021". We strip these so callers see only data.
-var echoRe = regexp.MustCompile(`^Q\d+(\s+-?\d+)?$`)
-
 // stripEchoAndFraming pulls the meaningful payload out of a raw response.
-// Prefers the STX/ETB-framed form; falls back to line-based filtering
-// for controls that don't frame.
+// Requires STX/ETB framing — historically we tolerated unframed line-mode
+// responses for non-Haas controllers, but in practice the only way that
+// path triggered was when the read buffer picked up G-code line bytes
+// during a stream and we'd return them as if they were a Q response.
+// Returning "" on no-frame lets validateResponseShape reject cleanly.
 func stripEchoAndFraming(raw string) string {
 	if raw == "" {
 		return ""
@@ -183,25 +186,7 @@ func stripEchoAndFraming(raw string) string {
 	if m := frameRe.FindStringSubmatch(raw); m != nil {
 		return strings.TrimSpace(m[1])
 	}
-	var lines []string
-	for _, ln := range splitAny(raw, "\r\n") {
-		ln = stripCtrl(ln)
-		ln = strings.TrimSpace(ln)
-		for strings.HasPrefix(ln, ">") {
-			ln = strings.TrimSpace(strings.TrimPrefix(ln, ">"))
-		}
-		if ln == "" || strings.HasPrefix(ln, "?") {
-			continue
-		}
-		if echoRe.MatchString(ln) {
-			continue
-		}
-		lines = append(lines, ln)
-	}
-	if len(lines) == 0 {
-		return ""
-	}
-	return strings.Join(lines, ", ")
+	return ""
 }
 
 // validateResponseShape returns nil if `value` plausibly answers the
@@ -326,12 +311,6 @@ func parseNumber(s string) (any, bool) {
 	return nil, false
 }
 
-func splitAny(s, set string) []string {
-	return strings.FieldsFunc(s, func(r rune) bool {
-		return strings.ContainsRune(set, r)
-	})
-}
-
 func splitAndTrim(s, sep string) []string {
 	out := []string{}
 	for _, p := range strings.Split(s, sep) {
@@ -341,17 +320,6 @@ func splitAndTrim(s, sep string) []string {
 		}
 	}
 	return out
-}
-
-func stripCtrl(s string) string {
-	var b strings.Builder
-	b.Grow(len(s))
-	for _, r := range s {
-		if r >= 0x20 || r == '\t' {
-			b.WriteRune(r)
-		}
-	}
-	return b.String()
 }
 
 func sinceMs(t time.Time) float64 {
