@@ -53,6 +53,10 @@ USB_PRODUCT="CNC USB"
 USB_SERIAL="$(hostname | tr -d '\n')"
 FB_USER="$DEFAULT_USER"
 FB_DB="${DEFAULT_HOME}/.config/filebrowser/filebrowser.db"
+# Branding asset dir lives next to the DB — outside SHARE_PATH on
+# purpose so logos / icons never end up on the USB stick the controller
+# sees. Populated from the repo's branding/ tree at install time.
+FB_ASSETS_DIR="${DEFAULT_HOME}/.local/share/filebrowser/branding"
 ADMIN_USER="admin"
 ADMIN_PASSWORD="cncadmin1234"   # 12+ chars to satisfy upstream's minimum
 ENABLE_SMB="y"                  # serve $SHARE_PATH as SMB so Finder/Explorer can mount it
@@ -131,6 +135,7 @@ write_conf \
   "FB_BIN=$FB_BIN" \
   "FB_WORKDIR=$FB_WORKDIR" \
   "FB_DB=$FB_DB" \
+  "FB_ASSETS_DIR=$FB_ASSETS_DIR" \
   "ADMIN_USER=$ADMIN_USER" \
   "ADMIN_PASSWORD=$ADMIN_PASSWORD" \
   "ENABLE_SMB=$ENABLE_SMB" \
@@ -198,6 +203,37 @@ ensure_admin_user() {
   fi
 }
 ensure_admin_user
+
+# Branding assets — keep logos / icons OUT of $SHARE_PATH (and therefore
+# off the USB stick the controller sees). filebrowser supports a
+# branding-files override that points at any directory containing
+# img/<name>.{svg,png}, so we drop the repo's branding/ tree at
+# $FB_ASSETS_DIR/img/ and tell filebrowser to read from there.
+ensure_branding_assets() {
+  if [[ ! -x $FB_BIN ]]; then
+    return 0
+  fi
+  step "Installing branding assets at $FB_ASSETS_DIR"
+  systemctl stop filebrowser.service 2>/dev/null || true
+
+  install -d -m 0755 -o "$FB_USER" -g "$FB_USER" "$FB_ASSETS_DIR"
+  install -d -m 0755 -o "$FB_USER" -g "$FB_USER" "$FB_ASSETS_DIR/img"
+  # -n: never overwrite a file the user has customized in place.
+  if [[ -d $REPO_DIR/branding ]]; then
+    cp -an "$REPO_DIR"/branding/*.svg "$REPO_DIR"/branding/*.png \
+       "$FB_ASSETS_DIR/img/" 2>/dev/null || true
+    chown -R "$FB_USER:$FB_USER" "$FB_ASSETS_DIR" 2>/dev/null || true
+  fi
+
+  # Point filebrowser at the new dir. config set is idempotent.
+  if runuser -u "$FB_USER" -- "$FB_BIN" config set \
+       --branding.files "$FB_ASSETS_DIR" --database "$FB_DB" >/dev/null 2>&1; then
+    ok "branding.files = $FB_ASSETS_DIR"
+  else
+    warn "could not set branding.files — assets installed but filebrowser config not updated"
+  fi
+}
+ensure_branding_assets
 
 if [[ -x $FB_BIN ]]; then
   enable_now filebrowser.service
