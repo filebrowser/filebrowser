@@ -52,6 +52,12 @@ type Status struct {
 	StartedAt     time.Time `json:"started_at,omitempty"`
 	HaasOK        bool      `json:"haas_ok"`
 	HaasLastError string    `json:"haas_last_error,omitempty"`
+
+	// Z-15: a previous instance left an active-job marker behind.
+	// Frontend renders the warning until the operator POSTs to
+	// /api/cnc/recovery/ack.
+	RecoveryPending  bool   `json:"recovery_pending,omitempty"`
+	RecoveryFilePath string `json:"recovery_file_path,omitempty"`
 }
 
 // Streamer is the long-lived singleton. One per process. Holds the
@@ -61,12 +67,18 @@ type Status struct {
 type Streamer struct {
 	settings settingsReader
 
-	mu  sync.Mutex // guards job
+	mu  sync.Mutex // guards job + pendingRecovery
 	job *job       // nil when idle
 
 	// last* are kept across jobs so /status can show the most
 	// recent error after the streamer goes idle. Read with mu held.
 	lastError string
+
+	// pendingRecovery is set when New() finds an orphaned active-job
+	// marker (i.e. previous instance crashed mid-job). Start refuses
+	// while this is non-nil — see recovery.go (Z-15). Cleared by
+	// AckRecovery().
+	pendingRecovery *activeJobMarker
 
 	// Event broadcast — see events.go. Independent mutex so a slow
 	// subscriber's drop logic can't block job state changes.
@@ -90,9 +102,15 @@ type job struct {
 	queryCh     chan *queryReq
 }
 
-// New builds the singleton.
+// New builds the singleton. Picks up any active-job marker left behind
+// by a previous instance and stashes it in pendingRecovery so the
+// /status endpoint can surface it and Start can refuse until ack.
 func New(s settingsReader) *Streamer {
-	return &Streamer{settings: s}
+	st := &Streamer{settings: s}
+	if m := readMarker(); m != nil {
+		st.pendingRecovery = m
+	}
+	return st
 }
 
 // Start kicks off a streaming job. absPath must already be path-validated
@@ -120,6 +138,10 @@ func (s *Streamer) Start(absPath, displayPath string) (*Status, error) {
 	}
 
 	s.mu.Lock()
+	if s.pendingRecovery != nil {
+		s.mu.Unlock()
+		return nil, ErrRecoveryPending
+	}
 	if s.job != nil {
 		s.mu.Unlock()
 		return nil, ErrJobAlreadyRunning
@@ -145,6 +167,19 @@ func (s *Streamer) Start(absPath, displayPath string) (*Status, error) {
 	s.job = j
 	s.lastError = ""
 	s.mu.Unlock()
+
+	// Persist the active-job marker AFTER the job is in s.job so a
+	// crash between Start returning and the marker write would still
+	// be observed via the inhibit (defensive — the window is tiny).
+	if err := writeMarker(j); err != nil {
+		// Don't fail Start over a marker write — log via lastError so
+		// /status surfaces it but the job runs. Operators usually
+		// care more about "the spindle is on" than "we couldn't
+		// write a recovery hint."
+		s.mu.Lock()
+		s.lastError = "marker write failed: " + err.Error()
+		s.mu.Unlock()
+	}
 
 	st := s.Status()
 	s.emit(Event{Type: "status", Status: st})
@@ -183,6 +218,10 @@ func (s *Streamer) Status() *Status {
 		st.LineCurrent = s.job.lineCurrent.Load()
 		st.LineTotal = s.job.lineTotal
 		st.StartedAt = s.job.startedAt
+	}
+	if s.pendingRecovery != nil {
+		st.RecoveryPending = true
+		st.RecoveryFilePath = s.pendingRecovery.DisplayPath
 	}
 	return st
 }
@@ -251,6 +290,12 @@ func (s *Streamer) run(ctx context.Context, j *job, host string, port int) {
 		s.mu.Lock()
 		s.job = nil
 		s.mu.Unlock()
+		// Marker is cleared on clean exit (whether the source EOFed,
+		// the user clicked Stop, or the dial/write failed and we're
+		// returning the error). A crash between here and the next
+		// New() leaves the marker in place — exactly the case Z-15
+		// is designed to catch.
+		clearMarker()
 		// Emit the idle status event AFTER s.job has been cleared so
 		// subscribers see the post-job snapshot, not a stale "running".
 		s.emit(Event{Type: "status", Status: s.Status()})

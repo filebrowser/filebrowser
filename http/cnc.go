@@ -149,6 +149,8 @@ func cncStartHandler(streamer *cnc.Streamer) handleFunc {
 		switch {
 		case errors.Is(err, cnc.ErrJobAlreadyRunning):
 			return http.StatusConflict, err
+		case errors.Is(err, cnc.ErrRecoveryPending):
+			return http.StatusConflict, err
 		case errors.Is(err, cnc.ErrConfigMissing):
 			return http.StatusBadRequest, err
 		case err != nil:
@@ -165,6 +167,20 @@ func cncStopHandler(streamer *cnc.Streamer) handleFunc {
 		}
 		stopped := streamer.Stop()
 		return renderJSON(w, r, map[string]bool{"stopped": stopped})
+	})
+}
+
+// cncRecoveryAckHandler clears the pending-recovery flag (Z-15) so
+// Start can succeed again. Modify-permission gate matches start/stop —
+// recovering from a partial cut is an operator decision, not an admin
+// settings one.
+func cncRecoveryAckHandler(streamer *cnc.Streamer) handleFunc {
+	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		if !d.user.Perm.Modify {
+			return http.StatusForbidden, nil
+		}
+		streamer.AckRecovery()
+		return renderJSON(w, r, map[string]bool{"acknowledged": true})
 	})
 }
 
