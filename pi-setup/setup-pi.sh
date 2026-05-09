@@ -169,22 +169,32 @@ ok "wrote /etc/systemd/system/filebrowser.service"
 # Pre-create the admin user with the chosen password so the box is usable
 # the moment the service starts. Idempotent on re-runs (updates the password
 # if the user already exists) — no journal-grepping for a random string.
+#
+# filebrowser's BoltDB is single-writer; if the service is running we'd
+# silently lose the update and ship a "wrong" password to the user. Stop
+# the service first, then let the normal enable_now restart it.
 ensure_admin_user() {
   if [[ ! -x $FB_BIN ]]; then
     return 0
   fi
   step "Configuring filebrowser admin user"
+  systemctl stop filebrowser.service 2>/dev/null || true
+
   # Make sure the DB schema exists (config init is a no-op if it already does).
   runuser -u "$FB_USER" -- "$FB_BIN" config init --database "$FB_DB" >/dev/null 2>&1 || true
-  # Try update first (covers re-runs where admin already exists).
-  if runuser -u "$FB_USER" -- "$FB_BIN" users update "$ADMIN_USER" \
-       --password "$ADMIN_PASSWORD" --database "$FB_DB" >/dev/null 2>&1; then
+  # Try update first (covers re-runs where admin already exists). Capture
+  # stderr so a real failure surfaces instead of dying behind /dev/null.
+  local out
+  if out=$(runuser -u "$FB_USER" -- "$FB_BIN" users update "$ADMIN_USER" \
+                   --password "$ADMIN_PASSWORD" --database "$FB_DB" 2>&1); then
     ok "updated admin password"
-  elif runuser -u "$FB_USER" -- "$FB_BIN" users add "$ADMIN_USER" "$ADMIN_PASSWORD" \
-       --perm.admin --database "$FB_DB" >/dev/null 2>&1; then
+  elif out=$(runuser -u "$FB_USER" -- "$FB_BIN" users add "$ADMIN_USER" \
+                     "$ADMIN_PASSWORD" --perm.admin --database "$FB_DB" 2>&1); then
     ok "created admin user"
   else
-    warn "could not create or update admin user — first start will auto-init with a random password (look in journalctl -u filebrowser)"
+    warn "could not create or update admin user:"
+    printf '%s\n' "$out" | sed 's/^/    /' >&2
+    warn "first start will auto-init with a random password (look in journalctl -u filebrowser)"
   fi
 }
 ensure_admin_user
