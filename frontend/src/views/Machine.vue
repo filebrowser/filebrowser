@@ -117,6 +117,26 @@
               <Axis label="Z" :value="parsed('g54_z')" />
             </div>
           </div>
+
+          <!-- Activity feed: backend log events + status transitions -->
+          <div class="activity">
+            <div class="activity__title">{{ t("machine.activity") }}</div>
+            <div v-if="cncStore.log.length === 0" class="activity__empty">
+              {{ t("machine.activityEmpty") }}
+            </div>
+            <ol v-else class="activity__list">
+              <li
+                v-for="(entry, i) in cncStore.log"
+                :key="i"
+                class="activity__row"
+                :class="`activity__row--${entry.level}`"
+              >
+                <span class="activity__ts">{{ fmtTs(entry.ts) }}</span>
+                <span class="activity__level">{{ entry.level }}</span>
+                <span class="activity__msg">{{ entry.msg }}</span>
+              </li>
+            </ol>
+          </div>
         </div>
       </section>
     </div>
@@ -180,6 +200,11 @@ const formatNum = (v: unknown, digits = 1): string => {
     return digits === 0 ? Math.round(v).toString() : v.toFixed(digits);
   }
   return "—";
+};
+
+const fmtTs = (ts: number): string => {
+  const d = new Date(ts);
+  return d.toLocaleTimeString();
 };
 
 // Q500 returns either a "PROGRAM,O123,RUNNING,PARTS,n" dict from the
@@ -536,6 +561,75 @@ const Axis = (props: { label: string; value: unknown }) => {
   height: 100%;
   object-fit: contain;
   background: #000;
+}
+
+/* Activity log — backend log events + status transitions */
+.activity {
+  background: var(--alt-background, #fafafa);
+  border: 1px solid var(--border-color, #eee);
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+  margin-top: 0.6rem;
+}
+
+.activity__title {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--fg-muted, #888);
+  margin-bottom: 0.4rem;
+}
+
+.activity__empty {
+  color: var(--fg-muted, #888);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.activity__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 14rem;
+  overflow-y: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.8rem;
+}
+
+.activity__row {
+  display: grid;
+  grid-template-columns: auto 4.5rem 1fr;
+  gap: 0.6rem;
+  padding: 0.15rem 0;
+  border-bottom: 1px solid var(--border-color, #f0f0f0);
+}
+
+.activity__row:last-child {
+  border-bottom: none;
+}
+
+.activity__ts {
+  color: var(--fg-muted, #888);
+  font-variant-numeric: tabular-nums;
+}
+
+.activity__level {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  align-self: center;
+}
+
+.activity__row--error .activity__level {
+  color: #c62828;
+}
+
+.activity__row--info .activity__level {
+  color: var(--primaryColor, #2196f3);
+}
+
+.activity__msg {
+  word-break: break-word;
 }
 
 .hint {

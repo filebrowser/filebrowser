@@ -15,6 +15,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"log"
 	"net"
 	"os"
 	"strconv"
@@ -201,6 +202,7 @@ func (s *Streamer) Start(absPath, displayPath string) (*Status, error) {
 
 	st := s.Status()
 	s.emit(Event{Type: "status", Status: st})
+	s.logf("info", "start job %s: %s (%d lines) → %s:%d", j.id, j.displayPath, j.lineTotal, host, port)
 	go s.run(ctx, j, host, port)
 
 	return st, nil
@@ -216,6 +218,7 @@ func (s *Streamer) Stop() bool {
 	if j == nil {
 		return false
 	}
+	s.logf("info", "stop requested for job %s at line %d/%d", j.id, j.lineCurrent.Load(), j.lineTotal)
 	j.cancel()
 	<-j.done
 	return true
@@ -346,12 +349,14 @@ func (s *Streamer) run(ctx context.Context, j *job, host string, port int) {
 
 	// net.JoinHostPort handles bracketing IPv6 addresses; "%s:%d" doesn't.
 	addr := net.JoinHostPort(host, strconv.Itoa(port))
+	s.logf("info", "dialing bridge %s…", addr)
 	conn, err := net.DialTimeout("tcp", addr, 5*time.Second)
 	if err != nil {
 		s.recordError(fmt.Errorf("dial %s: %w", addr, err))
 		return
 	}
 	defer conn.Close()
+	s.logf("info", "bridge connected, opening %s", j.displayPath)
 
 	f, err := os.Open(j.absPath)
 	if err != nil {
@@ -387,9 +392,17 @@ func (s *Streamer) run(ctx context.Context, j *job, host string, port int) {
 		}
 		n := j.lineCurrent.Add(1)
 		s.emit(Event{Type: "line", N: n, Text: line})
+		// Periodic progress beacon to journalctl — every line on the WS
+		// is great for the UI but would drown a 100k-line program in
+		// the system log. One every 100 lines is plenty for postmortems.
+		if n%100 == 0 {
+			log.Printf("[cnc:line] %s %d/%d", j.id, n, j.lineTotal)
+		}
 	}
 	if err := scanner.Err(); err != nil {
 		s.recordError(fmt.Errorf("read source: %w", err))
+	} else {
+		s.logf("info", "stream complete: %d lines sent", j.lineCurrent.Load())
 	}
 
 	// Drain any queries enqueued during the final line so callers don't
@@ -435,6 +448,17 @@ func (s *Streamer) recordError(err error) {
 	s.mu.Lock()
 	s.lastError = err.Error()
 	s.mu.Unlock()
+	s.logf("error", "%v", err)
+}
+
+// logf emits one structured log event AND writes to the standard
+// logger (journalctl when running under systemd). Two destinations
+// because operators want different things — `journalctl -u filebrowser`
+// for permanent record, and the WS feed for live UI without an SSH.
+func (s *Streamer) logf(level, format string, args ...any) {
+	msg := fmt.Sprintf(format, args...)
+	log.Printf("[cnc:%s] %s", level, msg)
+	s.emit(Event{Type: "log", Level: level, Msg: msg})
 }
 
 func newJobID() (string, error) {

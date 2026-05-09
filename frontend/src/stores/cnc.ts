@@ -16,6 +16,17 @@ import { baseURL } from "@/utils/constants";
 const POLL_INTERVAL_MS = 2000;
 const RECONNECT_DELAY_MS = 3000;
 
+// LogEntry is one line on the activity feed. Backend emits these via
+// the WS `log` event; we also synthesize them client-side for line +
+// status transitions so the panel reads chronologically.
+export interface LogEntry {
+  ts: number;
+  level: string;
+  msg: string;
+}
+
+const LOG_BUFFER_MAX = 200;
+
 interface CncState {
   running: boolean;
   filePath: string;
@@ -35,6 +46,9 @@ interface CncState {
   // metric-spec list (mode, spindle_actual, pos_x, …).
   metrics: CncStateSnapshot;
   metricsSeeded: boolean;
+  // Rolling activity log — backend `log` events plus client-synthesized
+  // entries for status / line milestones. Newest first.
+  log: LogEntry[];
 }
 
 let pollTimer: ReturnType<typeof setInterval> | null = null;
@@ -57,6 +71,7 @@ export const useCncStore = defineStore("cnc", {
     initialized: false,
     metrics: {},
     metricsSeeded: false,
+    log: [],
   }),
   actions: {
     applyStatus(s: CncStatus) {
@@ -97,6 +112,13 @@ export const useCncStore = defineStore("cnc", {
     applyMetric(m: CncMetric) {
       this.metrics = { ...this.metrics, [m.key]: m };
       this.metricsSeeded = true;
+    },
+
+    pushLog(level: string, msg: string) {
+      this.log.unshift({ ts: Date.now(), level, msg });
+      if (this.log.length > LOG_BUFFER_MAX) {
+        this.log.length = LOG_BUFFER_MAX;
+      }
     },
 
     async pollOnce() {
@@ -155,12 +177,25 @@ export const useCncStore = defineStore("cnc", {
         try {
           const ev = JSON.parse(e.data);
           if (ev.type === "status" && ev.status) {
+            const wasRunning = this.running;
             this.applyStatus(ev.status);
+            if (this.running && !wasRunning) {
+              this.pushLog("info", `running: ${this.filePath}`);
+            } else if (!this.running && wasRunning) {
+              this.pushLog("info", `idle (last: ${this.lineCurrent}/${this.lineTotal})`);
+            }
+            if (ev.status.haas_last_error) {
+              // Surface server-side errors on the feed even if the
+              // status pill is off-screen.
+              this.pushLog("error", ev.status.haas_last_error);
+            }
           } else if (ev.type === "line" && typeof ev.n === "number") {
             this.lineCurrent = ev.n;
             this.running = true;
           } else if (ev.type === "metric" && ev.metric) {
             this.applyMetric(ev.metric as CncMetric);
+          } else if (ev.type === "log" && typeof ev.msg === "string") {
+            this.pushLog(ev.level || "info", ev.msg);
           }
         } catch {
           /* ignore malformed frames */
