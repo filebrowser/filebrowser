@@ -507,13 +507,14 @@ const handleViewerLineSelect = (lineIndex: number) => {
 }
 
 .editor-pane {
-  flex: 1 1 50%;
+  flex: 1 1 75%;
   min-width: 0;
 }
 
 .viewer-pane {
-  flex: 1 1 50%;
-  min-width: 0;
+  flex: 0 0 25%;
+  min-width: 280px;
+  max-width: 480px;
   border-left: 1px solid var(--border-color, #333);
 }
 </style>
