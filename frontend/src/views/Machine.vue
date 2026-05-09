@@ -46,6 +46,15 @@
             {{ t("machine.waitingFirstPoll") }}
           </span>
           <button
+            class="check-btn"
+            :disabled="checking || cncStore.running"
+            @click="runConnectionCheck"
+            :title="t('machine.checkConnection')"
+          >
+            <i class="material-icons">network_check</i>
+            {{ checking ? t("machine.checking") : t("machine.checkConnection") }}
+          </button>
+          <button
             v-if="cncStore.running && canModify"
             class="stop-btn"
             @click="promptStopMachine"
@@ -56,6 +65,29 @@
           </button>
         </div>
         <div class="card-body dashboard-body">
+          <!-- Connection-check result: rendered briefly after the button -->
+          <div v-if="checkResult" class="check-result" :class="checkResultClass">
+            <div class="check-result__row">
+              <i class="material-icons">{{ checkResult.bridge.ok ? "check_circle" : "error" }}</i>
+              <span class="check-result__label">{{ t("machine.checkBridge") }}</span>
+              <span class="check-result__detail">
+                <template v-if="checkResult.bridge.ok">
+                  {{ checkResult.bridge.address }} · {{ formatNum(checkResult.bridge.latency_ms, 0) }} ms
+                </template>
+                <template v-else>{{ checkResult.bridge.error || "?" }}</template>
+              </span>
+            </div>
+            <div class="check-result__row">
+              <i class="material-icons">{{ checkResult.controller.ok ? "check_circle" : "error" }}</i>
+              <span class="check-result__label">{{ t("machine.checkController") }}</span>
+              <span class="check-result__detail">
+                <template v-if="checkResult.controller.ok">
+                  Q104 → {{ checkResult.controller.mode }} · {{ formatNum(checkResult.controller.latency_ms, 0) }} ms
+                </template>
+                <template v-else>{{ checkResult.controller.error || "?" }}</template>
+              </span>
+            </div>
+          </div>
           <!-- Live send progress (only while a job is streaming) -->
           <div v-if="cncStore.running" class="send-progress">
             <div class="send-progress__head">
@@ -166,7 +198,7 @@
 import { computed, h, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { cnc as cncApi } from "@/api";
-import type { CncMetric } from "@/api/cnc";
+import type { CncCheckResult, CncMetric } from "@/api/cnc";
 import { useAuthStore } from "@/stores/auth";
 import { useCncStore } from "@/stores/cnc";
 import { useLayoutStore } from "@/stores/layout";
@@ -201,6 +233,29 @@ const promptStopMachine = () => {
 // ── Config from /api/cnc/settings ──────────────────────────────────────────
 const cameraURL = ref("");
 const hostConfigured = ref(false);
+
+// ── Connection check (button in card-header) ──────────────────────────────
+const checkResult = ref<CncCheckResult | null>(null);
+const checking = ref(false);
+const checkResultClass = computed(() => {
+  if (!checkResult.value) return "";
+  if (checkResult.value.bridge.ok && checkResult.value.controller.ok) {
+    return "check-result--ok";
+  }
+  return "check-result--err";
+});
+
+const runConnectionCheck = async () => {
+  checking.value = true;
+  try {
+    checkResult.value = await cncApi.checkConnection();
+  } catch (e: any) {
+    $showError(e);
+    checkResult.value = null;
+  } finally {
+    checking.value = false;
+  }
+};
 
 // ── Live telemetry from useCncStore ────────────────────────────────────────
 // Initial seed via /api/cnc/state on mount; from then on, WS "metric"
@@ -418,6 +473,85 @@ const Axis = (props: { label: string; value: unknown }) => {
 
 .stop-btn .material-icons {
   font-size: 1rem;
+}
+
+.check-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--textSecondary, inherit);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-right: 0.4rem;
+}
+
+.check-btn:hover:not(:disabled) {
+  background: var(--alt-background, #f0f0f0);
+}
+
+.check-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.check-btn .material-icons {
+  font-size: 1rem;
+}
+
+.check-result {
+  border: 1px solid var(--border-color, #eee);
+  border-radius: 6px;
+  padding: 0.5rem 0.7rem;
+  margin-bottom: 0.6rem;
+  font-size: 0.85rem;
+}
+
+.check-result--ok {
+  border-color: #2e7d32;
+  background: rgba(46, 125, 50, 0.08);
+}
+
+.check-result--err {
+  border-color: #c62828;
+  background: rgba(198, 40, 40, 0.08);
+}
+
+.check-result__row {
+  display: grid;
+  grid-template-columns: 1.4rem 6rem 1fr;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.15rem 0;
+}
+
+.check-result__row .material-icons {
+  font-size: 1.1rem;
+}
+
+.check-result--ok .material-icons {
+  color: #2e7d32;
+}
+
+.check-result--err .material-icons {
+  color: #c62828;
+}
+
+.check-result__label {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+}
+
+.check-result__detail {
+  color: var(--fg-muted, #666);
+  font-variant-numeric: tabular-nums;
+  word-break: break-word;
 }
 
 .card-header .material-icons {

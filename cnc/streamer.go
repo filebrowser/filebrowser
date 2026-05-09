@@ -224,6 +224,49 @@ func (s *Streamer) Stop() bool {
 	return true
 }
 
+// CheckBridge does a TCP dial to the configured host:port. Returns
+// (ok, latencyMs, addr, err). Does NOT send any Q-code — only verifies
+// network reachability of the Waveshare. Caller should skip during
+// streaming to avoid contending with the job's socket.
+func (s *Streamer) CheckBridge() (bool, float64, string, error) {
+	set, err := s.settings.Get()
+	if err != nil {
+		return false, 0, "", err
+	}
+	if set.Cnc.HaasHost == "" {
+		return false, 0, "", ErrConfigMissing
+	}
+	port := set.Cnc.HaasPort
+	if port == 0 {
+		port = settings.DefaultHaasPort
+	}
+	addr := net.JoinHostPort(set.Cnc.HaasHost, strconv.Itoa(port))
+	t0 := time.Now()
+	conn, err := net.DialTimeout("tcp", addr, 3*time.Second)
+	latency := sinceMs(t0)
+	if err != nil {
+		return false, latency, addr, err
+	}
+	_ = conn.Close()
+	return true, latency, addr, nil
+}
+
+// CheckController sends one Q104 (mode) and validates the response
+// frame. Returns (ok, latencyMs, mode, err). Routes through Query so
+// queryMu serialization + minQuerySpacing apply.
+func (s *Streamer) CheckController(ctx context.Context) (bool, float64, string, error) {
+	t0 := time.Now()
+	res, err := s.Query(ctx, 104, nil)
+	latency := sinceMs(t0)
+	if err != nil {
+		return false, latency, "", err
+	}
+	if !res.OK {
+		return false, latency, "", fmt.Errorf("%s", res.Error)
+	}
+	return true, latency, res.Value, nil
+}
+
 // IsRunning returns true while a streaming job holds the socket. The
 // aggregator uses this to pause polling during streams — Q-code reads
 // on the streaming socket pick up G-code line bytes / flow-control

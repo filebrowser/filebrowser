@@ -468,6 +468,51 @@ unless we find something materially smaller.
   the existing endpoint. Read the dir, fuzzy-match basename, return
   the URL of the model + drawing alongside the streamer status.
 
+## TODO — Multi-machine support (architectural follow-on)
+
+User direction (2026-05-09): "should eventually be machine agnostic
+and allow multiple and different brands. Along with destination
+selection on send."
+
+Current state: `settings.Cnc` holds a single `HaasHost` / `HaasPort`,
+single Streamer singleton, hard-coded Q-code protocol. All references
+to "Haas" are baked through the codebase.
+
+What changes:
+
+- **Settings**: `cnc.machines: []Machine` array, each with id, name,
+  brand (`haas` / `fanuc` / `mazak` / generic), host, port,
+  capabilities (does it speak Q-codes? DPRNT? TFTP?). The current
+  single-machine config becomes the migration target — first item
+  in the array.
+- **Streamer**: one instance per machine. The current singleton
+  becomes a registry keyed by machine id. Aggregator gets the same
+  treatment.
+- **Brand abstraction**: protocol-specific code moves behind a
+  `MachineProtocol` interface — `Stream(line)`, `Query(qCode)`,
+  `ParseStatus(raw)`. Haas implementation is the first concrete.
+  Fanuc / Mazak / generic raw-passthrough land later.
+- **API**: existing `/api/cnc/*` endpoints take a `machine_id` query
+  param (or path prefix). Default to the first machine for backwards
+  compat during migration.
+- **UI**: editor's Send button gets a destination dropdown when
+  `machines.length > 1`. /machine becomes a multi-machine view (one
+  card per machine, or a top-level switcher).
+- **Settings UI**: Machine settings tab becomes a list with add/edit
+  /delete; each entry has its own host/port/camera/dashboard config.
+
+Order of operations:
+1. Add `MachineProtocol` interface, port the Haas implementation
+   behind it. No behaviour change yet.
+2. Schema migration from `settings.Cnc` (singleton) → `settings.Cnc.Machines`
+   (list of one). Old DBs auto-upgrade.
+3. Refactor Streamer + Aggregator into per-machine instances.
+4. Endpoint param + frontend send-destination dropdown.
+5. Second brand (Fanuc most likely — similar serial/network shape).
+
+Defer until single-machine streaming is rock solid and the user has
+a second machine to test against.
+
 ## Out of scope for v1 (revisit when ready)
 
 - Hardware feed-hold pause via Pi GPIO + opto-isolated relay → Haas's

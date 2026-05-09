@@ -108,6 +108,62 @@ func cncStatusHandler(streamer *cnc.Streamer) handleFunc {
 	})
 }
 
+// cncCheckHandler probes connectivity in two layers:
+//
+//   1. Bridge — TCP dial to the configured Haas host:port. Reports
+//      whether the Waveshare RS-232↔TCP bridge is reachable on the
+//      network (cabling / power / ip address sane).
+//   2. Controller — sends a Q104 (mode) round-trip and validates the
+//      response shape. If the bridge dials but the controller doesn't
+//      answer or returns garbage, that points at Setting 143 / RS-232
+//      cabling / pendant-off, not network. Auth: any logged-in user.
+func cncCheckHandler(streamer *cnc.Streamer) handleFunc {
+	return withUser(func(w http.ResponseWriter, r *http.Request, _ *data) (int, error) {
+		body := struct {
+			Bridge struct {
+				OK        bool    `json:"ok"`
+				LatencyMs float64 `json:"latency_ms,omitempty"`
+				Error     string  `json:"error,omitempty"`
+				Address   string  `json:"address,omitempty"`
+			} `json:"bridge"`
+			Controller struct {
+				OK        bool    `json:"ok"`
+				LatencyMs float64 `json:"latency_ms,omitempty"`
+				Error     string  `json:"error,omitempty"`
+				Mode      string  `json:"mode,omitempty"`
+			} `json:"controller"`
+		}{}
+
+		if streamer.IsRunning() {
+			body.Bridge.Error = "stream in progress — connection check skipped to avoid disturbing the job"
+			body.Controller.Error = body.Bridge.Error
+			return renderJSON(w, r, body)
+		}
+
+		bridgeOK, bridgeLatency, bridgeAddr, bridgeErr := streamer.CheckBridge()
+		body.Bridge.OK = bridgeOK
+		body.Bridge.LatencyMs = bridgeLatency
+		body.Bridge.Address = bridgeAddr
+		if bridgeErr != nil {
+			body.Bridge.Error = bridgeErr.Error()
+			body.Controller.Error = "skipped (bridge unreachable)"
+			return renderJSON(w, r, body)
+		}
+
+		// Bridge is up — exercise a Q104 to see if the controller is
+		// actually answering. CheckController honors the same query
+		// serialization as the rest of the streamer.
+		ctrlOK, ctrlLatency, mode, ctrlErr := streamer.CheckController(r.Context())
+		body.Controller.OK = ctrlOK
+		body.Controller.LatencyMs = ctrlLatency
+		body.Controller.Mode = mode
+		if ctrlErr != nil {
+			body.Controller.Error = ctrlErr.Error()
+		}
+		return renderJSON(w, r, body)
+	})
+}
+
 // cncStartBody is the request body for POST /api/cnc/start. file_path is
 // share-relative — the same shape filebrowser uses elsewhere.
 type cncStartBody struct {

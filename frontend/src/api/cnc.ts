@@ -63,6 +63,25 @@ export function ackRecovery() {
   });
 }
 
+export interface CncCheckResult {
+  bridge: {
+    ok: boolean;
+    latency_ms?: number;
+    error?: string;
+    address?: string;
+  };
+  controller: {
+    ok: boolean;
+    latency_ms?: number;
+    error?: string;
+    mode?: string;
+  };
+}
+
+export function checkConnection() {
+  return fetchJSON<CncCheckResult>(`/api/cnc/check`, { method: "POST" });
+}
+
 export interface CncMetric {
   key: string;
   label: string;
