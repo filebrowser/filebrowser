@@ -31,15 +31,27 @@ enable_dwc2() {
   [[ -f $cfg ]] || die "could not find config.txt — is this a Raspberry Pi?"
   [[ -f $cmd ]] || die "could not find cmdline.txt — is this a Raspberry Pi?"
 
-  if ! grep -qE '^\s*dtoverlay=dwc2' "$cfg"; then
+  # Gadget mode requires dwc2 in peripheral mode. dr_mode=host (sometimes
+  # left behind by other overlays / images) gives the Pi no UDC, and
+  # g_mass_storage silently fails with "couldn't find an available UDC".
+  # We force dr_mode=peripheral every time and rewrite a wrong line if we
+  # find one.
+  local want='dtoverlay=dwc2,dr_mode=peripheral'
+  if ! grep -qE '^\s*dtoverlay=dwc2(\b|,)' "$cfg"; then
     cp -a "$cfg" "${cfg}.cnc-pi.bak"
-    printf '\n# enabled by setup-pi.sh — USB OTG for mass-storage gadget\ndtoverlay=dwc2\n' >> "$cfg"
-    ok "added dtoverlay=dwc2 to $cfg (backup: ${cfg}.cnc-pi.bak)"
+    printf '\n# enabled by setup-pi.sh — USB OTG for mass-storage gadget\n%s\n' "$want" >> "$cfg"
+    ok "added $want to $cfg (backup: ${cfg}.cnc-pi.bak)"
     # REBOOT_REQUIRED is read by setup-pi.sh.
     # shellcheck disable=SC2034
     REBOOT_REQUIRED=1
+  elif grep -qE '^\s*dtoverlay=dwc2,dr_mode=peripheral\s*$' "$cfg"; then
+    ok "dwc2 overlay already in peripheral mode in $cfg"
   else
-    ok "dwc2 overlay already enabled in $cfg"
+    cp -a "$cfg" "${cfg}.cnc-pi.bak"
+    sed -i -E "s|^\s*dtoverlay=dwc2.*$|$want|" "$cfg"
+    ok "rewrote dwc2 overlay to peripheral mode in $cfg (backup: ${cfg}.cnc-pi.bak)"
+    # shellcheck disable=SC2034
+    REBOOT_REQUIRED=1
   fi
 
   if ! grep -q 'modules-load=.*dwc2' "$cmd"; then
