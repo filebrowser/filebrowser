@@ -1,14 +1,21 @@
 # Mode A: Pi presents itself as a USB mass-storage device to the connected CNC controller.
 #
-# Architecture:
-#   - A backing image file (FAT32) at $IMAGE_PATH is what g_mass_storage exports.
-#   - We loop-mount that image at $SHARE_PATH so filebrowser writes to it directly.
-#     One source of truth: a write through filebrowser lands in the FAT32 image
-#     immediately. No rsync. No drift between "what the user sees" and
-#     "what the controller sees".
-#   - On the OTG-USB side, the controller reads from the same image. When files
-#     change, the watcher does a quick eject+reattach so the controller picks
-#     up the new contents (most CNC firmwares cache the FAT directory).
+# Architecture (v2 — bidirectional, corruption-safe):
+#
+#   - $SHARE_PATH is a regular Linux folder. Filebrowser writes to it directly.
+#     It is NOT a loop mount of the image (was, in v1, and that caused FAT
+#     corruption when both Linux and the controller wrote at the same time).
+#   - $IMAGE_PATH is the FAT32 image exported via g_mass_storage. Linux NEVER
+#     mounts it. It's only ever read or written through mtools, and only
+#     while the LUN is detached.
+#   - The watcher orchestrates the sync: detach LUN → pull controller-new
+#     files into the share → atomically rebuild image from share → reattach
+#     LUN. See pi-setup/scripts/cnc-usb-watcher for the full algorithm.
+#
+# This is the documented-safe pattern from
+# Documentation/usb/mass-storage.rst — the host and the controller never
+# touch the file at the same time, so the FAT cache fight that corrupts
+# directory entries can't happen.
 #
 # shellcheck shell=bash
 
@@ -45,16 +52,11 @@ enable_dwc2() {
   else
     ok "dwc2 module-load already set in $cmd"
   fi
-
-  if ! grep -qE '^\s*g_mass_storage' /etc/modules 2>/dev/null; then
-    # We do NOT auto-load g_mass_storage at boot via /etc/modules — the systemd
-    # unit loads it with the right `file=` argument. Touching /etc/modules would
-    # cause a no-args load that would fail and clutter dmesg.
-    :
-  fi
 }
 
 # create_backing_image <path> <size_mb>
+# Creates a sparse FAT32 image. Never re-formats an existing one — that
+# would clobber whatever's currently on the stick.
 create_backing_image() {
   local image=$1 size_mb=$2
   step "Creating backing image at $image (${size_mb} MB, FAT32)"
@@ -67,47 +69,79 @@ create_backing_image() {
   mkdir -p "$(dirname "$image")"
   # Sparse via dd seek — fast even for large sizes.
   dd if=/dev/zero of="$image" bs=1M count=0 seek="$size_mb" status=none
-  # FAT32 with a friendly volume label. -F 32 forces FAT32 even on small sizes.
-  mkfs.vfat -F 32 -n CNC "$image" >/dev/null
+  # FAT32 with a friendly volume label. -I needed for raw .img files
+  # (mkfs.vfat otherwise refuses because the file isn't a partition device).
+  mkfs.vfat -F 32 -n CNC -I "$image" >/dev/null
   ok "created $image"
 }
 
-# mount_backing_image <image_path> <mount_point>
-# Persists in /etc/fstab so it survives reboot.
-mount_backing_image() {
-  local image=$1 mount_point=$2
-  step "Mounting $image at $mount_point"
-
-  mkdir -p "$mount_point"
-
-  # Idempotent fstab entry — keyed on mount point.
-  local fstab_line="$image  $mount_point  vfat  loop,uid=1000,gid=1000,umask=000,flush  0  0"
-  if grep -qE "^\s*[^#].*\s${mount_point}\s" /etc/fstab; then
-    # Replace existing line for this mount point (preserves other lines).
-    sed -i.cnc-pi.bak "\|[[:space:]]${mount_point}[[:space:]]|c\\${fstab_line}" /etc/fstab
-    ok "updated fstab entry for $mount_point"
-  else
-    printf '%s\n' "$fstab_line" >> /etc/fstab
-    ok "appended fstab entry for $mount_point"
+# migrate_v1_loop_mount — clean up the v1 architecture if found.
+# v1 loop-mounted $IMAGE_PATH at $SHARE_PATH and added an fstab line. v2
+# wants $SHARE_PATH to be a regular folder and no fstab entry. Handles
+# three cases:
+#   1. v1 install in good state (mounted): umount, copy contents, drop fstab.
+#   2. v1 install half-broken (fstab line present but never mounted —
+#      e.g. unescaped space in path): just drop the fstab line.
+#   3. Fresh install: nothing to do.
+migrate_v1_loop_mount() {
+  local mounted=0 had_fstab=0
+  if mountpoint -q "$SHARE_PATH" 2>/dev/null; then
+    mounted=1
+  fi
+  # Match any fstab line that references the image file. Robust to
+  # paths with spaces (escaped or not) and quoted paths.
+  if [[ -r /etc/fstab ]] && grep -qF "$IMAGE_PATH" /etc/fstab; then
+    had_fstab=1
   fi
 
-  # Mount now if not mounted.
-  if mountpoint -q "$mount_point"; then
-    log "$mount_point already mounted — remounting to apply new options"
-    mount -o remount "$mount_point" || mount "$mount_point"
-  else
-    mount "$mount_point"
+  if (( mounted == 0 && had_fstab == 0 )); then
+    return 0
   fi
-  ok "mounted"
+
+  step "Migrating from v1 loop-mounted layout"
+
+  systemctl stop filebrowser cnc-usb-watcher cnc-usb-mass-storage 2>/dev/null || true
+
+  if (( mounted )); then
+    local stash
+    stash=$(mktemp -d /tmp/cnc-pi-migrate-XXXXXX)
+    log "preserving share contents at $stash"
+    cp -a "$SHARE_PATH"/. "$stash/" 2>/dev/null || true
+
+    if ! umount "$SHARE_PATH"; then
+      rm -rf "$stash"
+      die "could not umount $SHARE_PATH — close any process holding it (lsof) and re-run"
+    fi
+    ok "umounted $SHARE_PATH"
+
+    cp -a "$stash"/. "$SHARE_PATH"/ 2>/dev/null || true
+    rm -rf "$stash"
+    ok "share contents preserved into the regular folder at $SHARE_PATH"
+  fi
+
+  if (( had_fstab )); then
+    cp -a /etc/fstab /etc/fstab.cnc-pi.bak 2>/dev/null || true
+    grep -vF "$IMAGE_PATH" /etc/fstab > /etc/fstab.tmp && mv /etc/fstab.tmp /etc/fstab
+    ok "removed legacy fstab entries referencing $IMAGE_PATH (backup: /etc/fstab.cnc-pi.bak)"
+    systemctl daemon-reload 2>/dev/null || true
+  fi
 }
 
 install_usb_mass_storage_mode() {
-  ensure_pkgs dosfstools inotify-tools
+  # mtools = the host-side FAT32 toolkit the watcher uses to read/write
+  # the image without mounting it. dosfstools = mkfs.vfat. inotify-tools
+  # = the watcher's change detector.
+  ensure_pkgs dosfstools inotify-tools mtools
+
+  migrate_v1_loop_mount
 
   enable_dwc2
 
   create_backing_image "$IMAGE_PATH" "$IMAGE_SIZE_MB"
-  mount_backing_image  "$IMAGE_PATH" "$SHARE_PATH"
+  mkdir -p "$SHARE_PATH"
+  if [[ -n "${FB_USER:-}" ]]; then
+    chown -R "$FB_USER:$FB_USER" "$SHARE_PATH" 2>/dev/null || true
+  fi
 
   step "Installing USB-gadget systemd units"
 

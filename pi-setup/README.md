@@ -12,43 +12,57 @@ with no panel input.
 
 ## How it fits together
 
-- **filebrowser-NC** runs as a systemd service rooted at your share folder.
-- A **FAT32 image file** is loop-mounted at that folder, so filebrowser
-  writes land directly in the image — no rsync, no drift between "what
-  you uploaded" and "what the controller sees", they're the same bytes.
-- **`g_mass_storage`** exports that image to the controller as a USB drive,
-  **read-only to the controller** (more on this below).
-- **`cnc-usb-watcher`** debounces file events and re-exports the LUN
-  (`echo "" > …/lun0/file` then `echo $IMAGE_PATH > …/lun0/file`), which
-  the controller's USB stack handles like an unplug + replug. New
-  contents show up automatically.
+- **filebrowser-NC** runs as a systemd service rooted at the share folder.
+  The share folder is a regular Linux directory — **not** a mount of
+  anything.
+- **A FAT32 image file** lives next to the share. It's the file
+  `g_mass_storage` exports to the controller as a USB drive. Linux
+  **never** loop-mounts it. The host only reads/writes the image
+  through `mtools`, and only while the LUN is detached.
+- **`cnc-usb-watcher`** orchestrates the bidirectional sync. On every
+  file change in the share folder, after `WATCH_DEBOUNCE_SECONDS` of
+  quiescence and at least `WATCH_MIN_INTERVAL_SECONDS` since the last
+  cycle:
+  1. Detach the LUN — controller's USB stack sees the stick unplug.
+  2. Pull any controller-side new files into the share folder
+     (DPRNT logs, output files the machine wrote).
+  3. Atomically rebuild the image from the share (build to a temp
+     `.new`, swap into place).
+  4. Reattach the LUN — controller re-mounts and sees the new contents.
 
-### Why the controller mounts the stick read-only
+### Why this design
 
-This is the part that bites hard if you don't get it right. The kernel
-docs (`Documentation/usb/mass-storage.rst`) say:
+The kernel's `Documentation/usb/mass-storage.rst` is explicit:
 
 > If the file is opened for both reading and writing and is accessed
 > via the host and via the local Linux system at the same time then
 > the contents of the file may be corrupted.
 
-We need to write to the image from Linux (filebrowser uploads), and
-the controller needs to read it. If we let the controller also write,
-both sides cache the FAT separately and fight — directory entries get
-corrupted, file contents end up at the wrong sectors, files look
-garbled when you try to open them.
+An earlier version of this fork loop-mounted the image AND exported
+it as read-write USB. Both sides cached the FAT independently and
+fought, corrupting directory entries and crossing file contents. We
+had files come back garbled.
 
-The fix the kernel docs describe is the one we use: pass `ro=1` to
-`g_mass_storage`. Linux writes freely, the controller reads only.
-Edits happen at the office workstation and travel through filebrowser;
-the controller is a consumer.
+The current design sidesteps the race entirely: only one side ever
+touches the image at a time. While the LUN is attached, the
+controller is the only writer (host doesn't touch the image at all).
+While the LUN is detached, the host syncs through `mtools` (the
+controller literally can't see the device). No shared cache, no
+fight.
 
-If your workflow needs the controller to write back to the stick
-(rare but possible — DPRNT logs, edited offsets), you'll need to
-either flip `ro=1` → `ro=0` in
-`/etc/systemd/system/cnc-usb-mass-storage.service` and accept the
-corruption risk, or wait for a v2 that detaches the LUN, syncs via
-`mtools`, and re-attaches (no shared mount, no race).
+### Conflict policy
+
+| Situation | Outcome |
+|---|---|
+| File on both sides | Filebrowser wins — the rebuild from the share overwrites whatever the controller wrote |
+| File only on the controller, not in last snapshot | Pulled into the share (controller-created) |
+| File only on the controller, *was* in last snapshot | Dropped — the host deleted it, deletion sticks |
+| File only on the host | Pushed into image via the rebuild |
+
+The watcher keeps a snapshot of the image's contents at the last
+successful sync (`/var/lib/cnc-usb-watcher/last_sync_listing`) so it
+can tell "controller created a new file" apart from "host deleted a
+file that was previously on the stick".
 
 ## First run
 
@@ -86,8 +100,8 @@ To change one knob without re-prompting through everything, edit
 
 | Setting | Default | Notes |
 |---|---|---|
-| `SHARE_PATH` | `~/cnc/files` | Where filebrowser is rooted |
-| `IMAGE_PATH` | `~/cnc/cnc-usb.img` | The FAT32 image, loop-mounted at SHARE_PATH |
+| `SHARE_PATH` | `~/cnc/files` | Regular folder filebrowser serves. Avoid spaces in the path. |
+| `IMAGE_PATH` | `~/cnc/cnc-usb.img` | FAT32 image exported as USB. Never mounted on the host. |
 | `IMAGE_SIZE_MB` | `4096` | 4 GB. Only used when creating a new image |
 | `WATCH_DEBOUNCE_SECONDS` | `8` | Quiet seconds before re-export |
 | `WATCH_MIN_INTERVAL_SECONDS` | `30` | Min gap between two re-exports |
@@ -102,12 +116,12 @@ journalctl -u cnc-usb-mass-storage -f # gadget module load/unload
 
 ## Troubleshooting
 
-**Controller doesn't see fresh files.** Either the watcher isn't
-re-exporting, or the controller's USB stack is too aggressive about
-caching. Check `journalctl -u cnc-usb-watcher -f` — you should see
-`re-export complete` lines after edits. Try shortening
-`WATCH_DEBOUNCE_SECONDS` or lengthening `WATCH_MIN_INTERVAL_SECONDS`
-if the controller is rejecting back-to-back re-mounts.
+**Controller doesn't see fresh files.** Check `journalctl -u
+cnc-usb-watcher -f` — you should see `sync complete` followed by
+`LUN reattached` after edits. If you don't, the watcher isn't being
+triggered. If you do, the controller's USB stack may be caching too
+aggressively; some Haas controllers need the operator to actually go
+to the directory listing screen for the re-mount to register.
 
 **`could not find LUN file under /sys`** in watcher logs. The
 `g_mass_storage` module isn't loaded, usually because dwc2 isn't
@@ -116,15 +130,23 @@ available. Confirm with `lsmod | grep dwc2` and
 edit didn't take effect — check `/boot/firmware/config.txt` for
 `dtoverlay=dwc2` and reboot.
 
-**Filebrowser writes don't show up in the image.** Check that
-`mountpoint -q "$SHARE_PATH"` returns true. If the image isn't mounted,
-filebrowser is writing to a plain folder of the same name and the
-controller will never see those bytes. `sudo mount "$SHARE_PATH"`.
+**Files in filebrowser don't show up on the controller.** Verify
+the share folder is *not* a mount point: `mountpoint -q $SHARE_PATH`
+should return non-zero (it's just a folder now). If it IS a mount
+point, you're on a stale v1 install — re-run `setup-pi.sh`, the
+migration step will umount and clean up the fstab line.
+
+**Path with spaces breaks setup (legacy).** v1 wrote an unescaped
+fstab entry which would parse-fail on paths like
+`/home/admin/Desktop/cnc files`. v2 doesn't write any fstab entry, so
+spaces in the share path are now fine — but if you upgraded from a
+half-broken v1 install, the migration step in `setup-pi.sh` removes
+the bad fstab line for you.
 
 **I want to wipe everything.** `sudo systemctl disable --now
 filebrowser cnc-usb-watcher cnc-usb-mass-storage`, then delete the
-unit files in `/etc/systemd/system/`, the loop image, and
-`/etc/cnc-pi.conf`.
+unit files in `/etc/systemd/system/`, the image file, the share
+folder, `/etc/cnc-pi.conf`, and `/var/lib/cnc-usb-watcher/`.
 
 ## Files installed
 
@@ -133,8 +155,8 @@ unit files in `/etc/systemd/system/`, the loop image, and
 | `/etc/cnc-pi.conf` | All knobs in one place. Source of truth for re-runs. |
 | `/etc/systemd/system/filebrowser.service` | Web file manager |
 | `/etc/systemd/system/cnc-usb-mass-storage.service` | Loads `g_mass_storage` at boot |
-| `/etc/systemd/system/cnc-usb-watcher.service` | The debounced watcher loop |
+| `/etc/systemd/system/cnc-usb-watcher.service` | The bidirectional sync watcher |
 | `/usr/local/bin/cnc-usb-watcher` | The watcher script itself |
-| `/etc/fstab` | Adds the loop-mount entry for the FAT32 image |
+| `/var/lib/cnc-usb-watcher/last_sync_listing` | Snapshot of the image's contents at the last successful sync. Lets the watcher distinguish controller-created files from host-deleted ones. |
 | `/boot/firmware/config.txt` | `dtoverlay=dwc2` line appended (backup written) |
 | `/boot/firmware/cmdline.txt` | `modules-load=dwc2` appended (backup written) |
