@@ -1,7 +1,14 @@
 <template>
   <header>
     <CncRecoveryBanner />
-    <img v-if="showLogo" :src="logoURL" />
+    <router-link
+      v-if="showLogo"
+      to="/files/"
+      :aria-label="t('sidebar.myFiles')"
+      class="logo-link"
+    >
+      <img :src="logoURL" />
+    </router-link>
     <Action
       v-if="showMenu"
       class="menu-button"

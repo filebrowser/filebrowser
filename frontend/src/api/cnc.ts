@@ -7,7 +7,6 @@ export interface CncSettings {
   haasHost: string;
   haasPort: number;
   cameraUrl: string;
-  haasDashboardUrl: string;
   machineToken?: string;
 }
 
