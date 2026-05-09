@@ -278,6 +278,10 @@ const toggleFollowMachine = () => {
 
 const promptSendToMachine = async () => {
   await refreshCncStatus();
+  if (cncStore.recoveryPending) {
+    $showError(new Error(t("errors.cncRecoveryPending") as string));
+    return;
+  }
   if (cncRunning.value) {
     $showError(new Error(t("errors.cncJobAlreadyRunning") as string));
     return;

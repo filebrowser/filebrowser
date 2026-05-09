@@ -69,7 +69,11 @@
   },
   "cnc": {
     "statusTooltip": "Streaming to machine: {path} — click to open the file",
-    "lineN": "line {n}"
+    "lineN": "line {n}",
+    "recoveryBanner": "Previous job ({path}) didn't end cleanly. Verify the part + machine state before starting a new one.",
+    "recoveryUnknownFile": "unknown file",
+    "recoveryAck": "Acknowledge",
+    "recoveryAcking": "Acknowledging…"
   },
   "machine": {
     "cameraTitle": "Camera",
@@ -83,7 +87,8 @@
     "notFound": "This location can't be reached.",
     "connection": "The server can't be reached.",
     "cncJobAlreadyRunning": "A job is already streaming to the machine.",
-    "cncSettingsMissing": "Set the Haas host in Settings → Machine before sending."
+    "cncSettingsMissing": "Set the Haas host in Settings → Machine before sending.",
+    "cncRecoveryPending": "Previous job didn't end cleanly. Acknowledge the recovery banner before starting a new job."
   },
   "files": {
     "body": "Body",

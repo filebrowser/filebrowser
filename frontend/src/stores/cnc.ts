@@ -24,6 +24,8 @@ interface CncState {
   lineTotal: number;
   haasOk: boolean;
   haasLastError: string;
+  recoveryPending: boolean;
+  recoveryFilePath: string;
   // Last raw status (handy if a future surface wants more fields).
   raw: CncStatus | null;
   // Internal: tells the pill component when to show "?", "running", "idle".
@@ -44,6 +46,8 @@ export const useCncStore = defineStore("cnc", {
     lineTotal: 0,
     haasOk: true,
     haasLastError: "",
+    recoveryPending: false,
+    recoveryFilePath: "",
     raw: null,
     initialized: false,
   }),
@@ -56,8 +60,18 @@ export const useCncStore = defineStore("cnc", {
       this.lineTotal = s.line_total ?? 0;
       this.haasOk = s.haas_ok !== false;
       this.haasLastError = s.haas_last_error ?? "";
+      this.recoveryPending = !!s.recovery_pending;
+      this.recoveryFilePath = s.recovery_file_path ?? "";
       this.raw = s;
       this.initialized = true;
+    },
+
+    async ackRecovery() {
+      await cncApi.ackRecovery();
+      this.recoveryPending = false;
+      this.recoveryFilePath = "";
+      // Refresh from the server so the rest of the state matches reality.
+      this.pollOnce();
     },
 
     async pollOnce() {

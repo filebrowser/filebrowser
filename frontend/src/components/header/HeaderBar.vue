@@ -1,5 +1,6 @@
 <template>
   <header>
+    <CncRecoveryBanner />
     <img v-if="showLogo" :src="logoURL" />
     <Action
       v-if="showMenu"
@@ -42,6 +43,7 @@ import { useLayoutStore } from "@/stores/layout";
 import { logoURL } from "@/utils/constants";
 
 import Action from "@/components/header/Action.vue";
+import CncRecoveryBanner from "@/components/header/CncRecoveryBanner.vue";
 import CncStatusPill from "@/components/header/CncStatusPill.vue";
 import { computed, onMounted, useSlots } from "vue";
 import { useI18n } from "vue-i18n";

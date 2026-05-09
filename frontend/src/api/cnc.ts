@@ -20,6 +20,8 @@ export interface CncStatus {
   started_at?: string;
   haas_ok: boolean;
   haas_last_error?: string;
+  recovery_pending?: boolean;
+  recovery_file_path?: string;
 }
 
 export function getSettings() {
@@ -52,6 +54,12 @@ export function start(filePath: string) {
 
 export function stop() {
   return fetchJSON<{ stopped: boolean }>(`/api/cnc/stop`, {
+    method: "POST",
+  });
+}
+
+export function ackRecovery() {
+  return fetchJSON<{ acknowledged: boolean }>(`/api/cnc/recovery/ack`, {
     method: "POST",
   });
 }
