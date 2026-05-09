@@ -416,6 +416,58 @@ calls for**. Most "tool management" software is offline-only.
    parser (we currently only highlight syntax; we don't model the
    semantics). Defer until 1-4 are proven on hardware.
 
+## TODO — Send → /machine pivot + 3D part viewer (next phase)
+
+User direction (2026-05-09): clicking Send should route to `/machine`
+with the part visualised next to the live state. /machine becomes
+the operating panel during a job, not just a dashboard.
+
+### Layout
+
+- `/machine` gets a side-by-side: live state on the left
+  (existing hero + tiles + position grid), part view on the right.
+- 3D viewer below the existing CNC viewer when both are present —
+  G-code render up top (toolpath / current line tracker), part 3D
+  view below it.
+- NC code preview side-by-side with the rendered NC viewer (mirrors
+  the editor pane but read-only, scrolling to follow `lineCurrent`).
+
+### File ↔ NC matching
+
+- "The model that goes with this NC" lives in the same folder.
+- Match rule: same basename, any of `.3mf .stl .step .stp .x_t .x_b .iges .igs .obj`.
+- PDF drawing: same basename, `.pdf`. Surface as a "Drawing" tab/link.
+- Show all three in /machine when the streaming job has a matching
+  set on disk.
+
+### 3D viewer library
+
+User-suggested: [Online3DViewer](https://github.com/kovacsv/Online3DViewer)
+(`online-3d-viewer` on npm). Strip out the PCB load path and the
+exporter — keep just the import + render surface. License: MIT.
+
+Open question: anything lighter? Three.js + a parser-per-format is
+the alternative but Online3DViewer covers `.3mf .stl .step .x_t
+.iges .obj` etc. out of the box, which is the long tail. Keep
+unless we find something materially smaller.
+
+### Raw viewer in filebrowser file listing
+
+- Clicking a `.3mf / .stl / .step / .x_t / …` from the file browser
+  should preview it in-line, the same way `.png` and `.jpg` already
+  preview.
+- Reuses the same Online3DViewer Vue component built for /machine.
+
+### Implementation notes
+
+- The 3D viewer component should be lazy-loaded — Online3DViewer
+  bundles parsers for many formats and adds weight, only pull it
+  when the user actually opens a 3D file or runs a job with a
+  matching model.
+- File ↔ NC matching: GET `/api/resources/<dir>?recursive=false` is
+  the existing endpoint. Read the dir, fuzzy-match basename, return
+  the URL of the model + drawing alongside the streamer status.
+
 ## Out of scope for v1 (revisit when ready)
 
 - Hardware feed-hold pause via Pi GPIO + opto-isolated relay → Haas's
