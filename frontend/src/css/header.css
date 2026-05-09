@@ -38,12 +38,22 @@ header a:hover {
 }
 
 header > div:first-child > .action,
-header img {
+header img,
+header .logo-link {
   margin-right: 1em;
 }
 
 header img {
   height: 2.5em;
+}
+
+header .logo-link {
+  display: inline-flex;
+  align-items: center;
+}
+
+header .logo-link img {
+  margin-right: 0;
 }
 
 header .action span {

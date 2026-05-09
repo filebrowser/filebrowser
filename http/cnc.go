@@ -29,20 +29,18 @@ import (
 // EXCEPT MachineToken — minted server-side via the dedicated regenerate
 // endpoint so a stray PUT can't blank it out.
 type cncSettingsBody struct {
-	HaasHost         string `json:"haasHost"`
-	HaasPort         int    `json:"haasPort"`
-	CameraURL        string `json:"cameraUrl"`
-	HaasDashboardURL string `json:"haasDashboardUrl"`
-	MachineToken     string `json:"machineToken,omitempty"` // GET only
+	HaasHost     string `json:"haasHost"`
+	HaasPort     int    `json:"haasPort"`
+	CameraURL    string `json:"cameraUrl"`
+	MachineToken string `json:"machineToken,omitempty"` // GET only
 }
 
 func cncFromSettings(c settings.Cnc) cncSettingsBody {
 	return cncSettingsBody{
-		HaasHost:         c.HaasHost,
-		HaasPort:         c.HaasPort,
-		CameraURL:        c.CameraURL,
-		HaasDashboardURL: c.HaasDashboardURL,
-		MachineToken:     c.MachineToken,
+		HaasHost:     c.HaasHost,
+		HaasPort:     c.HaasPort,
+		CameraURL:    c.CameraURL,
+		MachineToken: c.MachineToken,
 	}
 }
 
@@ -67,7 +65,6 @@ var cncSettingsPutHandler = withAdmin(func(_ http.ResponseWriter, r *http.Reques
 	d.settings.Cnc.HaasHost = req.HaasHost
 	d.settings.Cnc.HaasPort = port
 	d.settings.Cnc.CameraURL = req.CameraURL
-	d.settings.Cnc.HaasDashboardURL = req.HaasDashboardURL
 	// MachineToken intentionally not touched — see comment on the body type.
 
 	err := d.store.Settings.Save(d.settings)

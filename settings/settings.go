@@ -31,10 +31,9 @@ const DefaultHaasPort = 4196
 // nested struct is forward-compatible: pre-existing DBs decode it as the
 // zero value, and Storage.Get fills sensible defaults.
 type Cnc struct {
-	HaasHost         string `json:"haasHost"`
-	HaasPort         int    `json:"haasPort"`
-	CameraURL        string `json:"cameraUrl"`
-	HaasDashboardURL string `json:"haasDashboardUrl"`
+	HaasHost  string `json:"haasHost"`
+	HaasPort  int    `json:"haasPort"`
+	CameraURL string `json:"cameraUrl"`
 	// MachineToken is an opaque random secret pasted into the
 	// haas-dashboard env so its server-to-server calls into
 	// /api/cnc/qcode authenticate without a user session. Empty until

@@ -126,7 +126,8 @@
   header .menu-button {
     display: inherit;
   }
-  header img {
+  header img,
+  header .logo-link {
     display: none;
   }
   #listing {

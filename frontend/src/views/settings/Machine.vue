@@ -42,17 +42,6 @@
             />
           </p>
 
-          <h3>{{ t("settings.machineDashboard") }}</h3>
-          <p>
-            <label class="small">{{ t("settings.machineDashboardUrl") }}</label>
-            <input
-              class="input input--block"
-              type="text"
-              placeholder="http://homeserver.tail…/"
-              v-model="settings.haasDashboardUrl"
-            />
-          </p>
-
           <h3>{{ t("settings.machineToken") }}</h3>
           <p class="small">{{ t("settings.machineTokenHelp") }}</p>
           <p>
