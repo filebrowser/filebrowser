@@ -431,59 +431,27 @@ const handleViewerLineSelect = (lineIndex: number) => {
 
 <style>
 /*
- * G-code syntax highlighting for ace-gcode.js.
+ * G-code accents for ace-gcode.js.
  *
- * Colors picked in OKLCH at ~60% lightness so they read on both light and
- * dark Ace themes without per-theme overrides. N-codes inherit the theme's
- * own foreground color, just dimmed, so they're always legible.
+ * Colors come from the active Ace theme (Ambiance, Monokai, Solarized…)
+ * via the standard token categories the mode emits — keyword, variable,
+ * support.function, comment, etc. The rules below add only structural
+ * accents (italic, weight, dim) that work regardless of theme.
  */
 
-.ace_gcode.ace_comment {
-  color: oklch(55% 0.1 140) !important;
+.ace_comment.ace_gcode {
   font-style: italic;
 }
 
-.ace_gcode.ace_block {
-  /* N-codes track the theme's foreground color, slightly dimmed.
-     Works in any theme — dark or light, monokai or solarized — without
-     enumerating each one. */
-  color: currentColor;
-  opacity: 0.65;
+.ace_constant.ace_block.ace_gcode {
+  /* N-codes recede so the actual codes stand out. */
+  opacity: 0.55;
 }
 
-.ace_gcode.ace_marker {
-  color: oklch(60% 0.21 25) !important;
+.ace_keyword.ace_marker.ace_gcode,
+.ace_keyword.ace_gword.ace_gcode,
+.ace_keyword.ace_mcode.ace_gcode {
   font-weight: bold;
-}
-
-.ace_gcode.ace_gword {
-  color: oklch(60% 0.18 305) !important;
-  font-weight: bold;
-}
-
-.ace_gcode.ace_mcode {
-  color: oklch(65% 0.13 85) !important;
-  font-weight: bold;
-}
-
-.ace_gcode.ace_xparam {
-  color: oklch(62% 0.15 50) !important;
-}
-
-.ace_gcode.ace_yparam {
-  color: oklch(58% 0.13 175) !important;
-}
-
-.ace_gcode.ace_zparam {
-  color: oklch(58% 0.16 245) !important;
-}
-
-.ace_gcode.ace_feedspeed {
-  color: oklch(62% 0.13 230) !important;
-}
-
-.ace_gcode.ace_subprog {
-  color: oklch(62% 0.13 230) !important;
 }
 
 .ace_constant.ace_numeric {

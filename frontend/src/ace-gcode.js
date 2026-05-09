@@ -1,7 +1,13 @@
 // frontend/src/ace-gcode.js
 // Custom G-code syntax mode for ACE editor.
-// Tokens are intentionally neutral for N-codes so they inherit
-// the active theme's foreground color — works in both light and dark mode.
+//
+// Token names map onto standard Ace categories (keyword, comment,
+// variable.parameter, support.function, ...) so the *active theme*
+// paints them — picking Ambiance vs Monokai vs Solarized actually
+// changes the gcode colors instead of being overridden.
+// Multi-segment token names also produce per-axis CSS hooks
+// (e.g. "variable.parameter.x" → ".ace_variable.ace_parameter.ace_x")
+// for the few accent overrides we keep in Editor.vue.
 
 ace.define(
   "ace/mode/gcode_highlight_rules",
@@ -23,95 +29,61 @@ ace.define(
       this.$rules = {
         start: [
           // ── Comments ────────────────────────────────────────────────────────
-          // Parenthetical: (this is a comment)
-          {
-            token: "gcode.comment",
-            regex: "\\(.*?\\)",
-          },
-          // Semicolon: ; this is a comment
-          {
-            token: "gcode.comment",
-            regex: ";.*$",
-          },
+          { token: "comment.gcode", regex: "\\(.*?\\)" },
+          { token: "comment.gcode", regex: ";.*$" },
 
-          // ── Block numbers ────────────────────────────────────────────────────
-          // N100, N0010 — uses "gcode.block" token; CSS sets color: inherit
-          // so it renders correctly in both light and dark Ace themes.
-          {
-            token: "gcode.block",
-            regex: "\\bN[0-9]+\\b",
-          },
+          // ── Block numbers (N100, N0010) ─────────────────────────────────────
+          // Plain "constant" so the theme paints it; we dim it with opacity
+          // in CSS to keep the line numbers from competing with the codes.
+          { token: "constant.other.block.gcode", regex: "\\bN[0-9]+\\b" },
 
-          // ── Program markers ──────────────────────────────────────────────────
-          // % (tape start/end) and O1234 (program number)
-          {
-            token: "gcode.marker",
-            regex: "%|\\bO[0-9]+\\b",
-          },
+          // ── Program markers — % (tape start/end) and O1234 (program number).
+          { token: "keyword.control.marker.gcode", regex: "%|\\bO[0-9]+\\b" },
 
-          // ── G-words (purple) ─────────────────────────────────────────────────
-          // G0, G01, G28.1, etc.
-          {
-            token: "gcode.gword",
-            regex: "\\bG[0-9]+(?:\\.[0-9]+)?\\b",
-          },
+          // ── G-words: G0, G01, G28.1, etc.
+          { token: "keyword.gword.gcode", regex: "\\bG[0-9]+(?:\\.[0-9]+)?\\b" },
 
-          // ── M-codes (yellow) ─────────────────────────────────────────────────
-          // M3, M06, M30, etc.
-          {
-            token: "gcode.mcode",
-            regex: "\\bM[0-9]+(?:\\.[0-9]+)?\\b",
-          },
+          // ── M-codes: M3, M06, M30, etc.
+          { token: "keyword.other.mcode.gcode", regex: "\\bM[0-9]+(?:\\.[0-9]+)?\\b" },
 
           // ── Axis / arc params ────────────────────────────────────────────────
-          // X / I / A  →  orange
-          // NOTE: ACE does NOT uppercase input; use explicit uppercase only.
-          //       lowercase i/j removed — they never appear in standard NC files.
+          // X / I / A — first axis class
           {
-            token: "gcode.xparam",
+            token: "variable.parameter.x.gcode",
             regex: "\\b[AIX][+-]?[0-9]+(?:\\.[0-9]+)?\\b",
           },
-
-          // Y / J  →  teal
+          // Y / J — second axis class
           {
-            token: "gcode.yparam",
+            token: "variable.parameter.y.gcode",
             regex: "\\b[JY][+-]?[0-9]+(?:\\.[0-9]+)?\\b",
           },
-
-          // Z / K / B  →  blue
+          // Z / K / B — third axis class
           {
-            token: "gcode.zparam",
+            token: "variable.parameter.z.gcode",
             regex: "\\b[BKZ][+-]?[0-9]+(?:\\.[0-9]+)?\\b",
           },
 
-          // ── Feed / speed / tool / offset codes (teal) ───────────────────────
+          // ── Feed / speed / tool / offset codes ──────────────────────────────
           // F, S, H, D, T, HCC — covers feed rate, spindle speed, tool/offset calls
           {
-            token: "gcode.feedspeed",
+            token: "support.function.feedspeed.gcode",
             regex: "\\b(?:HCC|Hcc|hcc|[FSDHT])[+-]?[0-9]+(?:\\.[0-9]+)?\\b",
           },
 
-          // ── Subprogram / dwell P values (light blue) ────────────────────────
+          // ── Subprogram / dwell P values
           {
-            token: "gcode.subprog",
+            token: "entity.name.function.subprog.gcode",
             regex: "\\bP[0-9]+(?:\\.[0-9]+)?\\b",
           },
 
-          // ── R parameter (radius / retract) ──────────────────────────────────
-          // Kept separate so it can be styled distinctly if desired.
-          // Currently falls through to constant.numeric — add a token if needed.
+          // ── R parameter (radius / retract) — geometry-like, group with X/I.
           {
-            token: "gcode.xparam", // reuse orange — R is geometry like X/I
+            token: "variable.parameter.x.gcode",
             regex: "\\bR[+-]?[0-9]+(?:\\.[0-9]+)?\\b",
           },
 
           // ── Fallback: bare numbers ───────────────────────────────────────────
-          // Any remaining numeric literal — styled with opacity in CSS so it
-          // recedes behind named tokens without hardcoding a color.
-          {
-            token: "constant.numeric",
-            regex: "[+-]?[0-9]+(?:\\.[0-9]+)?\\b",
-          },
+          { token: "constant.numeric", regex: "[+-]?[0-9]+(?:\\.[0-9]+)?\\b" },
         ],
       };
 
