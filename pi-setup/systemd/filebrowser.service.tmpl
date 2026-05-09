@@ -12,10 +12,11 @@ ExecStart=@@FB_BIN@@ --root @@SHARE_PATH@@ --address 0.0.0.0 --port 8080 --datab
 Restart=on-failure
 RestartSec=3
 
-# Hardening — relaxed because we serve from a user-chosen path
+# Hardening — light. Filebrowser's whole job is to serve a folder
+# (typically under /home), and it persists state in ~/.config, so
+# locking down /home blocks both serving and the DB write.
 NoNewPrivileges=yes
 ProtectSystem=full
-ProtectHome=read-only
 PrivateTmp=yes
 
 [Install]
