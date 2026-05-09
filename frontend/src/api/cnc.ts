@@ -42,3 +42,16 @@ export function regenerateToken() {
 export function getStatus() {
   return fetchJSON<CncStatus>(`/api/cnc/status`, {});
 }
+
+export function start(filePath: string) {
+  return fetchJSON<{ job_id: string }>(`/api/cnc/start`, {
+    method: "POST",
+    body: JSON.stringify({ file_path: filePath }),
+  });
+}
+
+export function stop() {
+  return fetchJSON<{ stopped: boolean }>(`/api/cnc/stop`, {
+    method: "POST",
+  });
+}

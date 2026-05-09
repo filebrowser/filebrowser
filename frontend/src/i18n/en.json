@@ -52,7 +52,10 @@
     "overrideAll": "Replace all files in destination folder",
     "skipAll": "Skip all conflicting files",
     "renameAll": "Rename all files (create a copy)",
-    "singleDecision": "Decide for each conflicting file"
+    "singleDecision": "Decide for each conflicting file",
+    "send": "Send",
+    "sendToMachine": "Send to machine",
+    "sendingToMachine": "Streaming to machine…"
   },
   "download": {
     "downloadFile": "Download File",
@@ -66,7 +69,9 @@
     "forbidden": "You don't have permissions to access this.",
     "internal": "Something really went wrong.",
     "notFound": "This location can't be reached.",
-    "connection": "The server can't be reached."
+    "connection": "The server can't be reached.",
+    "cncJobAlreadyRunning": "A job is already streaming to the machine.",
+    "cncSettingsMissing": "Set the Haas host in Settings → Machine before sending."
   },
   "files": {
     "body": "Body",
@@ -166,6 +171,10 @@
     "optionalPassword": "Optional password",
     "resolution": "Resolution",
     "discardEditorChanges": "Are you sure you wish to discard the changes you've made?",
+    "sendToMachineConfirm": "Stream this file to the connected Haas controller?",
+    "sendToMachineLines": "{n} lines",
+    "sendToMachineDestination": "Destination:",
+    "sendToMachineUnknownHost": "(not configured — set in Settings → Machine)",
     "replaceOrSkip": "Replace or skip files",
     "resolveConflict": "Which files do you want to keep?",
     "singleConflictResolve": "If you select both versions, a number will be added to the name of the copied file.",

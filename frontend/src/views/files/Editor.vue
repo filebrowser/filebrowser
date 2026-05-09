@@ -30,6 +30,14 @@
         @action="preview()"
         v-show="isMarkdownFile"
       />
+
+      <action
+        v-if="isGcodeFile && authStore.user?.perm.modify"
+        :icon="cncRunning ? 'precision_manufacturing' : 'send'"
+        :label="cncRunning ? t('buttons.sendingToMachine') : t('buttons.sendToMachine')"
+        :disabled="cncRunning"
+        @action="promptSendToMachine()"
+      />
     </header-bar>
 
     <!-- loading spinner -->
@@ -112,7 +120,7 @@
 <script setup lang="ts">
 import "@/ace-gcode.js";
 
-import { files as api } from "@/api";
+import { files as api, cnc as cncApi } from "@/api";
 import buttons from "@/utils/buttons";
 import url from "@/utils/url";
 
@@ -155,6 +163,7 @@ function debounce<T extends (...args: any[]) => void>(fn: T, delay: number): T {
 }
 
 const $showError = inject<IToastError>("$showError")!;
+const $showSuccess = inject<IToastSuccess>("$showSuccess")!;
 
 const fileStore = useFileStore();
 const authStore = useAuthStore();
@@ -194,6 +203,68 @@ const katexOptions = {
 marked.use(markedKatex(katexOptions));
 
 const isSelectionEmpty = ref(true);
+
+// ── Send-to-Machine (Z-9) ──────────────────────────────────────────────────
+// One-shot status check on mount + after start, plus a re-check when the
+// user pulls the trigger so the prompt can refuse if a job started in
+// another tab. Live updates land with the WS subscriber later (Z-12).
+const cncRunning = ref(false);
+const cncHaasHostLabel = ref<string>("");
+
+const refreshCncStatus = async () => {
+  try {
+    const st = await cncApi.getStatus();
+    cncRunning.value = !!st.running;
+  } catch {
+    cncRunning.value = false;
+  }
+};
+
+const promptSendToMachine = async () => {
+  await refreshCncStatus();
+  if (cncRunning.value) {
+    $showError(new Error(t("errors.cncJobAlreadyRunning") as string));
+    return;
+  }
+  let settings: { haasHost: string; haasPort: number } | null = null;
+  try {
+    const s = await cncApi.getSettings();
+    settings = { haasHost: s.haasHost, haasPort: s.haasPort };
+    cncHaasHostLabel.value = settings.haasHost
+      ? `${settings.haasHost}:${settings.haasPort}`
+      : "";
+  } catch {
+    cncHaasHostLabel.value = "";
+  }
+  if (!settings?.haasHost) {
+    $showError(
+      new Error(t("errors.cncSettingsMissing") as string)
+    );
+    return;
+  }
+  const filePath = "/" + (fileStore.req?.path?.replace(/^\/+/, "") ?? "");
+  const lineCount = (editor.value?.session.getLength() ?? 0) || 0;
+
+  layoutStore.showHover({
+    prompt: "sendToMachine",
+    props: {
+      filePath,
+      lineCount,
+      haasHostLabel: cncHaasHostLabel.value,
+    },
+    confirm: async (event: Event) => {
+      event.preventDefault();
+      layoutStore.closeHovers();
+      try {
+        await cncApi.start(filePath);
+        cncRunning.value = true;
+        $showSuccess(t("buttons.sendingToMachine"));
+      } catch (e: any) {
+        $showError(e);
+      }
+    },
+  });
+};
 
 // ── Splitter between code + 3D viewer ──────────────────────────────────────
 // Width is stored as a percent of the .editor-layout flexbox row.
@@ -290,6 +361,10 @@ watchEffect(async () => {
 onMounted(() => {
   window.addEventListener("keydown", keyEvent);
   window.addEventListener("beforeunload", handlePageChange);
+
+  if (isGcodeFile.value) {
+    refreshCncStatus();
+  }
 
   const fileContent = fileStore.req?.content || "";
 
