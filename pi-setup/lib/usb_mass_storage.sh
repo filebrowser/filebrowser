@@ -31,25 +31,36 @@ enable_dwc2() {
   [[ -f $cfg ]] || die "could not find config.txt — is this a Raspberry Pi?"
   [[ -f $cmd ]] || die "could not find cmdline.txt — is this a Raspberry Pi?"
 
-  # Gadget mode requires dwc2 in peripheral mode. dr_mode=host (sometimes
-  # left behind by other overlays / images) gives the Pi no UDC, and
-  # g_mass_storage silently fails with "couldn't find an available UDC".
-  # We force dr_mode=peripheral every time and rewrite a wrong line if we
-  # find one.
+  # Gadget mode requires dwc2 in peripheral mode in a section that
+  # actually applies on this hardware. The Bookworm imager seeds a
+  # [cm5] block with `dtoverlay=dwc2,dr_mode=host` — fine on a Compute
+  # Module 5, completely inert on a Pi 4 Model B. Earlier versions of
+  # this script edited that line in place; the result was an "already
+  # configured" log line and a Pi where dwc2 never bound. We always
+  # ensure a peripheral-mode line lives under [all] regardless.
   local want='dtoverlay=dwc2,dr_mode=peripheral'
-  if ! grep -qE '^\s*dtoverlay=dwc2(\b|,)' "$cfg"; then
-    cp -a "$cfg" "${cfg}.cnc-pi.bak"
-    printf '\n# enabled by setup-pi.sh — USB OTG for mass-storage gadget\n%s\n' "$want" >> "$cfg"
-    ok "added $want to $cfg (backup: ${cfg}.cnc-pi.bak)"
-    # REBOOT_REQUIRED is read by setup-pi.sh.
-    # shellcheck disable=SC2034
-    REBOOT_REQUIRED=1
-  elif grep -qE '^\s*dtoverlay=dwc2,dr_mode=peripheral\s*$' "$cfg"; then
-    ok "dwc2 overlay already in peripheral mode in $cfg"
+  local want_block
+  want_block=$'\n# Added by setup-pi.sh — USB OTG for mass-storage gadget. Lives under\n# [all] so it applies to Pi 4 Model B (the [cm5] block from the imager\n# does not).\n[all]\n'"$want"$'\n'
+
+  # Already correct under an applicable section? grep checks that the
+  # peripheral line is preceded somewhere by an [all] / [pi4] header
+  # rather than buried in [cm4]/[cm5]/[pi5] etc.
+  if awk '
+      /^[[:space:]]*\[/ { section = $0; next }
+      /^[[:space:]]*dtoverlay=dwc2,dr_mode=peripheral[[:space:]]*$/ {
+        if (section ~ /^\[(all|pi4|pi04)\]/) { found = 1 }
+      }
+      END { exit found ? 0 : 1 }
+    ' "$cfg"; then
+    ok "dwc2 overlay already in peripheral mode under [all]/[pi4] in $cfg"
   else
-    cp -a "$cfg" "${cfg}.cnc-pi.bak"
-    sed -i -E "s|^\s*dtoverlay=dwc2.*$|$want|" "$cfg"
-    ok "rewrote dwc2 overlay to peripheral mode in $cfg (backup: ${cfg}.cnc-pi.bak)"
+    [[ -f ${cfg}.cnc-pi.bak ]] || cp -a "$cfg" "${cfg}.cnc-pi.bak"
+    # Strip every existing dtoverlay=dwc2 line — they're either wrong
+    # (host mode) or in a section that doesn't apply. Then append a
+    # fresh peripheral-mode line under [all].
+    sed -i -E '/^\s*dtoverlay=dwc2(\b|,).*/d' "$cfg"
+    printf '%s' "$want_block" >> "$cfg"
+    ok "wrote $want under [all] in $cfg (backup: ${cfg}.cnc-pi.bak)"
     # shellcheck disable=SC2034
     REBOOT_REQUIRED=1
   fi
