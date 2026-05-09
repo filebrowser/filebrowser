@@ -118,7 +118,8 @@
 import { computed, h, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { cnc as cncApi } from "@/api";
-import type { CncMetric, CncStateSnapshot } from "@/api/cnc";
+import type { CncMetric } from "@/api/cnc";
+import { useCncStore } from "@/stores/cnc";
 import HeaderBar from "@/components/header/HeaderBar.vue";
 
 const { t } = useI18n();
@@ -127,22 +128,15 @@ const { t } = useI18n();
 const cameraURL = ref("");
 const hostConfigured = ref(false);
 
-// ── State snapshot from /api/cnc/state, polled every 1 s ───────────────────
-const state = ref<CncStateSnapshot>({});
-const STATE_POLL_MS = 1000;
-let stateTimer: ReturnType<typeof setInterval> | null = null;
+// ── Live telemetry from useCncStore ────────────────────────────────────────
+// Initial seed via /api/cnc/state on mount; from then on, WS "metric"
+// events keep the store fresh. A background 30 s reseed runs as a
+// belt-and-braces safety net for cases where the WS dropped silently.
+const cncStore = useCncStore();
+const RESEED_MS = 30_000;
+let reseedTimer: ReturnType<typeof setInterval> | null = null;
 
-const refreshState = async () => {
-  if (!hostConfigured.value) return;
-  try {
-    state.value = await cncApi.getState();
-  } catch {
-    /* leave previous values; the tile will go "stale" via the
-       last_update timestamp the server sent. */
-  }
-};
-
-const metric = (key: string): CncMetric | undefined => state.value[key];
+const metric = (key: string): CncMetric | undefined => cncStore.metrics[key];
 const parsed = (key: string): unknown => metric(key)?.parsed ?? null;
 const rawValue = (key: string): string => metric(key)?.value ?? "";
 
@@ -181,7 +175,7 @@ const statusClass = computed(() => {
 });
 
 const anyFresh = computed(() =>
-  Object.values(state.value).some((m) => m && !m.stale)
+  Object.values(cncStore.metrics).some((m) => m && !m.stale)
 );
 
 // ── Camera dispatch (same as before) ───────────────────────────────────────
@@ -230,15 +224,18 @@ onMounted(async () => {
   } catch {
     /* ignore — view renders the configure-me hints */
   }
-  refreshState();
-  stateTimer = setInterval(refreshState, STATE_POLL_MS);
+  // Seed the store once; WS "metric" events from /api/cnc/stream will
+  // keep it fresh after that. The 30 s reseed catches the case where
+  // the WS was dropped silently and reconnect failed quietly.
+  await cncStore.seedMetrics();
+  reseedTimer = setInterval(() => cncStore.seedMetrics(), RESEED_MS);
   if (cameraKind.value === "snapshot" && !snapshotTimer) {
     snapshotTimer = setInterval(() => snapshotTick.value++, 200);
   }
 });
 
 onBeforeUnmount(() => {
-  if (stateTimer) clearInterval(stateTimer);
+  if (reseedTimer) clearInterval(reseedTimer);
   if (snapshotTimer) clearInterval(snapshotTimer);
 });
 

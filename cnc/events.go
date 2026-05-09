@@ -8,14 +8,19 @@ package cnc
 // Event is one item on the WS feed. Type is one of:
 //   - "line"   — streamer just wrote one line. n is 1-based.
 //   - "status" — streamer state changed (started, stopped, errored).
+//   - "metric" — aggregator updated a polled telemetry metric. The
+//                Metric field carries the new snapshot for that key,
+//                so subscribers can apply it directly without a
+//                round-trip to /api/cnc/state.
 //   - "log"    — informational; level + msg.
 type Event struct {
-	Type    string  `json:"type"`
-	N       int64   `json:"n,omitempty"`
-	Text    string  `json:"text,omitempty"`
-	Status  *Status `json:"status,omitempty"`
-	Level   string  `json:"level,omitempty"`
-	Msg     string  `json:"msg,omitempty"`
+	Type   string  `json:"type"`
+	N      int64   `json:"n,omitempty"`
+	Text   string  `json:"text,omitempty"`
+	Status *Status `json:"status,omitempty"`
+	Metric *Metric `json:"metric,omitempty"`
+	Level  string  `json:"level,omitempty"`
+	Msg    string  `json:"msg,omitempty"`
 }
 
 // subscriberBufferSize bounds how many events a slow subscriber can fall

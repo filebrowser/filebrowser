@@ -156,9 +156,9 @@ func (a *Aggregator) pollOnce(ctx context.Context, spec metricSpec) {
 	res, err := a.streamer.Query(queryCtx, spec.QCode, spec.MacroVar)
 
 	a.mu.Lock()
-	defer a.mu.Unlock()
 	m := a.metrics[spec.Key]
 	if m == nil {
+		a.mu.Unlock()
 		return
 	}
 	now := time.Now()
@@ -166,8 +166,17 @@ func (a *Aggregator) pollOnce(ctx context.Context, spec metricSpec) {
 		m.OK = false
 		m.LastError = err.Error()
 		m.Stale = true
+		// Snapshot under the lock for the broadcast outside it.
+		snap := *m
+		a.mu.Unlock()
+		a.streamer.emit(Event{Type: "metric", Metric: &snap})
 		return
 	}
+
+	// Cheap change detection — skip the broadcast if the value didn't
+	// actually move. Saves WS chatter for slow-changing fields like
+	// G54 offsets that emit "MACRO, 5221, 0.0000" every 30 s.
+	changed := m.Value != res.Value || m.OK != res.OK || m.LastError != res.Error
 	m.OK = res.OK
 	m.Raw = res.Raw
 	m.Value = res.Value
@@ -175,6 +184,12 @@ func (a *Aggregator) pollOnce(ctx context.Context, spec metricSpec) {
 	m.LastError = res.Error
 	m.LastUpdate = now
 	m.Stale = false
+	snap := *m
+	a.mu.Unlock()
+
+	if changed {
+		a.streamer.emit(Event{Type: "metric", Metric: &snap})
+	}
 }
 
 // Snapshot returns a deep-enough copy of the current metric map for a

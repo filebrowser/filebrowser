@@ -10,7 +10,7 @@
 
 import { defineStore } from "pinia";
 import { cnc as cncApi } from "@/api";
-import type { CncStatus } from "@/api/cnc";
+import type { CncMetric, CncStateSnapshot, CncStatus } from "@/api/cnc";
 import { baseURL } from "@/utils/constants";
 
 const POLL_INTERVAL_MS = 2000;
@@ -30,6 +30,11 @@ interface CncState {
   raw: CncStatus | null;
   // Internal: tells the pill component when to show "?", "running", "idle".
   initialized: boolean;
+  // Live telemetry snapshot, populated from WS "metric" events with
+  // an initial seed via /api/cnc/state. Keys mirror the backend's
+  // metric-spec list (mode, spindle_actual, pos_x, …).
+  metrics: CncStateSnapshot;
+  metricsSeeded: boolean;
 }
 
 let pollTimer: ReturnType<typeof setInterval> | null = null;
@@ -50,6 +55,8 @@ export const useCncStore = defineStore("cnc", {
     recoveryFilePath: "",
     raw: null,
     initialized: false,
+    metrics: {},
+    metricsSeeded: false,
   }),
   actions: {
     applyStatus(s: CncStatus) {
@@ -72,6 +79,24 @@ export const useCncStore = defineStore("cnc", {
       this.recoveryFilePath = "";
       // Refresh from the server so the rest of the state matches reality.
       this.pollOnce();
+    },
+
+    // Seed the metrics snapshot once via /api/cnc/state so consumers
+    // (e.g. Machine.vue) have something to render before the first WS
+    // "metric" event lands. Idempotent — re-callers just refresh the
+    // map.
+    async seedMetrics() {
+      try {
+        this.metrics = await cncApi.getState();
+        this.metricsSeeded = true;
+      } catch {
+        /* leave previous map; WS events will fill it in */
+      }
+    },
+
+    applyMetric(m: CncMetric) {
+      this.metrics = { ...this.metrics, [m.key]: m };
+      this.metricsSeeded = true;
     },
 
     async pollOnce() {
@@ -134,6 +159,8 @@ export const useCncStore = defineStore("cnc", {
           } else if (ev.type === "line" && typeof ev.n === "number") {
             this.lineCurrent = ev.n;
             this.running = true;
+          } else if (ev.type === "metric" && ev.metric) {
+            this.applyMetric(ev.metric as CncMetric);
           }
         } catch {
           /* ignore malformed frames */
