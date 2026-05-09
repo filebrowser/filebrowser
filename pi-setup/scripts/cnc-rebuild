@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+#
+# cnc-rebuild — one-shot pull-and-deploy for the filebrowser-NC stack.
+#
+# Replaces the multi-line "git pull && pnpm build && go build &&
+# systemctl restart" recipe operators were getting handed every time.
+#
+# Stops on the first failing step so a half-built dist + old binary
+# (or a fresh binary that won't start) doesn't get masked by the
+# restart succeeding anyway. Override paths via env if your install
+# isn't in the default spot:
+#
+#   REPO_DIR=/srv/filebrowser-NC GO_BIN=/usr/local/go/bin/go cnc-rebuild
+
+set -euo pipefail
+
+REPO_DIR=${REPO_DIR:-$HOME/filebrowser-NC}
+GO_BIN=${GO_BIN:-/usr/local/go/bin/go}
+SERVICE=${SERVICE:-filebrowser}
+
+if [[ ! -d $REPO_DIR ]]; then
+  echo "cnc-rebuild: repo not found at $REPO_DIR (set REPO_DIR=…)" >&2
+  exit 1
+fi
+
+cd "$REPO_DIR"
+
+echo "→ pulling latest…"
+git pull --ff-only
+
+echo "→ building frontend…"
+( cd frontend && corepack pnpm install --frozen-lockfile --silent && corepack pnpm run build )
+
+echo "→ building backend…"
+"$GO_BIN" build -o filebrowser
+
+echo "→ restarting $SERVICE…"
+sudo systemctl restart "$SERVICE"
+
+echo "→ done. last 20 journal lines:"
+sudo journalctl -u "$SERVICE" -n 20 --no-pager
+echo
+echo "Live tail: sudo journalctl -u $SERVICE -f"

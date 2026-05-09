@@ -155,6 +155,10 @@ step "Installing cnc-status diagnostic script"
 install -m 0755 "$REPO_DIR/pi-setup/scripts/cnc-status" /usr/local/bin/cnc-status
 ok "cnc-status installed → run \`cnc-status\` any time for a one-shot diagnostic dump"
 
+step "Installing cnc-rebuild deploy script"
+install -m 0755 "$REPO_DIR/pi-setup/scripts/cnc-rebuild" /usr/local/bin/cnc-rebuild
+ok "cnc-rebuild installed → run \`cnc-rebuild\` to pull, rebuild, and restart in one shot"
+
 # ── Mode-specific install ───────────────────────────────────────────────────
 case $MODE in
   usb)    install_usb_mass_storage_mode ;;
