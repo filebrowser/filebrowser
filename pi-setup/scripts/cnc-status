@@ -1,0 +1,169 @@
+#!/usr/bin/env bash
+#
+# cnc-status — one-shot diagnostic dump for a Zinc CNC Pi.
+#
+# Run from any user (uses sudo when needed). Output is grouped under
+# headers so you can paste the whole thing into a chat / GitHub issue
+# without filtering. Read-only — no file edits, no service restarts.
+#
+# Designed around the failure modes we've actually hit in this fork:
+#   - dwc2 overlay landed in a [cm5] section that doesn't apply on Pi 4
+#   - USB-C VBUS sense → no UDC binds → g_mass_storage logs the
+#     "couldn't find an available UDC" and silently fails
+#   - watcher running but never doing an initial sync, so the
+#     controller sees an empty stick even though the share has files
+#   - filebrowser admin password drift after a re-run that hit a
+#     locked BoltDB
+#   - SMB share visible but pointing somewhere unexpected
+
+set -uo pipefail
+
+CONF=/etc/cnc-pi.conf
+SHARE_PATH=
+IMAGE_PATH=
+FB_USER=
+FB_BIN=
+FB_DB=
+ADMIN_USER=
+[[ -r $CONF ]] && {
+  # shellcheck disable=SC1090
+  . "$CONF" 2>/dev/null || true
+}
+
+red()    { printf '\033[31m%s\033[0m' "$*"; }
+green()  { printf '\033[32m%s\033[0m' "$*"; }
+yellow() { printf '\033[33m%s\033[0m' "$*"; }
+cyan()   { printf '\033[36m%s\033[0m' "$*"; }
+bold()   { printf '\033[1m%s\033[0m' "$*"; }
+
+section() {
+  printf '\n%s %s\n' "$(bold "==>")" "$(cyan "$*")"
+}
+
+ok()   { printf '  %s %s\n' "$(green '✓')" "$*"; }
+warn() { printf '  %s %s\n' "$(yellow '!')" "$*"; }
+bad()  { printf '  %s %s\n' "$(red '✗')" "$*"; }
+info() { printf '  %s\n' "$*"; }
+
+# Run a command and indent its output two spaces. Stderr merged in.
+indent() {
+  "$@" 2>&1 | sed 's/^/    /'
+}
+
+# ── Header ────────────────────────────────────────────────────────────────
+printf '\n%s\n' "$(bold "filebrowser-NC :: cnc-status")"
+info "host:     $(hostname) ($(uname -r))"
+info "uptime:   $(uptime -p) (since $(uptime -s))"
+if [[ -r /proc/device-tree/model ]]; then
+  info "model:    $(tr -d '\0' </proc/device-tree/model)"
+fi
+info "config:   $CONF $([[ -r $CONF ]] && echo found || echo not found)"
+
+# ── /etc/cnc-pi.conf snapshot (passwords masked) ──────────────────────────
+section "configured paths"
+if [[ -r $CONF ]]; then
+  info "share:    ${SHARE_PATH:-(unset)}"
+  info "image:    ${IMAGE_PATH:-(unset)}"
+  info "fb_user:  ${FB_USER:-(unset)}"
+  info "fb_bin:   ${FB_BIN:-(unset)} $([[ -x ${FB_BIN:-/dev/null} ]] && echo '(executable)' || echo '(missing)')"
+  info "fb_db:    ${FB_DB:-(unset)}"
+  info "admin:    ${ADMIN_USER:-(unset)}  (password masked — grep ADMIN /etc/cnc-pi.conf to see it)"
+else
+  warn "config not loaded — run pi-setup/setup-pi.sh first"
+fi
+
+# ── dwc2 / UDC ────────────────────────────────────────────────────────────
+section "USB gadget (dwc2)"
+DT_USB=/proc/device-tree/soc/usb@7e980000
+if [[ -d $DT_USB ]]; then
+  status=$(tr -d '\0' <"$DT_USB/status" 2>/dev/null || echo "?")
+  drmode=$(tr -d '\0' <"$DT_USB/dr_mode" 2>/dev/null || echo "?")
+  if [[ $status == okay ]]; then
+    ok "DT node enabled (status=$status, dr_mode=$drmode)"
+  else
+    bad "DT node status=$status — dwc2 overlay didn't apply"
+    info "    fix: ensure 'dtoverlay=dwc2,dr_mode=peripheral' lives under [all] in /boot/firmware/config.txt"
+  fi
+else
+  warn "no usb@7e980000 node in device tree (path moved? non-Pi-4 hardware?)"
+fi
+
+if compgen -G "/sys/class/udc/*" > /dev/null; then
+  for udc in /sys/class/udc/*; do
+    ok "UDC: $(basename "$udc")"
+  done
+else
+  bad "no UDC bound — g_mass_storage cannot expose a stick"
+  info "    diagnose: dmesg | grep -iE 'dwc2|udc|gadget' | tail -10"
+fi
+
+if lsmod | grep -qE '^g_mass_storage'; then
+  ok "g_mass_storage module loaded"
+else
+  warn "g_mass_storage NOT in lsmod (may be fine — it's loaded on demand)"
+fi
+
+# ── systemd units ─────────────────────────────────────────────────────────
+section "services"
+for unit in filebrowser cnc-usb-mass-storage cnc-usb-watcher smbd nmbd avahi-daemon; do
+  if systemctl list-unit-files --type=service --no-legend "$unit.service" 2>/dev/null | grep -q .; then
+    if systemctl is-active --quiet "$unit"; then
+      ok "$unit  (active)"
+    elif systemctl is-enabled --quiet "$unit" 2>/dev/null; then
+      warn "$unit  (enabled but NOT active)"
+    else
+      info "$unit  (installed, not enabled)"
+    fi
+  fi
+done
+
+# ── /api/cnc/status ───────────────────────────────────────────────────────
+section "/api/cnc/status (no auth → expect 401 if filebrowser is up)"
+if command -v curl >/dev/null; then
+  http_code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/api/cnc/status 2>/dev/null || echo "000")
+  case $http_code in
+    200) ok "200 — endpoint reachable AND no auth required (unusual)" ;;
+    401) ok "401 — endpoint reachable, auth working" ;;
+    000) bad "could not reach 127.0.0.1:8080 — filebrowser not running?" ;;
+    *)   warn "unexpected status: $http_code" ;;
+  esac
+else
+  info "(curl not installed — skipping)"
+fi
+
+# ── Image vs share ────────────────────────────────────────────────────────
+if [[ -n ${SHARE_PATH:-} && -n ${IMAGE_PATH:-} ]]; then
+  section "share vs image"
+  share_count=0
+  if [[ -d $SHARE_PATH ]]; then
+    share_count=$(find "$SHARE_PATH" -maxdepth 4 -type f 2>/dev/null | wc -l)
+    info "share files (depth ≤4): $share_count"
+  else
+    warn "share path missing: $SHARE_PATH"
+  fi
+  if [[ -f $IMAGE_PATH ]]; then
+    image_size=$(stat -c '%s' "$IMAGE_PATH" 2>/dev/null || echo 0)
+    info "image:                  $IMAGE_PATH (${image_size} bytes)"
+    if command -v mdir >/dev/null; then
+      image_count=$(MTOOLS_SKIP_CHECK=1 mdir -i "$IMAGE_PATH" -/ -b :: 2>/dev/null | grep -vE '/$' | wc -l)
+      info "image files:            $image_count"
+      if (( share_count > 0 && image_count == 0 )); then
+        bad "share has $share_count files but image is empty — watcher hasn't synced"
+        info "    fix: touch $SHARE_PATH/.sync-trigger ; sleep 12 ; journalctl -u cnc-usb-watcher -n 20"
+      fi
+    fi
+  else
+    warn "image missing: $IMAGE_PATH"
+  fi
+fi
+
+# ── Recent journal tails ──────────────────────────────────────────────────
+section "recent logs (last 5 lines per service)"
+for unit in filebrowser cnc-usb-watcher cnc-usb-mass-storage; do
+  if systemctl list-unit-files --type=service --no-legend "$unit.service" 2>/dev/null | grep -q .; then
+    printf '\n  %s\n' "$(bold "[$unit]")"
+    indent journalctl -u "$unit" -n 5 --no-pager
+  fi
+done
+
+printf '\n'

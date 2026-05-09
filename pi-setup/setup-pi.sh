@@ -149,6 +149,12 @@ chmod 0600 "$CONF_PATH" 2>/dev/null || true
 install_build_prereqs
 build_filebrowser
 
+# ── Diagnostics one-shot script ─────────────────────────────────────────────
+# Drop in early so it's available even if the rest of setup fails midway.
+step "Installing cnc-status diagnostic script"
+install -m 0755 "$REPO_DIR/pi-setup/scripts/cnc-status" /usr/local/bin/cnc-status
+ok "cnc-status installed → run \`cnc-status\` any time for a one-shot diagnostic dump"
+
 # ── Mode-specific install ───────────────────────────────────────────────────
 case $MODE in
   usb)    install_usb_mass_storage_mode ;;
