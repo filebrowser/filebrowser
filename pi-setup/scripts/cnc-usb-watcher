@@ -1,24 +1,42 @@
 #!/usr/bin/env bash
 #
-# cnc-usb-watcher — watches the share path for changes and re-exports the
-# USB mass-storage LUN so the connected CNC controller picks up new files
-# without the operator having to manually unmount + remount.
+# cnc-usb-watcher — debounced bidirectional sync between the share folder
+# and the FAT32 image exported via g_mass_storage.
 #
-# Behaviour:
-#   1. inotifywait fires on any modify/create/delete/move under SHARE_PATH.
-#   2. Each event (re)starts a "settle" timer of WATCH_DEBOUNCE_SECONDS.
-#   3. We also enforce WATCH_MIN_INTERVAL_SECONDS between two consecutive
-#      eject/reattach cycles, so a stream of rapid edits doesn't flap the
-#      mount under the controller.
-#   4. On settle: sync, eject (echo "" > .../lun0/file), pause briefly,
-#      reattach (echo IMAGE_PATH > .../lun0/file). The controller's
-#      USB stack sees the volume drop and re-enumerate with fresh contents.
+# Architecture (the IMPORTANT part):
 #
-# Configured via /etc/cnc-pi.conf. Required vars:
-#   SHARE_PATH                    — the host-side mount point (filebrowser root)
-#   IMAGE_PATH                    — backing .img file passed to g_mass_storage
-#   WATCH_DEBOUNCE_SECONDS        — quiescence window before re-export (default 8)
-#   WATCH_MIN_INTERVAL_SECONDS    — minimum gap between re-exports (default 30)
+#   - $SHARE_PATH is a regular Linux folder. Filebrowser writes to it
+#     directly. It's NEVER a loop mount of the image.
+#   - $IMAGE_PATH is the FAT32 image exported as a USB drive to the
+#     controller. Linux NEVER mounts it. Linux only ever touches it via
+#     mtools, and only while the LUN is detached.
+#
+#   This is the documented-safe pattern from
+#   Documentation/usb/mass-storage.rst — "the host and the local Linux
+#   system [must not] read+write the file at the same time". Earlier
+#   versions of this fork loop-mounted the image AND exported it
+#   read-write, which corrupts the FAT. We don't do that anymore.
+#
+# Sync semantics:
+#
+#   On settle (after WATCH_DEBOUNCE_SECONDS of quiescence on $SHARE_PATH,
+#   subject to WATCH_MIN_INTERVAL_SECONDS floor):
+#     1. Detach LUN (controller sees the stick unplug).
+#     2. Pull controller-side new files into the share.
+#        Distinguish "new from controller" from "deleted by host" using
+#        a snapshot of what was in the image at the last successful sync.
+#     3. Rebuild the image from $SHARE_PATH atomically (write to .new,
+#        rename in place). Filebrowser is the source of truth for
+#        existing files — controller modifications to existing files
+#        get clobbered. Controller-only new files get preserved.
+#     4. Snapshot the new image listing.
+#     5. Reattach LUN. Controller re-mounts and sees the synced content.
+#
+# Conflict policy (v1):
+#   - File present on both sides: filebrowser wins (host content).
+#   - File only on controller, not in last snapshot: pulled into share.
+#   - File only on controller, IN last snapshot: host deleted it; drop.
+#   - File only on host: pushed into image (via rebuild).
 #
 # Logs to stderr; systemd captures via journalctl -u cnc-usb-watcher.
 
@@ -33,9 +51,27 @@ CONF=/etc/cnc-pi.conf
 : "${IMAGE_PATH:?IMAGE_PATH must be set in $CONF}"
 WATCH_DEBOUNCE_SECONDS=${WATCH_DEBOUNCE_SECONDS:-8}
 WATCH_MIN_INTERVAL_SECONDS=${WATCH_MIN_INTERVAL_SECONDS:-30}
+FB_USER=${FB_USER:-}
 
-# Locate the gadget LUN file. g_mass_storage exposes it under
-# /sys/devices/platform/.../gadget/lun0/file. We glob to be future-proof.
+# mtools doesn't need geometry checks for our raw .img files.
+export MTOOLS_SKIP_CHECK=1
+
+STATE_DIR=${RUNTIME_DIRECTORY:-/run/cnc-usb-watcher}
+mkdir -p "$STATE_DIR"
+LAST_EXPORT_FILE="$STATE_DIR/last_export"
+INHIBIT_UNTIL_FILE="$STATE_DIR/inhibit_until"
+# Persisted under /var/lib so deletes don't bounce after a reboot.
+SNAPSHOT_DIR=/var/lib/cnc-usb-watcher
+SNAPSHOT_FILE="$SNAPSHOT_DIR/last_sync_listing"
+mkdir -p "$SNAPSHOT_DIR"
+
+log()    { printf '[%s] %s\n' "$(date '+%F %T')" "$*" >&2; }
+read_epoch()  { [[ -r $1 ]] && cat "$1" || echo 0; }
+write_epoch() { printf '%s' "$1" > "$2"; }
+inhibit()     { write_epoch "$(( $(date +%s) + 5 ))" "$INHIBIT_UNTIL_FILE"; }
+inhibited()   { (( $(date +%s) < $(read_epoch "$INHIBIT_UNTIL_FILE") )); }
+
+# Locate the LUN file. g_mass_storage exposes it under /sys/.../lun0/file.
 find_lun_file() {
   local f
   for f in /sys/class/udc/*/device/gadget/lun0/file \
@@ -47,20 +83,92 @@ find_lun_file() {
   return 1
 }
 
-log() { printf '[%s] %s\n' "$(date '+%F %T')" "$*" >&2; }
+# Recursive list of files in the image (one ::/path per line, no dirs).
+list_image() {
+  mdir -i "$IMAGE_PATH" -/ -b :: 2>/dev/null \
+    | grep -vE '/$' \
+    | sort -u
+}
 
-# Cross-process state: settle subshells update LAST_EXPORT and INHIBIT_UNTIL,
-# the inotify reader checks them. Files keep them in sync.
-STATE_DIR=${RUNTIME_DIRECTORY:-/run/cnc-usb-watcher}
-mkdir -p "$STATE_DIR"
-LAST_EXPORT_FILE="$STATE_DIR/last_export"
-INHIBIT_UNTIL_FILE="$STATE_DIR/inhibit_until"
+# Owner setting after pull-from-image. FB_USER may be empty (root run).
+chown_share_path() {
+  local path=$1
+  [[ -z $FB_USER ]] && return 0
+  chown "$FB_USER:$FB_USER" "$path" 2>/dev/null || true
+}
 
-read_epoch() { [[ -r $1 ]] && cat "$1" || echo 0; }
-write_epoch() { printf '%s' "$1" > "$2"; }
+# Sync image and share. Caller must already have detached the LUN.
+sync_image() {
+  local listing last_listing
+  listing=$(list_image) || true
+  if [[ -r $SNAPSHOT_FILE ]]; then
+    last_listing=$(<"$SNAPSHOT_FILE")
+  else
+    last_listing=""
+  fi
 
-inhibit() { write_epoch "$(( $(date +%s) + 3 ))" "$INHIBIT_UNTIL_FILE"; }
-inhibited() { (( $(date +%s) < $(read_epoch "$INHIBIT_UNTIL_FILE") )); }
+  # Pass 1: pull files that are in the image but not in the share.
+  # Distinguish "new from controller" (pull) from "host deleted it" (skip).
+  local pulled=0 dropped=0
+  while IFS= read -r entry; do
+    [[ -z $entry ]] && continue
+    local rel="${entry#::/}"
+    rel="${rel#/}"
+    [[ -z $rel ]] && continue
+
+    local target="$SHARE_PATH/$rel"
+    if [[ -e $target ]]; then
+      # Both sides have it — host content wins via the rebuild.
+      continue
+    fi
+
+    if grep -qFx "$entry" <<< "$last_listing"; then
+      # Was on the stick at last sync, host has since deleted it. Drop.
+      dropped=$((dropped + 1))
+      continue
+    fi
+
+    # Controller-new: pull it into the share.
+    mkdir -p "$(dirname "$target")"
+    if mcopy -n -i "$IMAGE_PATH" "$entry" "$target" 2>/dev/null; then
+      chown_share_path "$target"
+      log "pulled new from controller: $rel"
+      pulled=$((pulled + 1))
+    else
+      log "WARN: failed to pull $rel from image"
+    fi
+  done <<< "$listing"
+
+  # Pass 2: rebuild the image from the share, atomically.
+  local tmp_img="${IMAGE_PATH}.new.$$"
+  if ! truncate -r "$IMAGE_PATH" "$tmp_img" 2>/dev/null; then
+    log "ERROR: could not allocate temp image"
+    return 1
+  fi
+  if ! mkfs.vfat -F 32 -n CNC -I "$tmp_img" >/dev/null 2>&1; then
+    rm -f "$tmp_img"
+    log "ERROR: mkfs.vfat failed on temp image"
+    return 1
+  fi
+  if [[ -n "$(ls -A "$SHARE_PATH" 2>/dev/null)" ]]; then
+    if ! (cd "$SHARE_PATH" && mcopy -s -m -Q -i "$tmp_img" -- * :: 2>/dev/null); then
+      rm -f "$tmp_img"
+      log "ERROR: mcopy failed during image rebuild"
+      return 1
+    fi
+  fi
+  if ! mv -f "$tmp_img" "$IMAGE_PATH"; then
+    rm -f "$tmp_img"
+    log "ERROR: could not swap rebuilt image into place"
+    return 1
+  fi
+
+  # Pass 3: snapshot the post-sync image so the next pull-pass can tell
+  # "controller created" from "host deleted".
+  list_image > "$SNAPSHOT_FILE.tmp" && mv -f "$SNAPSHOT_FILE.tmp" "$SNAPSHOT_FILE"
+
+  log "sync complete (pulled=$pulled, host-deleted-from-image=$dropped)"
+}
 
 reexport() {
   local lun
@@ -69,29 +177,32 @@ reexport() {
     return 1
   fi
 
-  local now elapsed_since_last last_export
+  local now elapsed last_export
   now=$(date +%s)
   last_export=$(read_epoch "$LAST_EXPORT_FILE")
-  elapsed_since_last=$(( now - last_export ))
-  if (( elapsed_since_last < WATCH_MIN_INTERVAL_SECONDS )); then
-    local wait_for=$(( WATCH_MIN_INTERVAL_SECONDS - elapsed_since_last ))
-    log "min-interval guard: waiting ${wait_for}s before re-export"
+  elapsed=$(( now - last_export ))
+  if (( elapsed < WATCH_MIN_INTERVAL_SECONDS )); then
+    local wait_for=$(( WATCH_MIN_INTERVAL_SECONDS - elapsed ))
+    log "min-interval guard: waiting ${wait_for}s"
     sleep "$wait_for"
   fi
 
   inhibit
-  log "re-exporting USB LUN — eject + reattach"
-  sync
-  # Eject: empty string detaches the backing file. Controller sees device disappear.
-  printf '' > "$lun" || { log "WARN: eject write failed"; return 1; }
+  log "settle: detaching LUN"
+  printf '' > "$lun" || { log "WARN: detach write failed"; return 1; }
   sleep 1
-  # Reattach with same backing file.
+
+  if ! sync_image; then
+    log "ERROR: sync failed; reattaching original image without rebuild"
+  fi
+  sync   # flush kernel buffers before re-export
+
   printf '%s' "$IMAGE_PATH" > "$lun" || { log "WARN: reattach write failed"; return 1; }
   write_epoch "$(date +%s)" "$LAST_EXPORT_FILE"
-  log "re-export complete"
+  log "settle: LUN reattached"
 }
 
-# Debounce: kill any in-flight settle timer and start a new one.
+# Debounce: kill any pending settle, schedule a new one.
 SETTLE_PID=0
 schedule_reexport() {
   if (( SETTLE_PID != 0 )) && kill -0 "$SETTLE_PID" 2>/dev/null; then
@@ -103,9 +214,13 @@ schedule_reexport() {
 
 trap 'kill $SETTLE_PID 2>/dev/null || true' EXIT
 
+# Initialize the snapshot if missing — first run after install.
+if [[ ! -s $SNAPSHOT_FILE ]]; then
+  list_image > "$SNAPSHOT_FILE" || true
+fi
+
 log "watching $SHARE_PATH (debounce=${WATCH_DEBOUNCE_SECONDS}s, min-interval=${WATCH_MIN_INTERVAL_SECONDS}s)"
 
-# inotifywait events: write closures, creates, deletes, moves, attribute changes.
 inotifywait -m -r -q -e close_write -e create -e delete -e move -e attrib \
             --format '%T %e %w%f' --timefmt '%H:%M:%S' \
             "$SHARE_PATH" \
