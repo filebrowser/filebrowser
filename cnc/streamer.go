@@ -69,6 +69,10 @@ type Streamer struct {
 	lastError string
 }
 
+// queryQueueDepth caps in-flight queries against the streaming socket.
+// 4 is plenty — the dashboard polls one Q-code at a time.
+const queryQueueDepth = 4
+
 type job struct {
 	id          string
 	displayPath string // share-relative, what /status echoes back
@@ -78,6 +82,7 @@ type job struct {
 	lineTotal   int
 	cancel      context.CancelFunc
 	done        chan struct{} // closed when the streaming goroutine exits
+	queryCh     chan *queryReq
 }
 
 // New builds the singleton.
@@ -130,6 +135,7 @@ func (s *Streamer) Start(absPath, displayPath string) (*Status, error) {
 		lineTotal:   lineTotal,
 		cancel:      cancel,
 		done:        make(chan struct{}),
+		queryCh:     make(chan *queryReq, queryQueueDepth),
 	}
 	s.job = j
 	s.lastError = ""
@@ -174,8 +180,64 @@ func (s *Streamer) Status() *Status {
 	return st
 }
 
+// Query runs one Q-code round-trip. When idle, opens a transient TCP
+// connection. When a streaming job is in flight, queues the request on
+// the streaming worker so we don't try to open a second client to the
+// Waveshare (it typically only accepts one).
+//
+// Honors ctx for cancellation while the request is queued; once the
+// streaming worker has the conn locked the queryTimeout (3s default)
+// bounds the read.
+func (s *Streamer) Query(ctx context.Context, qCode int, macroVar *int) (*QueryResult, error) {
+	set, err := s.settings.Get()
+	if err != nil {
+		return nil, err
+	}
+	if set.Cnc.HaasHost == "" {
+		return nil, ErrConfigMissing
+	}
+	host := set.Cnc.HaasHost
+	port := set.Cnc.HaasPort
+	if port == 0 {
+		port = settings.DefaultHaasPort
+	}
+
+	s.mu.Lock()
+	j := s.job
+	s.mu.Unlock()
+	if j == nil {
+		return transientQuery(host, port, qCode, macroVar), nil
+	}
+
+	req := &queryReq{
+		q:      qCode,
+		macroV: macroVar,
+		ctx:    ctx,
+		respCh: make(chan *QueryResult, 1),
+	}
+	select {
+	case j.queryCh <- req:
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	case <-j.done:
+		return transientQuery(host, port, qCode, macroVar), nil
+	}
+
+	select {
+	case res := <-req.respCh:
+		return res, nil
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	}
+}
+
 // run is the worker goroutine. Owns the TCP socket for the duration of
 // the job and clears s.job on exit so subsequent Starts succeed.
+//
+// Each iteration: optionally service one Q-code query (so /api/cnc/qcode
+// stays responsive during a stream), then write the next line. Per-line
+// write keeps cancel + line counters honest; flow control (XON/XOFF) is
+// the next iteration if testing on the real Haas needs it.
 func (s *Streamer) run(ctx context.Context, j *job, host string, port int) {
 	defer close(j.done)
 	defer func() {
@@ -204,28 +266,25 @@ func (s *Streamer) run(ctx context.Context, j *job, host string, port int) {
 	// Allow long G-code lines just in case.
 	scanner.Buffer(make([]byte, 64*1024), 1024*1024)
 
-	w := bufio.NewWriter(conn)
 	for scanner.Scan() {
 		select {
 		case <-ctx.Done():
-			_ = w.Flush()
 			return
 		default:
 		}
 
+		// Drain at most one pending Q-code query before the next line
+		// so the stream still makes forward progress under heavy
+		// polling. queryQueueDepth bounds the worst case.
+		select {
+		case req := <-j.queryCh:
+			s.serviceQuery(conn, req)
+		default:
+		}
+
 		line := strings.TrimRight(scanner.Text(), "\r\n")
-		if _, err := w.WriteString(line); err != nil {
+		if _, err := conn.Write([]byte(line + "\r\n")); err != nil {
 			s.recordError(fmt.Errorf("write line %d: %w", j.lineCurrent.Load()+1, err))
-			return
-		}
-		if _, err := w.WriteString("\r\n"); err != nil {
-			s.recordError(fmt.Errorf("write CRLF: %w", err))
-			return
-		}
-		// Flush per line so cancel + line counters track real wire progress.
-		// Phase 2.2 will replace this with XON/XOFF-aware pacing.
-		if err := w.Flush(); err != nil {
-			s.recordError(fmt.Errorf("flush: %w", err))
 			return
 		}
 		j.lineCurrent.Add(1)
@@ -233,6 +292,44 @@ func (s *Streamer) run(ctx context.Context, j *job, host string, port int) {
 	if err := scanner.Err(); err != nil {
 		s.recordError(fmt.Errorf("read source: %w", err))
 	}
+
+	// Drain any queries enqueued during the final line so callers don't
+	// hang waiting for a response.
+	for {
+		select {
+		case req := <-j.queryCh:
+			s.serviceQuery(conn, req)
+		default:
+			return
+		}
+	}
+}
+
+// serviceQuery executes one Q-code request on the streaming socket and
+// fulfils its response channel. Errors are returned via QueryResult.OK
+// = false rather than thrown — the streaming run loop must keep going.
+func (s *Streamer) serviceQuery(conn net.Conn, req *queryReq) {
+	if err := req.ctx.Err(); err != nil {
+		req.respCh <- &QueryResult{Q: req.q, Var: req.macroV, Error: err.Error()}
+		return
+	}
+	t0 := time.Now()
+	raw, err := exchangeOnConn(conn, req.q, req.macroV)
+	res := &QueryResult{
+		Q:          req.q,
+		Var:        req.macroV,
+		DurationMs: sinceMs(t0),
+	}
+	if err != nil {
+		res.Error = err.Error()
+		req.respCh <- res
+		return
+	}
+	res.Raw = raw
+	res.Value = stripEchoAndFraming(raw)
+	res.Parsed = parseValue(res.Value, req.q, req.macroV)
+	res.OK = true
+	req.respCh <- res
 }
 
 func (s *Streamer) recordError(err error) {

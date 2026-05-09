@@ -165,6 +165,54 @@ func cncStopHandler(streamer *cnc.Streamer) handleFunc {
 	})
 }
 
+// cncQueryBody mirrors haas-dashboard's POST /api/query so the dashboard
+// can swap its base URL between direct-Waveshare and Pi-broker without
+// other code changes (D-1 in the integration plan).
+type cncQueryBody struct {
+	Q   int  `json:"q"`
+	Var *int `json:"var,omitempty"`
+}
+
+// cncQueryHandler accepts either a logged-in filebrowser session OR a
+// matching Authorization: Bearer <MachineToken> header (the
+// server-to-server path used by haas-dashboard). Session path defers
+// auth to withUser; token path validates inline so the dashboard
+// doesn't need a filebrowser user account.
+func cncQueryHandler(streamer *cnc.Streamer) handleFunc {
+	session := withUser(func(w http.ResponseWriter, r *http.Request, _ *data) (int, error) {
+		return runQuery(w, r, streamer)
+	})
+	return func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		if auth := r.Header.Get("Authorization"); strings.HasPrefix(auth, "Bearer ") {
+			got := strings.TrimPrefix(auth, "Bearer ")
+			if d.settings.Cnc.MachineToken == "" || got != d.settings.Cnc.MachineToken {
+				return http.StatusUnauthorized, nil
+			}
+			return runQuery(w, r, streamer)
+		}
+		return session(w, r, d)
+	}
+}
+
+func runQuery(w http.ResponseWriter, r *http.Request, streamer *cnc.Streamer) (int, error) {
+	req := &cncQueryBody{}
+	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+		return http.StatusBadRequest, err
+	}
+	if req.Q <= 0 {
+		return http.StatusBadRequest, errors.New("q must be a positive integer")
+	}
+
+	res, err := streamer.Query(r.Context(), req.Q, req.Var)
+	switch {
+	case errors.Is(err, cnc.ErrConfigMissing):
+		return http.StatusBadRequest, err
+	case err != nil:
+		return errToStatus(err), err
+	}
+	return renderJSON(w, r, res)
+}
+
 func ensureLeading(p string) string {
 	if strings.HasPrefix(p, "/") {
 		return p
