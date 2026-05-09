@@ -82,14 +82,19 @@ load_conf() {
 }
 
 # write_conf — atomically write /etc/cnc-pi.conf. Pass key=value pairs.
+# Values get shell-safe quoting (printf %q) so spaces, quotes, $, etc. round-trip
+# correctly through `. /etc/cnc-pi.conf` in setup-pi.sh and the watcher.
 write_conf() {
   local tmp
   tmp=$(mktemp)
   {
     printf '# /etc/cnc-pi.conf — written by setup-pi.sh\n'
     printf '# Re-run setup-pi.sh to change these values.\n'
+    local kv k v
     for kv in "$@"; do
-      printf '%s\n' "$kv"
+      k=${kv%%=*}
+      v=${kv#*=}
+      printf '%s=%q\n' "$k" "$v"
     done
   } > "$tmp"
   install -m 0644 "$tmp" "$CONF_PATH"
