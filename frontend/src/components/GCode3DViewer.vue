@@ -6,7 +6,9 @@
         {{ pointCount.toLocaleString() }} pts
         <span v-if="lastTruncated" class="truncated-badge">truncated</span>
       </span>
-      <button class="viewer-btn" @click="resetCamera" title="Reset camera">⌂</button>
+      <button class="viewer-btn" @click="resetCamera" title="Reset camera">
+        ⌂
+      </button>
     </div>
     <div ref="canvasContainer" class="gcode-canvas"></div>
   </div>
@@ -29,24 +31,22 @@ const emit = defineEmits<{
 
 const canvasContainer = ref<HTMLDivElement | null>(null);
 
-// three.js objects – typed as any to avoid THREE namespace TS issues
+// three.js objects — typed as any to avoid THREE namespace TS issues
 let scene: any = null;
 let camera: any = null;
 let renderer: any = null;
-let rapidLines: any = null;   // G0 moves — gray
-let feedLines: any = null;    // G1/G2/G3 moves — blue
+let rapidLines: any = null; // G0 moves — gray
+let feedLines: any = null; // G1/G2/G3 moves — blue
 let controls: any = null;
-let highlightSphere: any = null;
-let raycaster: any = null;
-let mouseNDC: any = null;
+let highlightCross: any = null;
 let animationId: number | null = null;
 
-// store bounding box center + size for camera reset
+// bounding box center + size for camera reset
 let sceneCenter: any = null;
 let sceneDist = 200;
 
-let rapidLineSrc: number[] = [];   // rapidLineSrc[i] = original file line for rapidPoints[i]
-let feedLineSrc: number[] = [];    // feedLineSrc[i]  = original file line for feedPoints[i]
+let rapidLineSrc: number[] = []; // rapidLineSrc[i] = original file line for rapidPoints[i]
+let feedLineSrc: number[] = []; // feedLineSrc[i]  = original file line for feedPoints[i]
 let resizeHandler: (() => void) | null = null;
 let clickHandler: ((e: MouseEvent) => void) | null = null;
 
@@ -55,10 +55,13 @@ const pointCount = ref(0);
 const isThreeReady = ref(false);
 const webglError = ref<string | null>(null);
 
-// conservative caps
-const MAX_LINES   = 200_000;
-const MAX_POINTS  = 120_000;
-const TARGET_POINTS = 50_000;
+// Caps: input that exceeds these is sampled (and the "truncated" badge shown).
+// Routine decimation for snappy interaction does NOT trigger the badge.
+const MAX_LINES = 1_500_000;
+const MAX_POINTS = 750_000;
+const TARGET_POINTS = 250_000;
+// Click radius in screen pixels — clicks farther than this don't snap to a point.
+const CLICK_PICK_PIXELS = 30;
 
 interface ParseResult {
   rapidPoints: any[];
@@ -102,7 +105,9 @@ function parseGcode(raw: string): ParseResult | null {
   const rSrc: number[] = []; // source line per rapid point
   const fSrc: number[] = []; // source line per feed point
 
-  let x = 0, y = 0, z = 0;
+  let x = 0,
+    y = 0,
+    z = 0;
   let currentMode = 1; // default to G1 if no G word seen yet
   let totalPoints = 0;
 
@@ -140,8 +145,8 @@ function parseGcode(raw: string): ParseResult | null {
     if (!hasMotion) continue;
 
     const isRapid = currentMode === 0;
-    const target    = isRapid ? rapidPoints : feedPoints;
-    const targetSrc = isRapid ? rSrc        : fSrc;
+    const target = isRapid ? rapidPoints : feedPoints;
+    const targetSrc = isRapid ? rSrc : fSrc;
 
     // seed first point of this array with the start position
     if (target.length === 0) {
@@ -165,7 +170,8 @@ function parseGcode(raw: string): ParseResult | null {
       const endAngle = Math.atan2(endVecY, endVecX);
 
       let delta = endAngle - startAngle;
-      if (currentMode === 2 && delta > 0) delta -= Math.PI * 2; // CW
+      if (currentMode === 2 && delta > 0)
+        delta -= Math.PI * 2; // CW
       else if (currentMode === 3 && delta < 0) delta += Math.PI * 2; // CCW
 
       const arcLen = Math.abs(delta * r);
@@ -183,7 +189,10 @@ function parseGcode(raw: string): ParseResult | null {
         );
         fSrc.push(origLine);
         totalPoints++;
-        if (totalPoints >= MAX_POINTS) { truncated = true; break; }
+        if (totalPoints >= MAX_POINTS) {
+          truncated = true;
+          break;
+        }
       }
     } else {
       target.push(new THREE.Vector3(x, y, z));
@@ -191,7 +200,10 @@ function parseGcode(raw: string): ParseResult | null {
       totalPoints++;
     }
 
-    if (totalPoints >= MAX_POINTS) { truncated = true; break; }
+    if (totalPoints >= MAX_POINTS) {
+      truncated = true;
+      break;
+    }
   }
 
   if (rapidPoints.length + feedPoints.length < 2) {
@@ -199,9 +211,10 @@ function parseGcode(raw: string): ParseResult | null {
     return null;
   }
 
-  // decimate if over target — keep points and source-line arrays in sync
-  function decimate(pts: any[], src: number[]): { pts: any[]; src: number[]; wasTruncated: boolean } {
-    if (pts.length <= TARGET_POINTS) return { pts, src, wasTruncated: false };
+  // Decimate down to TARGET_POINTS for snappy rendering. This is NOT
+  // truncation — coverage stays end-to-end, we just thin the points.
+  function decimate(pts: any[], src: number[]): { pts: any[]; src: number[] } {
+    if (pts.length <= TARGET_POINTS) return { pts, src };
     const step = Math.ceil(pts.length / TARGET_POINTS);
     const outPts: any[] = [];
     const outSrc: number[] = [];
@@ -209,39 +222,61 @@ function parseGcode(raw: string): ParseResult | null {
       outPts.push(pts[i]);
       outSrc.push(src[i]);
     }
-    return { pts: outPts, src: outSrc, wasTruncated: true };
+    return { pts: outPts, src: outSrc };
   }
 
-  const { pts: finalRapid, src: finalRapidSrc, wasTruncated: r1 } = decimate(rapidPoints, rSrc);
-  const { pts: finalFeed,  src: finalFeedSrc,  wasTruncated: r2 } = decimate(feedPoints,  fSrc);
-  truncated = truncated || r1 || r2;
+  const { pts: finalRapid, src: finalRapidSrc } = decimate(rapidPoints, rSrc);
+  const { pts: finalFeed, src: finalFeedSrc } = decimate(feedPoints, fSrc);
 
   return {
     rapidPoints: finalRapid,
-    feedPoints:  finalFeed,
+    feedPoints: finalFeed,
     rapidLineSrc: finalRapidSrc,
-    feedLineSrc:  finalFeedSrc,
+    feedLineSrc: finalFeedSrc,
     totalSourceLines: srcTotal,
     truncated,
   };
 }
 
-// ── Highlight sphere ─────────────────────────────────────────────────────────
-// FIX 3: sphere radius is now passed in, scaled to the bounding box
-function ensureHighlightSphere(radius: number) {
+// ── Highlight crosshair ──────────────────────────────────────────────────────
+// A small 3D cross (three orthogonal segments) that lands on the picked
+// vertex. More visually precise than a sphere for "I picked exactly this point".
+function ensureHighlightCross(size: number) {
   if (!scene) return;
-  if (highlightSphere) {
-    // rescale if geometry already exists
-    highlightSphere.scale.setScalar(1); // reset
-    scene.remove(highlightSphere);
-    highlightSphere.geometry.dispose();
-    highlightSphere.material.dispose();
-    highlightSphere = null;
+  if (highlightCross) {
+    scene.remove(highlightCross);
+    highlightCross.traverse((c: any) => {
+      c.geometry?.dispose();
+      c.material?.dispose();
+    });
+    highlightCross = null;
   }
-  const geom = new THREE.SphereGeometry(radius, 14, 14);
-  const mat  = new THREE.MeshBasicMaterial({ color: 0xff3300 });
-  highlightSphere = new THREE.Mesh(geom, mat);
-  scene.add(highlightSphere);
+  const mat = new THREE.LineBasicMaterial({
+    color: 0xff3300,
+    depthTest: false, // always visible on top of toolpath
+    transparent: true,
+  });
+  const group = new THREE.Group();
+  group.renderOrder = 999;
+  for (const axis of [
+    [size, 0, 0],
+    [0, size, 0],
+    [0, 0, size],
+  ]) {
+    const geom = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(-axis[0], -axis[1], -axis[2]),
+      new THREE.Vector3(axis[0], axis[1], axis[2]),
+    ]);
+    group.add(new THREE.Line(geom, mat));
+  }
+  highlightCross = group;
+  scene.add(highlightCross);
+}
+
+function setHighlightPosition(x: number, y: number, z: number) {
+  if (!highlightCross) return;
+  highlightCross.position.set(x, y, z);
+  highlightCross.visible = true;
 }
 
 // ── Geometry management ──────────────────────────────────────────────────────
@@ -254,9 +289,9 @@ function clearGeometry() {
     }
   }
   rapidLines = null;
-  feedLines  = null;
+  feedLines = null;
   rapidLineSrc = [];
-  feedLineSrc  = [];
+  feedLineSrc = [];
 }
 
 // ── Three.js init ────────────────────────────────────────────────────────────
@@ -264,7 +299,7 @@ function initThree() {
   const el = canvasContainer.value;
   if (!el) return;
 
-  const width  = el.clientWidth  || 400;
+  const width = el.clientWidth || 400;
   const height = el.clientHeight || 300;
 
   scene = new THREE.Scene();
@@ -280,7 +315,7 @@ function initThree() {
 
   try {
     renderer = new THREE.WebGLRenderer({ antialias: true });
-  } catch (e) {
+  } catch {
     webglError.value = "WebGL is not available in this browser.";
     return;
   }
@@ -289,18 +324,14 @@ function initThree() {
   el.appendChild(renderer.domElement);
 
   controls = new OrbitControls(camera, renderer.domElement);
-  controls.enableDamping    = true;
-  controls.dampingFactor    = 0.1;
-  controls.enablePan        = true;
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.1;
+  controls.enablePan = true;
   controls.screenSpacePanning = true;
-
-  raycaster = new THREE.Raycaster();
-  raycaster.params.Line = { threshold: 0.5 }; // easier to click lines
-  mouseNDC  = new THREE.Vector2();
 
   resizeHandler = () => {
     if (!renderer || !camera || !canvasContainer.value) return;
-    const w = canvasContainer.value.clientWidth  || 400;
+    const w = canvasContainer.value.clientWidth || 400;
     const h = canvasContainer.value.clientHeight || 300;
     renderer.setSize(w, h);
     camera.aspect = w / h;
@@ -308,36 +339,63 @@ function initThree() {
   };
   window.addEventListener("resize", resizeHandler);
 
+  // Click → nearest vertex in screen space.
+  // Raycasting Lines was unreliable: a tiny world-space threshold misses
+  // most clicks, a large one snaps to whatever segment happens to lie within
+  // the corridor (usually biased toward whichever direction the toolpath runs).
+  // Projecting every vertex to screen and picking the nearest gives the user
+  // exactly what they clicked, with no orientation bias.
   clickHandler = (event: MouseEvent) => {
-    if (!renderer || !camera || !raycaster || !mouseNDC) return;
+    if (!renderer || !camera) return;
     if (event.button !== 0) return;
 
     const rect = renderer.domElement.getBoundingClientRect();
-    mouseNDC.x =  ((event.clientX - rect.left) / rect.width)  * 2 - 1;
-    mouseNDC.y = -((event.clientY - rect.top)  / rect.height) * 2 + 1;
+    const cx = event.clientX - rect.left;
+    const cy = event.clientY - rect.top;
 
-    raycaster.setFromCamera(mouseNDC, camera);
+    const targets: any[] = [];
+    if (feedLines) targets.push(feedLines);
+    if (rapidLines) targets.push(rapidLines);
+    if (!targets.length) return;
 
-    // check both line objects
-    const targets = [feedLines, rapidLines].filter(Boolean);
-    const hits = raycaster.intersectObjects(targets, false);
-    if (!hits.length) return;
+    const tmp = new THREE.Vector3();
+    let bestObj: any = null;
+    let bestIdx = 0;
+    let bestDistSq = Infinity;
 
-    const hit = hits[0] as any;
-    const index = hit.index ?? 0;
-    const posAttr = hit.object.geometry.getAttribute("position") as any;
-    const count   = posAttr.count || 1;
-    const clamped = Math.max(0, Math.min(count - 1, index));
+    for (const obj of targets) {
+      const posAttr = obj.geometry.getAttribute("position") as any;
+      const count = posAttr.count;
+      for (let i = 0; i < count; i++) {
+        tmp.set(posAttr.getX(i), posAttr.getY(i), posAttr.getZ(i));
+        tmp.project(camera);
+        // skip points behind the camera or outside the frustum
+        if (tmp.z < -1 || tmp.z > 1) continue;
+        const sx = (tmp.x + 1) * 0.5 * rect.width;
+        const sy = (1 - tmp.y) * 0.5 * rect.height;
+        const dx = sx - cx;
+        const dy = sy - cy;
+        const d2 = dx * dx + dy * dy;
+        if (d2 < bestDistSq) {
+          bestDistSq = d2;
+          bestObj = obj;
+          bestIdx = i;
+        }
+      }
+    }
 
-    const hx = posAttr.getX(clamped);
-    const hy = posAttr.getY(clamped);
-    const hz = posAttr.getZ(clamped);
+    if (!bestObj) return;
+    if (bestDistSq > CLICK_PICK_PIXELS * CLICK_PICK_PIXELS) return;
 
-    if (highlightSphere) highlightSphere.position.set(hx, hy, hz);
+    const posAttr = bestObj.geometry.getAttribute("position") as any;
+    setHighlightPosition(
+      posAttr.getX(bestIdx),
+      posAttr.getY(bestIdx),
+      posAttr.getZ(bestIdx)
+    );
 
-    const src = hit.object === feedLines ? feedLineSrc : rapidLineSrc;
-    const sourceLine = src[clamped] ?? 0;
-    emit("select-line", sourceLine);
+    const src = bestObj === feedLines ? feedLineSrc : rapidLineSrc;
+    emit("select-line", src[bestIdx] ?? 0);
   };
   renderer.domElement.addEventListener("click", clickHandler);
 
@@ -361,16 +419,22 @@ function updateGeometry(gcode: string) {
   const result = parseGcode(gcode || "");
   if (!result) return;
 
-  const { rapidPoints, feedPoints, rapidLineSrc: rSrc, feedLineSrc: fSrc, truncated } = result;
+  const {
+    rapidPoints,
+    feedPoints,
+    rapidLineSrc: rSrc,
+    feedLineSrc: fSrc,
+    truncated,
+  } = result;
   rapidLineSrc = rSrc;
-  feedLineSrc      = fSrc;
+  feedLineSrc = fSrc;
   lastTruncated.value = truncated;
-  pointCount.value       = rapidPoints.length + feedPoints.length;
+  pointCount.value = rapidPoints.length + feedPoints.length;
 
   // G0 rapids — dashed gray
   if (rapidPoints.length >= 2) {
     const geom = new THREE.BufferGeometry().setFromPoints(rapidPoints);
-    const mat  = new THREE.LineDashedMaterial({
+    const mat = new THREE.LineDashedMaterial({
       color: 0x888888,
       dashSize: 2,
       gapSize: 1,
@@ -383,7 +447,7 @@ function updateGeometry(gcode: string) {
   // G1/G2/G3 feeds — blue
   if (feedPoints.length >= 2) {
     const geom = new THREE.BufferGeometry().setFromPoints(feedPoints);
-    const mat  = new THREE.LineBasicMaterial({ color: 0x4287f5 });
+    const mat = new THREE.LineBasicMaterial({ color: 0x4287f5 });
     feedLines = new THREE.Line(geom, mat);
     scene.add(feedLines);
   }
@@ -395,14 +459,14 @@ function updateGeometry(gcode: string) {
   const bbox = new THREE.Box3();
   for (const p of allPoints) bbox.expandByPoint(p);
 
-  const size   = new THREE.Vector3();
+  const size = new THREE.Vector3();
   const center = new THREE.Vector3();
   bbox.getSize(size);
   bbox.getCenter(center);
 
   sceneCenter = center.clone();
   const maxDim = Math.max(size.x || 1, size.y || 1, size.z || 1);
-  sceneDist    = maxDim * 2.5;
+  sceneDist = maxDim * 2.5;
 
   camera.position.set(
     center.x + sceneDist,
@@ -410,7 +474,7 @@ function updateGeometry(gcode: string) {
     center.z + sceneDist
   );
   camera.near = maxDim * 0.0001;
-  camera.far  = maxDim * 100;
+  camera.far = maxDim * 100;
   camera.lookAt(center);
   camera.updateProjectionMatrix();
 
@@ -419,27 +483,27 @@ function updateGeometry(gcode: string) {
     controls.update();
   }
 
-  // FIX 3: sphere radius scales with part size — visible but not giant
-  ensureHighlightSphere(maxDim * 0.008);
+  // Crosshair size scales with part — visible but never engulfing.
+  ensureHighlightCross(maxDim * 0.04);
 }
 
-// ── Highlight cursor line ────────────────────────────────────────────────────
+// ── Cursor → 3D highlight ────────────────────────────────────────────────────
+// Binary-searches the source-line map for the geometry vertex closest to the
+// editor cursor's source line. Accurate even when most source lines produce no
+// geometry (comments, M-codes, etc.) — linear interpolation drifts badly here.
 function highlightLine(line: number | null | undefined) {
-  if (!scene || !highlightSphere || line == null || line < 0) return;
+  if (!scene || !highlightCross || line == null || line < 0) return;
 
-  // prefer feed lines for cursor tracking; fall back to rapids
   const obj = feedLines || rapidLines;
   if (!obj) return;
 
   const posAttr = obj.geometry.getAttribute("position") as any;
-  const count   = posAttr.count || 0;
+  const count = posAttr.count || 0;
   if (!count) return;
 
-  // Binary search the source-line map for the point closest to the cursor line.
-  // This is accurate even when most source lines produce no geometry (comments,
-  // M-codes, etc.) — unlike linear interpolation which drifts badly.
   const lineSrc = feedLines ? feedLineSrc : rapidLineSrc;
-  let lo = 0, hi = lineSrc.length - 1;
+  let lo = 0,
+    hi = lineSrc.length - 1;
   while (lo < hi) {
     const mid = (lo + hi) >> 1;
     if (lineSrc[mid] < line) lo = mid + 1;
@@ -447,11 +511,7 @@ function highlightLine(line: number | null | undefined) {
   }
   const idx = Math.min(lo, count - 1);
 
-  highlightSphere.position.set(
-    posAttr.getX(idx),
-    posAttr.getY(idx),
-    posAttr.getZ(idx)
-  );
+  setHighlightPosition(posAttr.getX(idx), posAttr.getY(idx), posAttr.getZ(idx));
 }
 
 // ── Camera reset ─────────────────────────────────────────────────────────────
@@ -506,24 +566,31 @@ onBeforeUnmount(() => {
 
   clearGeometry();
 
-  if (highlightSphere && scene) {
-    scene.remove(highlightSphere);
-    highlightSphere.geometry.dispose();
-    highlightSphere.material.dispose();
-    highlightSphere = null;
+  if (highlightCross && scene) {
+    scene.remove(highlightCross);
+    highlightCross.traverse((c: any) => {
+      c.geometry?.dispose();
+      c.material?.dispose();
+    });
+    highlightCross = null;
   }
 
   controls?.dispose();
 
   if (renderer) {
     renderer.dispose();
-    if (renderer.domElement && canvasContainer.value?.contains(renderer.domElement)) {
+    if (
+      renderer.domElement &&
+      canvasContainer.value?.contains(renderer.domElement)
+    ) {
       canvasContainer.value.removeChild(renderer.domElement);
     }
   }
 
-  scene = null; camera = null; renderer = null;
-  controls = null; raycaster = null; mouseNDC = null;
+  scene = null;
+  camera = null;
+  renderer = null;
+  controls = null;
 });
 </script>
 

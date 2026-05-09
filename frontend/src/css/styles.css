@@ -462,21 +462,7 @@ html[dir="rtl"] .card.floating .card-content .file-list {
   text-align: left;
 }
 
-/* =========================================================
-   ACE GCODE THEME OVERRIDES
-   ========================================================= */
-
-/* DARK ACE THEMES — keep N-codes white */
-.ace-monokai .ace_gcode.ace_block,
-.ace-one-dark .ace_gcode.ace_block,
-.ace-twilight .ace_gcode.ace_block,
-.ace-solarized-dark .ace_gcode.ace_block {
-  color: #ffffff !important;
-}
-
-/* LIGHT ACE THEMES — N-codes dark so they show on white bg */
-.ace-github .ace_gcode.ace_block,
-.ace-chrome .ace_gcode.ace_block,
-.ace-solarized-light .ace_gcode.ace_block {
-  color: #000000 !important;
-}
+/* G-code token colors live next to the token rules in
+ * frontend/src/views/files/Editor.vue (one source of truth). They use
+ * OKLCH at ~60% lightness so they're legible on every Ace theme without
+ * per-theme overrides. */
