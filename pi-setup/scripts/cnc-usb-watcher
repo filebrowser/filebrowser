@@ -219,6 +219,14 @@ if [[ ! -s $SNAPSHOT_FILE ]]; then
   list_image > "$SNAPSHOT_FILE" || true
 fi
 
+# Initial sync. v2 only re-exports on filesystem events; without this the
+# image stays in whatever state it was last left in (often empty after
+# mkfs.vfat), so the controller sees an empty stick even though the
+# share folder + filebrowser UI both show files. schedule_reexport is
+# debounced + interval-bounded, so this is harmless on every restart.
+log "scheduling initial sync (so the controller sees the current share contents)"
+schedule_reexport
+
 log "watching $SHARE_PATH (debounce=${WATCH_DEBOUNCE_SECONDS}s, min-interval=${WATCH_MIN_INTERVAL_SECONDS}s)"
 
 inotifywait -m -r -q -e close_write -e create -e delete -e move -e attrib \
