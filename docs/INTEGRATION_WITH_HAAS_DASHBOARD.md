@@ -2,7 +2,45 @@
 
 > **Audience:** the Claude session working on `jasongainor/filebrowser-NC` (Zinc).
 > This doc is self-contained — you don't need to read the haas-dashboard chat history.
-> **Status:** decisions resolved 2026-05-09. Ready to implement.
+> **Status:** decisions resolved 2026-05-09. **Zinc side is shipped as of 2026-05-09**; see "Status as of 2026-05-09" below for what landed and what changed in flight.
+
+---
+
+## Status as of 2026-05-09
+
+Most of the original plan is in. One architectural pivot in flight (Z-11): the operator-facing dashboard is now a **native Vue page on Zinc** rather than an embedded iframe pointing at haas-dashboard. The iframe-specific dashboard-side todos (D-3 CORS, D-4 token-in-URL) are therefore obsolete; D-1 (proxy mode for haas-dashboard) is the only piece that keeps the bearer token earning its keep.
+
+| Item | Status | PR(s) |
+|---|---|---|
+| Z-1 / Z-2 / Z-3 — Settings tab + GET/PUT + status stub | ✓ shipped | #11 |
+| Z-4 — Streamer skeleton (single-job lock, start/stop/status) | ✓ shipped | #12 |
+| Z-5 — Q-code multiplexer (`POST /api/cnc/qcode`) | ✓ shipped | #13 |
+| Z-8 — WS event stream (`/api/cnc/stream`, line + status events) | ✓ shipped | #14 |
+| Z-9 — Send-to-Machine button on the .nc viewer | ✓ shipped | #17 |
+| Z-12 — Global status pill on the header | ✓ shipped | #18 |
+| Z-10 — Machine tracker + follow-machine toggle | ✓ shipped | #19 |
+| Z-11 — `/machine` page (architecture pivot — see below) | ✓ shipped natively | #20 → #24 |
+| Z-13 — Camera embed (HLS / snapshot / RTSP-hint) | ✓ shipped | #20 |
+| Z-15 — Crash-recovery prompt + ack | ✓ shipped (backend + UI) | #21, #22 |
+| Z-14 — DPRNT log capture | ⏸ deferred — needs hardware to verify safely |  |
+| `GET /api/cnc/state` — curated telemetry snapshot | ✓ shipped (new, not in original plan) | #24 |
+| Branding assets out of share folder | ✓ shipped (new, not in original plan) | #23 |
+
+Pi-side bugfixes that landed alongside (not in the original plan but blocking):
+
+| Item | PR |
+|---|---|
+| `dr_mode=peripheral` forced under `[all]` (Bookworm imager seeds `[cm5]`) | #15 |
+| `cnc-usb-watcher` initial sync at startup | #16 |
+| Stop filebrowser before BoltDB writes (admin password) | #9 |
+
+### Z-11 architectural pivot
+
+Original plan: `/machine` is an iframe pointing at haas-dashboard with `?token=` for auth. Hung on D-3 + D-4 to ship.
+
+What we shipped instead: `/machine` is a native filebrowser Vue page that polls `GET /api/cnc/state` (also new). The state endpoint is backed by a `cnc.Aggregator` background poller that hits each Q-code on its own ticker and caches the result, so the request path doesn't hit the Haas. **The Pi is now the sole owner of the "live state" view AND the data source.** External services that want the same telemetry call `/api/cnc/state` (or `/api/cnc/qcode` for ad-hoc) with the bearer token; haas-dashboard becomes one such consumer rather than the canonical UI.
+
+That makes the bearer-token feature still useful (D-1 — haas-dashboard's HaasBridge can route through the Pi during a streaming job) but **removes the urgency of D-3 / D-4**. Marked obsolete below.
 
 ---
 
@@ -178,7 +216,7 @@ POST /api/query          // {"q": 104} or {"q": 600, "var": 5021}
 
 ### Phase 1 — Settings + status stub
 
-- [ ] **Z-1. Add "Machine" tab to filebrowser settings.** Look at how the
+- [x] **Z-1. Add "Machine" tab to filebrowser settings.** Look at how the
   existing `/settings` page is composed (likely `frontend/src/views/settings/`)
   and add a tab next to whatever's already there. Fields:
   - `haas_host` (text, default `192.168.20.200`)
@@ -189,15 +227,15 @@ POST /api/query          // {"q": 104} or {"q": 600, "var": 5021}
     so the operator can paste it into the haas-dashboard's env to authorize
     its API calls.
   Persist via `settings.Storage`.
-- [ ] **Z-2. `GET/PUT /api/cnc/settings`** backed by the same store as Z-1.
+- [x] **Z-2. `GET/PUT /api/cnc/settings`** backed by the same store as Z-1.
   Both endpoints require `filebrowser.User.Perm.Admin` (matches the existing
   settings convention; check how the rest of `/settings` is gated).
-- [ ] **Z-3. Stub `GET /api/cnc/status`** that returns `{"running": false}`.
+- [x] **Z-3. Stub `GET /api/cnc/status`** that returns `{"running": false}`.
   Unblocks haas-dashboard development before streaming is built.
 
 ### Phase 2 — DNC streaming + Q-code proxy
 
-- [ ] **Z-4. Implement RS-232 streaming.** New service (`runner/cnc-stream/`?)
+- [x] **Z-4. Implement RS-232 streaming.** New service (`runner/cnc-stream/`?)
   that opens a TCP connection to `<haas_host>:<haas_port>` and feeds a file
   line-by-line.
   - **Wire format:** Same as the existing dashboard:
@@ -211,7 +249,7 @@ POST /api/query          // {"q": 104} or {"q": 600, "var": 5021}
     [`haas_bridge.py`](../haas_bridge.py) has the framing/parser logic for
     Q-code responses (`STX 0x02 ... ETB 0x17`). Re-use the protocol details
     in Go.
-- [ ] **Z-5. Q-code multiplexing.** Implement `POST /api/cnc/qcode`.
+- [x] **Z-5. Q-code multiplexing.** Implement `POST /api/cnc/qcode`.
   - **When idle (no job running):** open a transient TCP connection,
     send `?Q<n> [<var>]\r\n`, read until `\x17`, close. Same as
     `haas_bridge._round_trip()`.
@@ -221,23 +259,23 @@ POST /api/query          // {"q": 104} or {"q": 600, "var": 5021}
     starve.
   - Return `{ raw, value, parsed }` — same shape as the dashboard's
     `/api/query`.
-- [ ] **Z-6. `POST /api/cnc/start`.** Validates the file path is under the
+- [x] **Z-6. `POST /api/cnc/start`.** Validates the file path is under the
   share folder, kicks off the streamer, returns a `job_id`. 409 if a job is
   already running. Logs to `journalctl -u cnc-stream`.
-- [ ] **Z-7. `POST /api/cnc/stop`.** Stops feeding bytes. The Haas stalls
+- [x] **Z-7. `POST /api/cnc/stop`.** Stops feeding bytes. The Haas stalls
   on look-ahead drain.
-- [ ] **Z-8. `WS /api/cnc/stream`** — pushes `line` events as the streamer
+- [x] **Z-8. `WS /api/cnc/stream`** — pushes `line` events as the streamer
   advances and `status` events on state change. Match the message shapes in
   the API contract above.
 
 ### Phase 3 — UI
 
-- [ ] **Z-9. "Send to Machine" button** on the `.nc` file viewer (the
+- [x] **Z-9. "Send to Machine" button** on the `.nc` file viewer (the
   existing 3D viewer / Ace editor split-pane). POSTs to `/api/cnc/start`.
   Show a confirmation dialog first: *"Stream `part_0429_v3.nc` (2,043
   lines) to 192.168.20.200? — Confirm"*. Disabled if a job is already
   running (poll `/api/cnc/status`).
-- [ ] **Z-10. Two trackers in the 3D viewer.**
+- [x] **Z-10. Two trackers in the 3D viewer.**
   - **Machine tracker** — colored marker that follows the line index in the
     `line` WebSocket events.
   - **User tracker** — already exists (the cursor that scrubs through the
@@ -248,13 +286,8 @@ POST /api/query          // {"q": 104} or {"q": 600, "var": 5021}
     button reappears as **"Resume follow"** to re-lock. Approximation is
     fine — the user explicitly said: *"doesn't have to be exact correct
     atm, just a reactive of what the connection machine says."*
-- [ ] **Z-11. "Machine Status" entry in the left sidebar.** Clicking it
-  loads `/machine`. The right pane is an iframe pointed at
-  `<haas_dashboard_url>` (from settings) with a short-lived bearer token
-  appended (`?token=…`) so the dashboard authenticates without a separate
-  login. The filebrowser sidebar TOC stays visible — only the right pane
-  swaps.
-- [ ] **Z-12. Currently-served-file breadcrumb.** When `/api/cnc/status`
+- [x] **Z-11. "Machine Status" entry in the left sidebar.** ~~Iframe + ?token=~~ **Pivoted (PR #24)**: `/machine` is now a native Vue page that polls `GET /api/cnc/state` (also new). Sidebar entry is in (PR #20).
+- [x] **Z-12. Currently-served-file breadcrumb.** When `/api/cnc/status`
   returns `running:true`, surface the file path in:
   - The **header bar** (across the top of every filebrowser page) — pill
     showing `Running: part_0429_v3.nc · line 482 / 2043`. Clicking
@@ -262,7 +295,7 @@ POST /api/query          // {"q": 104} or {"q": 600, "var": 5021}
   - The **top of the left sidebar** — same info, more space.
   Updates live from the WS stream when open, falls back to a 2-second
   poll otherwise.
-- [ ] **Z-13. Camera embed** on the `/machine` page. If `camera_url` set:
+- [x] **Z-13. Camera embed** on the `/machine` page. If `camera_url` set:
   - URL ends in `.m3u8` → `<video>` with HLS.js (or native HLS on Safari).
   - URL ends in `.jpg` / `/snapshot` → `<img>` reloaded every 200 ms.
   - URL starts with `rtsp://` → render *"RTSP isn't browser-renderable;
@@ -276,7 +309,7 @@ POST /api/query          // {"q": 104} or {"q": 600, "var": 5021}
   emits DPRNT logs back over the same RS-232, capture them and append to
   a sibling file in the share folder (`<jobname>.log`). Same pattern as
   today's USB-mode `cnc-usb-watcher`.
-- [ ] **Z-15. Crash recovery prompt.** If filebrowser-NC restarts mid-job,
+- [x] **Z-15. Crash recovery prompt.** If filebrowser-NC restarts mid-job,
   the next start of the streamer should refuse to auto-resume — surface a
   banner asking the operator to confirm.
 
@@ -295,16 +328,9 @@ POST /api/query          // {"q": 104} or {"q": 600, "var": 5021}
   metric tiles. Polls `<ZINC_BASE_URL>/api/cnc/status` every 2 s. Shows
   file name, line `current/total`, progress bar, and a "view in
   filebrowser" link to `<ZINC_BASE_URL>/files/<file_path>`.
-- [ ] **D-3. CORS** for iframe embed. The dashboard will be loaded inside
-  filebrowser-NC's `/machine` page on a different origin. Add
-  `fastapi.middleware.cors.CORSMiddleware` with the Zinc origin allow-listed.
-- [ ] **D-4. Token-bearer auth** on the dashboard's API. Honor a
-  `?token=…` query string (for iframe embed) or `Authorization: Bearer …`
-  header — both validated against the value Zinc minted. If unset, fall
-  back to LAN-open (current behavior, for dev mode).
-- [ ] **D-5. Hide direct-TCP details when proxied.** Footer "Host:
-  192.168.20.200:4196" becomes "via zinc.local" when running through the
-  proxy.
+- ~~D-3. CORS for iframe embed.~~ **Obsolete (Z-11 pivot)** — no iframe.
+- [ ] **D-4. Token-bearer auth on the dashboard's API.** ~~`?token=…` query string for iframe~~ — drop the query-string acceptor; `Authorization: Bearer …` header is enough now. Validated against the value Zinc minted; unset → fall back to LAN-open (dev mode).
+- [ ] **D-5. Hide direct-TCP details when proxied.** Footer "Host: 192.168.20.200:4196" becomes "via zinc.local" when running through the proxy. Still applies — useful operator hint.
 
 ---
 
