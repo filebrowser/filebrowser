@@ -6,6 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 
+	"github.com/filebrowser/filebrowser/v2/cnc"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/storage"
 )
@@ -23,6 +24,7 @@ func NewHandler(
 	store *storage.Storage,
 	server *settings.Server,
 	assetsFs fs.FS,
+	streamer *cnc.Streamer,
 ) (http.Handler, error) {
 	server.Clean()
 
@@ -78,11 +80,13 @@ func NewHandler(
 	api.Handle("/settings", monkey(settingsGetHandler, "")).Methods("GET")
 	api.Handle("/settings", monkey(settingsPutHandler, "")).Methods("PUT")
 
-	cnc := api.PathPrefix("/cnc").Subrouter()
-	cnc.Handle("/settings", monkey(cncSettingsGetHandler, "")).Methods("GET")
-	cnc.Handle("/settings", monkey(cncSettingsPutHandler, "")).Methods("PUT")
-	cnc.Handle("/settings/token", monkey(cncRegenerateTokenHandler, "")).Methods("POST")
-	cnc.Handle("/status", monkey(cncStatusHandler, "")).Methods("GET")
+	cncRouter := api.PathPrefix("/cnc").Subrouter()
+	cncRouter.Handle("/settings", monkey(cncSettingsGetHandler, "")).Methods("GET")
+	cncRouter.Handle("/settings", monkey(cncSettingsPutHandler, "")).Methods("PUT")
+	cncRouter.Handle("/settings/token", monkey(cncRegenerateTokenHandler, "")).Methods("POST")
+	cncRouter.Handle("/status", monkey(cncStatusHandler(streamer), "")).Methods("GET")
+	cncRouter.Handle("/start", monkey(cncStartHandler(streamer), "")).Methods("POST")
+	cncRouter.Handle("/stop", monkey(cncStopHandler(streamer), "")).Methods("POST")
 
 	api.PathPrefix("/raw").Handler(monkey(rawHandler, "/api/raw")).Methods("GET")
 	api.PathPrefix("/preview/{size}/{path:.*}").

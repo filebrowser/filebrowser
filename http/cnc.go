@@ -12,8 +12,12 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"net/http"
+	"path"
+	"strings"
 
+	"github.com/filebrowser/filebrowser/v2/cnc"
 	"github.com/filebrowser/filebrowser/v2/settings"
 )
 
@@ -83,25 +87,87 @@ var cncRegenerateTokenHandler = withAdmin(func(w http.ResponseWriter, r *http.Re
 	return renderJSON(w, r, map[string]string{"machineToken": d.settings.Cnc.MachineToken})
 })
 
-// cncStatusBody is the long-term shape — Phase 1 returns it with
-// running=false and zero values. Phase 2 wires the streamer in.
-type cncStatusBody struct {
-	Running       bool   `json:"running"`
-	FilePath      string `json:"file_path,omitempty"`
-	FileURL       string `json:"file_url,omitempty"`
-	LineCurrent   int    `json:"line_current,omitempty"`
-	LineTotal     int    `json:"line_total,omitempty"`
-	StartedAt     string `json:"started_at,omitempty"`
-	HaasOK        bool   `json:"haas_ok"`
-	HaasLastError string `json:"haas_last_error,omitempty"`
-}
-
 // cncStatusHandler is auth-required (any logged-in user) so the
 // breadcrumb pill can poll it from every page. It does NOT require
 // admin — operators need to see whether a job is running.
-var cncStatusHandler = withUser(func(w http.ResponseWriter, r *http.Request, _ *data) (int, error) {
-	return renderJSON(w, r, cncStatusBody{
-		Running: false,
-		HaasOK:  true, // optimistic until the streamer reports otherwise
+//
+// Status comes from the live cnc.Streamer singleton; the FileURL
+// field is composed here so the dashboard can deep-link straight to
+// the file in filebrowser without re-deriving the path.
+func cncStatusHandler(streamer *cnc.Streamer) handleFunc {
+	return withUser(func(w http.ResponseWriter, r *http.Request, _ *data) (int, error) {
+		st := streamer.Status()
+		body := struct {
+			*cnc.Status
+			FileURL string `json:"file_url,omitempty"`
+		}{Status: st}
+		if st.FilePath != "" {
+			body.FileURL = "/files" + ensureLeading(st.FilePath)
+		}
+		return renderJSON(w, r, body)
 	})
-})
+}
+
+// cncStartBody is the request body for POST /api/cnc/start. file_path is
+// share-relative — the same shape filebrowser uses elsewhere.
+type cncStartBody struct {
+	FilePath string `json:"file_path"`
+}
+
+// cncStartHandler validates the file path stays under the user's scope
+// then hands off to the streamer. Phase 2.1 doesn't yet enforce
+// machine-token auth here — the streamer endpoints expect a logged-in
+// filebrowser user; haas-dashboard's machine-token only matters for
+// /api/cnc/qcode (Phase 2.2).
+func cncStartHandler(streamer *cnc.Streamer) handleFunc {
+	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		if !d.user.Perm.Modify {
+			return http.StatusForbidden, nil
+		}
+
+		req := &cncStartBody{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			return http.StatusBadRequest, err
+		}
+		if req.FilePath == "" {
+			return http.StatusBadRequest, errors.New("file_path required")
+		}
+
+		// Resolve under the user's scope via afero.BasePathFs so escape
+		// attempts (../../etc/passwd) get clamped at the share root —
+		// same gate the rest of the HTTP layer uses.
+		clean := path.Clean(ensureLeading(req.FilePath))
+		if strings.Contains(clean, "..") {
+			return http.StatusBadRequest, errors.New("file_path must not escape the share")
+		}
+		absPath := d.user.FullPath(clean)
+
+		st, err := streamer.Start(absPath, clean)
+		switch {
+		case errors.Is(err, cnc.ErrJobAlreadyRunning):
+			return http.StatusConflict, err
+		case errors.Is(err, cnc.ErrConfigMissing):
+			return http.StatusBadRequest, err
+		case err != nil:
+			return errToStatus(err), err
+		}
+		return renderJSON(w, r, map[string]string{"job_id": st.JobID})
+	})
+}
+
+func cncStopHandler(streamer *cnc.Streamer) handleFunc {
+	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		if !d.user.Perm.Modify {
+			return http.StatusForbidden, nil
+		}
+		stopped := streamer.Stop()
+		return renderJSON(w, r, map[string]bool{"stopped": stopped})
+	})
+}
+
+func ensureLeading(p string) string {
+	if strings.HasPrefix(p, "/") {
+		return p
+	}
+	return "/" + p
+}
