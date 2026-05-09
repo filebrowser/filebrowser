@@ -105,7 +105,7 @@
             class="splitter"
             role="separator"
             aria-orientation="vertical"
-            @mousedown="startResize"
+            @pointerdown="startResize"
             @dblclick="resetSplit"
             :title="t('buttons.dragToResize') || 'Drag to resize · double-click to reset'"
           ></div>
@@ -370,28 +370,47 @@ const editorPct = ref<number>(
   })()
 );
 
-const startResize = (e: MouseEvent) => {
+const startResize = (e: PointerEvent) => {
   e.preventDefault();
-  const layout = (e.currentTarget as HTMLElement).parentElement;
+  const target = e.currentTarget as HTMLElement;
+  const layout = target.parentElement;
   if (!layout) return;
   const rect = layout.getBoundingClientRect();
-  const onMove = (ev: MouseEvent) => {
+  const pointerId = e.pointerId;
+  // Capture so the move events keep coming even if the cursor leaves
+  // the splitter (which is a thin 6px strip — on touch you immediately
+  // drag past it). Without this, mobile drag was reported as "shows
+  // cursor but never moves" because pointermove went to whichever
+  // element is under the finger after the first millimeter.
+  try {
+    target.setPointerCapture(pointerId);
+  } catch {
+    /* not all browsers — fall back to document listeners */
+  }
+  const onMove = (ev: PointerEvent) => {
     const pct = ((ev.clientX - rect.left) / rect.width) * 100;
     editorPct.value = Math.min(SPLIT_MAX, Math.max(SPLIT_MIN, pct));
     editor.value?.resize();
   };
   const onUp = () => {
-    document.removeEventListener("mousemove", onMove);
-    document.removeEventListener("mouseup", onUp);
+    target.removeEventListener("pointermove", onMove);
+    target.removeEventListener("pointerup", onUp);
+    target.removeEventListener("pointercancel", onUp);
     document.body.style.cursor = "";
     document.body.style.userSelect = "";
+    try {
+      target.releasePointerCapture(pointerId);
+    } catch {
+      /* ignore */
+    }
     localStorage.setItem(SPLIT_KEY, String(editorPct.value));
     editor.value?.resize();
   };
   document.body.style.cursor = "col-resize";
   document.body.style.userSelect = "none";
-  document.addEventListener("mousemove", onMove);
-  document.addEventListener("mouseup", onUp);
+  target.addEventListener("pointermove", onMove);
+  target.addEventListener("pointerup", onUp);
+  target.addEventListener("pointercancel", onUp);
 };
 
 const resetSplit = () => {
@@ -779,6 +798,9 @@ watch(
   position: relative;
   user-select: none;
   z-index: 1;
+  /* Stops the browser from interpreting drag as a horizontal scroll
+     gesture on touch devices, which was eating the move events. */
+  touch-action: none;
 }
 
 .splitter::before {
