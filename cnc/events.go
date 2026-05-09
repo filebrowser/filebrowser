@@ -45,6 +45,15 @@ func (s *Streamer) Subscribe() <-chan Event {
 	return sub.ch
 }
 
+// SubscriberCount returns the number of live WS listeners. Used by
+// the aggregator to gate polling — no listeners means nobody's
+// looking, so we don't need to keep poking the Waveshare 24/7.
+func (s *Streamer) SubscriberCount() int {
+	s.subsMu.Lock()
+	defer s.subsMu.Unlock()
+	return len(s.subs)
+}
+
 // Unsubscribe removes a listener. The channel is closed so callers can
 // range over it without leaking.
 func (s *Streamer) Unsubscribe(ch <-chan Event) {

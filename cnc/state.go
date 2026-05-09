@@ -166,6 +166,14 @@ func (a *Aggregator) pollOnce(ctx context.Context, spec metricSpec) {
 		a.mu.Unlock()
 		return
 	}
+	// Don't poll if nobody's listening. The Pi is on 24/7 and the
+	// Waveshare bridge has been steadily polled at 16 metrics × every
+	// 2.5–30 s for hours when no operator was at the machine. Gate on
+	// at least one WS subscriber (the /machine page mounts one, the
+	// header pill mounts one). Polling resumes the moment a tab opens.
+	if a.streamer.SubscriberCount() == 0 {
+		return
+	}
 
 	queryCtx, cancel := context.WithTimeout(ctx, 4*time.Second)
 	defer cancel()
