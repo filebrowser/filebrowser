@@ -63,3 +63,24 @@ export function ackRecovery() {
     method: "POST",
   });
 }
+
+export interface CncMetric {
+  key: string;
+  label: string;
+  q_code: number;
+  macro_var?: number;
+  interval_s: number;
+  raw?: string;
+  value?: string;
+  parsed?: string | number | boolean | Record<string, unknown> | null;
+  last_update?: string;
+  last_error?: string;
+  ok: boolean;
+  stale: boolean;
+}
+
+export type CncStateSnapshot = Record<string, CncMetric>;
+
+export function getState() {
+  return fetchJSON<CncStateSnapshot>(`/api/cnc/state`, {});
+}

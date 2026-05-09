@@ -77,8 +77,20 @@
   },
   "machine": {
     "cameraTitle": "Camera",
-    "dashboardTitle": "Haas dashboard",
+    "dashboardTitle": "Live state",
     "dashboardNotConfigured": "Set the dashboard URL in Settings → Machine to embed it here.",
+    "notConfigured": "Set the Haas host in Settings → Machine",
+    "waitingFirstPoll": "Waiting for first poll…",
+    "program": "Program",
+    "mode": "Mode",
+    "spindleRpm": "Spindle RPM",
+    "spindleCmd": "cmd {n}",
+    "parts": "Parts",
+    "tool": "Tool",
+    "lastCycle": "Last cycle",
+    "machinePos": "Machine position",
+    "workPos": "Work position",
+    "g54Offset": "G54 offset",
     "rtspNotSupported": "RTSP isn't browser-renderable. Set up a go2rtc proxy to convert to HLS, then paste the .m3u8 URL into Settings → Machine."
   },
   "errors": {

@@ -170,6 +170,26 @@ func cncStopHandler(streamer *cnc.Streamer) handleFunc {
 	})
 }
 
+// cncStateHandler exposes the curated Q-code snapshot maintained by
+// the aggregator. Auth: same shape as /qcode — accept either a
+// logged-in filebrowser session or a matching machine bearer token,
+// so the dashboard's UI tiles AND any external service can read it.
+func cncStateHandler(agg *cnc.Aggregator) handleFunc {
+	session := withUser(func(w http.ResponseWriter, r *http.Request, _ *data) (int, error) {
+		return renderJSON(w, r, agg.Snapshot())
+	})
+	return func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		if auth := r.Header.Get("Authorization"); strings.HasPrefix(auth, "Bearer ") {
+			got := strings.TrimPrefix(auth, "Bearer ")
+			if d.settings.Cnc.MachineToken == "" || got != d.settings.Cnc.MachineToken {
+				return http.StatusUnauthorized, nil
+			}
+			return renderJSON(w, r, agg.Snapshot())
+		}
+		return session(w, r, d)
+	}
+}
+
 // cncRecoveryAckHandler clears the pending-recovery flag (Z-15) so
 // Start can succeed again. Modify-permission gate matches start/stop —
 // recovering from a partial cut is an operator decision, not an admin

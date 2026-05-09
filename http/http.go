@@ -25,6 +25,7 @@ func NewHandler(
 	server *settings.Server,
 	assetsFs fs.FS,
 	streamer *cnc.Streamer,
+	aggregator *cnc.Aggregator,
 ) (http.Handler, error) {
 	server.Clean()
 
@@ -89,6 +90,7 @@ func NewHandler(
 	cncRouter.Handle("/stop", monkey(cncStopHandler(streamer), "")).Methods("POST")
 	cncRouter.Handle("/qcode", monkey(cncQueryHandler(streamer), "")).Methods("POST")
 	cncRouter.Handle("/stream", monkey(cncStreamHandler(streamer), "")).Methods("GET")
+	cncRouter.Handle("/state", monkey(cncStateHandler(aggregator), "")).Methods("GET")
 	cncRouter.Handle("/recovery/ack", monkey(cncRecoveryAckHandler(streamer), "")).Methods("POST")
 
 	api.PathPrefix("/raw").Handler(monkey(rawHandler, "/api/raw")).Methods("GET")

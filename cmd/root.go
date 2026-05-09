@@ -237,8 +237,11 @@ user created with the credentials from options "username" and "password".`,
 		}
 
 		streamer := cnc.New(st.Settings)
+		aggregator := cnc.NewAggregator(streamer)
+		aggregator.Start(context.Background())
+		defer aggregator.Stop()
 
-		handler, err := fbhttp.NewHandler(imageService, fileCache, uploadCache, st.Storage, server, assetsFs, streamer)
+		handler, err := fbhttp.NewHandler(imageService, fileCache, uploadCache, st.Storage, server, assetsFs, streamer, aggregator)
 		if err != nil {
 			return err
 		}
