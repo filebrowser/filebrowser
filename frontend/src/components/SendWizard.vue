@@ -18,6 +18,24 @@
         </div>
       </section>
 
+      <!-- 1.5 Destination machine — only when more than one is configured.
+           Defaults to the currently-selected machine in the global store
+           but the operator can route this specific send to a different
+           controller without having to change /machine first. -->
+      <section v-if="cncStore.machines.length > 1" class="wizard-section">
+        <h3 class="wizard-section__title">
+          {{ t("sendWizard.destination") }}
+        </h3>
+        <select
+          class="wizard-destination"
+          v-model="destinationId"
+        >
+          <option v-for="m in cncStore.machines" :key="m.id" :value="m.id">
+            {{ m.name || m.id }} <template v-if="m.host">· {{ m.host }}:{{ m.port }}</template>
+          </option>
+        </select>
+      </section>
+
       <!-- 2. Bridge connection check ──────────────────────────── -->
       <section class="wizard-section">
         <h3 class="wizard-section__title">{{ t("sendWizard.connection") }}</h3>
@@ -201,10 +219,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { cnc as cncApi } from "@/api";
 import type { CncCheckResult, Preflight, SendMethod } from "@/api/cnc";
+import { useCncStore } from "@/stores/cnc";
 
 const props = defineProps<{
   filePath: string;
@@ -216,6 +235,7 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
+const cncStore = useCncStore();
 
 // LocalStorage-persist the operator's last-used method so the next
 // send defaults to whatever they picked last. Default is "mem" since
@@ -226,6 +246,18 @@ const method = ref<SendMethod>(
     const v = localStorage.getItem(METHOD_KEY);
     return v === "dnc" ? "dnc" : "mem";
   })()
+);
+
+// Destination machine — defaults to the globally-selected one. The
+// preflight + connection check both follow this id, so routing a
+// send to a different controller updates the wizard's state in place
+// without needing to leave the page.
+const destinationId = ref<string>(cncStore.currentMachineId || "");
+watch(
+  () => cncStore.currentMachineId,
+  (id) => {
+    if (id && !destinationId.value) destinationId.value = id;
+  }
 );
 
 const checkResult = ref<CncCheckResult | null>(null);
@@ -261,7 +293,9 @@ const sendable = computed(() => connectionOK.value);
 const runCheck = async () => {
   checking.value = true;
   try {
-    checkResult.value = await cncApi.checkConnection();
+    checkResult.value = await cncApi.checkConnection(
+      destinationId.value || undefined
+    );
   } catch (e: any) {
     checkResult.value = {
       bridge: { ok: false, error: e?.message || String(e) },
@@ -278,7 +312,18 @@ const doSend = async () => {
   sendError.value = "";
   try {
     localStorage.setItem(METHOD_KEY, method.value);
-    await cncApi.start(props.filePath, method.value);
+    // If the operator picked a non-default destination in the wizard
+    // dropdown, switch the global store first so /machine reflects the
+    // job we're about to start. setCurrentMachine is a no-op if the id
+    // already matches.
+    if (destinationId.value && destinationId.value !== cncStore.currentMachineId) {
+      await cncStore.setCurrentMachine(destinationId.value);
+    }
+    await cncApi.start(
+      props.filePath,
+      method.value,
+      destinationId.value || undefined
+    );
     emit("started");
   } catch (e: any) {
     sendError.value = e?.message || String(e);
@@ -291,7 +336,10 @@ const runPreflight = async () => {
   preflightLoading.value = true;
   preflightError.value = "";
   try {
-    preflight.value = await cncApi.getPreflight(props.filePath);
+    preflight.value = await cncApi.getPreflight(
+      props.filePath,
+      destinationId.value || undefined
+    );
   } catch (e: any) {
     preflightError.value = e?.message || String(e);
     preflight.value = null;
@@ -307,6 +355,18 @@ const runPreflight = async () => {
 onMounted(() => {
   runCheck();
   runPreflight();
+});
+
+// Re-run check + preflight when the operator changes destination so
+// the displayed numbers always match the controller they're routing
+// to. Skip on first paint (onMounted already covered it).
+watch(destinationId, (id, prev) => {
+  if (id && prev !== undefined && id !== prev) {
+    checkResult.value = null;
+    preflight.value = null;
+    runCheck();
+    runPreflight();
+  }
 });
 </script>
 
@@ -520,6 +580,26 @@ onMounted(() => {
 
 .wizard-connection__detail .err {
   color: #c62828;
+}
+
+/* Destination dropdown — only renders when >1 machine. Same style
+   as a section input field; full-width so machine names + addresses
+   don't truncate. */
+.wizard-destination {
+  width: 100%;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.9rem;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 4px;
+  background: var(--surface, #fff);
+  color: inherit;
+  cursor: pointer;
+}
+
+.wizard-destination:hover,
+.wizard-destination:focus {
+  border-color: var(--primaryColor, #2196f3);
+  outline: none;
 }
 
 /* Method selector — radios styled as wide cards with explanatory body */

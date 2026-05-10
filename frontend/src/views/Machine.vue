@@ -59,6 +59,20 @@
       <section class="machine-card dashboard-card">
         <div class="card-header dashboard-header">
           <i class="material-icons">precision_manufacturing</i>
+          <!-- Machine switcher — only when more than one machine is
+               configured. Switching tears down the WS, clears job
+               state, and reseeds metrics for the new selection. -->
+          <select
+            v-if="cncStore.machines.length > 1"
+            class="machine-switcher"
+            :value="cncStore.currentMachineId"
+            @change="onMachineSwitch(($event.target as HTMLSelectElement).value)"
+            :title="t('machine.switcherTitle') || 'Switch machine'"
+          >
+            <option v-for="m in cncStore.machines" :key="m.id" :value="m.id">
+              {{ m.name || m.id }}
+            </option>
+          </select>
           <div class="dashboard-header__hero">
             <span class="dashboard-header__label">{{ t("machine.program") }}</span>
             <span class="dashboard-header__value">{{ programDisplay || "—" }}</span>
@@ -255,7 +269,7 @@
            so history is browsable in the file UI. -->
       <ToolTablePanel
         v-if="!kioskMode"
-        :machine-id="undefined"
+        :machine-id="cncStore.currentMachineId || undefined"
         :cnc-running="cncStore.running"
       />
 
@@ -391,7 +405,7 @@ const promptStopMachine = () => {
       event.preventDefault();
       layoutStore.closeHovers();
       try {
-        await cncApi.stop();
+        await cncApi.stop(cncStore.currentMachineId || undefined);
         cncStore.pollOnce();
       } catch (e: any) {
         $showError(e);
@@ -400,10 +414,38 @@ const promptStopMachine = () => {
   });
 };
 
+// Operator picked a different machine in the header dropdown. The
+// store handles the WS teardown / reconnect; we re-resolve camera
+// config + clear the previous machine's check result so stale data
+// doesn't linger across the swap.
+const onMachineSwitch = async (id: string) => {
+  if (!id) return;
+  await cncStore.setCurrentMachine(id);
+  checkResult.value = null;
+  await loadCameraConfig();
+};
+
 // ── Config from /api/cnc/settings ──────────────────────────────────────────
 const cameraURL = ref("");
 const cameraType = ref<string>("auto");
 const hostConfigured = ref(false);
+
+// Resolve camera + host config for the currently-selected machine.
+// Pulled from /api/cnc/settings and keyed off cncStore.currentMachine
+// so a switch updates the camera tile without needing to reload.
+const loadCameraConfig = async () => {
+  try {
+    const s = await cncApi.getSettings();
+    const id = cncStore.currentMachineId;
+    const m =
+      (id ? s.machines?.find((x) => x.id === id) : null) || s.machines?.[0];
+    cameraURL.value = m?.cameraUrl ?? s.cameraUrl ?? "";
+    cameraType.value = m?.cameraType ?? "auto";
+    hostConfigured.value = !!(m?.host ?? s.haasHost);
+  } catch {
+    /* leave previous values; the configure-me hint will still render */
+  }
+};
 
 // ── File ↔ NC sibling discovery (model + drawing) ─────────────────────────
 // Looks up a 3D model + PDF drawing in the same folder as the active
@@ -597,7 +639,9 @@ const checkResultClass = computed(() => {
 const runConnectionCheck = async () => {
   checking.value = true;
   try {
-    checkResult.value = await cncApi.checkConnection();
+    checkResult.value = await cncApi.checkConnection(
+      cncStore.currentMachineId || undefined
+    );
   } catch (e: any) {
     $showError(e);
     checkResult.value = null;
@@ -752,18 +796,20 @@ watch(cameraKind, (kind) => {
 
 // ── Lifecycle ──────────────────────────────────────────────────────────────
 onMounted(async () => {
-  try {
-    const s = await cncApi.getSettings();
-    // Phase C still pending — read the default machine (machines[0])
-    // for camera + host config, falling back to the legacy mirrored
-    // top-level fields the server keeps populated for compat.
-    const m = s.machines?.[0];
-    cameraURL.value = m?.cameraUrl ?? s.cameraUrl ?? "";
-    cameraType.value = m?.cameraType ?? "auto";
-    hostConfigured.value = !!(m?.host ?? s.haasHost);
-  } catch {
-    /* ignore — view renders the configure-me hints */
+  // ?machine_id= takes precedence over the persisted selection so a
+  // deep link from the file tree (or another tab) can pin /machine to
+  // a specific controller without trampling the operator's last pick
+  // for the default route. Fires before loadMachines so the store's
+  // reconciliation step keeps the override.
+  const requested = route.query.machine_id;
+  if (typeof requested === "string" && requested) {
+    await cncStore.setCurrentMachine(requested);
   }
+  // start() runs loadMachines + the WS connect; safe to call here as
+  // well as in App.vue because it's idempotent. This also guarantees
+  // the switcher dropdown has data before first render.
+  await cncStore.start();
+  await loadCameraConfig();
   // Seed the store once; WS "metric" events from /api/cnc/stream will
   // keep it fresh after that. The 30 s reseed catches the case where
   // the WS was dropped silently and reconnect failed quietly.
@@ -788,6 +834,17 @@ onMounted(async () => {
     snapshotTimer = setInterval(() => snapshotTick.value++, 200);
   }
 });
+
+// Reload camera config whenever the operator switches machines so
+// the camera tile follows the selection. setCurrentMachine itself
+// resets the dashboard, but settings is fetched once per page so we
+// re-read it here.
+watch(
+  () => cncStore.currentMachineId,
+  async (id) => {
+    if (id) await loadCameraConfig();
+  }
+);
 
 onBeforeUnmount(() => {
   if (reseedTimer) clearInterval(reseedTimer);
@@ -1043,6 +1100,26 @@ const Tile = (props: { label: string; value: string; sub?: string; icon: string 
 /* Header hero — program / status / mode promoted out of the body and
    into the card-header strip so the operator's primary read sits at
    the top with no whitespace below. */
+.machine-switcher {
+  /* Sits at the left of the dashboard header before the hero. Sized
+     to read at the same scale as the program / mode values so the
+     identity of the active machine is the first thing the operator
+     sees on /machine when more than one is configured. */
+  margin-right: 0.5rem;
+  padding: 0.2rem 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 4px;
+  background: var(--surface, #fff);
+  color: inherit;
+  cursor: pointer;
+}
+
+.machine-switcher:hover {
+  border-color: var(--primaryColor, #2196f3);
+}
+
 .dashboard-header__hero {
   display: flex;
   align-items: center;

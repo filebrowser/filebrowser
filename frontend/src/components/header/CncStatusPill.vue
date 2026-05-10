@@ -6,6 +6,7 @@
     :title="t('cnc.statusTooltip', { path: cnc.filePath })"
   >
     <i class="material-icons cnc-pill__icon">precision_manufacturing</i>
+    <span v-if="machineLabel" class="cnc-pill__machine">{{ machineLabel }}</span>
     <span class="cnc-pill__name">{{ basename(cnc.filePath) }}</span>
     <span class="cnc-pill__progress" v-if="cnc.lineTotal > 0">
       {{ cnc.lineCurrent }}&nbsp;/&nbsp;{{ cnc.lineTotal }}
@@ -24,6 +25,14 @@ import { useCncStore } from "@/stores/cnc";
 const { t } = useI18n();
 const store = useCncStore();
 const cnc = computed(() => store);
+
+// Show the machine name as a prefix only when more than one machine
+// is configured — single-machine setups already know which controller
+// the pill refers to and the prefix is just visual noise.
+const machineLabel = computed(() => {
+  if (store.machines.length < 2) return "";
+  return store.currentMachine?.name || store.currentMachineId || "";
+});
 
 const basename = (p: string) => {
   if (!p) return "";
@@ -63,6 +72,17 @@ const basename = (p: string) => {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 30vw;
+}
+
+.cnc-pill__machine {
+  /* Shown only when >1 machine is configured. Slightly muted so the
+     filename + progress remain the dominant read. */
+  font-weight: 500;
+  opacity: 0.85;
+  padding-right: 0.4rem;
+  border-right: 1px solid currentColor;
+  border-right-color: rgba(33, 150, 243, 0.4);
+  margin-right: 0.1rem;
 }
 
 .cnc-pill__progress {

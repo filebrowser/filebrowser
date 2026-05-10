@@ -10,8 +10,18 @@
 
 import { defineStore } from "pinia";
 import { cnc as cncApi } from "@/api";
-import type { CncMetric, CncStateSnapshot, CncStatus } from "@/api/cnc";
+import type {
+  CncMachine,
+  CncMetric,
+  CncStateSnapshot,
+  CncStatus,
+} from "@/api/cnc";
 import { baseURL } from "@/utils/constants";
+
+// Persist the operator's selected machine across page reloads. When
+// the same machine is still in the registry after restart, we restore
+// it; otherwise we fall back to the server's default.
+const CURRENT_MACHINE_KEY = "cncCurrentMachineId";
 
 const POLL_INTERVAL_MS = 2000;
 const RECONNECT_DELAY_MS = 3000;
@@ -67,6 +77,18 @@ function schedulePersist(entries: LogEntry[]) {
 }
 
 interface CncState {
+  // ── Multi-machine routing ────────────────────────────────────────
+  // currentMachineId is what every API call key ed off of and what the
+  // WS stream subscribes to. Empty string == "let the server pick the
+  // default" (used on cold load before /api/cnc/machines responds).
+  currentMachineId: string;
+  // Full machine list from /api/cnc/machines. Cached so the switcher
+  // dropdown and Send-destination dropdown can render without a
+  // separate fetch on every component mount.
+  machines: CncMachine[];
+  defaultMachineId: string;
+  machinesLoaded: boolean;
+
   running: boolean;
   filePath: string;
   fileURL: string;
@@ -102,6 +124,10 @@ let started = false;
 
 export const useCncStore = defineStore("cnc", {
   state: (): CncState => ({
+    currentMachineId: localStorage.getItem(CURRENT_MACHINE_KEY) || "",
+    machines: [],
+    defaultMachineId: "",
+    machinesLoaded: false,
     running: false,
     filePath: "",
     fileURL: "",
@@ -118,6 +144,15 @@ export const useCncStore = defineStore("cnc", {
     metricsSeeded: false,
     log: loadPersistedLog(),
   }),
+  getters: {
+    // currentMachine returns the CncMachine entry for the active id,
+    // or undefined while the list is still loading. Components that
+    // want to show "Haas VF-2 · 192.168.20.200" use this getter; raw
+    // calls into the store should pass currentMachineId directly.
+    currentMachine(state): CncMachine | undefined {
+      return state.machines.find((m) => m.id === state.currentMachineId);
+    },
+  },
   actions: {
     applyStatus(s: CncStatus) {
       this.running = !!s.running;
@@ -134,8 +169,87 @@ export const useCncStore = defineStore("cnc", {
       this.initialized = true;
     },
 
+    // Pull the machine list from /api/cnc/machines. Restores the
+    // operator's last-selected machine if it still exists, falls back
+    // to the server's default_id otherwise. Idempotent — components
+    // that mount during the same session re-call it cheaply.
+    async loadMachines() {
+      try {
+        const list = await cncApi.listMachines();
+        this.machines = list.machines || [];
+        this.defaultMachineId = list.default_id || "";
+        // Reconcile the persisted selection with what's now in the
+        // registry — if the operator's last machine was removed in
+        // settings, drop back to the default to avoid 404s on every
+        // call.
+        const stillExists = this.machines.some(
+          (m) => m.id === this.currentMachineId
+        );
+        if (!this.currentMachineId || !stillExists) {
+          this.currentMachineId = this.defaultMachineId;
+          try {
+            localStorage.setItem(CURRENT_MACHINE_KEY, this.currentMachineId);
+          } catch {
+            /* quota — ignore */
+          }
+        }
+        this.machinesLoaded = true;
+      } catch {
+        /* leave existing list; subsequent calls will retry */
+      }
+    },
+
+    // Switch to a different machine. Tears down the WS subscription,
+    // clears in-flight job state (so the previous machine's running
+    // counters don't show against the new machine), reseeds metrics,
+    // and reconnects the WS to the new machine_id.
+    async setCurrentMachine(id: string) {
+      if (!id || id === this.currentMachineId) return;
+      this.currentMachineId = id;
+      try {
+        localStorage.setItem(CURRENT_MACHINE_KEY, id);
+      } catch {
+        /* ignore */
+      }
+      // Reset transient per-machine state. Activity log is shared
+      // across machines for now (operators seldom switch mid-job; if
+      // that turns out to be wrong we can move log persistence to a
+      // per-machine key later).
+      this.running = false;
+      this.filePath = "";
+      this.fileURL = "";
+      this.method = "";
+      this.lineCurrent = 0;
+      this.lineTotal = 0;
+      this.haasOk = true;
+      this.haasLastError = "";
+      this.recoveryPending = false;
+      this.recoveryFilePath = "";
+      this.raw = null;
+      this.metrics = {};
+      this.metricsSeeded = false;
+      // Drop the existing WS and reconnect with the new machine_id.
+      // pollOnce + seedMetrics fire fresh state for the new machine
+      // so the dashboard repaints without waiting for the WS to
+      // reattach.
+      if (ws) {
+        try {
+          ws.close();
+        } catch {
+          /* ignore */
+        }
+        ws = null;
+      }
+      if (wsRetry) {
+        clearTimeout(wsRetry);
+        wsRetry = null;
+      }
+      await Promise.all([this.pollOnce(), this.seedMetrics()]);
+      if (started) this.connectWS();
+    },
+
     async ackRecovery() {
-      await cncApi.ackRecovery();
+      await cncApi.ackRecovery(this.currentMachineId || undefined);
       this.recoveryPending = false;
       this.recoveryFilePath = "";
       // Refresh from the server so the rest of the state matches reality.
@@ -148,7 +262,9 @@ export const useCncStore = defineStore("cnc", {
     // map.
     async seedMetrics() {
       try {
-        this.metrics = await cncApi.getState();
+        this.metrics = await cncApi.getState(
+          this.currentMachineId || undefined
+        );
         this.metricsSeeded = true;
       } catch {
         /* leave previous map; WS events will fill it in */
@@ -179,7 +295,7 @@ export const useCncStore = defineStore("cnc", {
 
     async pollOnce() {
       try {
-        const s = await cncApi.getStatus();
+        const s = await cncApi.getStatus(this.currentMachineId || undefined);
         this.applyStatus(s);
       } catch {
         // Silent: if /api/cnc/status fails (typically because the user
@@ -189,10 +305,15 @@ export const useCncStore = defineStore("cnc", {
     },
 
     // Start the poll loop + try to upgrade to WS. Idempotent — safe to
-    // call from every layout that mounts.
-    start() {
+    // call from every layout that mounts. loadMachines() runs first
+    // so the persisted currentMachineId is reconciled against the
+    // current registry (e.g. a machine deleted in settings since the
+    // last session) before the first poll fires; otherwise we'd 404
+    // every call until the operator manually picked a new machine.
+    async start() {
       if (started) return;
       started = true;
+      await this.loadMachines();
       this.pollOnce();
       pollTimer = setInterval(() => this.pollOnce(), POLL_INTERVAL_MS);
       this.connectWS();
@@ -220,8 +341,13 @@ export const useCncStore = defineStore("cnc", {
 
     connectWS() {
       // Build absolute ws:// or wss:// URL matching the current origin.
+      // The stream is per-machine; setCurrentMachine() tears down +
+      // reconnects so events are always for the active selection.
       const proto = window.location.protocol === "https:" ? "wss:" : "ws:";
-      const url = `${proto}//${window.location.host}${baseURL}/api/cnc/stream`;
+      const q = this.currentMachineId
+        ? `?machine_id=${encodeURIComponent(this.currentMachineId)}`
+        : "";
+      const url = `${proto}//${window.location.host}${baseURL}/api/cnc/stream${q}`;
       try {
         ws = new WebSocket(url);
       } catch {

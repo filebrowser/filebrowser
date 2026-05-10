@@ -74,8 +74,9 @@ export function regenerateToken() {
   });
 }
 
-export function getStatus() {
-  return fetchJSON<CncStatus>(`/api/cnc/status`, {});
+export function getStatus(machineId?: string) {
+  const q = machineId ? `?machine_id=${encodeURIComponent(machineId)}` : "";
+  return fetchJSON<CncStatus>(`/api/cnc/status${q}`, {});
 }
 
 export function start(
@@ -91,14 +92,16 @@ export function start(
   });
 }
 
-export function stop() {
-  return fetchJSON<{ stopped: boolean }>(`/api/cnc/stop`, {
+export function stop(machineId?: string) {
+  const q = machineId ? `?machine_id=${encodeURIComponent(machineId)}` : "";
+  return fetchJSON<{ stopped: boolean }>(`/api/cnc/stop${q}`, {
     method: "POST",
   });
 }
 
-export function ackRecovery() {
-  return fetchJSON<{ acknowledged: boolean }>(`/api/cnc/recovery/ack`, {
+export function ackRecovery(machineId?: string) {
+  const q = machineId ? `?machine_id=${encodeURIComponent(machineId)}` : "";
+  return fetchJSON<{ acknowledged: boolean }>(`/api/cnc/recovery/ack${q}`, {
     method: "POST",
   });
 }
@@ -118,8 +121,9 @@ export interface CncCheckResult {
   };
 }
 
-export function checkConnection() {
-  return fetchJSON<CncCheckResult>(`/api/cnc/check`, { method: "POST" });
+export function checkConnection(machineId?: string) {
+  const q = machineId ? `?machine_id=${encodeURIComponent(machineId)}` : "";
+  return fetchJSON<CncCheckResult>(`/api/cnc/check${q}`, { method: "POST" });
 }
 
 export interface CncSiblings {
@@ -296,6 +300,7 @@ export interface CncMetric {
 
 export type CncStateSnapshot = Record<string, CncMetric>;
 
-export function getState() {
-  return fetchJSON<CncStateSnapshot>(`/api/cnc/state`, {});
+export function getState(machineId?: string) {
+  const q = machineId ? `?machine_id=${encodeURIComponent(machineId)}` : "";
+  return fetchJSON<CncStateSnapshot>(`/api/cnc/state${q}`, {});
 }
