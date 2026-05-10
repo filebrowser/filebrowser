@@ -77,6 +77,13 @@ type Machine struct {
 	// "iframe" is required for UniFi Protect / Reolink web UI URLs
 	// since browsers cannot play raw RTSP/RTSPS.
 	CameraType string `json:"cameraType,omitempty"`
+	// RequirePreflight, when true, refuses /api/cnc/start if the
+	// preflight comparison flags any tools as missing / empty pocket
+	// for the program's T-codes. The wizard already soft-warns; this
+	// flips the check to a hard server-side gate so an operator can't
+	// "I know what I'm doing" past a missing tool. Off by default —
+	// the operator-side controller prep is still on them.
+	RequirePreflight bool `json:"requirePreflight,omitempty"`
 }
 
 // MachineBrandHaas is the only brand wired into the streamer/aggregator

@@ -95,6 +95,19 @@
             </p>
 
             <p>
+              <label class="small">
+                <input
+                  type="checkbox"
+                  v-model="machine.requirePreflight"
+                />
+                {{ t("settings.machineRequirePreflight") }}
+              </label>
+              <span class="small machine-row__hint">
+                {{ t("settings.machineRequirePreflightHelp") }}
+              </span>
+            </p>
+
+            <p>
               <label class="small">{{ t("settings.machineCameraType") }}</label>
               <select class="input input--block" v-model="machine.cameraType">
                 <option value="auto">{{ t("settings.machineCameraTypeAuto") }}</option>
@@ -249,6 +262,7 @@ const addMachine = () => {
     toolSlots: 30,
     cameraUrl: "",
     cameraType: "auto",
+    requirePreflight: false,
   });
 };
 
@@ -341,6 +355,7 @@ onMounted(async () => {
           toolSlots: 30,
           cameraUrl: "",
           cameraType: "auto",
+          requirePreflight: false,
         },
       ];
     }
@@ -351,6 +366,7 @@ onMounted(async () => {
       toolSlots: 30,
       cameraUrl: "",
       cameraType: "auto",
+      requirePreflight: false,
       ...m,
     }));
     settings.value = fetched;

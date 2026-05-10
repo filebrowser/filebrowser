@@ -688,6 +688,23 @@ func newestJSONIn(dir string) (string, error) {
 	return newest, nil
 }
 
+// findMachine returns the Settings.Machine entry matching id, or
+// machines[0] when id is empty. nil if the registry is empty.
+func findMachine(s *settings.Settings, id string) *settings.Machine {
+	if s == nil || len(s.Cnc.Machines) == 0 {
+		return nil
+	}
+	if id == "" {
+		return &s.Cnc.Machines[0]
+	}
+	for i := range s.Cnc.Machines {
+		if s.Cnc.Machines[i].ID == id {
+			return &s.Cnc.Machines[i]
+		}
+	}
+	return nil
+}
+
 type cncStartBody struct {
 	FilePath  string `json:"file_path"`
 	MachineID string `json:"machine_id,omitempty"` // optional; ?machine_id= also accepted
@@ -730,6 +747,42 @@ func cncStartHandler(registry *cnc.Registry) handleFunc {
 			return http.StatusBadRequest, errors.New("file_path must not escape the share")
 		}
 		absPath := d.user.FullPath(clean)
+
+		// Hard-block preflight gate. When the machine has
+		// RequirePreflight=true in settings, refuse the send if any
+		// program-referenced tool comes back missing or empty in the
+		// latest persisted tool table. The wizard already soft-warns;
+		// this turns it into a server-enforced refusal so the
+		// operator can't bypass by hammering the API directly.
+		machineCfg := findMachine(d.settings, machineID)
+		if machineCfg != nil && machineCfg.RequirePreflight {
+			var table *cnc.ToolTable
+			dir := toolTableDirAbs(d, machineID)
+			if latestPath, _ := newestJSONIn(dir); latestPath != "" {
+				if buf, rerr := os.ReadFile(latestPath); rerr == nil {
+					var t cnc.ToolTable
+					if json.Unmarshal(buf, &t) == nil {
+						table = &t
+					}
+				}
+			}
+			pf, perr := cnc.BuildPreflight(absPath, clean, machineID, table)
+			if perr == nil {
+				if pf.TableMissing {
+					return http.StatusConflict, errors.New(
+						"preflight required: no tool-table read on file for this machine — read the table on /machine first")
+				}
+				if pf.Summary.Missing > 0 || pf.Summary.Empty > 0 {
+					return http.StatusConflict, fmt.Errorf(
+						"preflight required: %d missing, %d empty pocket — fix on the controller or disable Require preflight in Settings → Machine",
+						pf.Summary.Missing, pf.Summary.Empty)
+				}
+			}
+			// If BuildPreflight itself failed (e.g. couldn't parse the
+			// NC), fall through to the existing Start error path —
+			// don't let a parser hiccup wedge sends behind a gate that
+			// can't actually evaluate.
+		}
 
 		method := cnc.NormalizeSendMethod(req.Method)
 		st, err := streamer.Start(absPath, clean, method)

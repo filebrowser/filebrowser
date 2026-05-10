@@ -20,6 +20,10 @@ export interface CncMachine {
   toolSlots?: number;
   cameraUrl?: string;
   cameraType?: CameraType;
+  // When true the server refuses /api/cnc/start if any program tool
+  // is missing/empty in the latest tool table. Off by default; the
+  // wizard always soft-warns regardless.
+  requirePreflight?: boolean;
 }
 
 export interface CncSettings {
