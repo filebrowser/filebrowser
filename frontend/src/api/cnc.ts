@@ -85,8 +85,10 @@ export function checkConnection() {
 export interface CncSiblings {
   model_url?: string;
   model_name?: string;
+  model_path?: string;
   drawing_url?: string;
   drawing_name?: string;
+  drawing_path?: string;
 }
 
 export function getSiblings(filePath: string) {

@@ -213,17 +213,15 @@
             <i class="material-icons">description</i>
             {{ t("machine.drawing") }}
           </a>
-          <a
-            v-if="siblings.model_url"
+          <router-link
+            v-if="siblings.model_path"
             class="sibling-link"
-            :href="siblings.model_url"
-            target="_blank"
-            rel="noopener"
+            :to="`/files${siblings.model_path}`"
             :title="siblings.model_name"
           >
             <i class="material-icons">view_in_ar</i>
             {{ t("machine.model") }}
-          </a>
+          </router-link>
           <span v-if="ncLoading" class="card-header__hint">{{ t("machine.ncLoading") }}</span>
           <span v-else-if="ncError" class="card-header__hint card-header__hint--err">{{ ncError }}</span>
         </div>

@@ -222,8 +222,10 @@ func cncSiblingsHandler(streamer *cnc.Streamer) handleFunc {
 		body := struct {
 			ModelURL    string `json:"model_url,omitempty"`
 			ModelName   string `json:"model_name,omitempty"`
+			ModelPath   string `json:"model_path,omitempty"`
 			DrawingURL  string `json:"drawing_url,omitempty"`
 			DrawingName string `json:"drawing_name,omitempty"`
+			DrawingPath string `json:"drawing_path,omitempty"`
 		}{}
 
 		for _, e := range entries {
@@ -237,12 +239,19 @@ func cncSiblingsHandler(streamer *cnc.Streamer) handleFunc {
 				continue
 			}
 			full := path.Join(dir, name)
+			// model_url / drawing_url are RAW endpoints — these are
+			// fetched directly by the 3D viewer + opened in a new tab
+			// for the PDF, so they must hit /api/raw, not the SPA route.
+			// model_path / drawing_path are share-relative for any UI
+			// that wants to deep-link back into the file browser.
 			if modelExtensions[ext] && body.ModelURL == "" {
-				body.ModelURL = "/files" + full
+				body.ModelURL = "/api/raw" + full + "?inline=true"
 				body.ModelName = name
+				body.ModelPath = full
 			} else if ext == ".pdf" && body.DrawingURL == "" {
-				body.DrawingURL = "/files" + full
+				body.DrawingURL = "/api/raw" + full + "?inline=true"
 				body.DrawingName = name
+				body.DrawingPath = full
 			}
 			if body.ModelURL != "" && body.DrawingURL != "" {
 				break
