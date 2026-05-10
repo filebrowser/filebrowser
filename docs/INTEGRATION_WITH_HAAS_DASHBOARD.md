@@ -1,14 +1,47 @@
-# Haas Dashboard ↔ Zinc (filebrowser-NC) Integration Plan
+# Machine integration plan (filebrowser-NC ↔ Haas)
 
-> **Audience:** the Claude session working on `jasongainor/filebrowser-NC` (Zinc).
-> This doc is self-contained — you don't need to read the haas-dashboard chat history.
-> **Status:** decisions resolved 2026-05-09. **Zinc side is shipped as of 2026-05-09**; see "Status as of 2026-05-09" below for what landed and what changed in flight.
+> **Status (2026-05-10):** filebrowser-NC is now the **sole** Pi-side
+> service for the Haas. The original `haas-dashboard` repo is
+> **deprecated** — see "haas-dashboard deprecation" below. The doc keeps
+> the original plan for archaeological reference, but every D-N item
+> on the dashboard side is obsolete.
+
+---
+
+## haas-dashboard deprecation (2026-05-10)
+
+The plan started as a two-service split:
+- `haas-dashboard` (FastAPI on a home server) — UI + Q-code poller + WebSocket
+- `filebrowser-NC` (Go/Vue on the Pi) — file shuttle + DNC streaming
+
+That split is gone. filebrowser-NC has eaten every endpoint the dashboard exposed:
+
+| haas-dashboard endpoint  | filebrowser-NC equivalent   |
+|--------------------------|-----------------------------|
+| `GET /api/state`         | `GET /api/cnc/state`        |
+| `POST /api/query`        | `POST /api/cnc/qcode`       |
+| `GET /api/raw?Q=…`       | `POST /api/cnc/qcode`       |
+| `WS /ws`                 | `WS /api/cnc/stream`        |
+| `GET /` (HTML index)     | `/machine` Vue route        |
+
+Plus filebrowser-NC adds: file management, DNC streaming, NC code/toolpath/3D-part viewer, file↔NC matching, kiosk view for HA, Stop button, recovery flow, single-flight bridge serialization, response validation, wake-on-demand polling, activity log.
+
+**The haas-dashboard repo can be archived.** It runs against the same
+bridge as filebrowser-NC, so leaving it on causes the cross-talk we
+fixed in #31 + #35 + #36. Stop the dashboard service, archive the
+GitHub repo, done.
+
+If you ever want a separate "fleet view" UI in front of multiple
+machines, that lands inside filebrowser-NC as the multi-machine
+work (TODO at the bottom of this doc), not as a resurrected dashboard.
 
 ---
 
 ## Status as of 2026-05-09
 
-Most of the original plan is in. One architectural pivot in flight (Z-11): the operator-facing dashboard is now a **native Vue page on Zinc** rather than an embedded iframe pointing at haas-dashboard. The iframe-specific dashboard-side todos (D-3 CORS, D-4 token-in-URL) are therefore obsolete; D-1 (proxy mode for haas-dashboard) is the only piece that keeps the bearer token earning its keep.
+Most of the original plan is in. One architectural pivot (Z-11): the operator-facing dashboard is a **native Vue page on Zinc** rather than an embedded iframe pointing at haas-dashboard. The iframe-specific dashboard-side todos (D-3 CORS, D-4 token-in-URL) are obsolete. D-1 (proxy mode for haas-dashboard) was the only piece that kept the bearer token earning its keep — and now haas-dashboard is gone, so even D-1 is obsolete.
+
+The bearer token (`MachineToken`) stays in filebrowser-NC settings as a generic S2S API token — useful for any external integration that wants to query `/api/cnc/state` or `/api/cnc/qcode` (HA scripts, monitoring agents, future fleet view).
 
 | Item | Status | PR(s) |
 |---|---|---|
@@ -315,22 +348,21 @@ POST /api/query          // {"q": 104} or {"q": 600, "var": 5021}
 
 ---
 
-## TODOs — Haas-dashboard side (this repo)
+## ~~TODOs — Haas-dashboard side (this repo)~~ — ALL OBSOLETE 2026-05-10
 
-- [ ] **D-1. Switch the bridge to proxy mode.** New env vars:
-  - `ZINC_BASE_URL` (e.g. `http://zinc.local:8080`)
-  - `ZINC_BEARER_TOKEN` (issued by Zinc settings page; see `Z-1`)
-  When set, `HaasBridge.query()` POSTs to
-  `<ZINC_BASE_URL>/api/cnc/qcode` with `Authorization: Bearer …` instead of
-  opening TCP to the Waveshare. When unset (offline / standalone testing),
-  current direct-TCP behavior is preserved.
-- [ ] **D-2. Add a "Current Job" tile.** Between the hero row and the
-  metric tiles. Polls `<ZINC_BASE_URL>/api/cnc/status` every 2 s. Shows
-  file name, line `current/total`, progress bar, and a "view in
-  filebrowser" link to `<ZINC_BASE_URL>/files/<file_path>`.
-- ~~D-3. CORS for iframe embed.~~ **Obsolete (Z-11 pivot)** — no iframe.
-- [ ] **D-4. Token-bearer auth on the dashboard's API.** ~~`?token=…` query string for iframe~~ — drop the query-string acceptor; `Authorization: Bearer …` header is enough now. Validated against the value Zinc minted; unset → fall back to LAN-open (dev mode).
-- [ ] **D-5. Hide direct-TCP details when proxied.** Footer "Host: 192.168.20.200:4196" becomes "via zinc.local" when running through the proxy. Still applies — useful operator hint.
+The haas-dashboard repo is deprecated; archive it. See
+"haas-dashboard deprecation" at the top of this doc.
+
+- ~~D-1. Switch the bridge to proxy mode.~~ **Obsolete** — dashboard
+  doesn't exist anymore.
+- ~~D-2. Add a "Current Job" tile.~~ **Obsolete** — already in
+  `/machine` natively (progress strip + NC card per #36, #42).
+- ~~D-3. CORS for iframe embed.~~ **Obsolete** — no iframe (Z-11 pivot).
+- ~~D-4. Token-bearer auth on the dashboard's API.~~ **Obsolete** —
+  filebrowser-NC's `/api/cnc/*` is the API surface now; bearer auth
+  on those endpoints is in #11/#13/#14 already.
+- ~~D-5. Hide direct-TCP details when proxied.~~ **Obsolete** — no
+  proxy because no dashboard.
 
 ---
 

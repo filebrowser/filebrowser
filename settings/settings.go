@@ -34,10 +34,12 @@ type Cnc struct {
 	HaasHost  string `json:"haasHost"`
 	HaasPort  int    `json:"haasPort"`
 	CameraURL string `json:"cameraUrl"`
-	// MachineToken is an opaque random secret pasted into the
-	// haas-dashboard env so its server-to-server calls into
-	// /api/cnc/qcode authenticate without a user session. Empty until
-	// the admin clicks "Regenerate" in the UI.
+	// MachineToken is an opaque random secret used as a bearer token
+	// for server-to-server access to /api/cnc/state and /api/cnc/qcode
+	// (Home Assistant scripts, monitoring, etc). Originally minted for
+	// the haas-dashboard project (now subsumed by filebrowser-NC); the
+	// mechanism stays because it's useful for any external consumer.
+	// Empty until the admin clicks "Regenerate" in the UI.
 	MachineToken string `json:"machineToken"`
 }
 

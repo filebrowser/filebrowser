@@ -71,10 +71,16 @@ var cncSettingsPutHandler = withAdmin(func(_ http.ResponseWriter, r *http.Reques
 	return errToStatus(err), err
 })
 
-// cncRegenerateTokenHandler mints a fresh opaque secret for
-// haas-dashboard's server-to-server calls. Old token is invalidated
-// immediately. Admin-only — never exposed to non-admin sessions and
-// never returned in a list endpoint.
+// cncRegenerateTokenHandler mints a fresh opaque secret for any
+// external service (Home Assistant scripts, monitoring agents, custom
+// dashboards) that needs to call /api/cnc/state or /api/cnc/qcode
+// server-to-server without a filebrowser session. Old token is
+// invalidated immediately. Admin-only — never exposed to non-admin
+// sessions and never returned in a list endpoint.
+//
+// Originally minted for the haas-dashboard repo (now archived;
+// filebrowser-NC subsumed its functionality). The mechanism stays
+// because it's useful for any S2S consumer.
 var cncRegenerateTokenHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	buf := make([]byte, 32)
 	if _, err := rand.Read(buf); err != nil {
