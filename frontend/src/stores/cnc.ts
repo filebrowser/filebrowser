@@ -15,6 +15,8 @@ import type {
   CncMetric,
   CncStateSnapshot,
   CncStatus,
+  QueueItem,
+  SendMethod,
 } from "@/api/cnc";
 import { baseURL } from "@/utils/constants";
 
@@ -115,6 +117,10 @@ interface CncState {
   // Rolling activity log — backend `log` events plus client-synthesized
   // entries for status / line milestones. Newest first.
   log: LogEntry[];
+  // Per-machine NC job queue. Replaced wholesale on every WS "queue"
+  // event so the UI doesn't have to merge incremental mutations.
+  queue: QueueItem[];
+  queueLoaded: boolean;
 }
 
 let pollTimer: ReturnType<typeof setInterval> | null = null;
@@ -143,6 +149,8 @@ export const useCncStore = defineStore("cnc", {
     metrics: {},
     metricsSeeded: false,
     log: loadPersistedLog(),
+    queue: [],
+    queueLoaded: false,
   }),
   getters: {
     // currentMachine returns the CncMachine entry for the active id,
@@ -228,6 +236,8 @@ export const useCncStore = defineStore("cnc", {
       this.raw = null;
       this.metrics = {};
       this.metricsSeeded = false;
+      this.queue = [];
+      this.queueLoaded = false;
       // Drop the existing WS and reconnect with the new machine_id.
       // pollOnce + seedMetrics fire fresh state for the new machine
       // so the dashboard repaints without waiting for the WS to
@@ -244,7 +254,7 @@ export const useCncStore = defineStore("cnc", {
         clearTimeout(wsRetry);
         wsRetry = null;
       }
-      await Promise.all([this.pollOnce(), this.seedMetrics()]);
+      await Promise.all([this.pollOnce(), this.seedMetrics(), this.loadQueue()]);
       if (started) this.connectWS();
     },
 
@@ -274,6 +284,51 @@ export const useCncStore = defineStore("cnc", {
     applyMetric(m: CncMetric) {
       this.metrics = { ...this.metrics, [m.key]: m };
       this.metricsSeeded = true;
+    },
+
+    // ── Queue ────────────────────────────────────────────────────────
+    async loadQueue() {
+      try {
+        this.queue = await cncApi.listQueue(
+          this.currentMachineId || undefined
+        );
+        this.queueLoaded = true;
+      } catch {
+        /* leave existing queue; WS event will re-seed */
+      }
+    },
+
+    async addToQueue(filePath: string) {
+      const item = await cncApi.addToQueue(
+        filePath,
+        this.currentMachineId || undefined
+      );
+      // Optimistically append — the WS "queue" event will replace
+      // with the canonical server-side ordering moments later.
+      this.queue = [...this.queue, item];
+      return item;
+    },
+
+    async removeFromQueue(id: string) {
+      await cncApi.removeFromQueue(id, this.currentMachineId || undefined);
+      this.queue = this.queue.filter((q) => q.id !== id);
+    },
+
+    async reorderQueue(ids: string[]) {
+      const next = await cncApi.reorderQueue(
+        ids,
+        this.currentMachineId || undefined
+      );
+      this.queue = next;
+    },
+
+    async sendFromQueue(item: QueueItem, method: SendMethod) {
+      await cncApi.start(
+        item.file_path,
+        method,
+        this.currentMachineId || undefined,
+        item.id
+      );
     },
 
     pushLog(level: string, msg: string) {
@@ -315,6 +370,7 @@ export const useCncStore = defineStore("cnc", {
       started = true;
       await this.loadMachines();
       this.pollOnce();
+      this.loadQueue();
       pollTimer = setInterval(() => this.pollOnce(), POLL_INTERVAL_MS);
       this.connectWS();
     },
@@ -385,6 +441,9 @@ export const useCncStore = defineStore("cnc", {
             this.applyMetric(ev.metric as CncMetric);
           } else if (ev.type === "log" && typeof ev.msg === "string") {
             this.pushLog(ev.level || "info", ev.msg);
+          } else if (ev.type === "queue" && Array.isArray(ev.queue)) {
+            this.queue = ev.queue as QueueItem[];
+            this.queueLoaded = true;
           }
         } catch {
           /* ignore malformed frames */

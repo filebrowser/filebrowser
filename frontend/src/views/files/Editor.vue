@@ -300,22 +300,18 @@ const toggleFollowMachine = () => {
 };
 
 const promptSendToMachine = async () => {
-  // Send no longer kicks off the stream from the editor — the
-  // operator now lands on /machine, runs a connection check, picks
-  // MEM-mode vs DNC drip-feed, and confirms there. This routes them
-  // there with the file pre-loaded into the wizard.
+  // Send-to-machine is now a two-step staging flow:
+  //   1. Enqueue the file (adds a row to the machine's queue).
+  //   2. Navigate to /machine?queue=open — the queue panel auto-
+  //      expands so the operator sees the new row at the bottom and
+  //      clicks the paper-plane to actually send.
+  // This separates "I want this ready" from "send it now," and the
+  // queue is durable — operators can stage multiple files in advance.
   await refreshCncStatus();
   if (cncStore.recoveryPending) {
     $showError(new Error(t("errors.cncRecoveryPending") as string));
     return;
   }
-  if (cncRunning.value) {
-    $showError(new Error(t("errors.cncJobAlreadyRunning") as string));
-    return;
-  }
-  // Bail before the navigation if the install isn't configured —
-  // the operator gets a clearer error here than after a router push
-  // into a page that can't resolve a machine.
   try {
     const s = await cncApi.getSettings();
     const m = s.machines?.[0];
@@ -324,14 +320,17 @@ const promptSendToMachine = async () => {
       return;
     }
   } catch {
-    /* settings fetch failure is non-fatal; the wizard will surface its own error. */
+    /* settings fetch failure is non-fatal */
   }
   const filePath = "/" + (fileStore.req?.path?.replace(/^\/+/, "") ?? "");
-  // Pre-flag follow-mode so when the wizard fires the start, the
-  // cursor follows the spindle line in the NC mirror without an
-  // explicit operator toggle.
+  try {
+    await cncStore.addToQueue(filePath);
+  } catch (e: any) {
+    $showError(e);
+    return;
+  }
   followMachine.value = true;
-  router.push({ name: "Machine", query: { send: filePath } });
+  router.push({ name: "Machine", query: { queue: "open" } });
 };
 
 // ── Splitter between code + 3D viewer ──────────────────────────────────────

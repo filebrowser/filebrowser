@@ -108,6 +108,40 @@
             </p>
 
             <p>
+              <label class="small">{{ t("settings.machineAxes") }}</label>
+              <span class="machine-axes">
+                <label v-for="ax in allAxes" :key="ax" class="machine-axes__item">
+                  <input
+                    type="checkbox"
+                    :value="ax"
+                    :checked="(machine.axesEnabled || ['X','Y','Z']).includes(ax)"
+                    :disabled="ax === 'X' || ax === 'Y' || ax === 'Z'"
+                    @change="toggleAxis(machine, ax, ($event.target as HTMLInputElement).checked)"
+                  />
+                  {{ ax }}
+                </label>
+              </span>
+              <span class="small machine-row__hint">
+                {{ t("settings.machineAxesHelp") }}
+              </span>
+            </p>
+
+            <p>
+              <label class="small">{{ t("settings.machinePositionTolerance") }}</label>
+              <input
+                class="input input--block"
+                type="number"
+                min="0"
+                step="0.0001"
+                :value="machine.positionToleranceIn ?? 0.001"
+                @input="machine.positionToleranceIn = parseFloat(($event.target as HTMLInputElement).value)"
+              />
+              <span class="small machine-row__hint">
+                {{ t("settings.machinePositionToleranceHelp") }}
+              </span>
+            </p>
+
+            <p>
               <label class="small">{{ t("settings.machineCameraType") }}</label>
               <select class="input input--block" v-model="machine.cameraType">
                 <option value="auto">{{ t("settings.machineCameraTypeAuto") }}</option>
@@ -292,6 +326,19 @@ const probeResultClass = (id: string) => {
 // operator can compare both outcomes at a glance.
 const lifeProbingId = ref<string | null>(null);
 const lifeProbeResults = ref<Record<string, ToolLifeProbeReport>>({});
+
+const allAxes = ["X", "Y", "Z", "A", "B", "C"] as const;
+const toggleAxis = (m: CncMachine, ax: string, on: boolean) => {
+  const cur = (m.axesEnabled || ["X", "Y", "Z"]).slice();
+  if (on) {
+    if (!cur.includes(ax)) cur.push(ax);
+  } else {
+    if (ax === "X" || ax === "Y" || ax === "Z") return; // protected
+    const i = cur.indexOf(ax);
+    if (i >= 0) cur.splice(i, 1);
+  }
+  m.axesEnabled = cur;
+};
 
 const lifeProbeResultClass = (id: string) => {
   const r = lifeProbeResults.value[id];

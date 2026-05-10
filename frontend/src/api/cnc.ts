@@ -24,6 +24,12 @@ export interface CncMachine {
   // is missing/empty in the latest tool table. Off by default; the
   // wizard always soft-warns regardless.
   requirePreflight?: boolean;
+  // X/Y/Z always render; A/B/C are optional 4th/5th-axis controllers.
+  // Stored as uppercase letters; undefined / empty falls back to XYZ.
+  axesEnabled?: string[];
+  // Inches threshold for the ∆ CMD column on the dashboard. Falls back
+  // to 0.001" when 0 / unset.
+  positionToleranceIn?: number;
 }
 
 export interface CncSettings {
@@ -86,13 +92,61 @@ export function getStatus(machineId?: string) {
 export function start(
   filePath: string,
   method: SendMethod = "mem",
-  machineId?: string
+  machineId?: string,
+  queueId?: string
 ) {
   const body: Record<string, string> = { file_path: filePath, method };
   if (machineId) body.machine_id = machineId;
+  if (queueId) body.queue_id = queueId;
   return fetchJSON<{ job_id: string }>(`/api/cnc/start`, {
     method: "POST",
     body: JSON.stringify(body),
+  });
+}
+
+// ── Queue (per-machine staging area) ──────────────────────────────────────
+
+export type QueueState = "queued" | "sending" | "running";
+
+export interface QueueItem {
+  id: string;
+  file_path: string;
+  job_name?: string;
+  onumber_hint?: string;
+  size_bytes?: number;
+  state: QueueState;
+  method?: SendMethod;
+  added_at: string;
+  line_current?: number;
+  line_total?: number;
+}
+
+export function listQueue(machineId?: string) {
+  const q = machineId ? `?machine_id=${encodeURIComponent(machineId)}` : "";
+  return fetchJSON<QueueItem[]>(`/api/cnc/queue${q}`, {});
+}
+
+export function addToQueue(filePath: string, machineId?: string) {
+  const body: Record<string, string> = { file_path: filePath };
+  if (machineId) body.machine_id = machineId;
+  return fetchJSON<QueueItem>(`/api/cnc/queue`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+export function removeFromQueue(id: string, machineId?: string) {
+  const q = machineId ? `?machine_id=${encodeURIComponent(machineId)}` : "";
+  return fetchJSON<{ removed: boolean }>(`/api/cnc/queue/${id}${q}`, {
+    method: "DELETE",
+  });
+}
+
+export function reorderQueue(ids: string[], machineId?: string) {
+  const q = machineId ? `?machine_id=${encodeURIComponent(machineId)}` : "";
+  return fetchJSON<QueueItem[]>(`/api/cnc/queue${q}`, {
+    method: "PATCH",
+    body: JSON.stringify({ ids }),
   });
 }
 
