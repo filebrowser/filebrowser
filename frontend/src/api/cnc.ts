@@ -3,11 +3,31 @@
 
 import { fetchURL, fetchJSON } from "./utils";
 
+export interface CncMachine {
+  id: string;
+  name: string;
+  host: string;
+  port: number;
+  cameraUrl?: string;
+}
+
 export interface CncSettings {
-  haasHost: string;
-  haasPort: number;
-  cameraUrl: string;
+  machines: CncMachine[];
   machineToken?: string;
+  // Legacy mirror of machines[0] — server returns these for back-compat
+  // with any old client. New code reads `machines` directly.
+  haasHost?: string;
+  haasPort?: number;
+  cameraUrl?: string;
+}
+
+export interface CncMachinesList {
+  machines: CncMachine[];
+  default_id: string;
+}
+
+export function listMachines() {
+  return fetchJSON<CncMachinesList>(`/api/cnc/machines`, {});
 }
 
 export interface CncStatus {
@@ -115,8 +135,9 @@ export interface ProbeToolsReport {
   recommendation: string;
 }
 
-export function probeTools(slots = 30) {
-  return fetchJSON<ProbeToolsReport>(`/api/cnc/probe-tools?slots=${slots}`, {
+export function probeTools(slots = 30, machineId?: string) {
+  const q = machineId ? `&machine_id=${encodeURIComponent(machineId)}` : "";
+  return fetchJSON<ProbeToolsReport>(`/api/cnc/probe-tools?slots=${slots}${q}`, {
     method: "POST",
   });
 }

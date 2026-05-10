@@ -311,11 +311,17 @@ const promptSendToMachine = async () => {
     $showError(new Error(t("errors.cncJobAlreadyRunning") as string));
     return;
   }
+  // Resolve host label from the default machine (machines[0]) for the
+  // confirm-prompt destination line. Multi-machine destination
+  // selection lands in a follow-on PR.
   let settings: { haasHost: string; haasPort: number } | null = null;
   try {
     const s = await cncApi.getSettings();
-    settings = { haasHost: s.haasHost, haasPort: s.haasPort };
-    cncHaasHostLabel.value = settings.haasHost
+    const m = s.machines?.[0];
+    if (m) {
+      settings = { haasHost: m.host, haasPort: m.port };
+    }
+    cncHaasHostLabel.value = settings?.haasHost
       ? `${settings.haasHost}:${settings.haasPort}`
       : "";
   } catch {
