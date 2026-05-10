@@ -9,12 +9,15 @@ package fbhttp
 // multiplexer; Phase 3 the UI; Phase 4 polish + DPRNT capture.
 
 import (
+	"context"
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"path"
+	"strconv"
 	"strings"
 	"time"
 
@@ -264,6 +267,31 @@ func cncSiblingsHandler(streamer *cnc.Streamer) handleFunc {
 			}
 		}
 		return renderJSON(w, r, body)
+	})
+}
+
+// cncProbeToolsHandler runs the discovery probe across a sample of
+// tool slots. Operator-triggered, admin-only — see docs/TOOL_TABLE_RESEARCH.md.
+// Default slot sample is 30; ?slots=N override caps at 200.
+func cncProbeToolsHandler(streamer *cnc.Streamer) handleFunc {
+	return withAdmin(func(w http.ResponseWriter, r *http.Request, _ *data) (int, error) {
+		slots := 30
+		if q := r.URL.Query().Get("slots"); q != "" {
+			n, err := strconv.Atoi(q)
+			if err != nil || n < 1 || n > 200 {
+				return http.StatusBadRequest, fmt.Errorf("slots must be 1..200")
+			}
+			slots = n
+		}
+		// Probe is potentially slow (slots × 4 bases × 150 ms spacing).
+		// Cap at 90s so a stuck bridge can't pin the request goroutine.
+		ctx, cancel := context.WithTimeout(r.Context(), 90*time.Second)
+		defer cancel()
+		rep, err := streamer.ProbeTools(ctx, slots)
+		if err != nil {
+			return errToStatus(err), err
+		}
+		return renderJSON(w, r, rep)
 	})
 }
 

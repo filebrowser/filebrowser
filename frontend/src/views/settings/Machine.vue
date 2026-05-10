@@ -61,6 +61,59 @@
               {{ t("settings.machineTokenRegenerate") }}
             </button>
           </p>
+
+          <h3>{{ t("settings.toolProbe") }}</h3>
+          <p class="small">{{ t("settings.toolProbeHelp") }}</p>
+          <p>
+            <button
+              type="button"
+              class="button button--flat"
+              :disabled="probing"
+              @click="runToolProbe"
+            >
+              {{ probing ? t("settings.toolProbing") : t("settings.toolProbeRun") }}
+            </button>
+          </p>
+          <div v-if="probeResult" class="probe-report" :class="`probe-report--${probeResultClass}`">
+            <p>
+              <strong>{{ t("settings.toolProbeVerdict") }}:</strong>
+              {{ probeResult.verdict }}
+            </p>
+            <p class="small">{{ probeResult.recommendation }}</p>
+            <p class="small">
+              {{ t("settings.toolProbeMeta", {
+                slots: probeResult.slots_probed,
+                ms: Math.round(probeResult.duration_ms),
+                addr: probeResult.bridge_address,
+              }) }}
+            </p>
+            <table class="probe-report__table">
+              <thead>
+                <tr>
+                  <th>Base</th>
+                  <th>Label</th>
+                  <th>OK</th>
+                  <th>Empty</th>
+                  <th>Err</th>
+                  <th>First sample</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="b in probeResult.bases" :key="b.base">
+                  <td><code>{{ b.base }}</code></td>
+                  <td>{{ b.label }}</td>
+                  <td>{{ b.ok }}</td>
+                  <td>{{ b.empty }}</td>
+                  <td>{{ b.errors }}</td>
+                  <td>
+                    <code v-if="b.samples[0]">
+                      {{ b.samples[0].value || b.samples[0].error || "—" }}
+                    </code>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div class="card-action">
@@ -77,15 +130,40 @@
 
 <script setup lang="ts">
 import { cnc as api } from "@/api";
-import type { CncSettings } from "@/api/cnc";
+import type { CncSettings, ProbeToolsReport } from "@/api/cnc";
 import { StatusError } from "@/api/utils";
 import { useLayoutStore } from "@/stores/layout";
 import Errors from "@/views/Errors.vue";
-import { inject, onMounted, ref } from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 const error = ref<StatusError | null>(null);
 const settings = ref<CncSettings | null>(null);
+const probing = ref(false);
+const probeResult = ref<ProbeToolsReport | null>(null);
+
+const probeResultClass = computed(() => {
+  if (!probeResult.value) return "";
+  switch (probeResult.value.verdict) {
+    case "ngc-mapping-confirmed":
+      return "ok";
+    case "ngc-mapping-empty":
+      return "warn";
+    default:
+      return "err";
+  }
+});
+
+const runToolProbe = async () => {
+  probing.value = true;
+  try {
+    probeResult.value = await api.probeTools(30);
+  } catch (e: any) {
+    $showError(e);
+  } finally {
+    probing.value = false;
+  }
+};
 
 const $showError = inject<IToastError>("$showError")!;
 const $showSuccess = inject<IToastSuccess>("$showSuccess")!;
@@ -126,3 +204,47 @@ onMounted(async () => {
   }
 });
 </script>
+
+<style scoped>
+.probe-report {
+  margin-top: 0.6rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.probe-report--ok {
+  border-color: #2e7d32;
+  background: rgba(46, 125, 50, 0.08);
+}
+
+.probe-report--warn {
+  border-color: #ed6c02;
+  background: rgba(237, 108, 2, 0.08);
+}
+
+.probe-report--err {
+  border-color: #c62828;
+  background: rgba(198, 40, 40, 0.08);
+}
+
+.probe-report__table {
+  width: 100%;
+  margin-top: 0.5rem;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.probe-report__table th,
+.probe-report__table td {
+  padding: 0.25rem 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.probe-report__table code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.8rem;
+}
+</style>

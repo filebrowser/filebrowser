@@ -87,6 +87,7 @@ func NewHandler(
 	cncRouter.Handle("/settings/token", monkey(cncRegenerateTokenHandler, "")).Methods("POST")
 	cncRouter.Handle("/status", monkey(cncStatusHandler(streamer), "")).Methods("GET")
 	cncRouter.Handle("/check", monkey(cncCheckHandler(streamer, aggregator), "")).Methods("POST")
+	cncRouter.Handle("/probe-tools", monkey(cncProbeToolsHandler(streamer), "")).Methods("POST")
 	cncRouter.Handle("/siblings", monkey(cncSiblingsHandler(streamer), "")).Methods("GET")
 	cncRouter.Handle("/start", monkey(cncStartHandler(streamer, aggregator), "")).Methods("POST")
 	cncRouter.Handle("/stop", monkey(cncStopHandler(streamer), "")).Methods("POST")

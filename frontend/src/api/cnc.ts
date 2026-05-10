@@ -96,6 +96,31 @@ export function getSiblings(filePath: string) {
   return fetchJSON<CncSiblings>(`/api/cnc/siblings?path=${q}`, {});
 }
 
+export interface ProbeToolsBaseResult {
+  base: number;
+  label: string;
+  ok: number;
+  empty: number;
+  errors: number;
+  first_error?: string;
+  samples: { slot: number; var: number; value?: string; error?: string }[];
+}
+
+export interface ProbeToolsReport {
+  slots_probed: number;
+  duration_ms: number;
+  bridge_address: string;
+  bases: ProbeToolsBaseResult[];
+  verdict: string;
+  recommendation: string;
+}
+
+export function probeTools(slots = 30) {
+  return fetchJSON<ProbeToolsReport>(`/api/cnc/probe-tools?slots=${slots}`, {
+    method: "POST",
+  });
+}
+
 export interface CncMetric {
   key: string;
   label: string;
