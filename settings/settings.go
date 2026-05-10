@@ -49,22 +49,34 @@ type Cnc struct {
 	CameraURL string `json:"cameraUrl,omitempty"`
 }
 
-// Machine is one configured CNC controller. All Haas-shaped today;
-// brand abstraction can land later without breaking the schema (a
-// Brand field default-empties to "haas").
+// Machine is one configured CNC controller.
 type Machine struct {
 	// ID is stable across renames. Generated on creation; never
 	// edited. The default-machine selector uses this.
 	ID string `json:"id"`
 	// Name is the operator-facing label, freely editable.
 	Name string `json:"name"`
+	// Brand identifies the controller family. Only "haas" is wired
+	// today; the field exists so a per-brand send protocol / state
+	// dialect can be slotted in without a settings-schema migration.
+	// Empty values normalize to "haas" on save.
+	Brand string `json:"brand,omitempty"`
 	// Host:Port is the Waveshare RS-232↔TCP bridge.
 	Host string `json:"host"`
 	Port int    `json:"port"`
-	// CameraURL is optional; HLS/snapshot/RTSP-hint per the existing
-	// camera tile dispatch.
+	// CameraURL is optional. CameraType picks the rendering path.
 	CameraURL string `json:"cameraUrl,omitempty"`
+	// CameraType is one of "auto" / "hls" / "mjpeg" / "iframe" /
+	// "none". Empty normalizes to "auto" (legacy URL-suffix dispatch).
+	// "iframe" is required for UniFi Protect / Reolink web UI URLs
+	// since browsers cannot play raw RTSP/RTSPS.
+	CameraType string `json:"cameraType,omitempty"`
 }
+
+// MachineBrandHaas is the only brand wired into the streamer/aggregator
+// today. Other brands round-trip through settings but no protocol code
+// reads them yet.
+const MachineBrandHaas = "haas"
 
 // EnsureMigrated folds legacy single-machine fields into Machines[0]
 // if Machines is empty. Idempotent; safe to call on every Settings
@@ -83,11 +95,13 @@ func (c *Cnc) EnsureMigrated() bool {
 		port = DefaultHaasPort
 	}
 	c.Machines = []Machine{{
-		ID:        "primary",
-		Name:      "Machine 1",
-		Host:      c.HaasHost,
-		Port:      port,
-		CameraURL: c.CameraURL,
+		ID:         "primary",
+		Name:       "Machine 1",
+		Brand:      MachineBrandHaas,
+		Host:       c.HaasHost,
+		Port:       port,
+		CameraURL:  c.CameraURL,
+		CameraType: "auto",
 	}}
 	return true
 }

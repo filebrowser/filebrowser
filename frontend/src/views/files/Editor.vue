@@ -365,11 +365,14 @@ const promptSendToMachine = async () => {
 };
 
 // ── Splitter between code + 3D viewer ──────────────────────────────────────
-// Width is stored as a percent of the .editor-layout flexbox row.
-// Default is 1/3 (code on the left), persisted per-browser in localStorage.
-const SPLIT_KEY = "gcodeEditorSplitPct";
-const SPLIT_DEFAULT = 33;
-const SPLIT_MIN = 15;
+// Width is stored as a percent of the .editor-layout flexbox row. Default
+// is narrow (~22% on the code side) — the toolpath visualization is the
+// star here, the NC text is just the source. The localStorage key is
+// versioned (V2) so users carrying a wide value from before the redesign
+// land on the new default; bump again next time the default changes.
+const SPLIT_KEY = "gcodeEditorSplitPctV2";
+const SPLIT_DEFAULT = 22;
+const SPLIT_MIN = 12;
 const SPLIT_MAX = 85;
 const editorPct = ref<number>(
   (() => {
@@ -387,15 +390,14 @@ const startResize = (e: PointerEvent) => {
   if (!layout) return;
   const rect = layout.getBoundingClientRect();
   const pointerId = e.pointerId;
-  // Capture so the move events keep coming even if the cursor leaves
-  // the splitter (which is a thin 6px strip — on touch you immediately
-  // drag past it). Without this, mobile drag was reported as "shows
-  // cursor but never moves" because pointermove went to whichever
-  // element is under the finger after the first millimeter.
+  // Pointer-capture keeps drags responsive on touch (tracking the
+  // finger after it slides past the 6 px hit area). The document-level
+  // listeners below are the actual transport — they work even if
+  // capture fails or Vue re-renders the splitter element mid-drag.
   try {
     target.setPointerCapture(pointerId);
   } catch {
-    /* not all browsers — fall back to document listeners */
+    /* ignore — document listeners cover us */
   }
   const onMove = (ev: PointerEvent) => {
     const pct = ((ev.clientX - rect.left) / rect.width) * 100;
@@ -403,9 +405,9 @@ const startResize = (e: PointerEvent) => {
     editor.value?.resize();
   };
   const onUp = () => {
-    target.removeEventListener("pointermove", onMove);
-    target.removeEventListener("pointerup", onUp);
-    target.removeEventListener("pointercancel", onUp);
+    document.removeEventListener("pointermove", onMove);
+    document.removeEventListener("pointerup", onUp);
+    document.removeEventListener("pointercancel", onUp);
     document.body.style.cursor = "";
     document.body.style.userSelect = "";
     try {
@@ -418,9 +420,9 @@ const startResize = (e: PointerEvent) => {
   };
   document.body.style.cursor = "col-resize";
   document.body.style.userSelect = "none";
-  target.addEventListener("pointermove", onMove);
-  target.addEventListener("pointerup", onUp);
-  target.addEventListener("pointercancel", onUp);
+  document.addEventListener("pointermove", onMove);
+  document.addEventListener("pointerup", onUp);
+  document.addEventListener("pointercancel", onUp);
 };
 
 const resetSplit = () => {
@@ -746,8 +748,9 @@ watch(
   flex: 1;
   min-height: 0;
   /* Default split is owned by the inline style on the row; this fallback
-     keeps the editor visible if the script is somehow late binding. */
-  --editor-pct: 33%;
+     keeps the editor visible if the script is somehow late binding.
+     Kept in sync with SPLIT_DEFAULT in the script block. */
+  --editor-pct: 22%;
 }
 
 .editor-pane {
@@ -799,15 +802,16 @@ watch(
   color: #66ff99;
 }
 
-/* 6px hit area, 1px visible line. Hover/drag highlights it so the user
-   can find the grip. */
+/* 10 px hit area, 1 px visible line. Bumped from 6 px because the
+   thinner strip was too narrow to grab reliably on touch. Hover/drag
+   highlights it so the user can find the grip. */
 .splitter {
-  flex: 0 0 6px;
+  flex: 0 0 10px;
   cursor: col-resize;
   background: transparent;
   position: relative;
   user-select: none;
-  z-index: 1;
+  z-index: 2;
   /* Stops the browser from interpreting drag as a horizontal scroll
      gesture on touch devices, which was eating the move events. */
   touch-action: none;

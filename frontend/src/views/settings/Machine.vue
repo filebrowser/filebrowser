@@ -40,6 +40,28 @@
             </div>
 
             <p>
+              <label class="small">{{ t("settings.machineBrand") }}</label>
+              <select class="input input--block" v-model="machine.brand">
+                <option value="haas">{{ t("settings.machineBrandHaas") }}</option>
+                <option value="fanuc" disabled>
+                  {{ t("settings.machineBrandFanuc") }}
+                </option>
+                <option value="mazak" disabled>
+                  {{ t("settings.machineBrandMazak") }}
+                </option>
+                <option value="okuma" disabled>
+                  {{ t("settings.machineBrandOkuma") }}
+                </option>
+                <option value="generic" disabled>
+                  {{ t("settings.machineBrandGeneric") }}
+                </option>
+              </select>
+              <span class="small machine-row__hint">
+                {{ t("settings.machineBrandHelp") }}
+              </span>
+            </p>
+
+            <p>
               <label class="small">{{ t("settings.machineHaasHost") }}</label>
               <input
                 class="input input--block"
@@ -60,11 +82,25 @@
             </p>
 
             <p>
+              <label class="small">{{ t("settings.machineCameraType") }}</label>
+              <select class="input input--block" v-model="machine.cameraType">
+                <option value="auto">{{ t("settings.machineCameraTypeAuto") }}</option>
+                <option value="hls">{{ t("settings.machineCameraTypeHls") }}</option>
+                <option value="mjpeg">{{ t("settings.machineCameraTypeMjpeg") }}</option>
+                <option value="iframe">{{ t("settings.machineCameraTypeIframe") }}</option>
+                <option value="none">{{ t("settings.machineCameraTypeNone") }}</option>
+              </select>
+              <span class="small machine-row__hint">
+                {{ t("settings.machineCameraTypeHelp") }}
+              </span>
+            </p>
+
+            <p>
               <label class="small">{{ t("settings.machineCameraUrl") }}</label>
               <input
                 class="input input--block"
                 type="text"
-                placeholder="https://… .m3u8 (HLS) or .jpg / /snapshot (MJPEG)"
+                :placeholder="cameraUrlPlaceholder(machine.cameraType)"
                 v-model="machine.cameraUrl"
               />
             </p>
@@ -194,10 +230,27 @@ const addMachine = () => {
   settings.value.machines.push({
     id: newID(),
     name: `Machine ${idx}`,
+    brand: "haas",
     host: "",
     port: 4196,
     cameraUrl: "",
+    cameraType: "auto",
   });
+};
+
+const cameraUrlPlaceholder = (kind: string | undefined) => {
+  switch (kind) {
+    case "hls":
+      return "https://… .m3u8";
+    case "mjpeg":
+      return "https://camera.local/snapshot or .jpg";
+    case "iframe":
+      return "https://protect.local/protect/livev3/<id> (UniFi Live View URL)";
+    case "none":
+      return "—";
+    default:
+      return "https://… .m3u8 (HLS) or .jpg / /snapshot (MJPEG)";
+  }
 };
 
 const deleteMachine = (idx: number) => {
@@ -268,15 +321,20 @@ onMounted(async () => {
         {
           id: newID(),
           name: "Machine 1",
+          brand: "haas",
           host: "",
           port: 4196,
           cameraUrl: "",
+          cameraType: "auto",
         },
       ];
     }
-    // Older payloads may have no cameraUrl on a Machine — coerce.
+    // Older payloads may be missing brand/cameraType/cameraUrl — coerce
+    // to today's defaults so the selects render with a value.
     fetched.machines = fetched.machines.map((m: CncMachine) => ({
+      brand: "haas",
       cameraUrl: "",
+      cameraType: "auto",
       ...m,
     }));
     settings.value = fetched;
@@ -325,6 +383,12 @@ onMounted(async () => {
   flex: 1;
   font-size: 1rem;
   padding: 0.3rem 0.6rem;
+}
+
+.machine-row__hint {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--fg-muted, #888);
 }
 
 .machine-row__delete {

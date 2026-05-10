@@ -3,12 +3,19 @@
 
 import { fetchURL, fetchJSON } from "./utils";
 
+export type CameraType = "auto" | "hls" | "mjpeg" | "iframe" | "none";
+
 export interface CncMachine {
   id: string;
   name: string;
+  // Controller family. "haas" is the only brand wired into the streamer
+  // today; the field exists so per-brand send protocols can land later
+  // without a settings migration.
+  brand?: string;
   host: string;
   port: number;
   cameraUrl?: string;
+  cameraType?: CameraType;
 }
 
 export interface CncSettings {

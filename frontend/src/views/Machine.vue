@@ -30,6 +30,13 @@
             class="camera-frame"
             alt=""
           />
+          <iframe
+            v-else-if="cameraKind === 'iframe'"
+            :src="cameraURL"
+            class="camera-frame camera-frame--iframe"
+            allow="autoplay; fullscreen; encrypted-media"
+            referrerpolicy="no-referrer"
+          />
         </div>
       </section>
 
@@ -339,6 +346,7 @@ const promptStopMachine = () => {
 
 // ── Config from /api/cnc/settings ──────────────────────────────────────────
 const cameraURL = ref("");
+const cameraType = ref<string>("auto");
 const hostConfigured = ref(false);
 
 // ── File ↔ NC sibling discovery (model + drawing) ─────────────────────────
@@ -615,14 +623,39 @@ watch(
   { immediate: false }
 );
 
-// ── Camera dispatch (same as before) ───────────────────────────────────────
+// ── Camera dispatch ────────────────────────────────────────────────────────
+// Operator picks an explicit type in Settings → Machine. "auto" keeps
+// the legacy URL-suffix dispatch. Browsers can't play raw RTSP/RTSPS,
+// so any rtsp(s)://… URL renders the "not browser-renderable" hint —
+// the proper path for UniFi Protect / Reolink is to switch the type
+// to "iframe" and paste the controller's web Live View URL.
 const snapshotTick = ref(0);
 let snapshotTimer: ReturnType<typeof setInterval> | null = null;
 
-const cameraKind = computed<"none" | "hls" | "snapshot" | "rtsp">(() => {
+const cameraKind = computed<"none" | "hls" | "snapshot" | "iframe" | "rtsp">(() => {
   const u = cameraURL.value;
   if (!u) return "none";
-  if (u.startsWith("rtsp://")) return "rtsp";
+  // Honor an explicit type unconditionally (except "auto"). Operators
+  // who selected "iframe" likely pasted a URL the suffix heuristic
+  // would have misclassified as snapshot.
+  switch (cameraType.value) {
+    case "none":
+      return "none";
+    case "hls":
+      return "hls";
+    case "mjpeg":
+      return "snapshot";
+    case "iframe":
+      return "iframe";
+    case "auto":
+    case undefined:
+    case "":
+      break;
+    default:
+      // Unknown values fall through to auto rather than blanking the tile.
+      break;
+  }
+  if (u.startsWith("rtsp://") || u.startsWith("rtsps://")) return "rtsp";
   if (u.endsWith(".m3u8")) return "hls";
   if (
     u.endsWith(".jpg") ||
@@ -656,8 +689,13 @@ watch(cameraKind, (kind) => {
 onMounted(async () => {
   try {
     const s = await cncApi.getSettings();
-    cameraURL.value = s.cameraUrl || "";
-    hostConfigured.value = !!s.haasHost;
+    // Phase C still pending — read the default machine (machines[0])
+    // for camera + host config, falling back to the legacy mirrored
+    // top-level fields the server keeps populated for compat.
+    const m = s.machines?.[0];
+    cameraURL.value = m?.cameraUrl ?? s.cameraUrl ?? "";
+    cameraType.value = m?.cameraType ?? "auto";
+    hostConfigured.value = !!(m?.host ?? s.haasHost);
   } catch {
     /* ignore — view renders the configure-me hints */
   }
@@ -1052,6 +1090,11 @@ const Axis = (props: { label: string; value: unknown }) => {
   height: 100%;
   object-fit: contain;
   background: #000;
+}
+
+.camera-frame--iframe {
+  border: 0;
+  display: block;
 }
 
 .sibling-link {

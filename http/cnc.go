@@ -94,13 +94,21 @@ func cncSettingsPutHandler(registry *cnc.Registry) handleFunc {
 			}
 			if len(d.settings.Cnc.Machines) == 0 {
 				d.settings.Cnc.Machines = []settings.Machine{{
-					ID:   newMachineID(),
-					Name: "Machine 1",
+					ID:         newMachineID(),
+					Name:       "Machine 1",
+					Brand:      settings.MachineBrandHaas,
+					CameraType: "auto",
 				}}
 			}
 			d.settings.Cnc.Machines[0].Host = req.HaasHost
 			d.settings.Cnc.Machines[0].Port = port
 			d.settings.Cnc.Machines[0].CameraURL = req.CameraURL
+			if d.settings.Cnc.Machines[0].Brand == "" {
+				d.settings.Cnc.Machines[0].Brand = settings.MachineBrandHaas
+			}
+			if d.settings.Cnc.Machines[0].CameraType == "" {
+				d.settings.Cnc.Machines[0].CameraType = "auto"
+			}
 		}
 		// Keep the legacy mirror fields populated as a fallback for
 		// any code that hasn't migrated. EnsureMigrated() will skip
@@ -143,6 +151,17 @@ func normalizeMachines(in []settings.Machine, existing []settings.Machine) ([]se
 		}
 		if m.Port > 65535 {
 			return nil, fmt.Errorf("machine %d (%s): port out of range", i, m.Name)
+		}
+		if strings.TrimSpace(m.Brand) == "" {
+			m.Brand = settings.MachineBrandHaas
+		}
+		switch m.CameraType {
+		case "", "auto", "hls", "mjpeg", "iframe", "none":
+			if m.CameraType == "" {
+				m.CameraType = "auto"
+			}
+		default:
+			return nil, fmt.Errorf("machine %d (%s): invalid cameraType %q", i, m.Name, m.CameraType)
 		}
 		if m.ID == "" {
 			m.ID = newMachineID()
