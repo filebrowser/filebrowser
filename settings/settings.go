@@ -84,6 +84,49 @@ type Machine struct {
 	// "I know what I'm doing" past a missing tool. Off by default —
 	// the operator-side controller prep is still on them.
 	RequirePreflight bool `json:"requirePreflight,omitempty"`
+	// AxesEnabled controls which axes the /machine dashboard renders
+	// rows for. X, Y, Z are always present; A, B, C are optional —
+	// some machines have a 4th or 5th axis, most don't. Stored as a
+	// list of uppercase letters; empty / unset defaults to X+Y+Z.
+	AxesEnabled []string `json:"axesEnabled,omitempty"`
+	// PositionToleranceIn is the in-inches drift between commanded
+	// and machine position that flips the dashboard's Δ-CMD readout
+	// from green to amber. 0 / unset falls back to 0.001".
+	PositionToleranceIn float64 `json:"positionToleranceIn,omitempty"`
+}
+
+// EffectiveAxes returns the axes to render for this machine. Defaults
+// to X/Y/Z when AxesEnabled is empty. Letters are uppercased and
+// deduped; A/B/C are accepted but anything else is dropped.
+func (m Machine) EffectiveAxes() []string {
+	if len(m.AxesEnabled) == 0 {
+		return []string{"X", "Y", "Z"}
+	}
+	allow := map[string]bool{"X": true, "Y": true, "Z": true, "A": true, "B": true, "C": true}
+	seen := map[string]bool{}
+	out := make([]string, 0, len(m.AxesEnabled))
+	for _, a := range m.AxesEnabled {
+		u := strings.ToUpper(strings.TrimSpace(a))
+		if !allow[u] || seen[u] {
+			continue
+		}
+		seen[u] = true
+		out = append(out, u)
+	}
+	if len(out) == 0 {
+		return []string{"X", "Y", "Z"}
+	}
+	return out
+}
+
+// EffectivePositionTolerance returns the green/amber threshold in
+// inches. Default 0.001" — same as the Haas's own position-drift
+// tolerance for most setups.
+func (m Machine) EffectivePositionTolerance() float64 {
+	if m.PositionToleranceIn <= 0 {
+		return 0.001
+	}
+	return m.PositionToleranceIn
 }
 
 // MachineBrandHaas is the only brand wired into the streamer/aggregator

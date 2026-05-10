@@ -100,6 +100,10 @@ func NewHandler(
 	cncRouter.Handle("/stream", monkey(cncStreamHandler(registry), "")).Methods("GET")
 	cncRouter.Handle("/state", monkey(cncStateHandler(registry), "")).Methods("GET")
 	cncRouter.Handle("/recovery/ack", monkey(cncRecoveryAckHandler(registry), "")).Methods("POST")
+	cncRouter.Handle("/queue", monkey(cncQueueListHandler(registry), "")).Methods("GET")
+	cncRouter.Handle("/queue", monkey(cncQueueAddHandler(registry), "")).Methods("POST")
+	cncRouter.Handle("/queue", monkey(cncQueueReorderHandler(registry), "")).Methods("PATCH")
+	cncRouter.PathPrefix("/queue/").Handler(monkey(cncQueueRemoveHandler(registry), "")).Methods("DELETE")
 
 	api.PathPrefix("/raw").Handler(monkey(rawHandler, "/api/raw")).Methods("GET")
 	api.PathPrefix("/preview/{size}/{path:.*}").

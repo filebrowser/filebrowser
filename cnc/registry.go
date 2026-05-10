@@ -24,6 +24,7 @@ type Registry struct {
 	mu          sync.RWMutex
 	streamers   map[string]*Streamer
 	aggregators map[string]*Aggregator
+	queues      *QueueStore
 	bgCtx       context.Context
 	bgCancel    context.CancelFunc
 }
@@ -40,9 +41,19 @@ func NewRegistry(s settingsReader) *Registry {
 		bgCtx:       ctx,
 		bgCancel:    cancel,
 	}
+	// Best-effort queue load. A read-only filesystem or permission
+	// error here doesn't bring the install down — the install just
+	// runs without persisted queues, mutations log a warning.
+	if qs, err := NewQueueStore("", nil); err == nil {
+		r.queues = qs
+	}
 	r.Refresh()
 	return r
 }
+
+// Queues returns the shared QueueStore. May be nil when persistence
+// failed at boot — callers should nil-check.
+func (r *Registry) Queues() *QueueStore { return r.queues }
 
 // Refresh diffs settings.Cnc.Machines against the live registry,
 // adding pairs for new IDs and stopping pairs for removed ones.
@@ -71,6 +82,13 @@ func (r *Registry) Refresh() {
 		ag.Start(r.bgCtx)
 		r.streamers[m.ID] = st
 		r.aggregators[m.ID] = ag
+		// Spin a watcher that listens to this streamer's event feed
+		// and auto-promotes a queue row to "running" whenever the
+		// controller's program metric changes. Catches the SD-card /
+		// USB / pre-existing-program case the spec calls out.
+		if r.queues != nil {
+			go r.watchQueueAutoMatch(r.bgCtx, m.ID, st)
+		}
 	}
 	// Remove orphaned.
 	for id, ag := range r.aggregators {
@@ -101,6 +119,75 @@ func (r *Registry) Stop() {
 	for _, ag := range r.aggregators {
 		ag.Stop()
 	}
+}
+
+// watchQueueAutoMatch subscribes to a machine's WS event feed and
+// promotes whichever queue row's O-number matches the controller's
+// currently-executing program. Covers the operator-started-via-SD-
+// card case the spec calls out — Q500 reflects whatever the panel is
+// running, regardless of who sent the file.
+//
+// Runs for the lifetime of the registry; exits when the parent
+// context is cancelled.
+func (r *Registry) watchQueueAutoMatch(ctx context.Context, machineID string, st *Streamer) {
+	feed := st.Subscribe()
+	defer st.Unsubscribe(feed)
+	var lastProgram string
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case ev, ok := <-feed:
+			if !ok {
+				return
+			}
+			switch ev.Type {
+			case "metric":
+				if ev.Metric == nil || ev.Metric.Key != "status_combined" {
+					continue
+				}
+				prog := extractProgram(ev.Metric)
+				if prog == "" || prog == lastProgram {
+					continue
+				}
+				lastProgram = prog
+				if r.queues != nil {
+					r.queues.PromoteByONumber(machineID, prog)
+					st.EmitQueueSnapshot(r.queues.List(machineID))
+				}
+			case "status":
+				if ev.Status == nil {
+					continue
+				}
+				// Streamer reports idle → the local-send job has ended.
+				// Demote any sending/running row. The next status_combined
+				// metric will re-promote if the controller is actually
+				// running something else.
+				if !ev.Status.Running && r.queues != nil {
+					r.queues.ClearInFlight(machineID)
+					st.EmitQueueSnapshot(r.queues.List(machineID))
+					lastProgram = ""
+				} else if ev.Status.Running && r.queues != nil {
+					r.queues.MarkProgress(machineID, int(ev.Status.LineCurrent), int(ev.Status.LineTotal))
+				}
+			}
+		}
+	}
+}
+
+// extractProgram pulls the program ID (e.g. "O00057") out of a parsed
+// status_combined metric. Q500 frames decode to either a struct with
+// a "program" key, or a raw string we fall through to.
+func extractProgram(m *Metric) string {
+	if m == nil {
+		return ""
+	}
+	if parsed, ok := m.Parsed.(map[string]any); ok {
+		if v, ok := parsed["program"].(string); ok {
+			return v
+		}
+	}
+	return m.Value
 }
 
 // resolve returns the (streamer, aggregator) pair for the requested

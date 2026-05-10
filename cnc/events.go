@@ -13,14 +13,19 @@ package cnc
 //                so subscribers can apply it directly without a
 //                round-trip to /api/cnc/state.
 //   - "log"    — informational; level + msg.
+//   - "queue"  — the machine's NC job queue changed (add / remove /
+//                reorder / state transition). Queue carries the
+//                whole post-mutation snapshot so subscribers can
+//                replace their local copy without a refetch.
 type Event struct {
-	Type   string  `json:"type"`
-	N      int64   `json:"n,omitempty"`
-	Text   string  `json:"text,omitempty"`
-	Status *Status `json:"status,omitempty"`
-	Metric *Metric `json:"metric,omitempty"`
-	Level  string  `json:"level,omitempty"`
-	Msg    string  `json:"msg,omitempty"`
+	Type   string      `json:"type"`
+	N      int64       `json:"n,omitempty"`
+	Text   string      `json:"text,omitempty"`
+	Status *Status     `json:"status,omitempty"`
+	Metric *Metric     `json:"metric,omitempty"`
+	Level  string      `json:"level,omitempty"`
+	Msg    string      `json:"msg,omitempty"`
+	Queue  []QueueItem `json:"queue,omitempty"`
 }
 
 // subscriberBufferSize bounds how many events a slow subscriber can fall
@@ -68,6 +73,13 @@ func (s *Streamer) Unsubscribe(ch <-chan Event) {
 			return
 		}
 	}
+}
+
+// EmitQueueSnapshot pushes a "queue" event to every subscriber of
+// this streamer. Exported so the HTTP layer can fan out after a queue
+// mutation without taking a direct dep on the unexported emit().
+func (s *Streamer) EmitQueueSnapshot(items []QueueItem) {
+	s.emit(Event{Type: "queue", Queue: items})
 }
 
 func (s *Streamer) emit(ev Event) {

@@ -175,6 +175,26 @@ func normalizeMachines(in []settings.Machine, existing []settings.Machine) ([]se
 		default:
 			return nil, fmt.Errorf("machine %d (%s): invalid cameraType %q", i, m.Name, m.CameraType)
 		}
+		// Axes: validate the letters (drop unknowns), canonicalize
+		// case. Empty list survives — the consumer treats that as the
+		// default X/Y/Z trio.
+		if len(m.AxesEnabled) > 0 {
+			seen := map[string]bool{}
+			allow := map[string]bool{"X": true, "Y": true, "Z": true, "A": true, "B": true, "C": true}
+			out := make([]string, 0, len(m.AxesEnabled))
+			for _, a := range m.AxesEnabled {
+				u := strings.ToUpper(strings.TrimSpace(a))
+				if !allow[u] || seen[u] {
+					continue
+				}
+				seen[u] = true
+				out = append(out, u)
+			}
+			m.AxesEnabled = out
+		}
+		if m.PositionToleranceIn < 0 {
+			return nil, fmt.Errorf("machine %d (%s): positionToleranceIn must be >= 0", i, m.Name)
+		}
 		if m.ID == "" {
 			m.ID = newMachineID()
 		}
@@ -760,6 +780,10 @@ type cncStartBody struct {
 	// on the job so the activity log + dashboard can tag entries.
 	// Empty / unknown values default to "mem".
 	Method string `json:"method,omitempty"`
+	// QueueID, when present, marks that queue row "sending" (and
+	// demotes any other in-flight row) before the streamer starts.
+	// Optional — sends not initiated from the queue panel skip this.
+	QueueID string `json:"queue_id,omitempty"`
 }
 
 func cncStartHandler(registry *cnc.Registry) handleFunc {
@@ -831,6 +855,18 @@ func cncStartHandler(registry *cnc.Registry) handleFunc {
 		}
 
 		method := cnc.NormalizeSendMethod(req.Method)
+		// Mark the queue row as in-flight before the streamer takes
+		// the job. The queue state must broadcast even when Start
+		// errors (the row stays "sending" briefly so the UI shows
+		// what was attempted), so the demote happens on the error
+		// path below.
+		if req.QueueID != "" {
+			if qs := registry.Queues(); qs != nil {
+				if _, qerr := qs.MarkSending(machineID, req.QueueID, string(method)); qerr == nil {
+					streamer.EmitQueueSnapshot(qs.List(machineID))
+				}
+			}
+		}
 		st, err := streamer.Start(absPath, clean, method)
 		switch {
 		case errors.Is(err, cnc.ErrJobAlreadyRunning):
@@ -838,8 +874,22 @@ func cncStartHandler(registry *cnc.Registry) handleFunc {
 		case errors.Is(err, cnc.ErrRecoveryPending):
 			return http.StatusConflict, err
 		case errors.Is(err, cnc.ErrConfigMissing):
+			// Start failed before any bytes went out — demote the
+			// queue row so the operator can retry, fix config, etc.
+			if req.QueueID != "" {
+				if qs := registry.Queues(); qs != nil {
+					qs.ClearInFlight(machineID)
+					streamer.EmitQueueSnapshot(qs.List(machineID))
+				}
+			}
 			return http.StatusBadRequest, err
 		case err != nil:
+			if req.QueueID != "" {
+				if qs := registry.Queues(); qs != nil {
+					qs.ClearInFlight(machineID)
+					streamer.EmitQueueSnapshot(qs.List(machineID))
+				}
+			}
 			return errToStatus(err), err
 		}
 		return renderJSON(w, r, map[string]string{"job_id": st.JobID})
@@ -943,11 +993,19 @@ func cncStopHandler(registry *cnc.Registry) handleFunc {
 		if !d.user.Perm.Modify {
 			return http.StatusForbidden, nil
 		}
-		st, _, code, err := resolveStreamer(registry, r)
+		st, machineID, code, err := resolveStreamer(registry, r)
 		if err != nil {
 			return code, err
 		}
 		stopped := st.Stop()
+		// Clear any in-flight queue row regardless of whether Stop
+		// reported a job to actually halt — operators sometimes hit
+		// Stop after a controller-side abort, and the queue should
+		// match reality.
+		if qs := registry.Queues(); qs != nil {
+			qs.ClearInFlight(machineID)
+			st.EmitQueueSnapshot(qs.List(machineID))
+		}
 		return renderJSON(w, r, map[string]bool{"stopped": stopped})
 	})
 }
