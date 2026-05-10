@@ -347,6 +347,10 @@ const promptSendToMachine = async () => {
         cncStore.pollOnce();
         followMachine.value = true;
         $showSuccess(t("buttons.sendingToMachine"));
+        // Operator's eyes belong on the machine page now — live state,
+        // progress bar, and the NC mirror are all there. Use the
+        // router so the editor cleanly tears down (Ace + 3D scene).
+        router.push({ name: "Machine" });
       } catch (e: any) {
         $showError(e);
       }

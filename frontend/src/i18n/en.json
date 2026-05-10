@@ -99,6 +99,7 @@
     "checking": "Checking…",
     "checkBridge": "Bridge",
     "checkController": "Controller",
+    "ncLoading": "Loading NC…",
     "rtspNotSupported": "RTSP isn't browser-renderable. Set up a go2rtc proxy to convert to HLS, then paste the .m3u8 URL into Settings → Machine."
   },
   "errors": {

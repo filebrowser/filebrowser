@@ -194,6 +194,34 @@
           </div>
         </div>
       </section>
+
+      <!-- NC code + toolpath, side-by-side. Only when a job has a
+           file path (running, or just ended and we still have it). -->
+      <section v-if="cncStore.filePath" class="machine-card nc-card">
+        <div class="card-header">
+          <i class="material-icons">code</i>
+          {{ cncStore.filePath }}
+          <span class="card-header__spacer" />
+          <span v-if="ncLoading" class="card-header__hint">{{ t("machine.ncLoading") }}</span>
+          <span v-else-if="ncError" class="card-header__hint card-header__hint--err">{{ ncError }}</span>
+        </div>
+        <div class="nc-split">
+          <div class="nc-split__pane nc-split__pane--code">
+            <MachineNcMirror
+              v-if="ncContent !== null"
+              :gcode="ncContent"
+              :machine-line="cncStore.lineCurrent"
+            />
+          </div>
+          <div class="nc-split__pane nc-split__pane--viewer">
+            <GCode3DViewer
+              v-if="ncContent !== null"
+              :gcode="ncContent"
+              :machine-line="cncStore.lineCurrent"
+            />
+          </div>
+        </div>
+      </section>
     </div>
   </div>
 </template>
@@ -201,8 +229,10 @@
 <script setup lang="ts">
 import { computed, h, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { cnc as cncApi } from "@/api";
+import { cnc as cncApi, files as filesApi } from "@/api";
 import type { CncCheckResult, CncMetric } from "@/api/cnc";
+import GCode3DViewer from "@/components/GCode3DViewer.vue";
+import MachineNcMirror from "@/components/MachineNcMirror.vue";
 import { useAuthStore } from "@/stores/auth";
 import { useCncStore } from "@/stores/cnc";
 import { useLayoutStore } from "@/stores/layout";
@@ -237,6 +267,42 @@ const promptStopMachine = () => {
 // ── Config from /api/cnc/settings ──────────────────────────────────────────
 const cameraURL = ref("");
 const hostConfigured = ref(false);
+
+// ── NC content fetch (drives the mirror + 3D toolpath) ────────────────────
+// When the streamer reports a filePath (job is running, or just ended
+// and the streamer still has the path), pull the NC content via the
+// resources API so we can render code + toolpath. Refetch only when
+// filePath changes — re-fetching on lineCurrent ticks would be silly.
+const ncContent = ref<string | null>(null);
+const ncLoading = ref(false);
+const ncError = ref<string>("");
+
+const fetchNc = async (path: string) => {
+  ncLoading.value = true;
+  ncError.value = "";
+  try {
+    const res = await filesApi.fetch(path);
+    ncContent.value = (res as any).content ?? "";
+  } catch (e: any) {
+    ncError.value = e?.message || "fetch failed";
+    ncContent.value = null;
+  } finally {
+    ncLoading.value = false;
+  }
+};
+
+watch(
+  () => cncStore.filePath,
+  (p) => {
+    if (p) {
+      fetchNc(p);
+    } else {
+      ncContent.value = null;
+      ncError.value = "";
+    }
+  },
+  { immediate: false }
+);
 
 // ── Connection check (button in card-header) ──────────────────────────────
 const checkResult = ref<CncCheckResult | null>(null);
@@ -385,6 +451,12 @@ onMounted(async () => {
   // the WS was dropped silently and reconnect failed quietly.
   await cncStore.seedMetrics();
   reseedTimer = setInterval(() => cncStore.seedMetrics(), RESEED_MS);
+  // Page-reload during a job: pollOnce already populated the store
+  // from /status above (via seedMetrics chain → status push); if a
+  // filePath landed, fetch its NC content now.
+  if (cncStore.filePath) {
+    fetchNc(cncStore.filePath);
+  }
   // Start the connect watchdog if we still have nothing fresh after
   // the seed. The watch above clears it as soon as a metric lands.
   if (!anyFresh.value && hostConfigured.value) {
@@ -749,6 +821,42 @@ const Axis = (props: { label: string; value: unknown }) => {
   height: 100%;
   object-fit: contain;
   background: #000;
+}
+
+/* NC card: side-by-side code mirror + 3D toolpath */
+.nc-card .nc-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  height: 50vh;
+  min-height: 400px;
+}
+
+.nc-split__pane {
+  position: relative;
+  border: 1px solid var(--border-color, #eee);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--surfacePrimary, #fff);
+}
+
+.nc-split__pane--code {
+  /* Ace fills via absolute positioning inside MachineNcMirror */
+  min-height: 0;
+}
+
+.nc-split__pane--viewer {
+  background: #111;
+}
+
+@media (max-width: 900px) {
+  .nc-card .nc-split {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .nc-split__pane {
+    height: 50vh;
+  }
 }
 
 /* Live send progress strip — visible only while streaming */
