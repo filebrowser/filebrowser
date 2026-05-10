@@ -98,8 +98,8 @@
                   :slot-number="row.slot"
                   :length-ratio="ratioL(row.effective_length)"
                   :diameter-ratio="ratioD(row.effective_diameter)"
-                  :width="24"
-                  :height="44"
+                  :width="20"
+                  :height="32"
                 />
               </td>
               <td>{{ row.slot }}</td>
@@ -149,8 +149,8 @@
               :slot-number="row.slot"
               :length-ratio="ratioL(row.effective_length)"
               :diameter-ratio="ratioD(row.effective_diameter)"
-              :width="48"
-              :height="180"
+              :width="36"
+              :height="120"
             />
             <div class="magazine-figure__label">
               <strong>T{{ row.slot }}</strong>
@@ -364,10 +364,37 @@ const toggleSort = (k: SortKey) => {
   }
 };
 
-// Resolve the initial slot count: localStorage override (if the
-// operator has overridden) > machine.toolSlots from settings > 30.
-// Called on mount + whenever machineId changes.
+// Resolve the initial slot count. Precedence:
+//   1. Settings → Machine → toolSlots — operator's source of truth
+//      for "how many pockets does this magazine have." Whatever they
+//      configured there is authoritative on every page load.
+//   2. localStorage — only consulted when the machine config doesn't
+//      have a value, so a machine without per-machine settings still
+//      remembers an ad-hoc override across reloads.
+//   3. 30 — universal fallback.
+//
+// The previous order (localStorage first) silently shadowed the
+// operator's settings change because the input @change persisted a
+// value the moment they typed in the panel, so changing Machine.
+// toolSlots had no effect on next reload. Settings now win.
 const resolveSlotCount = async () => {
+  let fromSettings: number | undefined;
+  try {
+    const list = await cncApi.listMachines();
+    const id = props.machineId || list.default_id;
+    const m = list.machines.find((x) => x.id === id);
+    fromSettings = m?.toolSlots;
+  } catch {
+    /* fall through to localStorage / default */
+  }
+  if (
+    typeof fromSettings === "number" &&
+    fromSettings >= 1 &&
+    fromSettings <= 200
+  ) {
+    slotCount.value = fromSettings;
+    return;
+  }
   const stored = parseInt(
     localStorage.getItem(slotCountKey.value) || "",
     10
@@ -375,22 +402,6 @@ const resolveSlotCount = async () => {
   if (Number.isFinite(stored) && stored >= 1 && stored <= 200) {
     slotCount.value = stored;
     return;
-  }
-  try {
-    const list = await cncApi.listMachines();
-    const id = props.machineId || list.default_id;
-    const m = list.machines.find((x) => x.id === id);
-    const fromSettings = m?.toolSlots;
-    if (
-      typeof fromSettings === "number" &&
-      fromSettings >= 1 &&
-      fromSettings <= 200
-    ) {
-      slotCount.value = fromSettings;
-      return;
-    }
-  } catch {
-    /* fall back to default */
   }
   slotCount.value = 30;
 };
@@ -483,8 +494,8 @@ onMounted(loadLatest);
 .tool-card__body {
   flex-direction: column;
   align-items: stretch;
-  padding: 0.8rem 1rem;
-  gap: 0.6rem;
+  padding: 0.5rem 0.8rem;
+  gap: 0.4rem;
   overflow: hidden;
 }
 
@@ -556,9 +567,14 @@ onMounted(loadLatest);
 }
 
 .tool-card__scroll {
+  /* Capped at 32 vh so the panel + camera + dashboard fit a single
+     screen on a 1080p display. overscroll-behavior: contain stops the
+     scroll from chaining into the page below when the operator hits
+     top/bottom inside the table. */
   flex: 1 1 auto;
-  max-height: 50vh;
+  max-height: 32vh;
   overflow: auto;
+  overscroll-behavior: contain;
   border: 1px solid var(--border-color, #eee);
   border-radius: 4px;
 }
@@ -566,12 +582,12 @@ onMounted(loadLatest);
 .tool-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.85rem;
+  font-size: 0.78rem;
 }
 
 .tool-table th,
 .tool-table td {
-  padding: 0.3rem 0.5rem;
+  padding: 0.2rem 0.4rem;
   text-align: left;
   border-bottom: 1px solid var(--border-color, #eee);
 }
@@ -650,9 +666,9 @@ onMounted(loadLatest);
 }
 
 .thumb-col {
-  width: 28px;
+  width: 24px;
   text-align: center;
-  padding: 0.2rem 0.3rem;
+  padding: 0.15rem 0.2rem;
 }
 
 /* Magazine: tools rendered to scale on one shared scale. Bottom-
@@ -668,12 +684,17 @@ onMounted(loadLatest);
 .magazine-strip {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.6rem;
-  padding: 0.8rem 0.6rem 0.4rem;
+  gap: 0.4rem;
+  padding: 0.5rem 0.4rem 0.3rem;
   background: var(--alt-background, #fafafa);
   border-radius: 6px;
   border: 1px solid var(--border-color, #eee);
   align-items: flex-end;
+  /* Magazine sometimes overflows when many tools are loaded; keep its
+     own scroll bounded so it doesn't push the page. */
+  max-height: 28vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .magazine-figure {

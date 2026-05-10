@@ -50,11 +50,24 @@
         </div>
       </section>
 
-      <!-- Native dashboard. Polls /api/cnc/state every 1s. -->
+      <!-- Native dashboard. Polls /api/cnc/state every 1s. The hero
+           (program + status + mode) lives in the card header so the
+           operator's primary "what is this machine doing right now"
+           read sits at the top, and the body collapses to a single
+           live-state column + activity feed without the previous
+           empty whitespace from a separate hero block. -->
       <section class="machine-card dashboard-card">
-        <div class="card-header">
+        <div class="card-header dashboard-header">
           <i class="material-icons">precision_manufacturing</i>
-          {{ t("machine.dashboardTitle") }}
+          <div class="dashboard-header__hero">
+            <span class="dashboard-header__label">{{ t("machine.program") }}</span>
+            <span class="dashboard-header__value">{{ programDisplay || "—" }}</span>
+            <span class="dashboard-header__status" :class="statusClass">
+              {{ statusText || "—" }}
+            </span>
+            <span class="dashboard-header__label">{{ t("machine.mode") }}</span>
+            <span class="dashboard-header__value">{{ rawValue("mode") || "—" }}</span>
+          </div>
           <span class="card-header__spacer" />
           <span class="card-header__hint" v-if="!hostConfigured">
             {{ t("machine.notConfigured") }}
@@ -87,68 +100,9 @@
           </button>
         </div>
         <div class="card-body dashboard-body">
-          <!-- Three-column layout inside the dashboard:
-               LEFT = numerical machine info (tiles + positions),
-               CENTER = live state (hero + check + send progress),
-               RIGHT = activity log.
-               Eliminates the previous nested-scroll where the dashboard
-               body scrolled inside an already-scrolling page. Each
-               column owns its own intrinsic height; only the activity
-               log scrolls (because it's unbounded by nature). -->
-
-          <!-- LEFT: Machine info -->
-          <div class="dashboard-col dashboard-col--info">
-            <!-- Tiles row: spindle / parts / tool / cycle -->
-            <div class="tiles">
-              <Tile
-                :label="t('machine.spindleRpm')"
-                :value="formatNum(parsed('spindle_actual'))"
-                :sub="t('machine.spindleCmd', { n: formatNum(parsed('spindle_cmd'), 0) })"
-                icon="rotate_right"
-              />
-              <Tile
-                :label="t('machine.parts')"
-                :value="formatNum(parsed('parts'), 0)"
-                icon="inventory_2"
-              />
-              <Tile
-                :label="t('machine.tool')"
-                :value="formatNum(parsed('tool'), 0)"
-                icon="construction"
-              />
-              <Tile
-                :label="t('machine.lastCycle')"
-                :value="rawValue('last_cycle') || '—'"
-                icon="timer"
-              />
-            </div>
-
-            <!-- Position grid: machine vs work -->
-            <div class="positions">
-              <div class="positions__col">
-                <div class="positions__title">{{ t("machine.machinePos") }}</div>
-                <Axis label="X" :value="parsed('pos_x')" />
-                <Axis label="Y" :value="parsed('pos_y')" />
-                <Axis label="Z" :value="parsed('pos_z')" />
-              </div>
-              <div class="positions__col">
-                <div class="positions__title">{{ t("machine.workPos") }}</div>
-                <Axis label="X" :value="parsed('work_x')" />
-                <Axis label="Y" :value="parsed('work_y')" />
-                <Axis label="Z" :value="parsed('work_z')" />
-              </div>
-              <div class="positions__col">
-                <div class="positions__title">{{ t("machine.g54Offset") }}</div>
-                <Axis label="X" :value="parsed('g54_x')" />
-                <Axis label="Y" :value="parsed('g54_y')" />
-                <Axis label="Z" :value="parsed('g54_z')" />
-              </div>
-            </div>
-          </div>
-
-          <!-- CENTER: Live state — kept in the position the operator
-               already knows. Hero is the visual anchor; send progress
-               and check result render above it when relevant. -->
+          <!-- LEFT: live state column. Tiles + positions stack
+               directly under the hero header — no separate program/
+               status/mode block, no empty whitespace. -->
           <div class="dashboard-col dashboard-col--state">
             <div v-if="checkResult" class="check-result" :class="checkResultClass">
               <div class="check-result__row">
@@ -211,17 +165,51 @@
                 </span>
               </div>
             </div>
-            <div class="hero">
-              <div class="hero__program">
-                <div class="hero__label">{{ t("machine.program") }}</div>
-                <div class="hero__value">{{ programDisplay || "—" }}</div>
+
+            <!-- Tiles row: spindle / parts / tool / cycle -->
+            <div class="tiles">
+              <Tile
+                :label="t('machine.spindleRpm')"
+                :value="formatNum(parsed('spindle_actual'))"
+                :sub="t('machine.spindleCmd', { n: formatNum(parsed('spindle_cmd'), 0) })"
+                icon="rotate_right"
+              />
+              <Tile
+                :label="t('machine.parts')"
+                :value="formatNum(parsed('parts'), 0)"
+                icon="inventory_2"
+              />
+              <Tile
+                :label="t('machine.tool')"
+                :value="formatNum(parsed('tool'), 0)"
+                icon="construction"
+              />
+              <Tile
+                :label="t('machine.lastCycle')"
+                :value="rawValue('last_cycle') || '—'"
+                icon="timer"
+              />
+            </div>
+
+            <!-- Compact position table: one shared grid (axis × machine
+                 / work / G54) instead of three side-by-side cards. Half
+                 the vertical real estate of the old layout. -->
+            <div class="positions-table">
+              <div class="positions-table__head">
+                <span class="positions-table__col-head"></span>
+                <span class="positions-table__col-head">{{ t("machine.machinePos") }}</span>
+                <span class="positions-table__col-head">{{ t("machine.workPos") }}</span>
+                <span class="positions-table__col-head">{{ t("machine.g54Offset") }}</span>
               </div>
-              <div class="hero__status" :class="statusClass">
-                {{ statusText || "—" }}
-              </div>
-              <div class="hero__mode">
-                <div class="hero__label">{{ t("machine.mode") }}</div>
-                <div class="hero__value">{{ rawValue("mode") || "—" }}</div>
+              <div
+                class="positions-table__row"
+                v-for="ax in ['x', 'y', 'z']"
+                :key="ax"
+              >
+                <span class="positions-table__axis">{{ ax.toUpperCase() }}</span>
+                <span class="positions-table__val">{{ fmtAxis(parsed(`pos_${ax}`)) }}</span>
+                <span class="positions-table__val">{{ fmtAxis(parsed(`work_${ax}`)) }}</span>
+                <span class="positions-table__val">{{ fmtAxis(parsed(`g54_${ax}`)) }}</span>
               </div>
             </div>
           </div>
@@ -637,6 +625,15 @@ const formatNum = (v: unknown, digits = 1): string => {
   return "—";
 };
 
+// Axis cells in the position grid render numbers with 4 decimals so
+// X/Y/Z line up cleanly across the three columns. Strings (rare —
+// happens when the parser couldn't decode) pass through untouched.
+const fmtAxis = (v: unknown): string => {
+  if (typeof v === "number" && Number.isFinite(v)) return v.toFixed(4);
+  if (typeof v === "string" && v !== "") return v;
+  return "—";
+};
+
 const fmtTs = (ts: number): string => {
   const d = new Date(ts);
   return d.toLocaleTimeString();
@@ -812,19 +809,6 @@ const Tile = (props: { label: string; value: string; sub?: string; icon: string 
       props.sub ? h("div", { class: "tile__sub" }, props.sub) : null,
     ]),
   ]);
-
-const Axis = (props: { label: string; value: unknown }) => {
-  let v = "—";
-  if (typeof props.value === "number" && Number.isFinite(props.value)) {
-    v = props.value.toFixed(4);
-  } else if (typeof props.value === "string" && props.value !== "") {
-    v = props.value;
-  }
-  return h("div", { class: "axis" }, [
-    h("span", { class: "axis__label" }, props.label),
-    h("span", { class: "axis__value" }, v),
-  ]);
-};
 </script>
 
 <style scoped>
@@ -1012,15 +996,14 @@ const Axis = (props: { label: string; value: unknown }) => {
 }
 
 .dashboard-body {
-  /* 3-column layout: machine info | live state | activity. The body
-     itself is a flex row; each column owns its own intrinsic height
-     (only the activity feed scrolls). Eliminates the double-scroll
-     where the dashboard body scrolled inside the already-scrolling
-     page. */
+  /* 2-column layout: live state | activity. The hero (program/state/
+     mode) lives in the card header now, and tiles + positions stack
+     directly below — no separate state column, no empty whitespace
+     between info tiles and the formerly-separate hero block. */
   flex-direction: row;
   align-items: stretch;
-  padding: 1rem;
-  gap: 1rem;
+  padding: 0.8rem;
+  gap: 0.8rem;
   overflow: hidden;
   min-height: 0;
 }
@@ -1028,34 +1011,26 @@ const Axis = (props: { label: string; value: unknown }) => {
 .dashboard-col {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.6rem;
   min-width: 0;
   min-height: 0;
 }
 
-/* LEFT — tiles + positions. Narrow but enough for the 4 tiles and
-   3 axis columns to read cleanly. */
-.dashboard-col--info {
-  flex: 1 1 28%;
-}
-
-/* CENTER — live state. Operator's primary read. Slightly wider than
-   the info column because hero text + status badge wants room. */
+/* LEFT — live state (tiles + positions + check/send blocks above). */
 .dashboard-col--state {
-  flex: 1 1 32%;
+  flex: 1 1 60%;
 }
 
-/* RIGHT — activity feed. Widest column because log lines are dense
-   and benefit from horizontal space. The internal list scrolls. */
+/* RIGHT — activity feed. The internal list scrolls; overscroll is
+   contained so chaining doesn't leak into the page below. */
 .dashboard-col--activity {
   flex: 1 1 40%;
-  min-width: 280px;
+  min-width: 260px;
 }
 
-/* Stack on narrower viewports where the 3-column row would force
-   each cell below readable width. The 1100 px breakpoint matches
-   roughly when the tiles row starts to wrap unhappily. */
-@media (max-width: 1100px) {
+/* Stack on narrower viewports where two columns would force each
+   cell below readable width. */
+@media (max-width: 1000px) {
   .dashboard-body {
     flex-direction: column;
     overflow: auto;
@@ -1065,138 +1040,157 @@ const Axis = (props: { label: string; value: unknown }) => {
   }
 }
 
-/* Hero row */
-.hero {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  gap: 1rem;
+/* Header hero — program / status / mode promoted out of the body and
+   into the card-header strip so the operator's primary read sits at
+   the top with no whitespace below. */
+.dashboard-header__hero {
+  display: flex;
   align-items: center;
-  padding: 0.8rem 1rem;
-  background: var(--alt-background, #fafafa);
-  border: 1px solid var(--border-color, #eee);
-  border-radius: 6px;
+  gap: 0.4rem;
+  flex-wrap: wrap;
 }
 
-.hero__label {
-  font-size: 0.7rem;
+.dashboard-header__label {
+  font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--fg-muted, #888);
+  font-weight: 500;
 }
 
-.hero__value {
-  font-size: 1.1rem;
+.dashboard-header__value {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
+  font-size: 0.95rem;
+  margin-right: 0.3rem;
 }
 
-.hero__status {
-  padding: 0.3rem 0.8rem;
+.dashboard-header__status {
+  padding: 0.18rem 0.6rem;
   border-radius: 999px;
-  font-size: 0.85rem;
+  font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   background: rgba(0, 0, 0, 0.06);
+  margin-right: 0.3rem;
 }
 
-.hero__status.is-running {
+.dashboard-header__status.is-running {
   background: rgba(46, 160, 67, 0.18);
   color: #2ea043;
 }
 
-.hero__status.is-warn {
+.dashboard-header__status.is-warn {
   background: rgba(201, 122, 0, 0.2);
   color: #c97a00;
 }
 
-.hero__status.is-error {
+.dashboard-header__status.is-error {
   background: rgba(220, 53, 69, 0.18);
   color: #dc3545;
 }
 
-/* Tiles row */
+/* Tiles row — fixed 4 columns to match the 4 tiles (spindle / parts
+   / tool / cycle) so they read as a single status strip rather than
+   wrapping unevenly. */
 .tiles {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 0.6rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+@media (max-width: 720px) {
+  .tiles {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .tile {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.6rem 0.8rem;
+  gap: 0.5rem;
+  padding: 0.45rem 0.6rem;
   background: var(--alt-background, #fafafa);
   border: 1px solid var(--border-color, #eee);
   border-radius: 6px;
+  min-width: 0;
 }
 
 .tile__icon {
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   color: var(--primaryColor, #2196f3);
   opacity: 0.9;
 }
 
+.tile__body {
+  min-width: 0;
+}
+
 .tile__label {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--fg-muted, #888);
 }
 
 .tile__value {
-  font-size: 1.3rem;
+  font-size: 1.15rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
 }
 
 .tile__sub {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--fg-muted, #888);
   font-variant-numeric: tabular-nums;
-  margin-top: 0.15rem;
+  margin-top: 0.1rem;
 }
 
-/* Position grid */
-.positions {
+/* Compact positions table: shared grid (axis × machine/work/G54) so
+   nine numbers occupy ~3 lines instead of 3 separate cards × 4 lines
+   each. Half the vertical real estate of the old layout. */
+.positions-table {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 0.6rem;
-}
-
-.positions__col {
+  grid-template-columns: 1.4rem repeat(3, 1fr);
+  column-gap: 0.6rem;
+  row-gap: 0.15rem;
+  padding: 0.5rem 0.7rem;
   background: var(--alt-background, #fafafa);
   border: 1px solid var(--border-color, #eee);
   border-radius: 6px;
-  padding: 0.6rem 0.8rem;
+  font-variant-numeric: tabular-nums;
 }
 
-.positions__title {
-  font-size: 0.7rem;
+.positions-table__head,
+.positions-table__row {
+  display: contents;
+}
+
+.positions-table__col-head {
+  font-size: 0.62rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--fg-muted, #888);
-  margin-bottom: 0.4rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--border-color, #eee);
+  text-align: right;
 }
 
-.axis {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  font-variant-numeric: tabular-nums;
-  padding: 0.15rem 0;
+.positions-table__col-head:first-child {
+  border-bottom: 1px solid var(--border-color, #eee);
 }
 
-.axis__label {
+.positions-table__axis {
   font-weight: 600;
   color: var(--primaryColor, #2196f3);
-  margin-right: 0.5rem;
+  font-size: 0.85rem;
 }
 
-.axis__value {
-  font-size: 1.05rem;
+.positions-table__val {
+  text-align: right;
+  font-size: 0.92rem;
   font-weight: 500;
 }
 
@@ -1447,9 +1441,13 @@ const Axis = (props: { label: string; value: unknown }) => {
   padding: 0;
   /* Cap the log at half the viewport so a long session doesn't push
      the rest of /machine off-screen, but keep its own scroll so the
-     newest entries are reachable without scrolling the whole page. */
+     newest entries are reachable without scrolling the whole page.
+     overscroll-behavior: contain stops scroll-chaining when the user
+     hits the top/bottom of the log — the page below doesn't pick up
+     the wheel events and pull itself around. */
   max-height: 50vh;
   overflow-y: auto;
+  overscroll-behavior: contain;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.8rem;
 }

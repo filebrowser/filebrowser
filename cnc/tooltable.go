@@ -117,32 +117,46 @@ func (s *Streamer) ReadToolTable(ctx context.Context, slots int) (*ToolTable, er
 		rows[i] = ToolTableSlot{Slot: i}
 	}
 
-	// ── Pass 1: length-geom across every slot ────────────────────────
-	s.logf("info", "tool-table pass 1 — length-geom across %d slots", slots)
+	// ── Pass 1: length-geom + diameter-geom across every slot ───────
+	// Reading both geoms in pass 1 catches the case where an operator
+	// loads a tool but hasn't probed its length yet (length_geom == 0
+	// but diameter_geom != 0). With length-only pass 1 those slots
+	// silently dropped to "empty pocket" and pass 2 skipped them — the
+	// operator then wonders why their drill in T15 doesn't show up
+	// even though it's physically there.
+	s.logf("info", "tool-table pass 1 — length+diameter geom across %d slots", slots)
 	populated := make([]bool, slots+1)
 	for slot := 1; slot <= slots; slot++ {
 		if ctxErr := ctx.Err(); ctxErr != nil {
 			markRemainingCancelled(rows, slot, slots, ctxErr)
 			break
 		}
-		v := toolTableBaseLengthGeom + (slot - 1)
-		res, qerr := s.Query(ctx, 600, &v)
-		applyBase(&rows[slot], "length_geom", res, qerr, &populated[slot])
+		vL := toolTableBaseLengthGeom + (slot - 1)
+		resL, errL := s.Query(ctx, 600, &vL)
+		applyBase(&rows[slot], "length_geom", resL, errL, &populated[slot])
+
+		if ctxErr := ctx.Err(); ctxErr != nil {
+			markRemainingCancelled(rows, slot, slots, ctxErr)
+			break
+		}
+		vD := toolTableBaseDiameterGeom + (slot - 1)
+		resD, errD := s.Query(ctx, 600, &vD)
+		applyBase(&rows[slot], "diameter_geom", resD, errD, &populated[slot])
 	}
 
-	// ── Pass 2: the other three bases, populated slots only ──────────
+	// ── Pass 2: the two wear bases, populated slots only ────────────
 	pcount := 0
 	for _, ok := range populated[1:] {
 		if ok {
 			pcount++
 		}
 	}
-	s.logf("info", "tool-table pass 2 — 3 bases × %d populated slots", pcount)
+	s.logf("info", "tool-table pass 2 — 2 wear bases × %d populated slots", pcount)
 	for slot := 1; slot <= slots; slot++ {
 		if !populated[slot] {
 			continue
 		}
-		for _, key := range [...]string{"length_wear", "diameter_geom", "diameter_wear"} {
+		for _, key := range [...]string{"length_wear", "diameter_wear"} {
 			if ctxErr := ctx.Err(); ctxErr != nil {
 				markRemainingCancelled(rows, slot, slots, ctxErr)
 				goto FINISH
@@ -191,7 +205,12 @@ FINISH:
 	return tbl, nil
 }
 
-func applyBase(row *ToolTableSlot, key string, res *QueryResult, qerr error, lengthPopulated *bool) {
+// applyBase writes a parsed macro readout into row[key] and (when
+// populatedFlag is non-nil) flips the slot's "populated" bit if the
+// value is non-zero. Both length_geom AND diameter_geom feed into the
+// flag so a tool with one offset set but not the other is still
+// detected as loaded.
+func applyBase(row *ToolTableSlot, key string, res *QueryResult, qerr error, populatedFlag *bool) {
 	if qerr != nil {
 		row.errSet(key, qerr.Error())
 		return
@@ -208,15 +227,15 @@ func applyBase(row *ToolTableSlot, key string, res *QueryResult, qerr error, len
 	switch key {
 	case "length_geom":
 		row.LengthGeom = &n
-		if lengthPopulated != nil && n != 0 {
-			*lengthPopulated = true
-		}
 	case "length_wear":
 		row.LengthWear = &n
 	case "diameter_geom":
 		row.DiameterGeom = &n
 	case "diameter_wear":
 		row.DiameterWear = &n
+	}
+	if populatedFlag != nil && n != 0 {
+		*populatedFlag = true
 	}
 }
 
