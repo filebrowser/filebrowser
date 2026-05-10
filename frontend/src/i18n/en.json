@@ -95,6 +95,7 @@
     "g54Offset": "G54 offset",
     "activity": "Activity",
     "activityEmpty": "No events yet — start a job to see streamer activity here.",
+    "activityClear": "Clear",
     "checkConnection": "Check connection",
     "checking": "Checking…",
     "checkBridge": "Bridge",

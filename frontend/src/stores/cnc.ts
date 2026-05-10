@@ -26,6 +26,45 @@ export interface LogEntry {
 }
 
 const LOG_BUFFER_MAX = 200;
+const LOG_PERSIST_KEY = "cncActivityLog";
+
+// loadPersistedLog restores the activity feed across page reloads.
+// Operators were losing all the dial / line / error entries on F5,
+// which made postmortems on a flaky job pointless.
+function loadPersistedLog(): LogEntry[] {
+  try {
+    const raw = localStorage.getItem(LOG_PERSIST_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .filter(
+        (e): e is LogEntry =>
+          e &&
+          typeof e.ts === "number" &&
+          typeof e.level === "string" &&
+          typeof e.msg === "string"
+      )
+      .slice(0, LOG_BUFFER_MAX);
+  } catch {
+    return [];
+  }
+}
+
+let persistTimer: ReturnType<typeof setTimeout> | null = null;
+function schedulePersist(entries: LogEntry[]) {
+  if (persistTimer) return;
+  // Coalesce — if a burst of events fires (e.g. 100-line beacon
+  // batch on a long stream), one write per ~500 ms is plenty.
+  persistTimer = setTimeout(() => {
+    persistTimer = null;
+    try {
+      localStorage.setItem(LOG_PERSIST_KEY, JSON.stringify(entries));
+    } catch {
+      /* quota / private mode — drop silently */
+    }
+  }, 500);
+}
 
 interface CncState {
   running: boolean;
@@ -71,7 +110,7 @@ export const useCncStore = defineStore("cnc", {
     initialized: false,
     metrics: {},
     metricsSeeded: false,
-    log: [],
+    log: loadPersistedLog(),
   }),
   actions: {
     applyStatus(s: CncStatus) {
@@ -118,6 +157,16 @@ export const useCncStore = defineStore("cnc", {
       this.log.unshift({ ts: Date.now(), level, msg });
       if (this.log.length > LOG_BUFFER_MAX) {
         this.log.length = LOG_BUFFER_MAX;
+      }
+      schedulePersist(this.log);
+    },
+
+    clearLog() {
+      this.log = [];
+      try {
+        localStorage.removeItem(LOG_PERSIST_KEY);
+      } catch {
+        /* ignore */
       }
     },
 

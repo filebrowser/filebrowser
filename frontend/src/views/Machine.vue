@@ -176,7 +176,17 @@
 
           <!-- Activity feed: backend log events + status transitions -->
           <div v-if="!kioskMode" class="activity">
-            <div class="activity__title">{{ t("machine.activity") }}</div>
+            <div class="activity__title">
+              {{ t("machine.activity") }}
+              <button
+                v-if="cncStore.log.length > 0"
+                class="activity__clear"
+                @click="cncStore.clearLog()"
+                :title="t('machine.activityClear')"
+              >
+                {{ t("machine.activityClear") }}
+              </button>
+            </div>
             <div v-if="cncStore.log.length === 0" class="activity__empty">
               {{ t("machine.activityEmpty") }}
             </div>
@@ -1023,11 +1033,31 @@ const Axis = (props: { label: string; value: unknown }) => {
 }
 
 .activity__title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--fg-muted, #888);
   margin-bottom: 0.4rem;
+}
+
+.activity__clear {
+  background: none;
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 3px;
+  padding: 0.1rem 0.5rem;
+  color: var(--fg-muted, #888);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+}
+
+.activity__clear:hover {
+  background: var(--surfacePrimary, #fff);
+  color: var(--textSecondary, inherit);
 }
 
 .activity__empty {
