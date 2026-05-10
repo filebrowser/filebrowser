@@ -1,0 +1,22 @@
+# go2rtc config — rendered by pi-setup/scripts/install-go2rtc.
+# Edit this file directly to add more cameras; restart with
+#   sudo systemctl restart go2rtc
+
+api:
+  # Bind to all interfaces so anything on the LAN (filebrowser, HA,
+  # tablets) can pull the stream. The Pi sits behind the LAN router;
+  # there's no public exposure unless you've explicitly forwarded.
+  listen: ":@@PORT@@"
+
+# Optional log section — uncomment to dial verbosity up while
+# diagnosing a flaky camera.
+# log:
+#   level: info  # trace / debug / info / warn / error
+
+streams:
+  # The default stream name the install-go2rtc script writes. Add
+  # additional cameras as more keys here, then expose them in
+  # filebrowser-NC by setting Camera URL to
+  #   http://<this-host>:@@PORT@@/api/stream.m3u8?src=<name>
+  @@STREAM_NAME@@:
+    - "@@RTSP_URL@@"

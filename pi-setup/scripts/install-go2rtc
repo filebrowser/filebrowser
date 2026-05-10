@@ -1,0 +1,126 @@
+#!/usr/bin/env bash
+# Stand up go2rtc on the Pi as a persistent re-streamer for the UniFi
+# Protect (or any RTSP/RTSPS) camera. Operator runs this once on
+# zinc:
+#
+#   sudo bash ~/filebrowser-NC/pi-setup/scripts/install-go2rtc
+#
+# Then pastes  http://zinc.local:1984/api/stream.m3u8?src=mill-cam
+# into Settings → Machine → Camera URL with type = HLS. The link
+# never expires (vs UniFi Protect's 24-hour Live View share).
+#
+# Why this exists: UniFi Protect's "Share Live View" links default to
+# 24 h on UniFi OS 3.x and earlier. Path A (Live View URL + iframe)
+# breaks every morning. go2rtc reads the camera's RTSPS endpoint
+# (which never expires) and republishes as HLS / WebRTC / MJPEG over
+# a stable LAN URL.
+#
+# Idempotent: re-runs replace the config + restart the service.
+
+set -euo pipefail
+
+GO2RTC_VERSION="${GO2RTC_VERSION:-1.10.1}"   # https://github.com/AlexxIT/go2rtc/releases
+GO2RTC_USER="${GO2RTC_USER:-go2rtc}"
+GO2RTC_HOME="/var/lib/go2rtc"
+GO2RTC_BIN="/usr/local/bin/go2rtc"
+GO2RTC_CONF_DIR="/etc/go2rtc"
+GO2RTC_CONF="$GO2RTC_CONF_DIR/go2rtc.yaml"
+GO2RTC_PORT="${GO2RTC_PORT:-1984}"
+GO2RTC_STREAM_NAME="${GO2RTC_STREAM_NAME:-mill-cam}"
+
+REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+SYSTEMD_TMPL="$REPO_DIR/systemd/go2rtc.service.tmpl"
+CONFIG_TMPL="$REPO_DIR/go2rtc.yaml.tmpl"
+
+if [[ $EUID -ne 0 ]]; then
+  echo "This script must be run as root (or via sudo)." >&2
+  exit 1
+fi
+
+# ── Detect arch — go2rtc ships separate binaries for arm64 / armv7 ──────────
+arch="$(uname -m)"
+case "$arch" in
+  aarch64|arm64) GO2RTC_ARCH="arm64" ;;
+  armv7l|armhf)  GO2RTC_ARCH="arm" ;;
+  x86_64|amd64)  GO2RTC_ARCH="amd64" ;;
+  *)
+    echo "Unsupported arch: $arch — go2rtc has no prebuilt binary for it." >&2
+    exit 1
+    ;;
+esac
+
+# ── Prompt for RTSP URL (or accept env var GO2RTC_RTSP_URL) ─────────────────
+RTSP_URL="${GO2RTC_RTSP_URL:-}"
+if [[ -z "$RTSP_URL" ]]; then
+  echo
+  echo "Paste the camera's RTSP/RTSPS URL. For UniFi Protect:"
+  echo "  Protect → camera → Settings → Advanced → RTSPS → enable"
+  echo "  Copy the rtsps://… URL it shows."
+  echo
+  read -rp "RTSP URL: " RTSP_URL
+fi
+if [[ -z "$RTSP_URL" ]]; then
+  echo "RTSP URL is required." >&2
+  exit 1
+fi
+
+# ── Download binary (skip if same version already present) ──────────────────
+need_download="yes"
+if [[ -x "$GO2RTC_BIN" ]]; then
+  cur="$("$GO2RTC_BIN" -v 2>/dev/null | awk '/^go2rtc version/ { print $3 }' || true)"
+  if [[ "$cur" == "$GO2RTC_VERSION" ]]; then
+    need_download="no"
+    echo "go2rtc $cur already installed — skipping download."
+  fi
+fi
+if [[ "$need_download" == "yes" ]]; then
+  url="https://github.com/AlexxIT/go2rtc/releases/download/v${GO2RTC_VERSION}/go2rtc_linux_${GO2RTC_ARCH}"
+  echo "Downloading $url"
+  tmp="$(mktemp)"
+  curl -fL --retry 3 -o "$tmp" "$url"
+  install -m 0755 "$tmp" "$GO2RTC_BIN"
+  rm -f "$tmp"
+fi
+
+# ── User + home dir for the service ─────────────────────────────────────────
+if ! id -u "$GO2RTC_USER" >/dev/null 2>&1; then
+  useradd --system --home-dir "$GO2RTC_HOME" --shell /usr/sbin/nologin "$GO2RTC_USER"
+fi
+install -d -o "$GO2RTC_USER" -g "$GO2RTC_USER" -m 0750 "$GO2RTC_HOME"
+
+# ── Render config + systemd unit from templates ─────────────────────────────
+install -d -m 0755 "$GO2RTC_CONF_DIR"
+sed -e "s|@@RTSP_URL@@|$RTSP_URL|g" \
+    -e "s|@@PORT@@|$GO2RTC_PORT|g" \
+    -e "s|@@STREAM_NAME@@|$GO2RTC_STREAM_NAME|g" \
+    "$CONFIG_TMPL" > "$GO2RTC_CONF"
+chown "$GO2RTC_USER:$GO2RTC_USER" "$GO2RTC_CONF"
+chmod 0640 "$GO2RTC_CONF"
+
+unit="/etc/systemd/system/go2rtc.service"
+sed -e "s|@@USER@@|$GO2RTC_USER|g" \
+    -e "s|@@HOME@@|$GO2RTC_HOME|g" \
+    -e "s|@@BIN@@|$GO2RTC_BIN|g" \
+    -e "s|@@CONF@@|$GO2RTC_CONF|g" \
+    "$SYSTEMD_TMPL" > "$unit"
+
+systemctl daemon-reload
+systemctl enable --now go2rtc.service
+
+sleep 2
+if systemctl is-active --quiet go2rtc.service; then
+  echo
+  echo "go2rtc is running on :$GO2RTC_PORT"
+  echo
+  host="$(hostname -f 2>/dev/null || hostname)"
+  echo "Paste this into Settings → Machine → Camera URL:"
+  echo
+  echo "  http://${host}:${GO2RTC_PORT}/api/stream.m3u8?src=${GO2RTC_STREAM_NAME}"
+  echo
+  echo "Set Camera type = HLS (or leave Auto — the .m3u8 suffix routes correctly)."
+  echo
+  echo "Web UI for live diagnostics: http://${host}:${GO2RTC_PORT}"
+else
+  echo "go2rtc failed to start — check journalctl -u go2rtc -n 80" >&2
+  exit 1
+fi

@@ -1,0 +1,23 @@
+[Unit]
+Description=go2rtc — RTSP/RTSPS → HLS/WebRTC re-streamer
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=@@USER@@
+Group=@@USER@@
+WorkingDirectory=@@HOME@@
+ExecStart=@@BIN@@ -config @@CONF@@
+Restart=on-failure
+RestartSec=3
+
+# Hardening — go2rtc only needs network and its own state dir.
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadWritePaths=@@HOME@@
+
+[Install]
+WantedBy=multi-user.target

@@ -148,6 +148,35 @@ filebrowser cnc-usb-watcher cnc-usb-mass-storage`, then delete the
 unit files in `/etc/systemd/system/`, the image file, the share
 folder, `/etc/cnc-pi.conf`, and `/var/lib/cnc-usb-watcher/`.
 
+## Optional: go2rtc — persistent UniFi Protect / RTSP camera embed
+
+UniFi Protect's "Share Live View" links default to 24-hour expiry on
+UniFi OS 3.x and earlier; pasting one into Settings → Machine →
+Camera URL works for a day, then breaks. Browsers also can't play
+raw RTSP/RTSPS. The fix is a re-streamer on the Pi that translates
+the camera's never-expiring RTSPS feed into HLS — which the camera
+tile renders natively.
+
+```bash
+sudo bash ~/filebrowser-NC/pi-setup/scripts/install-go2rtc
+# Paste the camera's RTSP/RTSPS URL when prompted.
+```
+
+Then in Settings → Machine, set Camera URL to:
+
+```
+http://<pi-host>:1984/api/stream.m3u8?src=mill-cam
+```
+
+Camera type = HLS (or Auto — the .m3u8 suffix routes correctly).
+
+The script is idempotent — re-run after editing `/etc/go2rtc/go2rtc.yaml`
+to refresh the systemd unit. To add more cameras, edit the YAML
+directly and `sudo systemctl restart go2rtc`.
+
+go2rtc's own web UI lives at `http://<pi-host>:1984` for quick
+diagnostics.
+
 ## Files installed
 
 | Path | Purpose |
