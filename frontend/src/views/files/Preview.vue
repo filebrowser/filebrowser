@@ -6,7 +6,7 @@
     @mousemove="toggleNavigation"
     @touchstart="toggleNavigation"
   >
-    <header-bar v-if="isPdf || isEpub || isCsv || showNav">
+    <header-bar v-if="isPdf || isEpub || isCsv || is3DModel || showNav">
       <action icon="close" :label="$t('buttons.close')" @action="close()" />
       <title>{{ name }}</title>
       <action
@@ -125,6 +125,11 @@
         >
         </VideoPlayer>
         <object v-else-if="isPdf" class="pdf" :data="previewUrl"></object>
+        <Part3DViewer
+          v-else-if="is3DModel"
+          class="part-preview"
+          :url="previewUrl"
+        />
         <div v-else-if="fileStore.req?.type == 'blob'" class="info">
           <div class="title">
             <i class="material-icons">feedback</i>
@@ -194,6 +199,7 @@ import Action from "@/components/header/Action.vue";
 import ExtendedImage from "@/components/files/ExtendedImage.vue";
 import VideoPlayer from "@/components/files/VideoPlayer.vue";
 import CsvViewer from "@/components/files/CsvViewer.vue";
+import Part3DViewer from "@/components/Part3DViewer.vue";
 import { VueReader } from "vue-reader";
 import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -307,6 +313,14 @@ const previewUrl = computed(() => {
 });
 
 const isPdf = computed(() => fileStore.req?.extension.toLowerCase() == ".pdf");
+// 3D model extensions Online3DViewer can render in-browser. Mirrors
+// the server-side modelExtensions set in http/cnc.go (sibling lookup).
+const MODEL_EXTS = new Set([
+  ".stl", ".step", ".stp", ".3mf", ".obj", ".x_t", ".x_b", ".iges", ".igs", ".ply",
+]);
+const is3DModel = computed(() =>
+  MODEL_EXTS.has(fileStore.req?.extension.toLowerCase() || "")
+);
 const isEpub = computed(
   () => fileStore.req?.extension.toLowerCase() == ".epub"
 );

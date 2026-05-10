@@ -275,6 +275,12 @@ main .spinner .bounce2 {
   padding-top: 4em;
 }
 
+#previewer .part-preview {
+  width: 100%;
+  height: calc(100% - 4em);
+  margin-top: 4em;
+}
+
 #previewer h2.message {
   color: rgba(255, 255, 255, 0.5);
 }
