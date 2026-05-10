@@ -110,6 +110,20 @@
                 :style="{ width: cncStore.lineTotal > 0 ? `${(cncStore.lineCurrent / cncStore.lineTotal) * 100}%` : '0%' }"
               />
             </div>
+            <div class="send-progress__time">
+              <span>
+                <i class="material-icons">schedule</i>
+                {{ t("machine.elapsed") }}: {{ fmtDuration(elapsedMs) }}
+              </span>
+              <span v-if="etaMs !== null">
+                <i class="material-icons">hourglass_bottom</i>
+                {{ t("machine.eta") }}: {{ fmtDuration(etaMs) }}
+              </span>
+              <span v-if="linesPerSec !== null">
+                <i class="material-icons">speed</i>
+                {{ formatNum(linesPerSec, 1) }} {{ t("machine.linesPerSec") }}
+              </span>
+            </div>
           </div>
 
           <!-- Hero: program + status + mode -->
@@ -390,6 +404,62 @@ watch(
   { immediate: false }
 );
 
+// ── Send progress timing (elapsed + ETA + lines/sec) ─────────────────────
+// `now` ticks every second while running so the elapsed and ETA
+// figures update without waiting for a status frame from the server.
+const now = ref<number>(Date.now());
+let nowTimer: ReturnType<typeof setInterval> | null = null;
+
+watch(
+  () => cncStore.running,
+  (running) => {
+    if (running && !nowTimer) {
+      now.value = Date.now();
+      nowTimer = setInterval(() => {
+        now.value = Date.now();
+      }, 1000);
+    } else if (!running && nowTimer) {
+      clearInterval(nowTimer);
+      nowTimer = null;
+    }
+  },
+  { immediate: true }
+);
+
+const elapsedMs = computed(() => {
+  const startedAt = cncStore.raw?.started_at;
+  if (!startedAt) return 0;
+  const t0 = new Date(startedAt).getTime();
+  if (!Number.isFinite(t0)) return 0;
+  return Math.max(0, now.value - t0);
+});
+
+const linesPerSec = computed<number | null>(() => {
+  const e = elapsedMs.value;
+  if (e < 1000) return null; // not enough samples yet
+  const lps = cncStore.lineCurrent / (e / 1000);
+  return Number.isFinite(lps) && lps > 0 ? lps : null;
+});
+
+const etaMs = computed<number | null>(() => {
+  const lps = linesPerSec.value;
+  if (lps === null) return null;
+  if (cncStore.lineTotal <= 0) return null;
+  const remaining = Math.max(0, cncStore.lineTotal - cncStore.lineCurrent);
+  return (remaining / lps) * 1000;
+});
+
+const fmtDuration = (ms: number): string => {
+  if (!Number.isFinite(ms) || ms < 0) return "—";
+  const totalSec = Math.floor(ms / 1000);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  if (h > 0) return `${h}h ${String(m).padStart(2, "0")}m ${String(s).padStart(2, "0")}s`;
+  if (m > 0) return `${m}m ${String(s).padStart(2, "0")}s`;
+  return `${s}s`;
+};
+
 // ── NC card splitter (code | toolpath) ───────────────────────────────────
 // Same pointer-events pattern as the editor splitter (PR #37). Stored
 // per-browser in localStorage so an operator's preferred ratio
@@ -620,6 +690,10 @@ onBeforeUnmount(() => {
   if (reseedTimer) clearInterval(reseedTimer);
   if (snapshotTimer) clearInterval(snapshotTimer);
   if (connectWatchdog) clearTimeout(connectWatchdog);
+  if (nowTimer) {
+    clearInterval(nowTimer);
+    nowTimer = null;
+  }
 });
 
 // ── Inline mini-components ─────────────────────────────────────────────────
@@ -1122,6 +1196,26 @@ const Axis = (props: { label: string; value: unknown }) => {
   height: 100%;
   background: var(--primaryColor, #2196f3);
   transition: width 0.2s ease;
+}
+
+.send-progress__time {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  margin-top: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--fg-muted, #888);
+  font-variant-numeric: tabular-nums;
+}
+
+.send-progress__time span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.send-progress__time .material-icons {
+  font-size: 0.95rem;
 }
 
 /* Activity log — backend log events + status transitions */
