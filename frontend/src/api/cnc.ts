@@ -82,6 +82,18 @@ export function checkConnection() {
   return fetchJSON<CncCheckResult>(`/api/cnc/check`, { method: "POST" });
 }
 
+export interface CncSiblings {
+  model_url?: string;
+  model_name?: string;
+  drawing_url?: string;
+  drawing_name?: string;
+}
+
+export function getSiblings(filePath: string) {
+  const q = encodeURIComponent(filePath);
+  return fetchJSON<CncSiblings>(`/api/cnc/siblings?path=${q}`, {});
+}
+
 export interface CncMetric {
   key: string;
   label: string;

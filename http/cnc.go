@@ -167,6 +167,91 @@ func cncCheckHandler(streamer *cnc.Streamer, agg *cnc.Aggregator) handleFunc {
 	})
 }
 
+// modelExtensions is the set of 3D model file extensions the siblings
+// endpoint will surface as a candidate part-view source. Matches what
+// Online3DViewer can render in-browser. Drawing PDFs are matched
+// separately with a fixed `.pdf`.
+var modelExtensions = map[string]bool{
+	".3mf":  true,
+	".stl":  true,
+	".step": true,
+	".stp":  true,
+	".x_t":  true,
+	".x_b":  true,
+	".iges": true,
+	".igs":  true,
+	".obj":  true,
+	".ply":  true,
+}
+
+// cncSiblingsHandler answers the question "given an NC file at this
+// path, where do I find the matching 3D model and PDF drawing?".
+// Match rule: same directory, same basename (case-insensitive), one
+// of `modelExtensions` for the model and `.pdf` for the drawing.
+//
+// Auth: any logged-in user. The file system access is scoped to the
+// caller's view (d.user.Fs), so users only see siblings inside their
+// own scope. Returned URLs are share-relative — the frontend prefixes
+// /api/raw or /files as needed.
+func cncSiblingsHandler(streamer *cnc.Streamer) handleFunc {
+	_ = streamer // reserved for future use (e.g. resolve via active job)
+	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		raw := r.URL.Query().Get("path")
+		if raw == "" {
+			return http.StatusBadRequest, errors.New("path required")
+		}
+		clean := path.Clean(ensureLeading(raw))
+		if strings.Contains(clean, "..") {
+			return http.StatusBadRequest, errors.New("path must not escape the share")
+		}
+
+		dir := path.Dir(clean)
+		base := strings.TrimSuffix(path.Base(clean), path.Ext(clean))
+		baseLower := strings.ToLower(base)
+
+		f, err := d.user.Fs.Open(dir)
+		if err != nil {
+			return errToStatus(err), err
+		}
+		defer f.Close()
+		entries, err := f.Readdir(-1)
+		if err != nil {
+			return errToStatus(err), err
+		}
+
+		body := struct {
+			ModelURL    string `json:"model_url,omitempty"`
+			ModelName   string `json:"model_name,omitempty"`
+			DrawingURL  string `json:"drawing_url,omitempty"`
+			DrawingName string `json:"drawing_name,omitempty"`
+		}{}
+
+		for _, e := range entries {
+			if e.IsDir() {
+				continue
+			}
+			name := e.Name()
+			ext := strings.ToLower(path.Ext(name))
+			stem := strings.ToLower(strings.TrimSuffix(name, path.Ext(name)))
+			if stem != baseLower {
+				continue
+			}
+			full := path.Join(dir, name)
+			if modelExtensions[ext] && body.ModelURL == "" {
+				body.ModelURL = "/files" + full
+				body.ModelName = name
+			} else if ext == ".pdf" && body.DrawingURL == "" {
+				body.DrawingURL = "/files" + full
+				body.DrawingName = name
+			}
+			if body.ModelURL != "" && body.DrawingURL != "" {
+				break
+			}
+		}
+		return renderJSON(w, r, body)
+	})
+}
+
 // cncStartBody is the request body for POST /api/cnc/start. file_path is
 // share-relative — the same shape filebrowser uses elsewhere.
 type cncStartBody struct {

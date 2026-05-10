@@ -202,6 +202,28 @@
           <i class="material-icons">code</i>
           {{ cncStore.filePath }}
           <span class="card-header__spacer" />
+          <a
+            v-if="siblings.drawing_url"
+            class="sibling-link"
+            :href="siblings.drawing_url"
+            target="_blank"
+            rel="noopener"
+            :title="siblings.drawing_name"
+          >
+            <i class="material-icons">description</i>
+            {{ t("machine.drawing") }}
+          </a>
+          <a
+            v-if="siblings.model_url"
+            class="sibling-link"
+            :href="siblings.model_url"
+            target="_blank"
+            rel="noopener"
+            :title="siblings.model_name"
+          >
+            <i class="material-icons">view_in_ar</i>
+            {{ t("machine.model") }}
+          </a>
           <span v-if="ncLoading" class="card-header__hint">{{ t("machine.ncLoading") }}</span>
           <span v-else-if="ncError" class="card-header__hint card-header__hint--err">{{ ncError }}</span>
         </div>
@@ -267,6 +289,33 @@ const promptStopMachine = () => {
 // ── Config from /api/cnc/settings ──────────────────────────────────────────
 const cameraURL = ref("");
 const hostConfigured = ref(false);
+
+// ── File ↔ NC sibling discovery (model + drawing) ─────────────────────────
+// Looks up a 3D model + PDF drawing in the same folder as the active
+// NC file. Surfaced as a Drawing link tile and (once Online3DViewer
+// lands) as a 3D part viewer below the toolpath.
+import type { CncSiblings } from "@/api/cnc";
+const siblings = ref<CncSiblings>({});
+
+const fetchSiblings = async (path: string) => {
+  try {
+    siblings.value = await cncApi.getSiblings(path);
+  } catch {
+    siblings.value = {};
+  }
+};
+
+watch(
+  () => cncStore.filePath,
+  (p) => {
+    if (p) {
+      fetchSiblings(p);
+    } else {
+      siblings.value = {};
+    }
+  },
+  { immediate: false }
+);
 
 // ── NC content fetch (drives the mirror + 3D toolpath) ────────────────────
 // When the streamer reports a filePath (job is running, or just ended
@@ -456,6 +505,7 @@ onMounted(async () => {
   // filePath landed, fetch its NC content now.
   if (cncStore.filePath) {
     fetchNc(cncStore.filePath);
+    fetchSiblings(cncStore.filePath);
   }
   // Start the connect watchdog if we still have nothing fresh after
   // the seed. The watch above clears it as soon as a metric lands.
@@ -821,6 +871,27 @@ const Axis = (props: { label: string; value: unknown }) => {
   height: 100%;
   object-fit: contain;
   background: #000;
+}
+
+.sibling-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.55rem;
+  margin-right: 0.4rem;
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 4px;
+  font-size: 0.78rem;
+  text-decoration: none;
+  color: var(--textSecondary, inherit);
+}
+
+.sibling-link:hover {
+  background: var(--alt-background, #f0f0f0);
+}
+
+.sibling-link .material-icons {
+  font-size: 0.95rem;
 }
 
 /* NC card: side-by-side code mirror + 3D toolpath */
