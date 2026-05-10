@@ -53,24 +53,38 @@ type ToolTable struct {
 	Slots          []ToolTableSlot `json:"slots"`
 }
 
-// toolTableBases maps a JSON field key to the macro-var base. Same
-// canonical NGC mapping the probe confirms — kept here so that if the
-// probe ever has to switch to a legacy mapping, this file is the only
-// place that needs to change.
-var toolTableBases = []struct {
-	Key  string
-	Base int
-}{
-	{"length_geom", 2001},
-	{"length_wear", 2201},
-	{"diameter_geom", 2401},
-	{"diameter_wear", 2601},
-}
+// Tool-table macro-var bases. Canonical NGC mapping confirmed by the
+// probe (probe.go). baseForKey() is the only consumer.
+const (
+	toolTableBaseLengthGeom   = 2001
+	toolTableBaseLengthWear   = 2201
+	toolTableBaseDiameterGeom = 2401
+	toolTableBaseDiameterWear = 2601
+)
 
 // ReadToolTable reads `slots` consecutive tool slots and returns a
 // structured table. slots is clamped to [1, 200] (Haas tool table max).
 // Refuses while a streaming job is running — Q-codes during a stream
 // take the per-line write turn and would slow the stream.
+//
+// Strategy: two-pass to avoid blowing 4× round-trips on empty pockets.
+//
+//  1. First pass reads length-geom for every slot. ~150 ms/round-trip
+//     × N slots. Length-geom == 0 is the canonical "no tool" marker
+//     on Haas — controllers don't carry orphan wear/diameter values
+//     for an unset pocket, so skipping the other 3 bases is safe.
+//  2. Second pass fetches length-wear / diameter-geom / diameter-wear
+//     ONLY for slots whose length-geom came back non-zero.
+//
+// For a 200-slot table with 14 populated tools that drops the read
+// from 800 round-trips to 200 + 42 = 242 — roughly 3× faster at any
+// baud, and the difference between "I'll wait" and "no thanks" at
+// 9600.
+//
+// On context cancellation (timeout or operator dismiss) we return the
+// partial table built so far rather than nil — the operator gets to
+// see whatever did read, and the persisted JSON marks every unreached
+// slot's errors map with the cancel reason.
 func (s *Streamer) ReadToolTable(ctx context.Context, slots int) (*ToolTable, error) {
 	if slots < 1 {
 		slots = 30
@@ -95,64 +109,65 @@ func (s *Streamer) ReadToolTable(ctx context.Context, slots int) (*ToolTable, er
 		SlotsRequested: slots,
 		Slots:          make([]ToolTableSlot, 0, slots),
 	}
-	s.logf("info", "reading tool table — %d slots × %d bases", slots, len(toolTableBases))
 
+	// Per-slot row built up across the two passes. Index 0 unused so
+	// slot N maps to rows[N] for readability.
+	rows := make([]ToolTableSlot, slots+1)
+	for i := 1; i <= slots; i++ {
+		rows[i] = ToolTableSlot{Slot: i}
+	}
+
+	// ── Pass 1: length-geom across every slot ────────────────────────
+	s.logf("info", "tool-table pass 1 — length-geom across %d slots", slots)
+	populated := make([]bool, slots+1)
 	for slot := 1; slot <= slots; slot++ {
-		row := ToolTableSlot{Slot: slot}
-		// Track whether anything READ on this row, to distinguish
-		// "empty pocket" (zeros across the board) from "we couldn't
-		// reach this slot at all" (errors across the board).
-		anyOK := false
-		anyNonZero := false
-
-		for _, b := range toolTableBases {
-			v := b.Base + (slot - 1)
-			res, qerr := s.Query(ctx, 600, &v)
-			if qerr != nil {
-				if row.Errors == nil {
-					row.Errors = map[string]string{}
-				}
-				row.Errors[b.Key] = qerr.Error()
-				continue
-			}
-			if !res.OK {
-				if row.Errors == nil {
-					row.Errors = map[string]string{}
-				}
-				row.Errors[b.Key] = res.Error
-				continue
-			}
-			anyOK = true
-			n, ok := parseFloatTail(res.Value)
-			if !ok {
-				if row.Errors == nil {
-					row.Errors = map[string]string{}
-				}
-				row.Errors[b.Key] = "unparseable: " + res.Value
-				continue
-			}
-			if n != 0 {
-				anyNonZero = true
-			}
-			switch b.Key {
-			case "length_geom":
-				row.LengthGeom = &n
-			case "length_wear":
-				row.LengthWear = &n
-			case "diameter_geom":
-				row.DiameterGeom = &n
-			case "diameter_wear":
-				row.DiameterWear = &n
-			}
+		if ctxErr := ctx.Err(); ctxErr != nil {
+			markRemainingCancelled(rows, slot, slots, ctxErr)
+			break
 		}
+		v := toolTableBaseLengthGeom + (slot - 1)
+		res, qerr := s.Query(ctx, 600, &v)
+		applyBase(&rows[slot], "length_geom", res, qerr, &populated[slot])
+	}
 
+	// ── Pass 2: the other three bases, populated slots only ──────────
+	pcount := 0
+	for _, ok := range populated[1:] {
+		if ok {
+			pcount++
+		}
+	}
+	s.logf("info", "tool-table pass 2 — 3 bases × %d populated slots", pcount)
+	for slot := 1; slot <= slots; slot++ {
+		if !populated[slot] {
+			continue
+		}
+		for _, key := range [...]string{"length_wear", "diameter_geom", "diameter_wear"} {
+			if ctxErr := ctx.Err(); ctxErr != nil {
+				markRemainingCancelled(rows, slot, slots, ctxErr)
+				goto FINISH
+			}
+			base := baseForKey(key)
+			v := base + (slot - 1)
+			res, qerr := s.Query(ctx, 600, &v)
+			applyBase(&rows[slot], key, res, qerr, nil)
+		}
+	}
+
+FINISH:
+	// Stitch row metadata + effective values, copy to the table.
+	for slot := 1; slot <= slots; slot++ {
+		row := rows[slot]
+		anyOK := row.LengthGeom != nil || row.LengthWear != nil ||
+			row.DiameterGeom != nil || row.DiameterWear != nil
+		anyNonZero := nonZero(row.LengthGeom) || nonZero(row.LengthWear) ||
+			nonZero(row.DiameterGeom) || nonZero(row.DiameterWear)
 		if anyOK {
 			tbl.SlotsRead++
 		}
 		if anyOK && !anyNonZero {
 			row.Empty = true
 		}
-		// Pre-compute effective values when we have both halves.
 		if row.LengthGeom != nil && row.LengthWear != nil {
 			v := *row.LengthGeom + *row.LengthWear
 			row.EffectiveLength = &v
@@ -167,7 +182,103 @@ func (s *Streamer) ReadToolTable(ctx context.Context, slots int) (*ToolTable, er
 	tbl.DurationMs = sinceMs(t0)
 	s.logf("info", "tool table read in %.1f ms — %d/%d slots populated",
 		tbl.DurationMs, tbl.SlotsRead, slots)
+	if ctxErr := ctx.Err(); ctxErr != nil {
+		// Partial result is still useful — surface the cancel reason
+		// in the table envelope and return non-nil so the caller can
+		// persist whatever did read.
+		return tbl, fmt.Errorf("tool-table read cancelled: %w", ctxErr)
+	}
 	return tbl, nil
+}
+
+func applyBase(row *ToolTableSlot, key string, res *QueryResult, qerr error, lengthPopulated *bool) {
+	if qerr != nil {
+		row.errSet(key, qerr.Error())
+		return
+	}
+	if !res.OK {
+		row.errSet(key, res.Error)
+		return
+	}
+	n, ok := parseFloatTail(res.Value)
+	if !ok {
+		row.errSet(key, "unparseable: "+res.Value)
+		return
+	}
+	switch key {
+	case "length_geom":
+		row.LengthGeom = &n
+		if lengthPopulated != nil && n != 0 {
+			*lengthPopulated = true
+		}
+	case "length_wear":
+		row.LengthWear = &n
+	case "diameter_geom":
+		row.DiameterGeom = &n
+	case "diameter_wear":
+		row.DiameterWear = &n
+	}
+}
+
+func (s *ToolTableSlot) errSet(key, msg string) {
+	if s.Errors == nil {
+		s.Errors = map[string]string{}
+	}
+	s.Errors[key] = msg
+}
+
+func baseForKey(key string) int {
+	switch key {
+	case "length_geom":
+		return toolTableBaseLengthGeom
+	case "length_wear":
+		return toolTableBaseLengthWear
+	case "diameter_geom":
+		return toolTableBaseDiameterGeom
+	case "diameter_wear":
+		return toolTableBaseDiameterWear
+	}
+	return 0
+}
+
+func nonZero(p *float64) bool { return p != nil && *p != 0 }
+
+// markRemainingCancelled stamps a "cancelled" error onto every base
+// of every slot from `from` through `slots` that we didn't actually
+// reach. The frontend renders these as red, distinct from "empty
+// pocket". Idempotent — never overwrites a real read.
+func markRemainingCancelled(rows []ToolTableSlot, from, slots int, ctxErr error) {
+	msg := "cancelled: " + ctxErr.Error()
+	for slot := from; slot <= slots; slot++ {
+		row := &rows[slot]
+		for _, key := range [...]string{"length_geom", "length_wear", "diameter_geom", "diameter_wear"} {
+			if row.Errors != nil {
+				if _, already := row.Errors[key]; already {
+					continue
+				}
+			}
+			// Only stamp keys that didn't read.
+			switch key {
+			case "length_geom":
+				if row.LengthGeom != nil {
+					continue
+				}
+			case "length_wear":
+				if row.LengthWear != nil {
+					continue
+				}
+			case "diameter_geom":
+				if row.DiameterGeom != nil {
+					continue
+				}
+			case "diameter_wear":
+				if row.DiameterWear != nil {
+					continue
+				}
+			}
+			row.errSet(key, msg)
+		}
+	}
 }
 
 // parseFloatTail parses the trailing numeric token from a Q600 frame

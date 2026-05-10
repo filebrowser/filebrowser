@@ -442,7 +442,8 @@ type toolTableHistoryEntry struct {
 
 // cncToolTableReadHandler reads the live tool table from the controller,
 // writes it to <user-scope>/cnc-tool-tables/<machine-id>/<RFC3339>.json,
-// and returns the table.
+// and returns the table. Partial reads (timeout / cancel) still persist
+// so the operator never loses progress on a long read.
 func cncToolTableReadHandler(registry *cnc.Registry) handleFunc {
 	return withAdmin(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		st, machineID, code, err := resolveStreamer(registry, r)
@@ -457,23 +458,29 @@ func cncToolTableReadHandler(registry *cnc.Registry) handleFunc {
 			}
 			slots = n
 		}
-		ctx, cancel := context.WithTimeout(r.Context(), 90*time.Second)
+		// Worst case: 9600 baud, 200 slots, every slot populated, 4
+		// bases each, ~500 ms per round trip = 400 s. Allow 15 min so
+		// even a fully-loaded toolchanger at the lowest baud completes.
+		// Operator triggers and walks away — the request idles cheap.
+		ctx, cancel := context.WithTimeout(r.Context(), 15*time.Minute)
 		defer cancel()
-		tbl, err := st.ReadToolTable(ctx, slots)
-		if err != nil {
-			return errToStatus(err), err
+		tbl, readErr := st.ReadToolTable(ctx, slots)
+
+		// If we got a partial table on context cancel, persist + return
+		// it anyway so the operator's progress isn't lost. Only bail
+		// when there's truly nothing to surface.
+		if tbl == nil {
+			return errToStatus(readErr), readErr
 		}
 
-		if err := persistToolTable(d, machineID, tbl); err != nil {
-			// Persisting is best-effort — surface the error in the
-			// JSON but don't fail the read. Operator gets the live
-			// data plus a hint that the history dump didn't land.
-			return renderJSON(w, r, map[string]any{
-				"table":         tbl,
-				"persist_error": err.Error(),
-			})
+		envelope := map[string]any{"table": tbl}
+		if readErr != nil {
+			envelope["read_error"] = readErr.Error()
 		}
-		return renderJSON(w, r, map[string]any{"table": tbl})
+		if err := persistToolTable(d, machineID, tbl); err != nil {
+			envelope["persist_error"] = err.Error()
+		}
+		return renderJSON(w, r, envelope)
 	})
 }
 
@@ -502,11 +509,18 @@ func cncToolTableLatestHandler(registry *cnc.Registry) handleFunc {
 		}
 		// Pass through verbatim — table is already valid JSON. The
 		// frontend wraps it in {"table": ...} the same as the read
-		// handler so downstream parsing is uniform.
+		// handler so downstream parsing is uniform. Errors writing
+		// to the response are uninteresting (client likely closed);
+		// surface via the handler return only if the first write
+		// fails so the caller knows the body was truncated.
 		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"table":`))
-		w.Write(buf)
-		w.Write([]byte(`}`))
+		if _, err := w.Write([]byte(`{"table":`)); err != nil {
+			return 0, err
+		}
+		if _, err := w.Write(buf); err != nil {
+			return 0, err
+		}
+		_, _ = w.Write([]byte(`}`))
 		return 0, nil
 	})
 }

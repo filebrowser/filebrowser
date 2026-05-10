@@ -177,6 +177,9 @@ export interface ToolTable {
 export interface ToolTableEnvelope {
   table: ToolTable;
   persist_error?: string;
+  // Set when the read was cut short (timeout / cancel). Partial table
+  // is still returned + persisted; surface the reason in the panel.
+  read_error?: string;
 }
 
 export interface ToolTableHistoryEntry {

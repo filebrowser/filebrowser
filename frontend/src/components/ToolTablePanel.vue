@@ -5,11 +5,21 @@
       {{ t("toolTable.title") }}
       <span class="card-header__spacer" />
       <span v-if="reading" class="tool-card__hint">
-        {{ t("toolTable.readingHint", { slots }) }}
+        {{ t("toolTable.readingHint", { slots: slotCount }) }}
       </span>
       <span v-else-if="latest" class="tool-card__hint">
         {{ t("toolTable.lastReadHint", { ts: fmtTs(latest.read_at) }) }}
       </span>
+      <label class="tool-card__slots-input" :title="t('toolTable.slotCountTitle')">
+        {{ t("toolTable.slotsToRead") }}
+        <input
+          type="number"
+          min="1"
+          max="200"
+          v-model.number="slotCount"
+          @change="persistSlotCount"
+        />
+      </label>
       <button
         class="check-btn"
         :disabled="reading || cncRunning"
@@ -29,7 +39,7 @@
       <div v-if="latest" class="tool-card__meta">
         <span>{{ latest.slots_read }} / {{ latest.slots_requested }} {{ t("toolTable.slotsLabel") }}</span>
         <span>·</span>
-        <span>{{ Math.round(latest.duration_ms) }} ms</span>
+        <span>{{ fmtMs(latest.duration_ms) }}</span>
         <span>·</span>
         <span>{{ latest.bridge_address }}</span>
         <span v-if="folder">·</span>
@@ -38,46 +48,76 @@
         </a>
       </div>
 
-      <table v-if="latest" class="tool-table">
-        <thead>
-          <tr>
-            <th>{{ t("toolTable.slot") }}</th>
-            <th class="num">{{ t("toolTable.lengthGeom") }}</th>
-            <th class="num">{{ t("toolTable.lengthWear") }}</th>
-            <th class="num">{{ t("toolTable.lengthEff") }}</th>
-            <th class="num">{{ t("toolTable.diameterGeom") }}</th>
-            <th class="num">{{ t("toolTable.diameterWear") }}</th>
-            <th class="num">{{ t("toolTable.diameterEff") }}</th>
-            <th>{{ t("toolTable.notes") }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="row in displayRows"
-            :key="row.slot"
-            :class="{ 'is-empty': row.empty, 'has-err': hasErr(row) }"
-          >
-            <td>{{ row.slot }}</td>
-            <td class="num">{{ fmt(row.length_geom) }}</td>
-            <td class="num">{{ fmt(row.length_wear) }}</td>
-            <td class="num">{{ fmt(row.effective_length) }}</td>
-            <td class="num">{{ fmt(row.diameter_geom) }}</td>
-            <td class="num">{{ fmt(row.diameter_wear) }}</td>
-            <td class="num">{{ fmt(row.effective_diameter) }}</td>
-            <td class="notes">
-              <span v-if="row.empty">{{ t("toolTable.emptyPocket") }}</span>
-              <span v-else-if="hasErr(row)" class="err">
-                {{ firstErr(row) }}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div v-if="latest" class="tool-card__filterbar">
+        <input
+          class="tool-card__search"
+          type="search"
+          v-model="search"
+          :placeholder="t('toolTable.searchPlaceholder')"
+        />
+        <label class="tool-card__toggle">
+          <input type="checkbox" v-model="showOffline" />
+          {{ t("toolTable.showOffline") }}
+        </label>
+        <label class="tool-card__toggle">
+          <input type="checkbox" v-model="showEmpty" />
+          {{ t("toolTable.showEmpty") }}
+        </label>
+        <span class="tool-card__visible-count">
+          {{ t("toolTable.visibleCount", { n: displayRows.length, total: latest.slots.length }) }}
+        </span>
+      </div>
 
-      <div v-if="latest && hidableEmpty" class="tool-card__toggle">
-        <button class="link-btn" @click="hideEmpty = !hideEmpty">
-          {{ hideEmpty ? t("toolTable.showAll") : t("toolTable.hideEmpty") }}
-        </button>
+      <div v-if="latest" class="tool-card__scroll">
+        <table class="tool-table">
+          <thead>
+            <tr>
+              <th
+                v-for="col in columns"
+                :key="col.key"
+                :class="['sortable', { num: col.num }, { sorted: sortKey === col.key }]"
+                @click="toggleSort(col.key)"
+              >
+                {{ col.label }}
+                <span v-if="sortKey === col.key" class="sort-arrow">
+                  {{ sortDir === 'asc' ? '↑' : '↓' }}
+                </span>
+              </th>
+              <th>{{ t("toolTable.status") }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="row in displayRows"
+              :key="row.slot"
+              :class="rowClass(row)"
+            >
+              <td>{{ row.slot }}</td>
+              <td class="num">{{ fmt(row.length_geom) }}</td>
+              <td class="num">{{ fmt(row.length_wear) }}</td>
+              <td class="num">{{ fmt(row.effective_length) }}</td>
+              <td class="num">{{ fmt(row.diameter_geom) }}</td>
+              <td class="num">{{ fmt(row.diameter_wear) }}</td>
+              <td class="num">{{ fmt(row.effective_diameter) }}</td>
+              <td class="status">
+                <span v-if="hasErr(row)" class="badge badge--err" :title="firstErr(row)">
+                  {{ t("toolTable.offline") }}
+                </span>
+                <span v-else-if="row.empty" class="badge badge--empty">
+                  {{ t("toolTable.emptyPocket") }}
+                </span>
+                <span v-else class="badge badge--ok">
+                  {{ t("toolTable.loaded") }}
+                </span>
+              </td>
+            </tr>
+            <tr v-if="displayRows.length === 0">
+              <td colspan="8" class="tool-card__no-match">
+                {{ t("toolTable.noMatch") }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </section>
@@ -92,23 +132,60 @@ import type { ToolTable, ToolTableSlot } from "@/api/cnc";
 const props = defineProps<{
   machineId?: string;
   cncRunning: boolean;
-  slots?: number;
 }>();
 
 const { t } = useI18n();
 
-const slots = computed(() => props.slots ?? 30);
+const SLOT_COUNT_KEY = "cncToolTableSlotCount";
+const slotCount = ref<number>(
+  (() => {
+    const v = parseInt(localStorage.getItem(SLOT_COUNT_KEY) || "");
+    return Number.isFinite(v) && v >= 1 && v <= 200 ? v : 200;
+  })()
+);
+const persistSlotCount = () => {
+  if (slotCount.value < 1) slotCount.value = 1;
+  if (slotCount.value > 200) slotCount.value = 200;
+  localStorage.setItem(SLOT_COUNT_KEY, String(slotCount.value));
+};
+
 const latest = ref<ToolTable | null>(null);
 const reading = ref(false);
 const errMsg = ref<string>("");
 const folder = ref<string>("");
-const hideEmpty = ref(true);
+
+const search = ref("");
+const showOffline = ref(true);
+const showEmpty = ref(false);
+type SortKey =
+  | "slot"
+  | "length_geom"
+  | "length_wear"
+  | "effective_length"
+  | "diameter_geom"
+  | "diameter_wear"
+  | "effective_diameter";
+const sortKey = ref<SortKey>("slot");
+const sortDir = ref<"asc" | "desc">("asc");
+
+const columns = computed(() => [
+  { key: "slot" as const, label: t("toolTable.slot"), num: false },
+  { key: "length_geom" as const, label: t("toolTable.lengthGeom"), num: true },
+  { key: "length_wear" as const, label: t("toolTable.lengthWear"), num: true },
+  { key: "effective_length" as const, label: t("toolTable.lengthEff"), num: true },
+  { key: "diameter_geom" as const, label: t("toolTable.diameterGeom"), num: true },
+  { key: "diameter_wear" as const, label: t("toolTable.diameterWear"), num: true },
+  { key: "effective_diameter" as const, label: t("toolTable.diameterEff"), num: true },
+]);
 
 const folderHref = computed(() =>
   folder.value ? `/files${folder.value}` : ""
 );
 
-const hasErr = (r: ToolTableSlot) => r.errors && Object.keys(r.errors).length > 0;
+const hasErr = (r: ToolTableSlot) =>
+  !!r.errors && Object.keys(r.errors).length > 0 &&
+  r.length_geom === undefined && r.length_wear === undefined &&
+  r.diameter_geom === undefined && r.diameter_wear === undefined;
 const firstErr = (r: ToolTableSlot) => {
   if (!r.errors) return "";
   const k = Object.keys(r.errors)[0];
@@ -120,22 +197,13 @@ const fmt = (v: number | undefined) => {
   return v.toFixed(4);
 };
 
-// "Empty" rows are pockets that read cleanly but had every value at
-// 0.0 — i.e. no tool loaded. Hiding them by default keeps the visible
-// table to the populated slots, which is what the operator usually
-// wants. Toggle reveals all so they can verify the read covered every
-// requested slot.
-const hidableEmpty = computed(() => {
-  if (!latest.value) return false;
-  return latest.value.slots.some((r) => r.empty) &&
-    latest.value.slots.some((r) => !r.empty);
-});
-
-const displayRows = computed(() => {
-  if (!latest.value) return [];
-  if (!hideEmpty.value) return latest.value.slots;
-  return latest.value.slots.filter((r) => !r.empty || hasErr(r));
-});
+const fmtMs = (ms: number) => {
+  if (ms < 1000) return `${Math.round(ms)} ms`;
+  if (ms < 60_000) return `${(ms / 1000).toFixed(1)} s`;
+  const m = Math.floor(ms / 60_000);
+  const s = Math.round((ms % 60_000) / 1000);
+  return `${m} m ${s} s`;
+};
 
 const fmtTs = (iso: string) => {
   if (!iso) return "—";
@@ -146,13 +214,78 @@ const fmtTs = (iso: string) => {
   }
 };
 
+const rowClass = (r: ToolTableSlot) => ({
+  "is-empty": r.empty && !hasErr(r),
+  "is-offline": hasErr(r),
+});
+
+const displayRows = computed(() => {
+  if (!latest.value) return [];
+  let rows = latest.value.slots.slice();
+
+  // Status filters first (cheap).
+  rows = rows.filter((r) => {
+    const offline = hasErr(r);
+    const empty = r.empty && !offline;
+    const loaded = !offline && !empty;
+    if (offline && !showOffline.value) return false;
+    if (empty && !showEmpty.value) return false;
+    return loaded || (offline && showOffline.value) || (empty && showEmpty.value);
+  });
+
+  // Free-text search across slot number and any numeric value (matches
+  // partial number strings — typing "0.5" finds 0.5011, etc).
+  const q = search.value.trim().toLowerCase();
+  if (q) {
+    rows = rows.filter((r) => {
+      if (String(r.slot).includes(q)) return true;
+      const fields: (number | undefined)[] = [
+        r.length_geom,
+        r.length_wear,
+        r.effective_length,
+        r.diameter_geom,
+        r.diameter_wear,
+        r.effective_diameter,
+      ];
+      return fields.some(
+        (f) => typeof f === "number" && f.toFixed(4).includes(q)
+      );
+    });
+  }
+
+  // Sort.
+  const k = sortKey.value;
+  rows.sort((a: any, b: any) => {
+    const va = a[k];
+    const vb = b[k];
+    // undefined sorts last regardless of direction so empty pockets
+    // group at the bottom.
+    if (va === undefined && vb === undefined) return 0;
+    if (va === undefined) return 1;
+    if (vb === undefined) return -1;
+    if (va === vb) return 0;
+    const cmp = va < vb ? -1 : 1;
+    return sortDir.value === "asc" ? cmp : -cmp;
+  });
+
+  return rows;
+});
+
+const toggleSort = (k: SortKey) => {
+  if (sortKey.value === k) {
+    sortDir.value = sortDir.value === "asc" ? "desc" : "asc";
+  } else {
+    sortKey.value = k;
+    sortDir.value = "asc";
+  }
+};
+
 const loadLatest = async () => {
   errMsg.value = "";
   try {
     const tbl = await cncApi.getLatestToolTable(props.machineId);
     latest.value = tbl;
   } catch (e: any) {
-    // Latest is best-effort — only surface non-trivial errors.
     if (e?.status && e.status !== 404 && e.status !== 204) {
       errMsg.value = e.message || String(e);
     }
@@ -170,16 +303,15 @@ const runRead = async () => {
   reading.value = true;
   errMsg.value = "";
   try {
-    const env = await cncApi.readToolTable(slots.value, props.machineId);
+    const env = await cncApi.readToolTable(slotCount.value, props.machineId);
     latest.value = env.table;
-    if (env.persist_error) {
-      errMsg.value = `${t("toolTable.persistFailed")}: ${env.persist_error}`;
-    }
-    // Refresh history listing so the new dump shows in the folder
-    // link's destination immediately.
-    cncApi.getToolTableHistory(props.machineId).then((h) => {
-      folder.value = h.folder || "";
-    }).catch(() => {});
+    const parts: string[] = [];
+    if (env.read_error) parts.push(`${t("toolTable.readPartial")}: ${env.read_error}`);
+    if (env.persist_error) parts.push(`${t("toolTable.persistFailed")}: ${env.persist_error}`);
+    if (parts.length) errMsg.value = parts.join(" · ");
+    cncApi.getToolTableHistory(props.machineId)
+      .then((h) => { folder.value = h.folder || ""; })
+      .catch(() => {});
   } catch (e: any) {
     errMsg.value = e?.message || String(e);
   } finally {
@@ -199,19 +331,49 @@ onMounted(loadLatest);
 </script>
 
 <style scoped>
+/* Span both columns of the /machine grid so the table has room to
+   breathe — at 200 slots the dense column layout is the load-bearing
+   feature. Falls back to single-column on narrow viewports via the
+   parent grid's media query. */
+.tool-card {
+  grid-column: 1 / -1;
+}
+
 .tool-card__hint {
   font-size: 0.78rem;
   color: var(--fg-muted, #888);
   margin-right: 0.6rem;
 }
 
+.tool-card__slots-input {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  color: var(--fg-muted, #888);
+  margin-right: 0.6rem;
+}
+
+.tool-card__slots-input input {
+  width: 4.5rem;
+  padding: 0.2rem 0.3rem;
+  font-size: 0.85rem;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 4px;
+  background: var(--surface, #fff);
+  color: inherit;
+}
+
 .tool-card__body {
+  flex-direction: column;
+  align-items: stretch;
   padding: 0.8rem 1rem;
+  gap: 0.6rem;
+  overflow: hidden;
 }
 
 .tool-card__err {
   padding: 0.5rem 0.7rem;
-  margin-bottom: 0.6rem;
   border-radius: 4px;
   background: rgba(198, 40, 40, 0.1);
   color: #c62828;
@@ -230,7 +392,6 @@ onMounted(loadLatest);
   gap: 0.4rem;
   font-size: 0.78rem;
   color: var(--fg-muted, #888);
-  margin-bottom: 0.6rem;
 }
 
 .tool-card__folder {
@@ -240,6 +401,50 @@ onMounted(loadLatest);
 
 .tool-card__folder:hover {
   text-decoration: underline;
+}
+
+.tool-card__filterbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border-color, #eee);
+}
+
+.tool-card__search {
+  flex: 1 1 12rem;
+  min-width: 12rem;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 4px;
+  background: var(--surface, #fff);
+  color: inherit;
+  font-size: 0.85rem;
+}
+
+.tool-card__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  color: var(--fg-muted, #666);
+  cursor: pointer;
+  user-select: none;
+}
+
+.tool-card__visible-count {
+  margin-left: auto;
+  font-size: 0.78rem;
+  color: var(--fg-muted, #888);
+}
+
+.tool-card__scroll {
+  flex: 1 1 auto;
+  max-height: 50vh;
+  overflow: auto;
+  border: 1px solid var(--border-color, #eee);
+  border-radius: 4px;
 }
 
 .tool-table {
@@ -255,12 +460,31 @@ onMounted(loadLatest);
   border-bottom: 1px solid var(--border-color, #eee);
 }
 
-.tool-table th {
+.tool-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--alt-background, #fafafa);
+  z-index: 1;
   font-weight: 500;
   color: var(--fg-muted, #888);
   text-transform: uppercase;
   font-size: 0.7rem;
   letter-spacing: 0.04em;
+  cursor: pointer;
+  user-select: none;
+}
+
+.tool-table th.sortable:hover {
+  color: var(--fg, #333);
+}
+
+.tool-table th.sorted {
+  color: var(--primaryColor, #2196f3);
+}
+
+.sort-arrow {
+  margin-left: 0.2rem;
+  font-size: 0.75rem;
 }
 
 .tool-table td.num,
@@ -269,34 +493,43 @@ onMounted(loadLatest);
   font-variant-numeric: tabular-nums;
 }
 
-.tool-table td.notes {
-  font-size: 0.78rem;
-  color: var(--fg-muted, #888);
-}
-
-.tool-table tr.has-err td.notes .err {
-  color: #c62828;
-}
-
 .tool-table tr.is-empty td {
   color: var(--fg-muted, #999);
 }
 
-.tool-card__toggle {
-  margin-top: 0.6rem;
+.tool-table tr.is-offline td {
+  color: var(--fg-muted, #888);
+  background: rgba(198, 40, 40, 0.04);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.badge--ok {
+  background: rgba(46, 125, 50, 0.12);
+  color: #2e7d32;
+}
+
+.badge--empty {
+  background: rgba(158, 158, 158, 0.18);
+  color: #757575;
+}
+
+.badge--err {
+  background: rgba(198, 40, 40, 0.12);
+  color: #c62828;
+  cursor: help;
+}
+
+.tool-card__no-match {
   text-align: center;
-}
-
-.link-btn {
-  background: none;
-  border: 0;
-  color: var(--primaryColor, #2196f3);
-  cursor: pointer;
-  font-size: 0.85rem;
-  padding: 0.2rem 0.4rem;
-}
-
-.link-btn:hover {
-  text-decoration: underline;
+  padding: 1rem 0;
+  color: var(--fg-muted, #888);
 }
 </style>
