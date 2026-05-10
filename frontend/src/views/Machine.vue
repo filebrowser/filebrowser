@@ -236,7 +236,7 @@
           <span v-if="ncLoading" class="card-header__hint">{{ t("machine.ncLoading") }}</span>
           <span v-else-if="ncError" class="card-header__hint card-header__hint--err">{{ ncError }}</span>
         </div>
-        <div class="nc-split">
+        <div class="nc-split" :style="{ '--nc-pct': ncSplitPct + '%' }">
           <div class="nc-split__pane nc-split__pane--code">
             <MachineNcMirror
               v-if="ncContent !== null"
@@ -244,6 +244,14 @@
               :machine-line="cncStore.lineCurrent"
             />
           </div>
+          <div
+            class="nc-split__bar"
+            role="separator"
+            aria-orientation="vertical"
+            @pointerdown="startNcResize"
+            @dblclick="resetNcSplit"
+            :title="t('buttons.dragToResize') || 'Drag to resize · double-click to reset'"
+          ></div>
           <div class="nc-split__pane nc-split__pane--viewer">
             <GCode3DViewer
               v-if="ncContent !== null"
@@ -381,6 +389,65 @@ watch(
   },
   { immediate: false }
 );
+
+// ── NC card splitter (code | toolpath) ───────────────────────────────────
+// Same pointer-events pattern as the editor splitter (PR #37). Stored
+// per-browser in localStorage so an operator's preferred ratio
+// persists across reloads. Defaults to 50/50; clamps to 15..85% so a
+// pane never collapses into invisibility.
+const NC_SPLIT_KEY = "machineNcSplitPct";
+const NC_SPLIT_DEFAULT = 50;
+const NC_SPLIT_MIN = 15;
+const NC_SPLIT_MAX = 85;
+const ncSplitPct = ref<number>(
+  (() => {
+    const stored = Number(localStorage.getItem(NC_SPLIT_KEY));
+    return Number.isFinite(stored) && stored >= NC_SPLIT_MIN && stored <= NC_SPLIT_MAX
+      ? stored
+      : NC_SPLIT_DEFAULT;
+  })()
+);
+
+const startNcResize = (e: PointerEvent) => {
+  e.preventDefault();
+  const target = e.currentTarget as HTMLElement;
+  const layout = target.parentElement;
+  if (!layout) return;
+  const rect = layout.getBoundingClientRect();
+  const pointerId = e.pointerId;
+  try {
+    target.setPointerCapture(pointerId);
+  } catch {
+    /* ignore */
+  }
+  const onMove = (ev: PointerEvent) => {
+    const pct = ((ev.clientX - rect.left) / rect.width) * 100;
+    ncSplitPct.value = Math.min(NC_SPLIT_MAX, Math.max(NC_SPLIT_MIN, pct));
+  };
+  const onUp = () => {
+    target.removeEventListener("pointermove", onMove);
+    target.removeEventListener("pointerup", onUp);
+    target.removeEventListener("pointercancel", onUp);
+    document.body.style.cursor = "";
+    document.body.style.userSelect = "";
+    try {
+      target.releasePointerCapture(pointerId);
+    } catch {
+      /* ignore */
+    }
+    localStorage.setItem(NC_SPLIT_KEY, String(ncSplitPct.value));
+  };
+  document.body.style.cursor = "col-resize";
+  document.body.style.userSelect = "none";
+  target.addEventListener("pointermove", onMove);
+  target.addEventListener("pointerup", onUp);
+  target.addEventListener("pointercancel", onUp);
+};
+
+const resetNcSplit = () => {
+  ncSplitPct.value = NC_SPLIT_DEFAULT;
+  localStorage.setItem(NC_SPLIT_KEY, String(NC_SPLIT_DEFAULT));
+};
 
 // ── Connection check (button in card-header) ──────────────────────────────
 const checkResult = ref<CncCheckResult | null>(null);
@@ -934,17 +1001,19 @@ const Axis = (props: { label: string; value: unknown }) => {
   font-size: 0.95rem;
 }
 
-/* NC card: side-by-side code mirror + 3D toolpath */
+/* NC card: side-by-side code mirror + 3D toolpath, with a draggable
+   splitter between them. Width is driven by --nc-pct (an inline
+   style set in the template, persisted to localStorage). */
 .nc-card .nc-split {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.6rem;
+  display: flex;
   height: 50vh;
   min-height: 400px;
+  --nc-pct: 50%;
 }
 
 .nc-split__pane {
   position: relative;
+  min-width: 0;
   border: 1px solid var(--border-color, #eee);
   border-radius: 6px;
   overflow: hidden;
@@ -952,21 +1021,53 @@ const Axis = (props: { label: string; value: unknown }) => {
 }
 
 .nc-split__pane--code {
-  /* Ace fills via absolute positioning inside MachineNcMirror */
-  min-height: 0;
+  flex: 0 0 var(--nc-pct);
+  margin-right: 0; /* gap is the splitter bar */
 }
 
 .nc-split__pane--viewer {
+  flex: 1 1 0;
   background: #111;
+}
+
+.nc-split__bar {
+  flex: 0 0 6px;
+  cursor: col-resize;
+  background: transparent;
+  position: relative;
+  user-select: none;
+  z-index: 1;
+  touch-action: none;
+}
+
+.nc-split__bar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: var(--border-color, #ddd);
+  transform: translateX(-50%);
+}
+
+.nc-split__bar:hover::before,
+.nc-split__bar:active::before {
+  background: var(--primaryColor, #2196f3);
+  width: 2px;
 }
 
 @media (max-width: 900px) {
   .nc-card .nc-split {
-    grid-template-columns: 1fr;
+    flex-direction: column;
     height: auto;
   }
-  .nc-split__pane {
-    height: 50vh;
+  .nc-split__pane--code,
+  .nc-split__pane--viewer {
+    flex: 0 0 50vh;
+  }
+  .nc-split__bar {
+    display: none;
   }
 }
 
