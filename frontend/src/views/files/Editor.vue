@@ -388,19 +388,23 @@ const startResize = (e: PointerEvent) => {
   const target = e.currentTarget as HTMLElement;
   const layout = target.parentElement;
   if (!layout) return;
-  const rect = layout.getBoundingClientRect();
-  const pointerId = e.pointerId;
-  // Pointer-capture keeps drags responsive on touch (tracking the
-  // finger after it slides past the 6 px hit area). The document-level
-  // listeners below are the actual transport — they work even if
-  // capture fails or Vue re-renders the splitter element mid-drag.
-  try {
-    target.setPointerCapture(pointerId);
-  } catch {
-    /* ignore — document listeners cover us */
-  }
+
+  // Why no setPointerCapture: capturing the pointer on the splitter
+  // restricts pointer events to the splitter element, which means the
+  // *document*-level pointermove listener below stops firing in some
+  // browser/version combinations once the finger/cursor leaves the
+  // 10 px hit area. Plain document listeners with a touch-action lock
+  // on body work reliably across desktop + iOS Safari + iPadOS — and
+  // we don't actually need capture once the body's touch-action is
+  // disabled, because the document is the always-on listener target.
+
   const onMove = (ev: PointerEvent) => {
-    const pct = ((ev.clientX - rect.left) / rect.width) * 100;
+    // Recompute the rect each move so a mid-drag layout shift (e.g.,
+    // Ace adjusting its scrollbar after resize()) doesn't leave us
+    // working off stale coordinates.
+    const r = layout.getBoundingClientRect();
+    if (r.width <= 0) return;
+    const pct = ((ev.clientX - r.left) / r.width) * 100;
     editorPct.value = Math.min(SPLIT_MAX, Math.max(SPLIT_MIN, pct));
     editor.value?.resize();
   };
@@ -410,16 +414,16 @@ const startResize = (e: PointerEvent) => {
     document.removeEventListener("pointercancel", onUp);
     document.body.style.cursor = "";
     document.body.style.userSelect = "";
-    try {
-      target.releasePointerCapture(pointerId);
-    } catch {
-      /* ignore */
-    }
+    document.body.style.touchAction = "";
     localStorage.setItem(SPLIT_KEY, String(editorPct.value));
     editor.value?.resize();
   };
   document.body.style.cursor = "col-resize";
   document.body.style.userSelect = "none";
+  // Lock touch-action on the body so a touch drag can't be hijacked
+  // by the browser's scroll/zoom heuristics once the finger drifts
+  // off the splitter onto Ace or the 3D viewer.
+  document.body.style.touchAction = "none";
   document.addEventListener("pointermove", onMove);
   document.addEventListener("pointerup", onUp);
   document.addEventListener("pointercancel", onUp);
@@ -756,6 +760,11 @@ watch(
 .editor-pane {
   flex: 0 0 var(--editor-pct);
   min-width: 0;
+  /* Ace's absolutely-positioned text/cursor layers can poke past the
+     pane's right edge and intercept pointer events on the splitter.
+     Clipping at the pane boundary keeps the splitter pointer-receivable
+     across the entire 10 px hit area. */
+  overflow: hidden;
 }
 
 .viewer-pane {
