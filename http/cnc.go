@@ -812,7 +812,7 @@ func cncStartHandler(registry *cnc.Registry) handleFunc {
 					}
 				}
 			}
-			pf, perr := cnc.BuildPreflight(absPath, clean, machineID, table)
+			pf, perr := cnc.BuildPreflight(absPath, clean, machineID, table, currentSpindleTool(registry, machineID))
 			if perr == nil {
 				if pf.TableMissing {
 					return http.StatusConflict, errors.New(
@@ -884,12 +884,58 @@ func cncPreflightHandler(registry *cnc.Registry) handleFunc {
 			}
 		}
 
-		pf, err := cnc.BuildPreflight(absPath, clean, machineID, table)
+		// Pull the controller's current spindle tool from the
+		// aggregator snapshot. Best-effort — if the metric is stale
+		// or missing the preflight just omits the swap warning rather
+		// than failing the whole call.
+		spindleTool := currentSpindleTool(registry, machineID)
+
+		pf, err := cnc.BuildPreflight(absPath, clean, machineID, table, spindleTool)
 		if err != nil {
 			return errToStatus(err), err
 		}
 		return renderJSON(w, r, pf)
 	})
+}
+
+// currentSpindleTool reads the aggregator's "tool" metric (Q201) for
+// the given machine and parses it to an int. Returns nil when the
+// metric is unavailable, stale, or unparseable — caller treats nil
+// as "swap unknown".
+func currentSpindleTool(registry *cnc.Registry, machineID string) *int {
+	ag, _ := registry.Aggregator(machineID)
+	if ag == nil {
+		return nil
+	}
+	snap := ag.Snapshot()
+	m, ok := snap["tool"]
+	if !ok || m == nil || m.Stale {
+		return nil
+	}
+	// The aggregator's Q201 parser leaves the int either in `parsed`
+	// (preferred) or as a number-shaped string in `value`.
+	switch v := m.Parsed.(type) {
+	case int:
+		x := v
+		return &x
+	case int64:
+		x := int(v)
+		return &x
+	case float64:
+		x := int(v)
+		return &x
+	}
+	if m.Value != "" {
+		s := strings.TrimSpace(m.Value)
+		// Q201 frame shape: "STATUS,TOOL,5". Take the trailing token.
+		if i := strings.LastIndex(s, ","); i >= 0 {
+			s = strings.TrimSpace(s[i+1:])
+		}
+		if n, err := strconv.Atoi(s); err == nil {
+			return &n
+		}
+	}
+	return nil
 }
 
 func cncStopHandler(registry *cnc.Registry) handleFunc {

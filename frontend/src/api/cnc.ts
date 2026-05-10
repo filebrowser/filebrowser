@@ -322,6 +322,17 @@ export interface Preflight {
   table_read_at?: string;
   table_missing?: boolean;
   summary: PreflightSummary;
+  // Program-order first T-code. Surfaced so the wizard can show
+  // "starting tool: T5" before Send. Absent when the program has no
+  // T-codes (rare — typically a sub-program fragment).
+  starting_tool?: number;
+  // Controller's currently-selected tool from the aggregator's Q201
+  // metric at the time the preflight ran. Absent when the metric is
+  // stale or unavailable.
+  current_spindle_tool?: number;
+  // True when starting_tool and current_spindle_tool are both present
+  // and differ. Pre-computed so the wizard doesn't re-derive.
+  spindle_swap?: boolean;
 }
 
 export function getPreflight(filePath: string, machineId?: string) {

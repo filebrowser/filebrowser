@@ -94,6 +94,28 @@
           {{ t("sendWizard.toolCheckNoTable") }}
         </div>
         <template v-else-if="preflight">
+          <div
+            v-if="preflight.starting_tool !== undefined"
+            class="wizard-starting-tool"
+            :class="{ 'wizard-starting-tool--swap': preflight.spindle_swap }"
+          >
+            <i class="material-icons">play_circle</i>
+            <span>
+              {{ t("sendWizard.startingTool", { n: preflight.starting_tool }) }}
+              <template v-if="preflight.current_spindle_tool !== undefined">
+                ·
+                <template v-if="preflight.spindle_swap">
+                  <strong>{{ t("sendWizard.spindleSwap", { from: preflight.current_spindle_tool, to: preflight.starting_tool }) }}</strong>
+                </template>
+                <template v-else>
+                  {{ t("sendWizard.spindleMatch", { n: preflight.current_spindle_tool }) }}
+                </template>
+              </template>
+              <template v-else>
+                · <span class="wizard-starting-tool__unknown">{{ t("sendWizard.spindleUnknown") }}</span>
+              </template>
+            </span>
+          </div>
           <div class="wizard-tools__summary">
             <span class="wizard-pill wizard-pill--ok" v-if="preflight.summary.ok > 0">
               {{ preflight.summary.ok }} OK
@@ -497,6 +519,41 @@ watch(destinationId, (id, prev) => {
   background: rgba(198, 40, 40, 0.08);
   color: #c62828;
   font-size: 0.85rem;
+}
+
+.wizard-starting-tool {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.6rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 4px;
+  background: var(--alt-background, #fafafa);
+  font-size: 0.85rem;
+}
+
+.wizard-starting-tool .material-icons {
+  font-size: 1rem;
+  color: var(--primaryColor, #2196f3);
+}
+
+.wizard-starting-tool--swap {
+  /* Spindle currently has a different tool than the program starts
+     with. Highlighted because the operator should confirm the
+     incoming tool is in the carousel before pressing Cycle Start. */
+  border-color: #ed6c02;
+  background: rgba(237, 108, 2, 0.08);
+  color: #b85100;
+}
+
+.wizard-starting-tool--swap .material-icons {
+  color: #ed6c02;
+}
+
+.wizard-starting-tool__unknown {
+  color: var(--fg-muted, #888);
+  font-size: 0.78rem;
 }
 
 .wizard-tools__summary {

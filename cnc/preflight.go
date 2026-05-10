@@ -56,6 +56,22 @@ type Preflight struct {
 	TableReadAt  string           `json:"table_read_at,omitempty"`
 	TableMissing bool             `json:"table_missing,omitempty"`
 	Summary      PreflightSummary `json:"summary"`
+	// StartingTool is the first T<n> reference in the program (program
+	// order, not lowest tool number). Pointer so 0 / unset is
+	// distinguishable from a valid first-tool of T0. Surfaced by the
+	// wizard so the operator sees "starting tool: T5" before Send.
+	StartingTool *int `json:"starting_tool,omitempty"`
+	// CurrentSpindleTool is what the controller reported as the
+	// currently selected tool at the moment the preflight ran. Comes
+	// from the aggregator's "tool" metric (Q201). Operators get a
+	// "swap-on-send" warning when this differs from StartingTool —
+	// the program will issue an M06 to change tools and the operator
+	// has a moment to confirm tool 5 is in the carousel before that
+	// happens.
+	CurrentSpindleTool *int `json:"current_spindle_tool,omitempty"`
+	// SpindleSwap is true when both numbers are known and they differ.
+	// Pre-computed so the wizard doesn't have to re-derive.
+	SpindleSwap bool `json:"spindle_swap,omitempty"`
 }
 
 // DiameterTolerance is how far an effective_diameter may drift from
@@ -101,7 +117,18 @@ var cornerRe = regexp.MustCompile(`(?i)\bCR\s*=\s*([0-9.]+)`)
 // the result, which the wizard surfaces as "no tool-table read on
 // file; you're flying blind". The function never errors on parse —
 // malformed NC just produces an empty Tools list.
-func BuildPreflight(absPath, displayPath, machineID string, table *ToolTable) (*Preflight, error) {
+//
+// currentSpindleTool, when non-nil, is what the controller reported as
+// its currently-selected tool at the moment the preflight ran. The
+// caller pulls this from the aggregator's "tool" metric (Q201). When
+// both the program's starting tool and the spindle tool are known and
+// differ, Preflight.SpindleSwap is set so the wizard can warn the
+// operator about the imminent M06.
+func BuildPreflight(
+	absPath, displayPath, machineID string,
+	table *ToolTable,
+	currentSpindleTool *int,
+) (*Preflight, error) {
 	f, err := os.Open(absPath)
 	if err != nil {
 		return nil, err
@@ -117,6 +144,10 @@ func BuildPreflight(absPath, displayPath, machineID string, table *ToolTable) (*
 		usage[n] = u
 		return u
 	}
+
+	// startingTool is the first T-code we see in the program (program
+	// order, not lowest tool number). Captured during pass 2 below.
+	var startingTool *int
 
 	scanner := bufio.NewScanner(f)
 	scanner.Buffer(make([]byte, 64*1024), 1024*1024)
@@ -157,6 +188,10 @@ func BuildPreflight(absPath, displayPath, machineID string, table *ToolTable) (*
 				continue
 			}
 			get(n).ReferenceCount++
+			if startingTool == nil {
+				v := n
+				startingTool = &v
+			}
 		}
 	}
 
@@ -180,9 +215,15 @@ func BuildPreflight(absPath, displayPath, machineID string, table *ToolTable) (*
 	sort.Slice(tools, func(i, j int) bool { return tools[i].Tool < tools[j].Tool })
 
 	pf := &Preflight{
-		FilePath:  displayPath,
-		MachineID: machineID,
-		Tools:     tools,
+		FilePath:           displayPath,
+		MachineID:          machineID,
+		Tools:              tools,
+		StartingTool:       startingTool,
+		CurrentSpindleTool: currentSpindleTool,
+	}
+	if startingTool != nil && currentSpindleTool != nil &&
+		*startingTool != *currentSpindleTool {
+		pf.SpindleSwap = true
 	}
 
 	if table == nil {
