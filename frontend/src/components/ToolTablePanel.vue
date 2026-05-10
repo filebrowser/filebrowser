@@ -178,17 +178,18 @@ const props = defineProps<{
 
 const { t } = useI18n();
 
-const SLOT_COUNT_KEY = "cncToolTableSlotCount";
-const slotCount = ref<number>(
-  (() => {
-    const v = parseInt(localStorage.getItem(SLOT_COUNT_KEY) || "");
-    return Number.isFinite(v) && v >= 1 && v <= 200 ? v : 200;
-  })()
+// Slot count default order: localStorage override > machine config
+// (Settings → Machine → toolSlots) > 30 fallback. The localStorage key
+// is per-machine so an operator with two machines doesn't have to keep
+// re-typing the count when switching focus.
+const slotCount = ref<number>(30);
+const slotCountKey = computed(() =>
+  `cncToolTableSlotCount:${props.machineId || "default"}`
 );
 const persistSlotCount = () => {
   if (slotCount.value < 1) slotCount.value = 1;
   if (slotCount.value > 200) slotCount.value = 200;
-  localStorage.setItem(SLOT_COUNT_KEY, String(slotCount.value));
+  localStorage.setItem(slotCountKey.value, String(slotCount.value));
 };
 
 const latest = ref<ToolTable | null>(null);
@@ -363,8 +364,40 @@ const toggleSort = (k: SortKey) => {
   }
 };
 
+// Resolve the initial slot count: localStorage override (if the
+// operator has overridden) > machine.toolSlots from settings > 30.
+// Called on mount + whenever machineId changes.
+const resolveSlotCount = async () => {
+  const stored = parseInt(
+    localStorage.getItem(slotCountKey.value) || "",
+    10
+  );
+  if (Number.isFinite(stored) && stored >= 1 && stored <= 200) {
+    slotCount.value = stored;
+    return;
+  }
+  try {
+    const list = await cncApi.listMachines();
+    const id = props.machineId || list.default_id;
+    const m = list.machines.find((x) => x.id === id);
+    const fromSettings = m?.toolSlots;
+    if (
+      typeof fromSettings === "number" &&
+      fromSettings >= 1 &&
+      fromSettings <= 200
+    ) {
+      slotCount.value = fromSettings;
+      return;
+    }
+  } catch {
+    /* fall back to default */
+  }
+  slotCount.value = 30;
+};
+
 const loadLatest = async () => {
   errMsg.value = "";
+  await resolveSlotCount();
   try {
     const tbl = await cncApi.getLatestToolTable(props.machineId);
     latest.value = tbl;

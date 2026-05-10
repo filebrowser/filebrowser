@@ -82,6 +82,19 @@
             </p>
 
             <p>
+              <label class="small">{{ t("settings.machineToolSlots") }}</label>
+              <vue-number-input
+                controls
+                v-model.number="machine.toolSlots"
+                :min="0"
+                :max="200"
+              />
+              <span class="small machine-row__hint">
+                {{ t("settings.machineToolSlotsHelp") }}
+              </span>
+            </p>
+
+            <p>
               <label class="small">{{ t("settings.machineCameraType") }}</label>
               <select class="input input--block" v-model="machine.cameraType">
                 <option value="auto">{{ t("settings.machineCameraTypeAuto") }}</option>
@@ -233,6 +246,7 @@ const addMachine = () => {
     brand: "haas",
     host: "",
     port: 4196,
+    toolSlots: 30,
     cameraUrl: "",
     cameraType: "auto",
   });
@@ -324,15 +338,17 @@ onMounted(async () => {
           brand: "haas",
           host: "",
           port: 4196,
+          toolSlots: 30,
           cameraUrl: "",
           cameraType: "auto",
         },
       ];
     }
-    // Older payloads may be missing brand/cameraType/cameraUrl — coerce
-    // to today's defaults so the selects render with a value.
+    // Older payloads may be missing brand/cameraType/cameraUrl/toolSlots
+    // — coerce to today's defaults so every input has a value.
     fetched.machines = fetched.machines.map((m: CncMachine) => ({
       brand: "haas",
+      toolSlots: 30,
       cameraUrl: "",
       cameraType: "auto",
       ...m,

@@ -14,6 +14,10 @@ export interface CncMachine {
   brand?: string;
   host: string;
   port: number;
+  // Magazine slot count for tool-table reads. 0 / undefined = use the
+  // backend default (30). Set to your actual pocket count so reads
+  // don't probe unreachable upper slots.
+  toolSlots?: number;
   cameraUrl?: string;
   cameraType?: CameraType;
 }

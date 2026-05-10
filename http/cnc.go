@@ -161,6 +161,9 @@ func normalizeMachines(in []settings.Machine, existing []settings.Machine) ([]se
 		if m.Port > 65535 {
 			return nil, fmt.Errorf("machine %d (%s): port out of range", i, m.Name)
 		}
+		if m.ToolSlots < 0 || m.ToolSlots > 200 {
+			return nil, fmt.Errorf("machine %d (%s): toolSlots must be 0..200", i, m.Name)
+		}
 		if strings.TrimSpace(m.Brand) == "" {
 			m.Brand = settings.MachineBrandHaas
 		}
@@ -216,6 +219,20 @@ func defaultMachineID(registry *cnc.Registry) string {
 		return ""
 	}
 	return ms[0].ID
+}
+
+// defaultToolSlotsForMachine looks up the machine's configured ToolSlots
+// (per Settings → Machine) and returns the effective value, or
+// settings.DefaultToolSlots if the machine isn't found in settings.
+// Used as the default for /api/cnc/probe-tools and
+// /api/cnc/tool-table when no explicit ?slots= is passed.
+func defaultToolSlotsForMachine(d *data, machineID string) int {
+	if d != nil && d.settings != nil {
+		if m, ok := d.settings.Cnc.MachineByID(machineID); ok {
+			return m.EffectiveToolSlots()
+		}
+	}
+	return settings.DefaultToolSlots
 }
 
 var cncRegenerateTokenHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
@@ -404,12 +421,12 @@ func cncSiblingsHandler(_ *cnc.Registry) handleFunc {
 }
 
 func cncProbeToolsHandler(registry *cnc.Registry) handleFunc {
-	return withAdmin(func(w http.ResponseWriter, r *http.Request, _ *data) (int, error) {
-		st, _, code, err := resolveStreamer(registry, r)
+	return withAdmin(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		st, machineID, code, err := resolveStreamer(registry, r)
 		if err != nil {
 			return code, err
 		}
-		slots := 30
+		slots := defaultToolSlotsForMachine(d, machineID)
 		if q := r.URL.Query().Get("slots"); q != "" {
 			n, err := strconv.Atoi(q)
 			if err != nil || n < 1 || n > 200 {
@@ -450,7 +467,10 @@ func cncToolTableReadHandler(registry *cnc.Registry) handleFunc {
 		if err != nil {
 			return code, err
 		}
-		slots := 30
+		// Default to the machine's configured ToolSlots so an operator
+		// who set "20 pockets" once doesn't have to remember to pass
+		// ?slots=20 on every read. Explicit ?slots= still overrides.
+		slots := defaultToolSlotsForMachine(d, machineID)
 		if q := r.URL.Query().Get("slots"); q != "" {
 			n, err := strconv.Atoi(q)
 			if err != nil || n < 1 || n > 200 {

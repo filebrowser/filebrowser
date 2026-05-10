@@ -64,6 +64,12 @@ type Machine struct {
 	// Host:Port is the Waveshare RS-232↔TCP bridge.
 	Host string `json:"host"`
 	Port int    `json:"port"`
+	// ToolSlots is the magazine capacity for tool-table reads. Operators
+	// set this to their machine's actual slot count (e.g. 20 for a
+	// 20-pocket carousel) so reads cover the whole magazine without
+	// probing the unreachable upper range. 0 falls back to
+	// DefaultToolSlots.
+	ToolSlots int `json:"toolSlots,omitempty"`
 	// CameraURL is optional. CameraType picks the rendering path.
 	CameraURL string `json:"cameraUrl,omitempty"`
 	// CameraType is one of "auto" / "hls" / "mjpeg" / "iframe" /
@@ -77,6 +83,23 @@ type Machine struct {
 // today. Other brands round-trip through settings but no protocol code
 // reads them yet.
 const MachineBrandHaas = "haas"
+
+// DefaultToolSlots is the fallback magazine size when a machine's
+// ToolSlots is 0. 30 covers most older Haas mills; operators with
+// 200-slot tombstones should set ToolSlots explicitly.
+const DefaultToolSlots = 30
+
+// EffectiveToolSlots returns the machine's ToolSlots clamped to the
+// valid Haas tool-table range. 0 means use the default.
+func (m Machine) EffectiveToolSlots() int {
+	if m.ToolSlots <= 0 {
+		return DefaultToolSlots
+	}
+	if m.ToolSlots > 200 {
+		return 200
+	}
+	return m.ToolSlots
+}
 
 // EnsureMigrated folds legacy single-machine fields into Machines[0]
 // if Machines is empty. Idempotent; safe to call on every Settings

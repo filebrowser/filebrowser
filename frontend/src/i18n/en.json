@@ -347,6 +347,8 @@
     "machineHaasBridge": "Haas RS-232 bridge",
     "machineHaasHost": "Bridge host (Waveshare RS-232↔TCP)",
     "machineHaasPort": "Bridge port",
+    "machineToolSlots": "Tool magazine size",
+    "machineToolSlotsHelp": "How many tool slots to read on a tool-table refresh. Set to your machine's actual pocket count (e.g. 20 for a 20-pocket carousel) — the read auto-skips empty slots after a length probe, so this just bounds the scan. 0 falls back to 30.",
     "machineBrand": "Manufacturer",
     "machineBrandHelp": "Only Haas is wired into the streamer today. Other brands round-trip through settings so migration is easier when their protocol lands.",
     "machineBrandHaas": "Haas",
