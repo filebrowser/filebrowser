@@ -201,6 +201,10 @@
       <!-- 4. Send ────────────────────────────────────────────── -->
       <section class="wizard-section wizard-section--actions">
         <div v-if="sendError" class="wizard-error">{{ sendError }}</div>
+        <p v-if="destinationRequiresPreflight" class="wizard-preflight-note">
+          <i class="material-icons">verified</i>
+          {{ t("sendWizard.requirePreflightNote") }}
+        </p>
         <p class="wizard-prereq" v-if="!sendable">
           <i class="material-icons">info</i>
           {{ t("sendWizard.prereqHint") }}
@@ -289,6 +293,16 @@ const connectionOK = computed(
 // operator-side controller prep is on them — this gate just stops the
 // most common foot-gun: trying to stream when the bridge is offline.
 const sendable = computed(() => connectionOK.value);
+
+// Surface a small "this destination requires preflight" note when
+// the chosen machine has the server-side gate on. Heads off the 409
+// surprise — operator sees the requirement before they hit Send.
+const destinationRequiresPreflight = computed(() => {
+  const id = destinationId.value || cncStore.currentMachineId;
+  if (!id) return false;
+  const m = cncStore.machines.find((x) => x.id === id);
+  return !!m?.requirePreflight;
+});
 
 const runCheck = async () => {
   checking.value = true;
@@ -694,6 +708,23 @@ watch(destinationId, (id, prev) => {
 }
 
 .wizard-prereq .material-icons {
+  font-size: 1rem;
+}
+
+.wizard-preflight-note {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: #1976d2;
+  background: rgba(33, 150, 243, 0.08);
+  border: 1px solid rgba(33, 150, 243, 0.3);
+  border-radius: 4px;
+  padding: 0.4rem 0.6rem;
+}
+
+.wizard-preflight-note .material-icons {
   font-size: 1rem;
 }
 

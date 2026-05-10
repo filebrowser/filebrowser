@@ -39,6 +39,12 @@ type ToolTableSlot struct {
 	// ("length_geom", "diameter_wear", …). Populated only on failure
 	// so the typical row stays small in the JSON dump.
 	Errors map[string]string `json:"errors,omitempty"`
+	// CycleCount is the tool's accumulated select-count since the
+	// last reset — surfaced once the tool-life probe lands and we've
+	// confirmed which Haas macro range carries it. omitempty means
+	// "not read" (distinct from a confirmed zero).
+	// See docs/TOOL_LIFE_RESEARCH.md for the open mapping question.
+	CycleCount *int `json:"cycle_count,omitempty"`
 }
 
 // ToolTable is the full structured readout from POST /api/cnc/tool-table.

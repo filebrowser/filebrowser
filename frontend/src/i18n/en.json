@@ -166,6 +166,7 @@
     "dncStep2": "Tab to DNC",
     "dncStep3": "Press [INSERT] / [SELECT PROG]. Then click Send below; press [CYCLE START] once the program is loaded.",
     "prereqHint": "Run a connection check before sending — Send is locked until both bridge and controller respond.",
+    "requirePreflightNote": "This machine is configured to require a preflight pass — Send will be refused if any program tool isn't loaded in the latest tool-table dump.",
     "sendButton": "Send ({method})",
     "sending": "Sending…",
     "toolCheck": "Tool check",
