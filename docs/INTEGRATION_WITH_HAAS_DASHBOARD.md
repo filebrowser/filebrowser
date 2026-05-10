@@ -468,6 +468,29 @@ unless we find something materially smaller.
   the existing endpoint. Read the dir, fuzzy-match basename, return
   the URL of the model + drawing alongside the streamer status.
 
+## Embedding /machine elsewhere (Home Assistant, shop tablet)
+
+`/machine?kiosk=1` strips the global header bar, the activity log
+panel, the Stop button, and the Check connection button. Everything
+else (live state, NC code/toolpath, 3D part viewer) renders unchanged.
+Background goes transparent so the embedder's theme shows through.
+
+**Home Assistant Lovelace example:**
+
+```yaml
+type: iframe
+url: https://zinc.tail542434.ts.net:8443/machine?kiosk=1
+aspect_ratio: 16:9
+```
+
+The page has no `X-Frame-Options` and CSP doesn't restrict
+`frame-ancestors`, so any origin can embed. Auth is via the same
+filebrowser session cookie, so the embedding browser must be logged
+in OR use a publicly-readable share if the network exposes one.
+
+For full operator interaction (Stop, Check connection), open
+`/machine` directly without the kiosk param.
+
 ## TODO — Multi-machine support (architectural follow-on)
 
 User direction (2026-05-09): "should eventually be machine agnostic

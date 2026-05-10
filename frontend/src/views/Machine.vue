@@ -1,6 +1,6 @@
 <template>
-  <div class="machine-page">
-    <header-bar showMenu showLogo>
+  <div class="machine-page" :class="{ 'machine-page--kiosk': kioskMode }">
+    <header-bar v-if="!kioskMode" showMenu showLogo>
       <title>{{ t("sidebar.machine") }}</title>
     </header-bar>
 
@@ -50,6 +50,7 @@
             {{ connectTimedOut ? t("machine.connectTimeout") : t("machine.waitingFirstPoll") }}
           </span>
           <button
+            v-if="!kioskMode"
             class="check-btn"
             :disabled="checking || cncStore.running"
             @click="runConnectionCheck"
@@ -59,7 +60,7 @@
             {{ checking ? t("machine.checking") : t("machine.checkConnection") }}
           </button>
           <button
-            v-if="cncStore.running && canModify"
+            v-if="cncStore.running && canModify && !kioskMode"
             class="stop-btn"
             @click="promptStopMachine"
             :title="t('buttons.stopMachine')"
@@ -174,7 +175,7 @@
           </div>
 
           <!-- Activity feed: backend log events + status transitions -->
-          <div class="activity">
+          <div v-if="!kioskMode" class="activity">
             <div class="activity__title">{{ t("machine.activity") }}</div>
             <div v-if="cncStore.log.length === 0" class="activity__empty">
               {{ t("machine.activityEmpty") }}
@@ -268,13 +269,21 @@ import Part3DViewer from "@/components/Part3DViewer.vue";
 import { useAuthStore } from "@/stores/auth";
 import { useCncStore } from "@/stores/cnc";
 import { useLayoutStore } from "@/stores/layout";
+import { useRoute } from "vue-router";
 import HeaderBar from "@/components/header/HeaderBar.vue";
 
 const { t } = useI18n();
 const $showError = inject<IToastError>("$showError")!;
 const authStore = useAuthStore();
 const layoutStore = useLayoutStore();
+const route = useRoute();
 const canModify = computed(() => !!authStore.user?.perm.modify);
+
+// /machine?kiosk=1 strips the global header + activity log + check
+// button so the page can be iframed cleanly into Home Assistant
+// Lovelace WebPage cards or hung on a shop tablet. Same data, no
+// chrome.
+const kioskMode = computed(() => route.query.kiosk === "1");
 
 const promptStopMachine = () => {
   layoutStore.showHover({
@@ -567,6 +576,17 @@ const Axis = (props: { label: string; value: unknown }) => {
   flex-direction: column;
   height: 100vh;
   background: var(--background, #f5f5f5);
+}
+
+/* Kiosk view (HA Lovelace embed / shop tablet): no global header,
+   tighter padding, no background contrast against the embedder. */
+.machine-page--kiosk {
+  background: transparent;
+}
+
+.machine-page--kiosk .machine-grid {
+  padding: 0.4rem;
+  gap: 0.4rem;
 }
 
 .machine-grid {
