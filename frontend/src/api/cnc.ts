@@ -236,6 +236,49 @@ export function getToolTableHistory(machineId?: string) {
   return fetchJSON<ToolTableHistory>(`/api/cnc/tool-table/history${q}`, {});
 }
 
+// ── Pre-flight tool check (NC ↔ tool table) ─────────────────────────────────
+
+export type PreflightStatus = "ok" | "warn" | "empty" | "offline" | "missing";
+
+export interface PreflightToolUsage {
+  tool: number;
+  reference_count: number;
+  comment?: string;
+  expected_diameter?: number;
+  expected_corner_radius?: number;
+  in_table: boolean;
+  loaded: boolean;
+  empty_pocket: boolean;
+  offline: boolean;
+  actual_diameter?: number;
+  diameter_delta?: number;
+  status: PreflightStatus;
+  status_reason?: string;
+}
+
+export interface PreflightSummary {
+  ok: number;
+  warn: number;
+  empty: number;
+  offline: number;
+  missing: number;
+}
+
+export interface Preflight {
+  file_path: string;
+  machine_id: string;
+  tools: PreflightToolUsage[];
+  table_read_at?: string;
+  table_missing?: boolean;
+  summary: PreflightSummary;
+}
+
+export function getPreflight(filePath: string, machineId?: string) {
+  const params = new URLSearchParams({ file_path: filePath });
+  if (machineId) params.set("machine_id", machineId);
+  return fetchJSON<Preflight>(`/api/cnc/preflight?${params}`, {});
+}
+
 export interface CncMetric {
   key: string;
   label: string;

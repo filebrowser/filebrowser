@@ -62,6 +62,82 @@
         </div>
       </section>
 
+      <!-- 2b. Tool check — NC ↔ tool-table ───────────────────── -->
+      <section class="wizard-section">
+        <h3 class="wizard-section__title">{{ t("sendWizard.toolCheck") }}</h3>
+        <div v-if="preflightLoading" class="wizard-tools__loading">
+          {{ t("sendWizard.toolCheckLoading") }}
+        </div>
+        <div v-else-if="preflightError" class="wizard-tools__err">
+          {{ preflightError }}
+        </div>
+        <div v-else-if="preflight && preflight.table_missing" class="wizard-tools__warning">
+          <i class="material-icons">warning</i>
+          {{ t("sendWizard.toolCheckNoTable") }}
+        </div>
+        <template v-else-if="preflight">
+          <div class="wizard-tools__summary">
+            <span class="wizard-pill wizard-pill--ok" v-if="preflight.summary.ok > 0">
+              {{ preflight.summary.ok }} OK
+            </span>
+            <span class="wizard-pill wizard-pill--warn" v-if="preflight.summary.warn > 0">
+              {{ preflight.summary.warn }} {{ t("sendWizard.warn") }}
+            </span>
+            <span class="wizard-pill wizard-pill--err" v-if="preflight.summary.empty > 0">
+              {{ preflight.summary.empty }} {{ t("sendWizard.toolEmpty") }}
+            </span>
+            <span class="wizard-pill wizard-pill--err" v-if="preflight.summary.offline > 0">
+              {{ preflight.summary.offline }} {{ t("sendWizard.toolOffline") }}
+            </span>
+            <span class="wizard-pill wizard-pill--err" v-if="preflight.summary.missing > 0">
+              {{ preflight.summary.missing }} {{ t("sendWizard.toolMissing") }}
+            </span>
+            <span v-if="preflight.table_read_at" class="wizard-tools__age">
+              {{ t("sendWizard.tableReadAt", { ts: fmtTs(preflight.table_read_at) }) }}
+            </span>
+          </div>
+          <table class="wizard-tools" v-if="preflight.tools.length > 0">
+            <thead>
+              <tr>
+                <th>{{ t("sendWizard.tool") }}</th>
+                <th>{{ t("sendWizard.expected") }}</th>
+                <th>{{ t("sendWizard.actual") }}</th>
+                <th>{{ t("sendWizard.refs") }}</th>
+                <th>{{ t("sendWizard.statusCol") }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="tu in preflight.tools" :key="tu.tool" :class="`tool-row--${tu.status}`">
+                <td><strong>T{{ tu.tool }}</strong></td>
+                <td class="tool-expected">
+                  <div v-if="tu.expected_diameter !== undefined">⌀ {{ tu.expected_diameter.toFixed(4) }}</div>
+                  <div v-if="tu.comment" class="tool-comment">{{ tu.comment }}</div>
+                  <div v-else-if="tu.expected_diameter === undefined" class="tool-comment">
+                    {{ t("sendWizard.noComment") }}
+                  </div>
+                </td>
+                <td class="tool-actual">
+                  <span v-if="tu.actual_diameter !== undefined">⌀ {{ tu.actual_diameter.toFixed(4) }}</span>
+                  <span v-else>—</span>
+                  <span v-if="tu.diameter_delta !== undefined" class="tool-delta">
+                    Δ {{ tu.diameter_delta >= 0 ? "+" : "" }}{{ tu.diameter_delta.toFixed(4) }}
+                  </span>
+                </td>
+                <td class="tool-refs">{{ tu.reference_count }}×</td>
+                <td>
+                  <span class="badge" :class="`badge--${tu.status}`" :title="tu.status_reason">
+                    {{ tu.status }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div v-else class="wizard-tools__loading">
+            {{ t("sendWizard.toolCheckNoTools") }}
+          </div>
+        </template>
+      </section>
+
       <!-- 3. Send method ─────────────────────────────────────── -->
       <section class="wizard-section">
         <h3 class="wizard-section__title">{{ t("sendWizard.method") }}</h3>
@@ -128,7 +204,7 @@
 import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { cnc as cncApi } from "@/api";
-import type { CncCheckResult, SendMethod } from "@/api/cnc";
+import type { CncCheckResult, Preflight, SendMethod } from "@/api/cnc";
 
 const props = defineProps<{
   filePath: string;
@@ -156,6 +232,19 @@ const checkResult = ref<CncCheckResult | null>(null);
 const checking = ref(false);
 const sending = ref(false);
 const sendError = ref<string>("");
+
+const preflight = ref<Preflight | null>(null);
+const preflightLoading = ref(false);
+const preflightError = ref<string>("");
+
+const fmtTs = (iso: string) => {
+  if (!iso) return "—";
+  try {
+    return new Date(iso).toLocaleString();
+  } catch {
+    return iso;
+  }
+};
 
 const connectionOK = computed(
   () =>
@@ -198,10 +287,26 @@ const doSend = async () => {
   }
 };
 
-// Auto-run a connection check on open so the operator doesn't have to
-// click twice. If it fails they can still re-run manually.
+const runPreflight = async () => {
+  preflightLoading.value = true;
+  preflightError.value = "";
+  try {
+    preflight.value = await cncApi.getPreflight(props.filePath);
+  } catch (e: any) {
+    preflightError.value = e?.message || String(e);
+    preflight.value = null;
+  } finally {
+    preflightLoading.value = false;
+  }
+};
+
+// Auto-run a connection check + preflight on open so the operator
+// doesn't have to click twice. Both are independent — preflight
+// reads the latest persisted tool table from disk, so a flaky
+// bridge doesn't block the tool comparison.
 onMounted(() => {
   runCheck();
+  runPreflight();
 });
 </script>
 
@@ -282,6 +387,123 @@ onMounted(() => {
 .wizard-pill--unknown {
   background: var(--alt-background, #f5f5f5);
   color: var(--fg-muted, #888);
+}
+
+.wizard-pill--warn {
+  background: rgba(245, 124, 0, 0.14);
+  color: #ef6c00;
+}
+
+/* Tool-check table — dense per-tool comparison between expected
+   (parsed from comments) and actual (from latest tool-table read). */
+.wizard-tools__loading,
+.wizard-tools__warning {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 4px;
+  background: var(--alt-background, #fafafa);
+  color: var(--fg-muted, #666);
+  font-size: 0.85rem;
+}
+
+.wizard-tools__warning {
+  background: rgba(245, 124, 0, 0.08);
+  color: #ef6c00;
+}
+
+.wizard-tools__warning .material-icons {
+  font-size: 1rem;
+}
+
+.wizard-tools__err {
+  padding: 0.5rem 0.7rem;
+  border-radius: 4px;
+  background: rgba(198, 40, 40, 0.08);
+  color: #c62828;
+  font-size: 0.85rem;
+}
+
+.wizard-tools__summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.wizard-tools__age {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--fg-muted, #888);
+}
+
+.wizard-tools {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.83rem;
+  margin-top: 0.4rem;
+}
+
+.wizard-tools th,
+.wizard-tools td {
+  padding: 0.35rem 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color, #eee);
+  vertical-align: top;
+}
+
+.wizard-tools thead th {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--fg-muted, #888);
+  font-weight: 500;
+}
+
+.wizard-tools .tool-comment {
+  color: var(--fg-muted, #888);
+  font-size: 0.78rem;
+}
+
+.wizard-tools .tool-actual,
+.wizard-tools .tool-expected {
+  font-variant-numeric: tabular-nums;
+}
+
+.wizard-tools .tool-delta {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--fg-muted, #888);
+}
+
+.wizard-tools .tool-refs {
+  text-align: right;
+  color: var(--fg-muted, #888);
+  font-variant-numeric: tabular-nums;
+}
+
+.wizard-tools tr.tool-row--warn td,
+.wizard-tools tr.tool-row--empty td,
+.wizard-tools tr.tool-row--offline td,
+.wizard-tools tr.tool-row--missing td {
+  background: rgba(198, 40, 40, 0.04);
+}
+
+.wizard-tools tr.tool-row--warn td {
+  background: rgba(245, 124, 0, 0.06);
+}
+
+.badge--warn {
+  background: rgba(245, 124, 0, 0.14);
+  color: #ef6c00;
+}
+
+.badge--empty,
+.badge--offline,
+.badge--missing {
+  background: rgba(198, 40, 40, 0.12);
+  color: #c62828;
 }
 
 .wizard-connection__detail {

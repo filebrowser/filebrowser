@@ -91,6 +91,7 @@ func NewHandler(
 	cncRouter.Handle("/tool-table", monkey(cncToolTableReadHandler(registry), "")).Methods("POST")
 	cncRouter.Handle("/tool-table", monkey(cncToolTableLatestHandler(registry), "")).Methods("GET")
 	cncRouter.Handle("/tool-table/history", monkey(cncToolTableHistoryHandler(registry), "")).Methods("GET")
+	cncRouter.Handle("/preflight", monkey(cncPreflightHandler(registry), "")).Methods("GET")
 	cncRouter.Handle("/siblings", monkey(cncSiblingsHandler(registry), "")).Methods("GET")
 	cncRouter.Handle("/start", monkey(cncStartHandler(registry), "")).Methods("POST")
 	cncRouter.Handle("/stop", monkey(cncStopHandler(registry), "")).Methods("POST")

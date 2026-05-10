@@ -165,7 +165,22 @@
     "dncStep3": "Press [INSERT] / [SELECT PROG]. Then click Send below; press [CYCLE START] once the program is loaded.",
     "prereqHint": "Run a connection check before sending — Send is locked until both bridge and controller respond.",
     "sendButton": "Send ({method})",
-    "sending": "Sending…"
+    "sending": "Sending…",
+    "toolCheck": "Tool check",
+    "toolCheckLoading": "Parsing NC and joining against latest tool table…",
+    "toolCheckNoTable": "No tool-table read on file for this machine — flying blind. Run a tool-table read on /machine first to get diameter / wear comparisons.",
+    "toolCheckNoTools": "No T-codes found in the program — nothing to verify.",
+    "tableReadAt": "Last read {ts}",
+    "tool": "Tool",
+    "expected": "Expected (NC)",
+    "actual": "Actual (table)",
+    "refs": "Refs",
+    "statusCol": "Status",
+    "warn": "warn",
+    "toolEmpty": "empty",
+    "toolOffline": "offline",
+    "toolMissing": "not in table",
+    "noComment": "(no comment block)"
   },
   "errors": {
     "forbidden": "You don't have permissions to access this.",

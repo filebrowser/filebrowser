@@ -747,6 +747,52 @@ func cncStartHandler(registry *cnc.Registry) handleFunc {
 	})
 }
 
+// cncPreflightHandler joins the NC source's tool references against
+// the machine's latest persisted tool-table dump. Read-only; the
+// streamer is not touched. Returns the per-tool status list the
+// SendWizard renders before the operator hits Send.
+func cncPreflightHandler(registry *cnc.Registry) handleFunc {
+	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		if !d.user.Perm.Modify {
+			return http.StatusForbidden, nil
+		}
+		filePath := r.URL.Query().Get("file_path")
+		if filePath == "" {
+			return http.StatusBadRequest, errors.New("file_path required")
+		}
+		clean := path.Clean(ensureLeading(filePath))
+		if strings.Contains(clean, "..") {
+			return http.StatusBadRequest, errors.New("file_path must not escape the share")
+		}
+		absPath := d.user.FullPath(clean)
+
+		_, machineID, code, err := resolveStreamer(registry, r)
+		if err != nil {
+			return code, err
+		}
+
+		// Load the latest persisted tool-table dump for this machine.
+		// nil == no dump yet → BuildPreflight returns "missing" rows.
+		var table *cnc.ToolTable
+		dir := toolTableDirAbs(d, machineID)
+		latestPath, _ := newestJSONIn(dir)
+		if latestPath != "" {
+			if buf, err := os.ReadFile(latestPath); err == nil {
+				var t cnc.ToolTable
+				if json.Unmarshal(buf, &t) == nil {
+					table = &t
+				}
+			}
+		}
+
+		pf, err := cnc.BuildPreflight(absPath, clean, machineID, table)
+		if err != nil {
+			return errToStatus(err), err
+		}
+		return renderJSON(w, r, pf)
+	})
+}
+
 func cncStopHandler(registry *cnc.Registry) handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		if !d.user.Perm.Modify {
