@@ -37,10 +37,13 @@ export function listMachines() {
   return fetchJSON<CncMachinesList>(`/api/cnc/machines`, {});
 }
 
+export type SendMethod = "mem" | "dnc";
+
 export interface CncStatus {
   running: boolean;
   file_path?: string;
   file_url?: string;
+  method?: SendMethod;
   line_current?: number;
   line_total?: number;
   started_at?: string;
@@ -71,10 +74,16 @@ export function getStatus() {
   return fetchJSON<CncStatus>(`/api/cnc/status`, {});
 }
 
-export function start(filePath: string) {
+export function start(
+  filePath: string,
+  method: SendMethod = "mem",
+  machineId?: string
+) {
+  const body: Record<string, string> = { file_path: filePath, method };
+  if (machineId) body.machine_id = machineId;
   return fetchJSON<{ job_id: string }>(`/api/cnc/start`, {
     method: "POST",
-    body: JSON.stringify({ file_path: filePath }),
+    body: JSON.stringify(body),
   });
 }
 

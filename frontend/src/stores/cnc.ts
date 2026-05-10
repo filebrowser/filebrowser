@@ -70,6 +70,11 @@ interface CncState {
   running: boolean;
   filePath: string;
   fileURL: string;
+  // Mode the operator picked when starting the job — "mem" (Receive
+  // into NC memory then Cycle Start) or "dnc" (drip-feed). Echoed by
+  // the backend on every status frame; surfaces in the activity log
+  // and the in-flight progress strip.
+  method: string;
   lineCurrent: number;
   lineTotal: number;
   haasOk: boolean;
@@ -100,6 +105,7 @@ export const useCncStore = defineStore("cnc", {
     running: false,
     filePath: "",
     fileURL: "",
+    method: "",
     lineCurrent: 0,
     lineTotal: 0,
     haasOk: true,
@@ -117,6 +123,7 @@ export const useCncStore = defineStore("cnc", {
       this.running = !!s.running;
       this.filePath = s.file_path ?? "";
       this.fileURL = s.file_url ?? "";
+      this.method = s.method ?? "";
       this.lineCurrent = s.line_current ?? 0;
       this.lineTotal = s.line_total ?? 0;
       this.haasOk = s.haas_ok !== false;
@@ -235,7 +242,8 @@ export const useCncStore = defineStore("cnc", {
             const prevTotal = this.lineTotal;
             this.applyStatus(ev.status);
             if (this.running && !wasRunning) {
-              this.pushLog("info", `running: ${this.filePath}`);
+              const tag = this.method ? ` [${this.method}]` : "";
+              this.pushLog("info", `running${tag}: ${this.filePath}`);
             } else if (!this.running && wasRunning) {
               this.pushLog("info", `idle (last: ${prevLine}/${prevTotal})`);
             }

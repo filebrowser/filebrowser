@@ -671,6 +671,12 @@ func newestJSONIn(dir string) (string, error) {
 type cncStartBody struct {
 	FilePath  string `json:"file_path"`
 	MachineID string `json:"machine_id,omitempty"` // optional; ?machine_id= also accepted
+	// Method tells the streamer how the operator has prepared the
+	// controller — "mem" (Memory-tab Receive) or "dnc" (DNC drip-feed).
+	// The Pi-side bytes are identical for both; the field is recorded
+	// on the job so the activity log + dashboard can tag entries.
+	// Empty / unknown values default to "mem".
+	Method string `json:"method,omitempty"`
 }
 
 func cncStartHandler(registry *cnc.Registry) handleFunc {
@@ -705,7 +711,8 @@ func cncStartHandler(registry *cnc.Registry) handleFunc {
 		}
 		absPath := d.user.FullPath(clean)
 
-		st, err := streamer.Start(absPath, clean)
+		method := cnc.NormalizeSendMethod(req.Method)
+		st, err := streamer.Start(absPath, clean, method)
 		switch {
 		case errors.Is(err, cnc.ErrJobAlreadyRunning):
 			return http.StatusConflict, err

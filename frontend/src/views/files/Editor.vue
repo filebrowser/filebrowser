@@ -189,7 +189,6 @@ function debounce<T extends (...args: any[]) => void>(fn: T, delay: number): T {
 }
 
 const $showError = inject<IToastError>("$showError")!;
-const $showSuccess = inject<IToastSuccess>("$showSuccess")!;
 
 const fileStore = useFileStore();
 const authStore = useAuthStore();
@@ -235,7 +234,6 @@ const isSelectionEmpty = ref(true);
 // cncRunning + machineLine are driven by the global useCncStore — same
 // source the header pill reads, so all surfaces stay in sync via the
 // /api/cnc/stream WebSocket (with the 2 s poll backstop).
-const cncHaasHostLabel = ref<string>("");
 const cncRunning = computed(() => cncStore.running);
 
 // machineLine is null unless the streamer is on THIS file. Without the
@@ -302,6 +300,10 @@ const toggleFollowMachine = () => {
 };
 
 const promptSendToMachine = async () => {
+  // Send no longer kicks off the stream from the editor — the
+  // operator now lands on /machine, runs a connection check, picks
+  // MEM-mode vs DNC drip-feed, and confirms there. This routes them
+  // there with the file pre-loaded into the wizard.
   await refreshCncStatus();
   if (cncStore.recoveryPending) {
     $showError(new Error(t("errors.cncRecoveryPending") as string));
@@ -311,57 +313,25 @@ const promptSendToMachine = async () => {
     $showError(new Error(t("errors.cncJobAlreadyRunning") as string));
     return;
   }
-  // Resolve host label from the default machine (machines[0]) for the
-  // confirm-prompt destination line. Multi-machine destination
-  // selection lands in a follow-on PR.
-  let settings: { haasHost: string; haasPort: number } | null = null;
+  // Bail before the navigation if the install isn't configured —
+  // the operator gets a clearer error here than after a router push
+  // into a page that can't resolve a machine.
   try {
     const s = await cncApi.getSettings();
     const m = s.machines?.[0];
-    if (m) {
-      settings = { haasHost: m.host, haasPort: m.port };
+    if (!m?.host) {
+      $showError(new Error(t("errors.cncSettingsMissing") as string));
+      return;
     }
-    cncHaasHostLabel.value = settings?.haasHost
-      ? `${settings.haasHost}:${settings.haasPort}`
-      : "";
   } catch {
-    cncHaasHostLabel.value = "";
-  }
-  if (!settings?.haasHost) {
-    $showError(
-      new Error(t("errors.cncSettingsMissing") as string)
-    );
-    return;
+    /* settings fetch failure is non-fatal; the wizard will surface its own error. */
   }
   const filePath = "/" + (fileStore.req?.path?.replace(/^\/+/, "") ?? "");
-  const lineCount = (editor.value?.session.getLength() ?? 0) || 0;
-
-  layoutStore.showHover({
-    prompt: "sendToMachine",
-    props: {
-      filePath,
-      lineCount,
-      haasHostLabel: cncHaasHostLabel.value,
-    },
-    confirm: async (event: Event) => {
-      event.preventDefault();
-      layoutStore.closeHovers();
-      try {
-        await cncApi.start(filePath);
-        // Trigger an immediate poll so cncRunning (a computed off the
-        // store) flips before the WS broadcasts the status frame.
-        cncStore.pollOnce();
-        followMachine.value = true;
-        $showSuccess(t("buttons.sendingToMachine"));
-        // Operator's eyes belong on the machine page now — live state,
-        // progress bar, and the NC mirror are all there. Use the
-        // router so the editor cleanly tears down (Ace + 3D scene).
-        router.push({ name: "Machine" });
-      } catch (e: any) {
-        $showError(e);
-      }
-    },
-  });
+  // Pre-flag follow-mode so when the wizard fires the start, the
+  // cursor follows the spindle line in the NC mirror without an
+  // explicit operator toggle.
+  followMachine.value = true;
+  router.push({ name: "Machine", query: { send: filePath } });
 };
 
 // ── Splitter between code + 3D viewer ──────────────────────────────────────

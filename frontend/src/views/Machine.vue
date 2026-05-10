@@ -5,6 +5,16 @@
     </header-bar>
 
     <div class="machine-grid">
+      <!-- Send wizard — surfaces when the operator hits Send from
+           the editor and lands on /machine?send=<file>. Verify
+           connection, pick MEM-vs-DNC method, then Send. -->
+      <SendWizard
+        v-if="showSendWizard"
+        :file-path="sendWizardPath"
+        @cancel="onWizardCancel"
+        @started="onWizardStarted"
+      />
+
       <!-- Camera tile (Z-13). HLS / snapshot / RTSP-hint. -->
       <section class="machine-card camera-card" v-if="cameraKind !== 'none'">
         <div class="card-header">
@@ -164,6 +174,14 @@
             </div>
             <div v-if="cncStore.running" class="send-progress">
               <div class="send-progress__head">
+                <span
+                  v-if="cncStore.method"
+                  class="send-progress__method"
+                  :class="`send-progress__method--${cncStore.method}`"
+                  :title="t('sendWizard.method')"
+                >
+                  {{ cncStore.method.toUpperCase() }}
+                </span>
                 <span class="send-progress__file">{{ cncStore.filePath || "—" }}</span>
                 <span class="send-progress__counter">
                   {{ cncStore.lineCurrent }} / {{ cncStore.lineTotal }}
@@ -331,11 +349,12 @@ import type { CncCheckResult, CncMetric } from "@/api/cnc";
 import GCode3DViewer from "@/components/GCode3DViewer.vue";
 import MachineNcMirror from "@/components/MachineNcMirror.vue";
 import Part3DViewer from "@/components/Part3DViewer.vue";
+import SendWizard from "@/components/SendWizard.vue";
 import ToolTablePanel from "@/components/ToolTablePanel.vue";
 import { useAuthStore } from "@/stores/auth";
 import { useCncStore } from "@/stores/cnc";
 import { useLayoutStore } from "@/stores/layout";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import HeaderBar from "@/components/header/HeaderBar.vue";
 
 const { t } = useI18n();
@@ -350,6 +369,28 @@ const canModify = computed(() => !!authStore.user?.perm.modify);
 // Lovelace WebPage cards or hung on a shop tablet. Same data, no
 // chrome.
 const kioskMode = computed(() => route.query.kiosk === "1");
+
+// Send wizard: when /machine?send=<file_path> is hit, render the
+// guided pre-send flow (file → connection → method → send) ABOVE the
+// usual dashboard. Hide it as soon as the operator clicks Send (the
+// stream-in-progress view takes over) or hits Cancel.
+const router = useRouter();
+const sendWizardPath = computed(() => {
+  const q = route.query.send;
+  return typeof q === "string" && q ? q : "";
+});
+const wizardDismissed = ref(false);
+const showSendWizard = computed(
+  () => !!sendWizardPath.value && !wizardDismissed.value && !cncStore.running && !kioskMode.value
+);
+const onWizardCancel = () => {
+  wizardDismissed.value = true;
+  router.replace({ query: { ...route.query, send: undefined } });
+};
+const onWizardStarted = () => {
+  wizardDismissed.value = true;
+  router.replace({ query: { ...route.query, send: undefined } });
+};
 
 const promptStopMachine = () => {
   layoutStore.showHover({
@@ -1285,6 +1326,23 @@ const Axis = (props: { label: string; value: unknown }) => {
   gap: 0.6rem;
   font-size: 0.85rem;
   margin-bottom: 0.35rem;
+}
+
+.send-progress__method {
+  display: inline-block;
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  background: rgba(33, 150, 243, 0.12);
+  color: #1976d2;
+  margin-right: 0.4rem;
+}
+
+.send-progress__method--dnc {
+  background: rgba(245, 124, 0, 0.14);
+  color: #ef6c00;
 }
 
 .send-progress__file {

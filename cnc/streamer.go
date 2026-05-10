@@ -45,14 +45,15 @@ type settingsReader interface {
 // Status is a point-in-time snapshot of streamer state. Serialized as
 // the response body of GET /api/cnc/status.
 type Status struct {
-	Running       bool      `json:"running"`
-	JobID         string    `json:"job_id,omitempty"`
-	FilePath      string    `json:"file_path,omitempty"` // share-relative
-	LineCurrent   int64     `json:"line_current"`
-	LineTotal     int       `json:"line_total"`
-	StartedAt     time.Time `json:"started_at,omitempty"`
-	HaasOK        bool      `json:"haas_ok"`
-	HaasLastError string    `json:"haas_last_error,omitempty"`
+	Running       bool       `json:"running"`
+	JobID         string     `json:"job_id,omitempty"`
+	FilePath      string     `json:"file_path,omitempty"` // share-relative
+	Method        SendMethod `json:"method,omitempty"`
+	LineCurrent   int64      `json:"line_current"`
+	LineTotal     int        `json:"line_total"`
+	StartedAt     time.Time  `json:"started_at,omitempty"`
+	HaasOK        bool       `json:"haas_ok"`
+	HaasLastError string     `json:"haas_last_error,omitempty"`
 
 	// Z-15: a previous instance left an active-job marker behind.
 	// Frontend renders the warning until the operator POSTs to
@@ -114,12 +115,37 @@ type job struct {
 	id          string
 	displayPath string // share-relative, what /status echoes back
 	absPath     string // absolute filesystem path
+	method      SendMethod
 	startedAt   time.Time
 	lineCurrent atomic.Int64
 	lineTotal   int
 	cancel      context.CancelFunc
 	done        chan struct{} // closed when the streaming goroutine exits
 	queryCh     chan *queryReq
+}
+
+// SendMethod tells the operator which controller-side mode they're
+// pairing with. The Pi-side bytes are identical for both — RS-232
+// is RS-232 — but the controller must be prepared in matching mode
+// (MEM-tab Receive, or DNC-tab waiting for drip). The field is
+// recorded on the job so the activity log can tag entries with the
+// method and the dashboard can reflect the operator's intent.
+type SendMethod string
+
+const (
+	SendMethodMem SendMethod = "mem"
+	SendMethodDNC SendMethod = "dnc"
+)
+
+// NormalizeSendMethod maps a wire string to a known SendMethod or
+// returns SendMethodMem as the safe default.
+func NormalizeSendMethod(s string) SendMethod {
+	switch SendMethod(strings.ToLower(strings.TrimSpace(s))) {
+	case SendMethodDNC:
+		return SendMethodDNC
+	default:
+		return SendMethodMem
+	}
 }
 
 // New builds a Streamer for one Machine. machineID identifies which
@@ -166,7 +192,7 @@ func (s *Streamer) resolveMachine() (settings.Machine, int, error) {
 // displayPath is share-relative and what shows up in /status.
 //
 // Returns ErrJobAlreadyRunning if a job is already in flight.
-func (s *Streamer) Start(absPath, displayPath string) (*Status, error) {
+func (s *Streamer) Start(absPath, displayPath string, method SendMethod) (*Status, error) {
 	m, port, err := s.resolveMachine()
 	if err != nil {
 		return nil, err
@@ -199,6 +225,7 @@ func (s *Streamer) Start(absPath, displayPath string) (*Status, error) {
 		id:          id,
 		displayPath: displayPath,
 		absPath:     absPath,
+		method:      method,
 		startedAt:   time.Now().UTC(),
 		lineTotal:   lineTotal,
 		cancel:      cancel,
@@ -224,7 +251,7 @@ func (s *Streamer) Start(absPath, displayPath string) (*Status, error) {
 
 	st := s.Status()
 	s.emit(Event{Type: "status", Status: st})
-	s.logf("info", "start job %s: %s (%d lines) → %s:%d", j.id, j.displayPath, j.lineTotal, host, port)
+	s.logf("info", "start job %s [%s]: %s (%d lines) → %s:%d", j.id, j.method, j.displayPath, j.lineTotal, host, port)
 	go s.run(ctx, j, host, port)
 
 	return st, nil
@@ -305,6 +332,7 @@ func (s *Streamer) Status() *Status {
 		st.Running = true
 		st.JobID = s.job.id
 		st.FilePath = s.job.displayPath
+		st.Method = s.job.method
 		st.LineCurrent = s.job.lineCurrent.Load()
 		st.LineTotal = s.job.lineTotal
 		st.StartedAt = s.job.startedAt
