@@ -140,6 +140,15 @@
               >
                 {{ probingId === machine.id ? t("settings.toolProbing") : t("settings.toolProbeRun") }}
               </button>
+              <button
+                type="button"
+                class="button button--flat"
+                :disabled="lifeProbingId !== null"
+                @click="runToolLifeProbe(machine.id)"
+                :title="t('settings.toolLifeProbeTitle')"
+              >
+                {{ lifeProbingId === machine.id ? t("settings.toolLifeProbing") : t("settings.toolLifeProbeRun") }}
+              </button>
             </p>
             <div
               v-if="probeResults[machine.id]"
@@ -158,6 +167,47 @@
                   addr: probeResults[machine.id].bridge_address,
                 }) }}
               </p>
+            </div>
+            <div
+              v-if="lifeProbeResults[machine.id]"
+              class="probe-report"
+              :class="`probe-report--${lifeProbeResultClass(machine.id)}`"
+            >
+              <p>
+                <strong>{{ t("settings.toolLifeProbeVerdict") }}:</strong>
+                {{ lifeProbeResults[machine.id].verdict }}
+              </p>
+              <p class="small">{{ lifeProbeResults[machine.id].recommendation }}</p>
+              <p class="small">
+                {{ t("settings.toolLifeProbeMeta", {
+                  range: `${lifeProbeResults[machine.id].start}..${lifeProbeResults[machine.id].end}`,
+                  ok: lifeProbeResults[machine.id].non_zero,
+                  empty: lifeProbeResults[machine.id].empty,
+                  err: lifeProbeResults[machine.id].errors,
+                  ms: Math.round(lifeProbeResults[machine.id].duration_ms),
+                }) }}
+              </p>
+              <table
+                v-if="lifeProbeResults[machine.id].samples.length > 0"
+                class="probe-table"
+              >
+                <thead>
+                  <tr>
+                    <th>{{ t("settings.toolLifeProbeMacro") }}</th>
+                    <th>{{ t("settings.toolLifeProbeValue") }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="s in lifeProbeResults[machine.id].samples" :key="s.macro">
+                    <td><code>#{{ s.macro }}</code></td>
+                    <td>
+                      <span v-if="s.error" class="probe-err">{{ s.error }}</span>
+                      <span v-else-if="s.number !== undefined">{{ s.number }}</span>
+                      <span v-else class="small">{{ s.value }}</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
 
@@ -209,7 +259,7 @@
 
 <script setup lang="ts">
 import { cnc as api } from "@/api";
-import type { CncMachine, CncSettings, ProbeToolsReport } from "@/api/cnc";
+import type { CncMachine, CncSettings, ProbeToolsReport, ToolLifeProbeReport } from "@/api/cnc";
 import { fetchURL } from "@/api/utils";
 import { StatusError } from "@/api/utils";
 import { useLayoutStore } from "@/stores/layout";
@@ -232,6 +282,24 @@ const probeResultClass = (id: string) => {
     case "ngc-mapping-confirmed":
       return "ok";
     case "ngc-mapping-empty":
+      return "warn";
+    default:
+      return "err";
+  }
+};
+
+// Tool-life probe state — separate from the table probe so an
+// operator can compare both outcomes at a glance.
+const lifeProbingId = ref<string | null>(null);
+const lifeProbeResults = ref<Record<string, ToolLifeProbeReport>>({});
+
+const lifeProbeResultClass = (id: string) => {
+  const r = lifeProbeResults.value[id];
+  if (!r) return "";
+  switch (r.verdict) {
+    case "candidates-found":
+      return "ok";
+    case "all-zero":
       return "warn";
     default:
       return "err";
@@ -334,6 +402,26 @@ const runToolProbe = async (machineId: string) => {
     $showError(e);
   } finally {
     probingId.value = null;
+  }
+};
+
+// Tool-life discovery probe — defaults to macros 3000..3199 (covers
+// the common Haas tool-monitor candidates plus a few known counters
+// like #3022 M30 parts so the operator has a sanity reference). The
+// API accepts custom start/end/step but the UI sticks to the default
+// range until we know what to scan; once a candidate is pinned the
+// button can be replaced with a live read column.
+const runToolLifeProbe = async (machineId: string) => {
+  lifeProbingId.value = machineId;
+  try {
+    lifeProbeResults.value = {
+      ...lifeProbeResults.value,
+      [machineId]: await api.probeToolLife({ machineId }),
+    };
+  } catch (e: any) {
+    $showError(e);
+  } finally {
+    lifeProbingId.value = null;
   }
 };
 
@@ -450,5 +538,32 @@ onMounted(async () => {
 .probe-report--err {
   border-color: #c62828;
   background: rgba(198, 40, 40, 0.08);
+}
+
+.probe-table {
+  width: 100%;
+  margin-top: 0.5rem;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.probe-table th,
+.probe-table td {
+  padding: 0.2rem 0.4rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color, #eee);
+}
+
+.probe-table th {
+  font-weight: 500;
+  color: var(--fg-muted, #888);
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+}
+
+.probe-err {
+  color: #c62828;
+  font-size: 0.78rem;
 }
 </style>

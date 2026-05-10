@@ -170,6 +170,49 @@ export function probeTools(slots = 30, machineId?: string) {
   });
 }
 
+// ── Tool-life discovery probe (POST /api/cnc/probe-tool-life) ─────────────
+
+export interface ToolLifeProbeSample {
+  macro: number;
+  value?: string;
+  number?: number;
+  error?: string;
+}
+
+export interface ToolLifeProbeReport {
+  start: number;
+  end: number;
+  step: number;
+  probed: number;
+  ok: number;
+  empty: number;
+  non_zero: number;
+  errors: number;
+  duration_ms: number;
+  bridge_address: string;
+  samples: ToolLifeProbeSample[];
+  verdict: string;
+  recommendation: string;
+}
+
+export function probeToolLife(opts: {
+  start?: number;
+  end?: number;
+  step?: number;
+  machineId?: string;
+}) {
+  const params = new URLSearchParams();
+  if (opts.start) params.set("start", String(opts.start));
+  if (opts.end) params.set("end", String(opts.end));
+  if (opts.step) params.set("step", String(opts.step));
+  if (opts.machineId) params.set("machine_id", opts.machineId);
+  const qs = params.toString();
+  return fetchJSON<ToolLifeProbeReport>(
+    `/api/cnc/probe-tool-life${qs ? `?${qs}` : ""}`,
+    { method: "POST" }
+  );
+}
+
 // ── Tool table (live readout, persisted as JSON in user share) ─────────────
 
 export interface ToolTableSlot {

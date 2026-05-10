@@ -444,6 +444,52 @@ func cncProbeToolsHandler(registry *cnc.Registry) handleFunc {
 	})
 }
 
+// cncProbeToolLifeHandler — operator-triggered macro-range scan to
+// figure out which Haas macros carry tool-life data on this firmware.
+// See cnc/probe_life.go + docs/TOOL_LIFE_RESEARCH.md. Admin-only
+// because it ties up the bridge for tens of seconds; not appropriate
+// during a job.
+func cncProbeToolLifeHandler(registry *cnc.Registry) handleFunc {
+	return withAdmin(func(w http.ResponseWriter, r *http.Request, _ *data) (int, error) {
+		st, _, code, err := resolveStreamer(registry, r)
+		if err != nil {
+			return code, err
+		}
+		parseInt := func(key string) (int, error) {
+			q := r.URL.Query().Get(key)
+			if q == "" {
+				return 0, nil
+			}
+			n, perr := strconv.Atoi(q)
+			if perr != nil {
+				return 0, fmt.Errorf("%s: %w", key, perr)
+			}
+			return n, nil
+		}
+		start, perr := parseInt("start")
+		if perr != nil {
+			return http.StatusBadRequest, perr
+		}
+		end, perr := parseInt("end")
+		if perr != nil {
+			return http.StatusBadRequest, perr
+		}
+		step, perr := parseInt("step")
+		if perr != nil {
+			return http.StatusBadRequest, perr
+		}
+		// 90 s ceiling matches probe-tools — 500 macros × 150 ms ≈ 75 s,
+		// the worst case the probe code itself allows.
+		ctx, cancel := context.WithTimeout(r.Context(), 90*time.Second)
+		defer cancel()
+		rep, err := st.ProbeToolLife(ctx, start, end, step)
+		if err != nil {
+			return errToStatus(err), err
+		}
+		return renderJSON(w, r, rep)
+	})
+}
+
 // toolTableHistoryEntry is the lightweight summary returned by the
 // list endpoint — just enough to drive the history dropdown without
 // loading every JSON dump into memory.
