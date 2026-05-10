@@ -8,6 +8,18 @@
 
 ---
 
+## Companion design docs
+
+- [`MULTI_MACHINE_DESIGN.md`](MULTI_MACHINE_DESIGN.md) — schema +
+  protocol abstraction + per-machine streamer registry. Phase plan
+  for going from single-Haas to N-machine N-brand.
+- [`TOOL_TABLE_RESEARCH.md`](TOOL_TABLE_RESEARCH.md) — Q-code / macro
+  variable map for the Haas tool table. Probe plan to validate before
+  scaffolding the live tool index + diameter-check on Send.
+- [`DPRNT_RESEARCH.md`](DPRNT_RESEARCH.md) — Z-14 design. Refactor
+  shape for the streaming socket's read path so DPRNT lines get
+  captured to the activity log + a rolling tail.
+
 ## haas-dashboard deprecation (2026-05-10)
 
 The plan started as a two-service split:
