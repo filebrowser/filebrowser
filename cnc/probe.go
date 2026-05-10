@@ -75,12 +75,9 @@ func (s *Streamer) ProbeTools(ctx context.Context, slots int) (*ToolProbeReport,
 	if slots < 1 || slots > 200 {
 		return nil, fmt.Errorf("slots must be 1..200, got %d", slots)
 	}
-	set, err := s.settings.Get()
+	m, port, err := s.resolveMachine()
 	if err != nil {
 		return nil, err
-	}
-	if set.Cnc.HaasHost == "" {
-		return nil, ErrConfigMissing
 	}
 	if s.IsRunning() {
 		return nil, fmt.Errorf("can't probe during a streaming job")
@@ -89,7 +86,7 @@ func (s *Streamer) ProbeTools(ctx context.Context, slots int) (*ToolProbeReport,
 	t0 := time.Now()
 	rep := &ToolProbeReport{
 		Slots:         slots,
-		BridgeAddress: fmt.Sprintf("%s:%d", set.Cnc.HaasHost, set.Cnc.HaasPort),
+		BridgeAddress: fmt.Sprintf("%s:%d", m.Host, port),
 	}
 	s.logf("info", "starting tool-table probe over %d slots × %d bases", slots, len(toolProbeBases))
 

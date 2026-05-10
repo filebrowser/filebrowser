@@ -236,12 +236,12 @@ user created with the credentials from options "username" and "password".`,
 			panic(err)
 		}
 
-		streamer := cnc.New(st.Settings)
-		aggregator := cnc.NewAggregator(streamer)
-		aggregator.Start(context.Background())
-		defer aggregator.Stop()
+		// One Streamer + Aggregator per Machine. Registry kicks them
+		// off at construction time; Stop tears all of them down.
+		registry := cnc.NewRegistry(st.Settings)
+		defer registry.Stop()
 
-		handler, err := fbhttp.NewHandler(imageService, fileCache, uploadCache, st.Storage, server, assetsFs, streamer, aggregator)
+		handler, err := fbhttp.NewHandler(imageService, fileCache, uploadCache, st.Storage, server, assetsFs, registry)
 		if err != nil {
 			return err
 		}

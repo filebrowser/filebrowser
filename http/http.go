@@ -24,8 +24,7 @@ func NewHandler(
 	store *storage.Storage,
 	server *settings.Server,
 	assetsFs fs.FS,
-	streamer *cnc.Streamer,
-	aggregator *cnc.Aggregator,
+	registry *cnc.Registry,
 ) (http.Handler, error) {
 	server.Clean()
 
@@ -83,18 +82,19 @@ func NewHandler(
 
 	cncRouter := api.PathPrefix("/cnc").Subrouter()
 	cncRouter.Handle("/settings", monkey(cncSettingsGetHandler, "")).Methods("GET")
-	cncRouter.Handle("/settings", monkey(cncSettingsPutHandler, "")).Methods("PUT")
+	cncRouter.Handle("/settings", monkey(cncSettingsPutHandler(registry), "")).Methods("PUT")
 	cncRouter.Handle("/settings/token", monkey(cncRegenerateTokenHandler, "")).Methods("POST")
-	cncRouter.Handle("/status", monkey(cncStatusHandler(streamer), "")).Methods("GET")
-	cncRouter.Handle("/check", monkey(cncCheckHandler(streamer, aggregator), "")).Methods("POST")
-	cncRouter.Handle("/probe-tools", monkey(cncProbeToolsHandler(streamer), "")).Methods("POST")
-	cncRouter.Handle("/siblings", monkey(cncSiblingsHandler(streamer), "")).Methods("GET")
-	cncRouter.Handle("/start", monkey(cncStartHandler(streamer, aggregator), "")).Methods("POST")
-	cncRouter.Handle("/stop", monkey(cncStopHandler(streamer), "")).Methods("POST")
-	cncRouter.Handle("/qcode", monkey(cncQueryHandler(streamer), "")).Methods("POST")
-	cncRouter.Handle("/stream", monkey(cncStreamHandler(streamer), "")).Methods("GET")
-	cncRouter.Handle("/state", monkey(cncStateHandler(aggregator), "")).Methods("GET")
-	cncRouter.Handle("/recovery/ack", monkey(cncRecoveryAckHandler(streamer), "")).Methods("POST")
+	cncRouter.Handle("/machines", monkey(cncMachinesListHandler(registry), "")).Methods("GET")
+	cncRouter.Handle("/status", monkey(cncStatusHandler(registry), "")).Methods("GET")
+	cncRouter.Handle("/check", monkey(cncCheckHandler(registry), "")).Methods("POST")
+	cncRouter.Handle("/probe-tools", monkey(cncProbeToolsHandler(registry), "")).Methods("POST")
+	cncRouter.Handle("/siblings", monkey(cncSiblingsHandler(registry), "")).Methods("GET")
+	cncRouter.Handle("/start", monkey(cncStartHandler(registry), "")).Methods("POST")
+	cncRouter.Handle("/stop", monkey(cncStopHandler(registry), "")).Methods("POST")
+	cncRouter.Handle("/qcode", monkey(cncQueryHandler(registry), "")).Methods("POST")
+	cncRouter.Handle("/stream", monkey(cncStreamHandler(registry), "")).Methods("GET")
+	cncRouter.Handle("/state", monkey(cncStateHandler(registry), "")).Methods("GET")
+	cncRouter.Handle("/recovery/ack", monkey(cncRecoveryAckHandler(registry), "")).Methods("POST")
 
 	api.PathPrefix("/raw").Handler(monkey(rawHandler, "/api/raw")).Methods("GET")
 	api.PathPrefix("/preview/{size}/{path:.*}").

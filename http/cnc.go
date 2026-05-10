@@ -1,12 +1,13 @@
 package fbhttp
 
-// /api/cnc/* — Haas Dashboard ↔ Zinc integration endpoints.
-// See docs/INTEGRATION_WITH_HAAS_DASHBOARD.md for the wider design.
+// /api/cnc/* — machine integration endpoints.
+// See docs/INTEGRATION_WITH_HAAS_DASHBOARD.md for the wider design,
+// docs/MULTI_MACHINE_DESIGN.md for the per-Machine.ID architecture.
 //
-// Phase 1 (this file) only exposes the settings round-trip + a status
-// stub so haas-dashboard can start coding against the contract before
-// the streamer is built. Phase 2 will land the streamer + Q-code
-// multiplexer; Phase 3 the UI; Phase 4 polish + DPRNT capture.
+// All endpoints accept an optional ?machine_id=... query param. If
+// omitted, the registry resolves to the configured default
+// (Cnc.Machines[0]). Single-machine installs continue to work
+// without any change to existing API consumers.
 
 import (
 	"context"
@@ -28,62 +29,167 @@ import (
 )
 
 // cncSettingsBody is the wire shape the Machine settings tab POSTs and
-// reads. Keep it 1:1 with settings.Cnc so the JSON round-trips cleanly,
-// EXCEPT MachineToken — minted server-side via the dedicated regenerate
-// endpoint so a stray PUT can't blank it out.
+// reads. MachineToken is GET-only (minted server-side). Machines is
+// the canonical list; legacy haasHost/haasPort/cameraUrl fields are
+// returned as a copy of Machines[0] for backwards compat with the
+// pre-multi-machine settings UI.
 type cncSettingsBody struct {
-	HaasHost     string `json:"haasHost"`
-	HaasPort     int    `json:"haasPort"`
-	CameraURL    string `json:"cameraUrl"`
-	MachineToken string `json:"machineToken,omitempty"` // GET only
+	Machines     []settings.Machine `json:"machines"`
+	MachineToken string             `json:"machineToken,omitempty"` // GET only
+
+	// Legacy mirrors of Machines[0] — the pre-multi-machine settings
+	// UI POSTs these. Folded into Machines[0] on PUT if the request
+	// doesn't include a Machines list.
+	HaasHost  string `json:"haasHost,omitempty"`
+	HaasPort  int    `json:"haasPort,omitempty"`
+	CameraURL string `json:"cameraUrl,omitempty"`
 }
 
 func cncFromSettings(c settings.Cnc) cncSettingsBody {
-	return cncSettingsBody{
-		HaasHost:     c.HaasHost,
-		HaasPort:     c.HaasPort,
-		CameraURL:    c.CameraURL,
+	body := cncSettingsBody{
+		Machines:     c.Machines,
 		MachineToken: c.MachineToken,
 	}
+	if len(c.Machines) > 0 {
+		m := c.Machines[0]
+		body.HaasHost = m.Host
+		body.HaasPort = m.Port
+		body.CameraURL = m.CameraURL
+	}
+	return body
 }
 
 var cncSettingsGetHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	return renderJSON(w, r, cncFromSettings(d.settings.Cnc))
 })
 
-var cncSettingsPutHandler = withAdmin(func(_ http.ResponseWriter, r *http.Request, d *data) (int, error) {
-	req := &cncSettingsBody{}
-	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
-		return http.StatusBadRequest, err
+func cncSettingsPutHandler(registry *cnc.Registry) handleFunc {
+	return withAdmin(func(_ http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		req := &cncSettingsBody{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			return http.StatusBadRequest, err
+		}
+
+		// Two PUT shapes are accepted:
+		//
+		// 1. New multi-machine UI: req.Machines is set. We replace the
+		//    list wholesale, validating each entry.
+		// 2. Legacy single-machine UI: only haasHost/haasPort/cameraUrl
+		//    are set. We fold into Machines[0] (creating one if needed),
+		//    leaving any additional machines untouched.
+		switch {
+		case req.Machines != nil:
+			cleaned, err := normalizeMachines(req.Machines, d.settings.Cnc.Machines)
+			if err != nil {
+				return http.StatusBadRequest, err
+			}
+			d.settings.Cnc.Machines = cleaned
+		default:
+			port := req.HaasPort
+			if port <= 0 {
+				port = settings.DefaultHaasPort
+			}
+			if port > 65535 {
+				return http.StatusBadRequest, fmt.Errorf("port out of range")
+			}
+			if len(d.settings.Cnc.Machines) == 0 {
+				d.settings.Cnc.Machines = []settings.Machine{{
+					ID:   newMachineID(),
+					Name: "Machine 1",
+				}}
+			}
+			d.settings.Cnc.Machines[0].Host = req.HaasHost
+			d.settings.Cnc.Machines[0].Port = port
+			d.settings.Cnc.Machines[0].CameraURL = req.CameraURL
+		}
+		// Keep the legacy mirror fields populated as a fallback for
+		// any code that hasn't migrated. EnsureMigrated() will skip
+		// since Machines[0] now exists, so this is no-op cosmetic.
+		if len(d.settings.Cnc.Machines) > 0 {
+			d.settings.Cnc.HaasHost = d.settings.Cnc.Machines[0].Host
+			d.settings.Cnc.HaasPort = d.settings.Cnc.Machines[0].Port
+			d.settings.Cnc.CameraURL = d.settings.Cnc.Machines[0].CameraURL
+		}
+
+		if err := d.store.Settings.Save(d.settings); err != nil {
+			return errToStatus(err), err
+		}
+		// Pick up new/removed machines in the live registry.
+		registry.Refresh()
+		return 0, nil
+	})
+}
+
+// normalizeMachines validates + assigns IDs to a Machines list before
+// it lands in storage. Reuses existing IDs where Names match (so an
+// edit doesn't tear down a streamer); generates new IDs for new
+// entries. Empty list is rejected — the install must always have at
+// least one machine.
+func normalizeMachines(in []settings.Machine, existing []settings.Machine) ([]settings.Machine, error) {
+	if len(in) == 0 {
+		return nil, fmt.Errorf("at least one machine required")
 	}
-
-	port := req.HaasPort
-	if port <= 0 {
-		port = settings.DefaultHaasPort
+	seenIDs := make(map[string]struct{}, len(in))
+	out := make([]settings.Machine, 0, len(in))
+	for i, m := range in {
+		if strings.TrimSpace(m.Name) == "" {
+			return nil, fmt.Errorf("machine %d: name required", i)
+		}
+		if strings.TrimSpace(m.Host) == "" {
+			return nil, fmt.Errorf("machine %d (%s): host required", i, m.Name)
+		}
+		if m.Port <= 0 {
+			m.Port = settings.DefaultHaasPort
+		}
+		if m.Port > 65535 {
+			return nil, fmt.Errorf("machine %d (%s): port out of range", i, m.Name)
+		}
+		if m.ID == "" {
+			m.ID = newMachineID()
+		}
+		if _, dupe := seenIDs[m.ID]; dupe {
+			return nil, fmt.Errorf("machine %d (%s): duplicate id %q", i, m.Name, m.ID)
+		}
+		seenIDs[m.ID] = struct{}{}
+		_ = existing // currently unused; kept for future "preserve ID by name match" rules
+		out = append(out, m)
 	}
-	if port > 65535 {
-		return http.StatusBadRequest, nil
+	return out, nil
+}
+
+func newMachineID() string {
+	// 16-byte URL-safe random (~22 chars). Operators configure
+	// a handful of machines per install, no collision risk.
+	buf := make([]byte, 16)
+	if _, err := rand.Read(buf); err != nil {
+		// Crypto-rand failure is exotic; fall back to a timestamp
+		// so the install isn't bricked. Collision risk negligible at
+		// machine-config cadence.
+		return fmt.Sprintf("m%d", time.Now().UnixNano())
 	}
+	return base64.RawURLEncoding.EncodeToString(buf)
+}
 
-	d.settings.Cnc.HaasHost = req.HaasHost
-	d.settings.Cnc.HaasPort = port
-	d.settings.Cnc.CameraURL = req.CameraURL
-	// MachineToken intentionally not touched — see comment on the body type.
+// cncMachinesListHandler returns the configured Machines (id + name +
+// host:port + camera). Auth: any logged-in user — the frontend store
+// needs this to drive the machine switcher.
+func cncMachinesListHandler(registry *cnc.Registry) handleFunc {
+	return withUser(func(w http.ResponseWriter, r *http.Request, _ *data) (int, error) {
+		return renderJSON(w, r, map[string]any{
+			"machines":  registry.Machines(),
+			"default_id": defaultMachineID(registry),
+		})
+	})
+}
 
-	err := d.store.Settings.Save(d.settings)
-	return errToStatus(err), err
-})
+func defaultMachineID(registry *cnc.Registry) string {
+	ms := registry.Machines()
+	if len(ms) == 0 {
+		return ""
+	}
+	return ms[0].ID
+}
 
-// cncRegenerateTokenHandler mints a fresh opaque secret for any
-// external service (Home Assistant scripts, monitoring agents, custom
-// dashboards) that needs to call /api/cnc/state or /api/cnc/qcode
-// server-to-server without a filebrowser session. Old token is
-// invalidated immediately. Admin-only — never exposed to non-admin
-// sessions and never returned in a list endpoint.
-//
-// Originally minted for the haas-dashboard repo (now archived;
-// filebrowser-NC subsumed its functionality). The mechanism stays
-// because it's useful for any S2S consumer.
 var cncRegenerateTokenHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	buf := make([]byte, 32)
 	if _, err := rand.Read(buf); err != nil {
@@ -96,43 +202,60 @@ var cncRegenerateTokenHandler = withAdmin(func(w http.ResponseWriter, r *http.Re
 	return renderJSON(w, r, map[string]string{"machineToken": d.settings.Cnc.MachineToken})
 })
 
-// cncStatusHandler is auth-required (any logged-in user) so the
-// breadcrumb pill can poll it from every page. It does NOT require
-// admin — operators need to see whether a job is running.
-//
-// Status comes from the live cnc.Streamer singleton; the FileURL
-// field is composed here so the dashboard can deep-link straight to
-// the file in filebrowser without re-deriving the path.
-func cncStatusHandler(streamer *cnc.Streamer) handleFunc {
+// resolveStreamer pulls the streamer for ?machine_id= (or default
+// when missing). Returns 404 + nil if no machine matches. Handlers
+// short-circuit on a non-zero status.
+func resolveStreamer(registry *cnc.Registry, r *http.Request) (*cnc.Streamer, string, int, error) {
+	id := r.URL.Query().Get("machine_id")
+	st, resolvedID := registry.Streamer(id)
+	if st == nil {
+		return nil, "", http.StatusNotFound, fmt.Errorf("no machine configured (id=%q)", id)
+	}
+	return st, resolvedID, 0, nil
+}
+
+func resolveAggregator(registry *cnc.Registry, r *http.Request) (*cnc.Aggregator, string, int, error) {
+	id := r.URL.Query().Get("machine_id")
+	ag, resolvedID := registry.Aggregator(id)
+	if ag == nil {
+		return nil, "", http.StatusNotFound, fmt.Errorf("no machine configured (id=%q)", id)
+	}
+	return ag, resolvedID, 0, nil
+}
+
+func cncStatusHandler(registry *cnc.Registry) handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, _ *data) (int, error) {
-		st := streamer.Status()
+		st, machineID, code, err := resolveStreamer(registry, r)
+		if err != nil {
+			return code, err
+		}
+		s := st.Status()
 		body := struct {
 			*cnc.Status
-			FileURL string `json:"file_url,omitempty"`
-		}{Status: st}
-		if st.FilePath != "" {
-			body.FileURL = "/files" + ensureLeading(st.FilePath)
+			MachineID string `json:"machine_id"`
+			FileURL   string `json:"file_url,omitempty"`
+		}{Status: s, MachineID: machineID}
+		if s.FilePath != "" {
+			body.FileURL = "/files" + ensureLeading(s.FilePath)
 		}
 		return renderJSON(w, r, body)
 	})
 }
 
-// cncCheckHandler probes connectivity in two layers:
-//
-//   1. Bridge — TCP dial to the configured Haas host:port. Reports
-//      whether the Waveshare RS-232↔TCP bridge is reachable on the
-//      network (cabling / power / ip address sane).
-//   2. Controller — sends a Q104 (mode) round-trip and validates the
-//      response shape. If the bridge dials but the controller doesn't
-//      answer or returns garbage, that points at Setting 143 / RS-232
-//      cabling / pendant-off, not network. Auth: any logged-in user.
-func cncCheckHandler(streamer *cnc.Streamer, agg *cnc.Aggregator) handleFunc {
+func cncCheckHandler(registry *cnc.Registry) handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, _ *data) (int, error) {
-		// Operator looked at the machine — extend the polling window
-		// so the dashboard fills in normally afterwards.
-		agg.Wake(0)
+		st, machineID, code, err := resolveStreamer(registry, r)
+		if err != nil {
+			return code, err
+		}
+		ag, _ := registry.Aggregator(machineID)
+		if ag != nil {
+			ag.Wake(0)
+		}
+
 		body := struct {
-			Bridge struct {
+			MachineID string `json:"machine_id"`
+			Bridge    struct {
 				OK        bool    `json:"ok"`
 				LatencyMs float64 `json:"latency_ms,omitempty"`
 				Error     string  `json:"error,omitempty"`
@@ -144,15 +267,15 @@ func cncCheckHandler(streamer *cnc.Streamer, agg *cnc.Aggregator) handleFunc {
 				Error     string  `json:"error,omitempty"`
 				Mode      string  `json:"mode,omitempty"`
 			} `json:"controller"`
-		}{}
+		}{MachineID: machineID}
 
-		if streamer.IsRunning() {
+		if st.IsRunning() {
 			body.Bridge.Error = "stream in progress — connection check skipped to avoid disturbing the job"
 			body.Controller.Error = body.Bridge.Error
 			return renderJSON(w, r, body)
 		}
 
-		bridgeOK, bridgeLatency, bridgeAddr, bridgeErr := streamer.CheckBridge()
+		bridgeOK, bridgeLatency, bridgeAddr, bridgeErr := st.CheckBridge()
 		body.Bridge.OK = bridgeOK
 		body.Bridge.LatencyMs = bridgeLatency
 		body.Bridge.Address = bridgeAddr
@@ -162,10 +285,7 @@ func cncCheckHandler(streamer *cnc.Streamer, agg *cnc.Aggregator) handleFunc {
 			return renderJSON(w, r, body)
 		}
 
-		// Bridge is up — exercise a Q104 to see if the controller is
-		// actually answering. CheckController honors the same query
-		// serialization as the rest of the streamer.
-		ctrlOK, ctrlLatency, mode, ctrlErr := streamer.CheckController(r.Context())
+		ctrlOK, ctrlLatency, mode, ctrlErr := st.CheckController(r.Context())
 		body.Controller.OK = ctrlOK
 		body.Controller.LatencyMs = ctrlLatency
 		body.Controller.Mode = mode
@@ -177,9 +297,7 @@ func cncCheckHandler(streamer *cnc.Streamer, agg *cnc.Aggregator) handleFunc {
 }
 
 // modelExtensions is the set of 3D model file extensions the siblings
-// endpoint will surface as a candidate part-view source. Matches what
-// Online3DViewer can render in-browser. Drawing PDFs are matched
-// separately with a fixed `.pdf`.
+// endpoint will surface as a candidate part-view source.
 var modelExtensions = map[string]bool{
 	".3mf":  true,
 	".stl":  true,
@@ -193,17 +311,9 @@ var modelExtensions = map[string]bool{
 	".ply":  true,
 }
 
-// cncSiblingsHandler answers the question "given an NC file at this
-// path, where do I find the matching 3D model and PDF drawing?".
-// Match rule: same directory, same basename (case-insensitive), one
-// of `modelExtensions` for the model and `.pdf` for the drawing.
-//
-// Auth: any logged-in user. The file system access is scoped to the
-// caller's view (d.user.Fs), so users only see siblings inside their
-// own scope. Returned URLs are share-relative — the frontend prefixes
-// /api/raw or /files as needed.
-func cncSiblingsHandler(streamer *cnc.Streamer) handleFunc {
-	_ = streamer // reserved for future use (e.g. resolve via active job)
+// cncSiblingsHandler — same as before; not multi-machine aware (the
+// share is global to the install, not per-machine).
+func cncSiblingsHandler(_ *cnc.Registry) handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		raw := r.URL.Query().Get("path")
 		if raw == "" {
@@ -248,11 +358,6 @@ func cncSiblingsHandler(streamer *cnc.Streamer) handleFunc {
 				continue
 			}
 			full := path.Join(dir, name)
-			// model_url / drawing_url are RAW endpoints — these are
-			// fetched directly by the 3D viewer + opened in a new tab
-			// for the PDF, so they must hit /api/raw, not the SPA route.
-			// model_path / drawing_path are share-relative for any UI
-			// that wants to deep-link back into the file browser.
 			if modelExtensions[ext] && body.ModelURL == "" {
 				body.ModelURL = "/api/raw" + full + "?inline=true"
 				body.ModelName = name
@@ -270,11 +375,12 @@ func cncSiblingsHandler(streamer *cnc.Streamer) handleFunc {
 	})
 }
 
-// cncProbeToolsHandler runs the discovery probe across a sample of
-// tool slots. Operator-triggered, admin-only — see docs/TOOL_TABLE_RESEARCH.md.
-// Default slot sample is 30; ?slots=N override caps at 200.
-func cncProbeToolsHandler(streamer *cnc.Streamer) handleFunc {
+func cncProbeToolsHandler(registry *cnc.Registry) handleFunc {
 	return withAdmin(func(w http.ResponseWriter, r *http.Request, _ *data) (int, error) {
+		st, _, code, err := resolveStreamer(registry, r)
+		if err != nil {
+			return code, err
+		}
 		slots := 30
 		if q := r.URL.Query().Get("slots"); q != "" {
 			n, err := strconv.Atoi(q)
@@ -283,11 +389,9 @@ func cncProbeToolsHandler(streamer *cnc.Streamer) handleFunc {
 			}
 			slots = n
 		}
-		// Probe is potentially slow (slots × 4 bases × 150 ms spacing).
-		// Cap at 90s so a stuck bridge can't pin the request goroutine.
 		ctx, cancel := context.WithTimeout(r.Context(), 90*time.Second)
 		defer cancel()
-		rep, err := streamer.ProbeTools(ctx, slots)
+		rep, err := st.ProbeTools(ctx, slots)
 		if err != nil {
 			return errToStatus(err), err
 		}
@@ -295,26 +399,16 @@ func cncProbeToolsHandler(streamer *cnc.Streamer) handleFunc {
 	})
 }
 
-// cncStartBody is the request body for POST /api/cnc/start. file_path is
-// share-relative — the same shape filebrowser uses elsewhere.
 type cncStartBody struct {
-	FilePath string `json:"file_path"`
+	FilePath  string `json:"file_path"`
+	MachineID string `json:"machine_id,omitempty"` // optional; ?machine_id= also accepted
 }
 
-// cncStartHandler validates the file path stays under the user's scope
-// then hands off to the streamer. Phase 2.1 doesn't yet enforce
-// machine-token auth here — the streamer endpoints expect a logged-in
-// filebrowser user; haas-dashboard's machine-token only matters for
-// /api/cnc/qcode (Phase 2.2).
-func cncStartHandler(streamer *cnc.Streamer, agg *cnc.Aggregator) handleFunc {
+func cncStartHandler(registry *cnc.Registry) handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		if !d.user.Perm.Modify {
 			return http.StatusForbidden, nil
 		}
-		// Operator launched a job — wake the aggregator so the post-job
-		// dashboard refresh has a live polling window already in flight.
-		agg.Wake(0)
-
 		req := &cncStartBody{}
 		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
 			return http.StatusBadRequest, err
@@ -322,10 +416,20 @@ func cncStartHandler(streamer *cnc.Streamer, agg *cnc.Aggregator) handleFunc {
 		if req.FilePath == "" {
 			return http.StatusBadRequest, errors.New("file_path required")
 		}
+		// Body wins over query param when both are sent.
+		machineID := req.MachineID
+		if machineID == "" {
+			machineID = r.URL.Query().Get("machine_id")
+		}
+		streamer, _ := registry.Streamer(machineID)
+		if streamer == nil {
+			return http.StatusNotFound, fmt.Errorf("no machine configured (id=%q)", machineID)
+		}
+		ag, _ := registry.Aggregator(machineID)
+		if ag != nil {
+			ag.Wake(0)
+		}
 
-		// Resolve under the user's scope via afero.BasePathFs so escape
-		// attempts (../../etc/passwd) get clamped at the share root —
-		// same gate the rest of the HTTP layer uses.
 		clean := path.Clean(ensureLeading(req.FilePath))
 		if strings.Contains(clean, "..") {
 			return http.StatusBadRequest, errors.New("file_path must not escape the share")
@@ -347,24 +451,28 @@ func cncStartHandler(streamer *cnc.Streamer, agg *cnc.Aggregator) handleFunc {
 	})
 }
 
-func cncStopHandler(streamer *cnc.Streamer) handleFunc {
+func cncStopHandler(registry *cnc.Registry) handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		if !d.user.Perm.Modify {
 			return http.StatusForbidden, nil
 		}
-		stopped := streamer.Stop()
+		st, _, code, err := resolveStreamer(registry, r)
+		if err != nil {
+			return code, err
+		}
+		stopped := st.Stop()
 		return renderJSON(w, r, map[string]bool{"stopped": stopped})
 	})
 }
 
-// cncStateHandler exposes the curated Q-code snapshot maintained by
-// the aggregator. Auth: same shape as /qcode — accept either a
-// logged-in filebrowser session or a matching machine bearer token,
-// so the dashboard's UI tiles AND any external service can read it.
-func cncStateHandler(agg *cnc.Aggregator) handleFunc {
+func cncStateHandler(registry *cnc.Registry) handleFunc {
 	session := withUser(func(w http.ResponseWriter, r *http.Request, _ *data) (int, error) {
-		agg.Wake(0) // 0 = use the aggregator's default wake window
-		return renderJSON(w, r, agg.Snapshot())
+		ag, _, code, err := resolveAggregator(registry, r)
+		if err != nil {
+			return code, err
+		}
+		ag.Wake(0)
+		return renderJSON(w, r, ag.Snapshot())
 	})
 	return func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		if auth := r.Header.Get("Authorization"); strings.HasPrefix(auth, "Bearer ") {
@@ -372,43 +480,43 @@ func cncStateHandler(agg *cnc.Aggregator) handleFunc {
 			if d.settings.Cnc.MachineToken == "" || got != d.settings.Cnc.MachineToken {
 				return http.StatusUnauthorized, nil
 			}
-			agg.Wake(0)
-			return renderJSON(w, r, agg.Snapshot())
+			ag, _, code, err := resolveAggregator(registry, r)
+			if err != nil {
+				return code, err
+			}
+			ag.Wake(0)
+			return renderJSON(w, r, ag.Snapshot())
 		}
 		return session(w, r, d)
 	}
 }
 
-// cncRecoveryAckHandler clears the pending-recovery flag (Z-15) so
-// Start can succeed again. Modify-permission gate matches start/stop —
-// recovering from a partial cut is an operator decision, not an admin
-// settings one.
-func cncRecoveryAckHandler(streamer *cnc.Streamer) handleFunc {
+func cncRecoveryAckHandler(registry *cnc.Registry) handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		if !d.user.Perm.Modify {
 			return http.StatusForbidden, nil
 		}
-		streamer.AckRecovery()
+		st, _, code, err := resolveStreamer(registry, r)
+		if err != nil {
+			return code, err
+		}
+		st.AckRecovery()
 		return renderJSON(w, r, map[string]bool{"acknowledged": true})
 	})
 }
 
-// cncQueryBody mirrors haas-dashboard's POST /api/query so the dashboard
-// can swap its base URL between direct-Waveshare and Pi-broker without
-// other code changes (D-1 in the integration plan).
 type cncQueryBody struct {
 	Q   int  `json:"q"`
 	Var *int `json:"var,omitempty"`
 }
 
-// cncQueryHandler accepts either a logged-in filebrowser session OR a
-// matching Authorization: Bearer <MachineToken> header (the
-// server-to-server path used by haas-dashboard). Session path defers
-// auth to withUser; token path validates inline so the dashboard
-// doesn't need a filebrowser user account.
-func cncQueryHandler(streamer *cnc.Streamer) handleFunc {
+func cncQueryHandler(registry *cnc.Registry) handleFunc {
 	session := withUser(func(w http.ResponseWriter, r *http.Request, _ *data) (int, error) {
-		return runQuery(w, r, streamer)
+		st, _, code, err := resolveStreamer(registry, r)
+		if err != nil {
+			return code, err
+		}
+		return runQuery(w, r, st)
 	})
 	return func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		if auth := r.Header.Get("Authorization"); strings.HasPrefix(auth, "Bearer ") {
@@ -416,30 +524,28 @@ func cncQueryHandler(streamer *cnc.Streamer) handleFunc {
 			if d.settings.Cnc.MachineToken == "" || got != d.settings.Cnc.MachineToken {
 				return http.StatusUnauthorized, nil
 			}
-			return runQuery(w, r, streamer)
+			st, _, code, err := resolveStreamer(registry, r)
+			if err != nil {
+				return code, err
+			}
+			return runQuery(w, r, st)
 		}
 		return session(w, r, d)
 	}
 }
 
-// cncStreamHandler upgrades to a WebSocket and pushes line/status events
-// from the streamer until the client disconnects. Auth: any logged-in
-// user (operators need to watch from any browser session).
-//
-// Send-only on the server side: we don't expect client messages, but we
-// run a read loop anyway so the WS keep-alive ping/pong works and we
-// notice client disconnects promptly.
-func cncStreamHandler(streamer *cnc.Streamer) handleFunc {
+func cncStreamHandler(registry *cnc.Registry) handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, _ *data) (int, error) {
+		streamer, _, code, err := resolveStreamer(registry, r)
+		if err != nil {
+			return code, err
+		}
 		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
 		defer conn.Close()
 
-		// Send the current status as the first frame so a freshly-
-		// connecting client doesn't have to wait for the next event
-		// to know whether a job is running.
 		if err := writeJSONFrame(conn, cnc.Event{Type: "status", Status: streamer.Status()}); err != nil {
 			return 0, nil
 		}
@@ -447,9 +553,6 @@ func cncStreamHandler(streamer *cnc.Streamer) handleFunc {
 		events := streamer.Subscribe()
 		defer streamer.Unsubscribe(events)
 
-		// Read pump (drops anything the client sends; closing the
-		// connection on the client side surfaces here as ReadMessage
-		// returning an error).
 		readDone := make(chan struct{})
 		go func() {
 			defer close(readDone)
@@ -460,8 +563,6 @@ func cncStreamHandler(streamer *cnc.Streamer) handleFunc {
 			}
 		}()
 
-		// Heartbeat so a client behind a NAT/proxy that drops idle TCP
-		// gets evicted and reconnects rather than hanging forever.
 		ping := time.NewTicker(30 * time.Second)
 		defer ping.Stop()
 

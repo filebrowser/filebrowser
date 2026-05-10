@@ -27,20 +27,89 @@ const DefaultHaasPort = 4196
 // Cnc holds the per-instance machine integration config that the
 // /api/cnc/* endpoints read and the Machine settings tab edits.
 //
-// Stored on the same Settings record (single Bolt JSON blob) — adding a
-// nested struct is forward-compatible: pre-existing DBs decode it as the
-// zero value, and Storage.Get fills sensible defaults.
+// Multi-machine support (2026-05-10): Machines is the canonical list.
+// Legacy fields (HaasHost/HaasPort/CameraURL) are kept on the struct
+// for one-time migration from pre-multi-machine DBs and are NOT read
+// by new code. EnsureMigrated() folds them into Machines[0] on first
+// boot of the new binary.
 type Cnc struct {
-	HaasHost  string `json:"haasHost"`
-	HaasPort  int    `json:"haasPort"`
-	CameraURL string `json:"cameraUrl"`
-	// MachineToken is an opaque random secret used as a bearer token
-	// for server-to-server access to /api/cnc/state and /api/cnc/qcode
-	// (Home Assistant scripts, monitoring, etc). Originally minted for
-	// the haas-dashboard project (now subsumed by filebrowser-NC); the
-	// mechanism stays because it's useful for any external consumer.
-	// Empty until the admin clicks "Regenerate" in the UI.
+	// Machines is the canonical machine list. First entry is the
+	// default for any /api/cnc/* call without an explicit machine_id.
+	Machines []Machine `json:"machines"`
+
+	// MachineToken is the long-lived bearer used by external services
+	// (HA, monitoring, custom dashboards) to call /api/cnc/state or
+	// /api/cnc/qcode without a filebrowser session. Global, not
+	// per-machine — one token covers all machines under this install.
 	MachineToken string `json:"machineToken"`
+
+	// ── Legacy fields (deprecated; migrated into Machines[0]) ──
+	HaasHost  string `json:"haasHost,omitempty"`
+	HaasPort  int    `json:"haasPort,omitempty"`
+	CameraURL string `json:"cameraUrl,omitempty"`
+}
+
+// Machine is one configured CNC controller. All Haas-shaped today;
+// brand abstraction can land later without breaking the schema (a
+// Brand field default-empties to "haas").
+type Machine struct {
+	// ID is stable across renames. Generated on creation; never
+	// edited. The default-machine selector uses this.
+	ID string `json:"id"`
+	// Name is the operator-facing label, freely editable.
+	Name string `json:"name"`
+	// Host:Port is the Waveshare RS-232↔TCP bridge.
+	Host string `json:"host"`
+	Port int    `json:"port"`
+	// CameraURL is optional; HLS/snapshot/RTSP-hint per the existing
+	// camera tile dispatch.
+	CameraURL string `json:"cameraUrl,omitempty"`
+}
+
+// EnsureMigrated folds legacy single-machine fields into Machines[0]
+// if Machines is empty. Idempotent; safe to call on every Settings
+// load. Returns true when a migration actually happened so the caller
+// can persist.
+func (c *Cnc) EnsureMigrated() bool {
+	if len(c.Machines) > 0 {
+		return false
+	}
+	if c.HaasHost == "" && c.HaasPort == 0 && c.CameraURL == "" {
+		// Brand-new install — no machines yet, nothing to migrate.
+		return false
+	}
+	port := c.HaasPort
+	if port == 0 {
+		port = DefaultHaasPort
+	}
+	c.Machines = []Machine{{
+		ID:        "primary",
+		Name:      "Machine 1",
+		Host:      c.HaasHost,
+		Port:      port,
+		CameraURL: c.CameraURL,
+	}}
+	return true
+}
+
+// MachineByID returns the matching Machine and true, or zero + false.
+func (c *Cnc) MachineByID(id string) (Machine, bool) {
+	for _, m := range c.Machines {
+		if m.ID == id {
+			return m, true
+		}
+	}
+	return Machine{}, false
+}
+
+// DefaultMachineID returns the ID treated as the default when an
+// API call doesn't specify one. First entry of Machines, or "" if
+// no machines are configured.
+func (c *Cnc) DefaultMachineID() string {
+	if len(c.Machines) == 0 {
+		return ""
+	}
+	return c.Machines[0].ID
 }
 
 // Settings contain the main settings of the application.

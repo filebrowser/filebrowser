@@ -188,9 +188,10 @@ func (a *Aggregator) pollLoop(ctx context.Context, spec metricSpec) {
 }
 
 func (a *Aggregator) pollOnce(ctx context.Context, spec metricSpec) {
-	// Don't fire if Haas isn't configured — Query would error every tick.
-	set, err := a.streamer.settings.Get()
-	if err != nil || set.Cnc.HaasHost == "" {
+	// Don't fire if this Aggregator's Machine isn't configured —
+	// Query would error every tick. resolveMachine handles ID lookup
+	// + legacy fallback in one place.
+	if _, _, err := a.streamer.resolveMachine(); err != nil {
 		return
 	}
 	// Don't poll while a job is streaming. The streaming socket carries

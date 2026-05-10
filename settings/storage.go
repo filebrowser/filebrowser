@@ -62,6 +62,13 @@ func (s *Storage) Get() (*Settings, error) {
 		set.Cnc.HaasPort = DefaultHaasPort
 	}
 
+	// Multi-machine migration: fold the legacy single-machine fields
+	// into Machines[0] on first read of the new binary, then persist
+	// so subsequent reads short-circuit. Idempotent.
+	if set.Cnc.EnsureMigrated() {
+		_ = s.back.Save(set)
+	}
+
 	return set, nil
 }
 

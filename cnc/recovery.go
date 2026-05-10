@@ -38,28 +38,32 @@ type activeJobMarker struct {
 	LineTotal   int       `json:"line_total"`
 }
 
-// markerPath honors the same RUNTIME_DIRECTORY systemd-friendly env var
-// the watcher uses, but on a per-instance fallback so dev runs don't
-// step on each other.
-func markerPath() string {
+// markerStateDir resolves the directory holding per-machine markers.
+// Honors RUNTIME_DIRECTORY-style $CNC_STATE_DIR for systemd installs;
+// falls back to UserCacheDir / TempDir.
+func markerStateDir() string {
 	dir := os.Getenv("CNC_STATE_DIR")
-	if dir == "" {
-		// Default to a user-writable spot that survives a restart but
-		// not a reboot — we WANT the marker to survive a process
-		// crash, but if the host rebooted the operator's already
-		// going to be re-checking work, so persistence is a bonus
-		// rather than a requirement.
-		if cache, err := os.UserCacheDir(); err == nil {
-			dir = filepath.Join(cache, "filebrowser-cnc")
-		} else {
-			dir = filepath.Join(os.TempDir(), "filebrowser-cnc")
-		}
+	if dir != "" {
+		return dir
 	}
-	return filepath.Join(dir, "active_job.json")
+	if cache, err := os.UserCacheDir(); err == nil {
+		return filepath.Join(cache, "filebrowser-cnc")
+	}
+	return filepath.Join(os.TempDir(), "filebrowser-cnc")
 }
 
-func writeMarker(j *job) error {
-	p := markerPath()
+// markerPathFor returns the per-machine marker path. Two machines
+// running concurrent jobs each get their own marker file so a crash
+// of one doesn't block the other.
+func markerPathFor(machineID string) string {
+	if machineID == "" {
+		machineID = "default"
+	}
+	return filepath.Join(markerStateDir(), "active_job_"+machineID+".json")
+}
+
+func writeMarkerFor(machineID string, j *job) error {
+	p := markerPathFor(machineID)
 	if err := os.MkdirAll(filepath.Dir(p), 0o755); err != nil {
 		return err
 	}
@@ -81,25 +85,35 @@ func writeMarker(j *job) error {
 	return os.Rename(tmp, p)
 }
 
-func clearMarker() {
-	_ = os.Remove(markerPath())
+func clearMarkerFor(machineID string) {
+	_ = os.Remove(markerPathFor(machineID))
+	// Also clear the pre-multi-machine path so an old marker from
+	// before this binary doesn't haunt forever.
+	legacy := filepath.Join(markerStateDir(), "active_job.json")
+	_ = os.Remove(legacy)
 }
 
-// readMarker is non-fatal — a missing marker is the normal idle state.
+// readMarkerFor is non-fatal — missing marker is normal idle state.
 // A malformed marker is treated like a present one (better to surface
 // the "didn't end cleanly" warning than ignore it because of a parse
-// glitch).
-func readMarker() *activeJobMarker {
-	buf, err := os.ReadFile(markerPath())
-	if err != nil {
-		return nil
+// glitch). Falls back to the pre-multi-machine path so an existing
+// orphan marker from before the migration still triggers the prompt.
+func readMarkerFor(machineID string) *activeJobMarker {
+	for _, p := range []string{
+		markerPathFor(machineID),
+		filepath.Join(markerStateDir(), "active_job.json"), // legacy
+	} {
+		buf, err := os.ReadFile(p)
+		if err != nil {
+			continue
+		}
+		var m activeJobMarker
+		if err := json.Unmarshal(buf, &m); err != nil {
+			return &activeJobMarker{}
+		}
+		return &m
 	}
-	var m activeJobMarker
-	if err := json.Unmarshal(buf, &m); err != nil {
-		// Treat as orphan-present so the operator gets the prompt.
-		return &activeJobMarker{}
-	}
-	return &m
+	return nil
 }
 
 // AckRecovery clears the pending-recovery flag and removes the marker.
@@ -108,5 +122,5 @@ func (s *Streamer) AckRecovery() {
 	s.mu.Lock()
 	s.pendingRecovery = nil
 	s.mu.Unlock()
-	clearMarker()
+	clearMarkerFor(s.machineID)
 }

@@ -66,7 +66,8 @@ type Status struct {
 // running returns ErrJobAlreadyRunning, never spawns a second TCP
 // connection to the Waveshare.
 type Streamer struct {
-	settings settingsReader
+	settings  settingsReader
+	machineID string // immutable; identifies which Machine in settings this Streamer owns
 
 	mu  sync.Mutex // guards job + pendingRecovery
 	job *job       // nil when idle
@@ -121,15 +122,43 @@ type job struct {
 	queryCh     chan *queryReq
 }
 
-// New builds the singleton. Picks up any active-job marker left behind
-// by a previous instance and stashes it in pendingRecovery so the
-// /status endpoint can surface it and Start can refuse until ack.
-func New(s settingsReader) *Streamer {
-	st := &Streamer{settings: s}
-	if m := readMarker(); m != nil {
+// New builds a Streamer for one Machine. machineID identifies which
+// entry in settings.Cnc.Machines this Streamer owns. Picks up any
+// active-job marker left behind by a previous instance for THIS
+// machine and stashes it in pendingRecovery so /status surfaces it
+// and Start refuses until ack.
+//
+// One Streamer per Machine — see cnc/registry.go.
+func New(s settingsReader, machineID string) *Streamer {
+	st := &Streamer{settings: s, machineID: machineID}
+	if m := readMarkerFor(machineID); m != nil {
 		st.pendingRecovery = m
 	}
 	return st
+}
+
+// resolveMachine looks up THIS streamer's Machine in settings. Returns
+// the Machine + the resolved port (defaulting if zero) + nil err if
+// found; ErrConfigMissing if not. All Streamer methods that need
+// host/port go through here so the answer is always live (operator
+// edits in settings take effect on the next call).
+func (s *Streamer) resolveMachine() (settings.Machine, int, error) {
+	set, err := s.settings.Get()
+	if err != nil {
+		return settings.Machine{}, 0, err
+	}
+	m, ok := set.Cnc.MachineByID(s.machineID)
+	if !ok {
+		return settings.Machine{}, 0, ErrConfigMissing
+	}
+	if m.Host == "" {
+		return settings.Machine{}, 0, ErrConfigMissing
+	}
+	port := m.Port
+	if port == 0 {
+		port = settings.DefaultHaasPort
+	}
+	return m, port, nil
 }
 
 // Start kicks off a streaming job. absPath must already be path-validated
@@ -138,18 +167,11 @@ func New(s settingsReader) *Streamer {
 //
 // Returns ErrJobAlreadyRunning if a job is already in flight.
 func (s *Streamer) Start(absPath, displayPath string) (*Status, error) {
-	set, err := s.settings.Get()
+	m, port, err := s.resolveMachine()
 	if err != nil {
 		return nil, err
 	}
-	if set.Cnc.HaasHost == "" {
-		return nil, ErrConfigMissing
-	}
-	host := set.Cnc.HaasHost
-	port := set.Cnc.HaasPort
-	if port == 0 {
-		port = settings.DefaultHaasPort
-	}
+	host := m.Host
 
 	lineTotal, err := countLines(absPath)
 	if err != nil {
@@ -190,7 +212,7 @@ func (s *Streamer) Start(absPath, displayPath string) (*Status, error) {
 	// Persist the active-job marker AFTER the job is in s.job so a
 	// crash between Start returning and the marker write would still
 	// be observed via the inhibit (defensive — the window is tiny).
-	if err := writeMarker(j); err != nil {
+	if err := writeMarkerFor(s.machineID, j); err != nil {
 		// Don't fail Start over a marker write — log via lastError so
 		// /status surfaces it but the job runs. Operators usually
 		// care more about "the spindle is on" than "we couldn't
@@ -229,18 +251,11 @@ func (s *Streamer) Stop() bool {
 // network reachability of the Waveshare. Caller should skip during
 // streaming to avoid contending with the job's socket.
 func (s *Streamer) CheckBridge() (bool, float64, string, error) {
-	set, err := s.settings.Get()
+	m, port, err := s.resolveMachine()
 	if err != nil {
 		return false, 0, "", err
 	}
-	if set.Cnc.HaasHost == "" {
-		return false, 0, "", ErrConfigMissing
-	}
-	port := set.Cnc.HaasPort
-	if port == 0 {
-		port = settings.DefaultHaasPort
-	}
-	addr := net.JoinHostPort(set.Cnc.HaasHost, strconv.Itoa(port))
+	addr := net.JoinHostPort(m.Host, strconv.Itoa(port))
 	t0 := time.Now()
 	conn, err := net.DialTimeout("tcp", addr, 3*time.Second)
 	latency := sinceMs(t0)
@@ -310,18 +325,11 @@ func (s *Streamer) Status() *Status {
 // streaming worker has the conn locked the queryTimeout (3s default)
 // bounds the read.
 func (s *Streamer) Query(ctx context.Context, qCode int, macroVar *int) (*QueryResult, error) {
-	set, err := s.settings.Get()
+	m, port, err := s.resolveMachine()
 	if err != nil {
 		return nil, err
 	}
-	if set.Cnc.HaasHost == "" {
-		return nil, ErrConfigMissing
-	}
-	host := set.Cnc.HaasHost
-	port := set.Cnc.HaasPort
-	if port == 0 {
-		port = settings.DefaultHaasPort
-	}
+	host := m.Host
 
 	s.mu.Lock()
 	j := s.job
@@ -395,7 +403,7 @@ func (s *Streamer) run(ctx context.Context, j *job, host string, port int) {
 		// returning the error). A crash between here and the next
 		// New() leaves the marker in place — exactly the case Z-15
 		// is designed to catch.
-		clearMarker()
+		clearMarkerFor(s.machineID)
 		// Emit the idle status event AFTER s.job has been cleared so
 		// subscribers see the post-job snapshot, not a stale "running".
 		s.emit(Event{Type: "status", Status: s.Status()})
