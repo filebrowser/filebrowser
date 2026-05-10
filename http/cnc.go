@@ -117,8 +117,11 @@ func cncStatusHandler(streamer *cnc.Streamer) handleFunc {
 //      response shape. If the bridge dials but the controller doesn't
 //      answer or returns garbage, that points at Setting 143 / RS-232
 //      cabling / pendant-off, not network. Auth: any logged-in user.
-func cncCheckHandler(streamer *cnc.Streamer) handleFunc {
+func cncCheckHandler(streamer *cnc.Streamer, agg *cnc.Aggregator) handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, _ *data) (int, error) {
+		// Operator looked at the machine — extend the polling window
+		// so the dashboard fills in normally afterwards.
+		agg.Wake(0)
 		body := struct {
 			Bridge struct {
 				OK        bool    `json:"ok"`
@@ -175,11 +178,14 @@ type cncStartBody struct {
 // machine-token auth here — the streamer endpoints expect a logged-in
 // filebrowser user; haas-dashboard's machine-token only matters for
 // /api/cnc/qcode (Phase 2.2).
-func cncStartHandler(streamer *cnc.Streamer) handleFunc {
+func cncStartHandler(streamer *cnc.Streamer, agg *cnc.Aggregator) handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		if !d.user.Perm.Modify {
 			return http.StatusForbidden, nil
 		}
+		// Operator launched a job — wake the aggregator so the post-job
+		// dashboard refresh has a live polling window already in flight.
+		agg.Wake(0)
 
 		req := &cncStartBody{}
 		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
@@ -229,6 +235,7 @@ func cncStopHandler(streamer *cnc.Streamer) handleFunc {
 // so the dashboard's UI tiles AND any external service can read it.
 func cncStateHandler(agg *cnc.Aggregator) handleFunc {
 	session := withUser(func(w http.ResponseWriter, r *http.Request, _ *data) (int, error) {
+		agg.Wake(0) // 0 = use the aggregator's default wake window
 		return renderJSON(w, r, agg.Snapshot())
 	})
 	return func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
@@ -237,6 +244,7 @@ func cncStateHandler(agg *cnc.Aggregator) handleFunc {
 			if d.settings.Cnc.MachineToken == "" || got != d.settings.Cnc.MachineToken {
 				return http.StatusUnauthorized, nil
 			}
+			agg.Wake(0)
 			return renderJSON(w, r, agg.Snapshot())
 		}
 		return session(w, r, d)

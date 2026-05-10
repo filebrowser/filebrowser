@@ -42,8 +42,12 @@
           <span class="card-header__hint" v-if="!hostConfigured">
             {{ t("machine.notConfigured") }}
           </span>
-          <span class="card-header__hint" v-else-if="!anyFresh">
-            {{ t("machine.waitingFirstPoll") }}
+          <span
+            class="card-header__hint"
+            :class="{ 'card-header__hint--err': connectTimedOut }"
+            v-else-if="!anyFresh"
+          >
+            {{ connectTimedOut ? t("machine.connectTimeout") : t("machine.waitingFirstPoll") }}
           </span>
           <button
             class="check-btn"
@@ -312,6 +316,24 @@ const anyFresh = computed(() =>
   Object.values(cncStore.metrics).some((m) => m && !m.stale)
 );
 
+// Watchdog: after the first wake (mount), give the aggregator some
+// time to land at least one fresh metric. If nothing fresh after 8 s
+// the bridge probably isn't responding — surface "couldn't connect"
+// instead of the indefinite "Waiting for first poll…" hint.
+const connectTimedOut = ref(false);
+let connectWatchdog: ReturnType<typeof setTimeout> | null = null;
+watch(
+  anyFresh,
+  (fresh) => {
+    if (fresh && connectWatchdog) {
+      clearTimeout(connectWatchdog);
+      connectWatchdog = null;
+      connectTimedOut.value = false;
+    }
+  },
+  { immediate: false }
+);
+
 // ── Camera dispatch (same as before) ───────────────────────────────────────
 const snapshotTick = ref(0);
 let snapshotTimer: ReturnType<typeof setInterval> | null = null;
@@ -363,6 +385,14 @@ onMounted(async () => {
   // the WS was dropped silently and reconnect failed quietly.
   await cncStore.seedMetrics();
   reseedTimer = setInterval(() => cncStore.seedMetrics(), RESEED_MS);
+  // Start the connect watchdog if we still have nothing fresh after
+  // the seed. The watch above clears it as soon as a metric lands.
+  if (!anyFresh.value && hostConfigured.value) {
+    connectWatchdog = setTimeout(() => {
+      connectTimedOut.value = true;
+      connectWatchdog = null;
+    }, 8000);
+  }
   if (cameraKind.value === "snapshot" && !snapshotTimer) {
     snapshotTimer = setInterval(() => snapshotTick.value++, 200);
   }
@@ -371,6 +401,7 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   if (reseedTimer) clearInterval(reseedTimer);
   if (snapshotTimer) clearInterval(snapshotTimer);
+  if (connectWatchdog) clearTimeout(connectWatchdog);
 });
 
 // ── Inline mini-components ─────────────────────────────────────────────────
@@ -451,6 +482,10 @@ const Axis = (props: { label: string; value: unknown }) => {
   font-size: 0.78rem;
   font-weight: 400;
   color: var(--fg-muted, #888);
+}
+
+.card-header__hint--err {
+  color: #c62828;
 }
 
 .stop-btn {

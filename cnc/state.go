@@ -66,6 +66,13 @@ var defaultMetricSpecs = []metricSpec{
 	{"g54_z", "G54 Z", 600, ptr(5223), 30 * time.Second},
 }
 
+// defaultWakeWindow is how long an operator-initiated wake keeps the
+// aggregator polling before it falls back to standby. Long enough that
+// a person genuinely working at /machine is never surprised by data
+// going stale; short enough that a forgotten tab doesn't poll the
+// bridge for hours. Each fresh /state, /check, or /start extends it.
+const defaultWakeWindow = 5 * time.Minute
+
 // Aggregator owns the background pollers and the shared snapshot.
 type Aggregator struct {
 	streamer *Streamer
@@ -75,6 +82,39 @@ type Aggregator struct {
 
 	cancel context.CancelFunc
 	wg     sync.WaitGroup
+
+	// wakeMu guards wakeUntil. Separate from mu so a fast Wake() call
+	// from a request handler never contends with a poller doing its
+	// snapshot update.
+	wakeMu    sync.Mutex
+	wakeUntil time.Time
+}
+
+// Wake extends the polling window to now+d (or leaves it alone if a
+// later wake is already in flight). Pass 0 to use defaultWakeWindow.
+// Operators reach this through any route that implies they're looking
+// at machine state — /api/cnc/state, /api/cnc/check, /api/cnc/start.
+// WS subscribers do NOT wake; mounting the global header pill on every
+// authenticated layout shouldn't drag the bridge into a polling loop.
+//
+// Streams are unaffected by this — Streamer.run() owns its own context.
+func (a *Aggregator) Wake(d time.Duration) {
+	if d <= 0 {
+		d = defaultWakeWindow
+	}
+	until := time.Now().Add(d)
+	a.wakeMu.Lock()
+	if until.After(a.wakeUntil) {
+		a.wakeUntil = until
+	}
+	a.wakeMu.Unlock()
+}
+
+// IsAwake returns true if the aggregator's wake window hasn't expired.
+func (a *Aggregator) IsAwake() bool {
+	a.wakeMu.Lock()
+	defer a.wakeMu.Unlock()
+	return time.Now().Before(a.wakeUntil)
 }
 
 // NewAggregator wires the streamer reference and seeds the metric map
@@ -166,12 +206,15 @@ func (a *Aggregator) pollOnce(ctx context.Context, spec metricSpec) {
 		a.mu.Unlock()
 		return
 	}
-	// Don't poll if nobody's listening. The Pi is on 24/7 and the
-	// Waveshare bridge has been steadily polled at 16 metrics × every
-	// 2.5–30 s for hours when no operator was at the machine. Gate on
-	// at least one WS subscriber (the /machine page mounts one, the
-	// header pill mounts one). Polling resumes the moment a tab opens.
-	if a.streamer.SubscriberCount() == 0 {
+	// Standby unless an operator is actively engaged. /api/cnc/state,
+	// /api/cnc/check, and /api/cnc/start each extend the wake window
+	// (5 min). Outside that window, no polling — the bridge gets a rest.
+	//
+	// IMPORTANT: this skip ONLY governs metric polling. Active streams
+	// are unaffected — the IsRunning() check above already returned, so
+	// we never reach this branch during a job. Streamer.run() owns its
+	// own context that's tied to the JOB, not to this wake window.
+	if !a.IsAwake() {
 		return
 	}
 

@@ -45,9 +45,11 @@ func (s *Streamer) Subscribe() <-chan Event {
 	return sub.ch
 }
 
-// SubscriberCount returns the number of live WS listeners. Used by
-// the aggregator to gate polling — no listeners means nobody's
-// looking, so we don't need to keep poking the Waveshare 24/7.
+// SubscriberCount returns the number of live WS listeners. Diagnostic
+// only — polling gating is driven by Aggregator.Wake() now (operators
+// touching state-bearing endpoints) rather than by raw subscriber
+// count, since a header-pill subscriber on every authenticated layout
+// would otherwise wake the bridge for every routine page view.
 func (s *Streamer) SubscriberCount() int {
 	s.subsMu.Lock()
 	defer s.subsMu.Unlock()
