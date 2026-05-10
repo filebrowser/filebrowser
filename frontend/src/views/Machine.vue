@@ -77,152 +77,169 @@
           </button>
         </div>
         <div class="card-body dashboard-body">
-          <!-- Connection-check result: rendered briefly after the button -->
-          <div v-if="checkResult" class="check-result" :class="checkResultClass">
-            <div class="check-result__row">
-              <i class="material-icons">{{ checkResult.bridge.ok ? "check_circle" : "error" }}</i>
-              <span class="check-result__label">{{ t("machine.checkBridge") }}</span>
-              <span class="check-result__detail">
-                <template v-if="checkResult.bridge.ok">
-                  {{ checkResult.bridge.address }} · {{ formatNum(checkResult.bridge.latency_ms, 0) }} ms
-                </template>
-                <template v-else>{{ checkResult.bridge.error || "?" }}</template>
-              </span>
-            </div>
-            <div class="check-result__row">
-              <i class="material-icons">{{ checkResult.controller.ok ? "check_circle" : "error" }}</i>
-              <span class="check-result__label">{{ t("machine.checkController") }}</span>
-              <span class="check-result__detail">
-                <template v-if="checkResult.controller.ok">
-                  Q104 → {{ checkResult.controller.mode }} · {{ formatNum(checkResult.controller.latency_ms, 0) }} ms
-                </template>
-                <template v-else>{{ checkResult.controller.error || "?" }}</template>
-              </span>
-            </div>
-          </div>
-          <!-- Live send progress (only while a job is streaming) -->
-          <div v-if="cncStore.running" class="send-progress">
-            <div class="send-progress__head">
-              <span class="send-progress__file">{{ cncStore.filePath || "—" }}</span>
-              <span class="send-progress__counter">
-                {{ cncStore.lineCurrent }} / {{ cncStore.lineTotal }}
-                <span v-if="cncStore.lineTotal > 0" class="send-progress__pct">
-                  ({{ ((cncStore.lineCurrent / cncStore.lineTotal) * 100).toFixed(1) }}%)
-                </span>
-              </span>
-            </div>
-            <div class="send-progress__bar">
-              <div
-                class="send-progress__bar-fill"
-                :style="{ width: cncStore.lineTotal > 0 ? `${(cncStore.lineCurrent / cncStore.lineTotal) * 100}%` : '0%' }"
+          <!-- Three-column layout inside the dashboard:
+               LEFT = numerical machine info (tiles + positions),
+               CENTER = live state (hero + check + send progress),
+               RIGHT = activity log.
+               Eliminates the previous nested-scroll where the dashboard
+               body scrolled inside an already-scrolling page. Each
+               column owns its own intrinsic height; only the activity
+               log scrolls (because it's unbounded by nature). -->
+
+          <!-- LEFT: Machine info -->
+          <div class="dashboard-col dashboard-col--info">
+            <!-- Tiles row: spindle / parts / tool / cycle -->
+            <div class="tiles">
+              <Tile
+                :label="t('machine.spindleRpm')"
+                :value="formatNum(parsed('spindle_actual'))"
+                :sub="t('machine.spindleCmd', { n: formatNum(parsed('spindle_cmd'), 0) })"
+                icon="rotate_right"
+              />
+              <Tile
+                :label="t('machine.parts')"
+                :value="formatNum(parsed('parts'), 0)"
+                icon="inventory_2"
+              />
+              <Tile
+                :label="t('machine.tool')"
+                :value="formatNum(parsed('tool'), 0)"
+                icon="construction"
+              />
+              <Tile
+                :label="t('machine.lastCycle')"
+                :value="rawValue('last_cycle') || '—'"
+                icon="timer"
               />
             </div>
-            <div class="send-progress__time">
-              <span>
-                <i class="material-icons">schedule</i>
-                {{ t("machine.elapsed") }}: {{ fmtDuration(elapsedMs) }}
-              </span>
-              <span v-if="etaMs !== null">
-                <i class="material-icons">hourglass_bottom</i>
-                {{ t("machine.eta") }}: {{ fmtDuration(etaMs) }}
-              </span>
-              <span v-if="linesPerSec !== null">
-                <i class="material-icons">speed</i>
-                {{ formatNum(linesPerSec, 1) }} {{ t("machine.linesPerSec") }}
-              </span>
+
+            <!-- Position grid: machine vs work -->
+            <div class="positions">
+              <div class="positions__col">
+                <div class="positions__title">{{ t("machine.machinePos") }}</div>
+                <Axis label="X" :value="parsed('pos_x')" />
+                <Axis label="Y" :value="parsed('pos_y')" />
+                <Axis label="Z" :value="parsed('pos_z')" />
+              </div>
+              <div class="positions__col">
+                <div class="positions__title">{{ t("machine.workPos") }}</div>
+                <Axis label="X" :value="parsed('work_x')" />
+                <Axis label="Y" :value="parsed('work_y')" />
+                <Axis label="Z" :value="parsed('work_z')" />
+              </div>
+              <div class="positions__col">
+                <div class="positions__title">{{ t("machine.g54Offset") }}</div>
+                <Axis label="X" :value="parsed('g54_x')" />
+                <Axis label="Y" :value="parsed('g54_y')" />
+                <Axis label="Z" :value="parsed('g54_z')" />
+              </div>
             </div>
           </div>
 
-          <!-- Hero: program + status + mode -->
-          <div class="hero">
-            <div class="hero__program">
-              <div class="hero__label">{{ t("machine.program") }}</div>
-              <div class="hero__value">{{ programDisplay || "—" }}</div>
+          <!-- CENTER: Live state — kept in the position the operator
+               already knows. Hero is the visual anchor; send progress
+               and check result render above it when relevant. -->
+          <div class="dashboard-col dashboard-col--state">
+            <div v-if="checkResult" class="check-result" :class="checkResultClass">
+              <div class="check-result__row">
+                <i class="material-icons">{{ checkResult.bridge.ok ? "check_circle" : "error" }}</i>
+                <span class="check-result__label">{{ t("machine.checkBridge") }}</span>
+                <span class="check-result__detail">
+                  <template v-if="checkResult.bridge.ok">
+                    {{ checkResult.bridge.address }} · {{ formatNum(checkResult.bridge.latency_ms, 0) }} ms
+                  </template>
+                  <template v-else>{{ checkResult.bridge.error || "?" }}</template>
+                </span>
+              </div>
+              <div class="check-result__row">
+                <i class="material-icons">{{ checkResult.controller.ok ? "check_circle" : "error" }}</i>
+                <span class="check-result__label">{{ t("machine.checkController") }}</span>
+                <span class="check-result__detail">
+                  <template v-if="checkResult.controller.ok">
+                    Q104 → {{ checkResult.controller.mode }} · {{ formatNum(checkResult.controller.latency_ms, 0) }} ms
+                  </template>
+                  <template v-else>{{ checkResult.controller.error || "?" }}</template>
+                </span>
+              </div>
             </div>
-            <div class="hero__status" :class="statusClass">
-              {{ statusText || "—" }}
+            <div v-if="cncStore.running" class="send-progress">
+              <div class="send-progress__head">
+                <span class="send-progress__file">{{ cncStore.filePath || "—" }}</span>
+                <span class="send-progress__counter">
+                  {{ cncStore.lineCurrent }} / {{ cncStore.lineTotal }}
+                  <span v-if="cncStore.lineTotal > 0" class="send-progress__pct">
+                    ({{ ((cncStore.lineCurrent / cncStore.lineTotal) * 100).toFixed(1) }}%)
+                  </span>
+                </span>
+              </div>
+              <div class="send-progress__bar">
+                <div
+                  class="send-progress__bar-fill"
+                  :style="{ width: cncStore.lineTotal > 0 ? `${(cncStore.lineCurrent / cncStore.lineTotal) * 100}%` : '0%' }"
+                />
+              </div>
+              <div class="send-progress__time">
+                <span>
+                  <i class="material-icons">schedule</i>
+                  {{ t("machine.elapsed") }}: {{ fmtDuration(elapsedMs) }}
+                </span>
+                <span v-if="etaMs !== null">
+                  <i class="material-icons">hourglass_bottom</i>
+                  {{ t("machine.eta") }}: {{ fmtDuration(etaMs) }}
+                </span>
+                <span v-if="linesPerSec !== null">
+                  <i class="material-icons">speed</i>
+                  {{ formatNum(linesPerSec, 1) }} {{ t("machine.linesPerSec") }}
+                </span>
+              </div>
             </div>
-            <div class="hero__mode">
-              <div class="hero__label">{{ t("machine.mode") }}</div>
-              <div class="hero__value">{{ rawValue("mode") || "—" }}</div>
+            <div class="hero">
+              <div class="hero__program">
+                <div class="hero__label">{{ t("machine.program") }}</div>
+                <div class="hero__value">{{ programDisplay || "—" }}</div>
+              </div>
+              <div class="hero__status" :class="statusClass">
+                {{ statusText || "—" }}
+              </div>
+              <div class="hero__mode">
+                <div class="hero__label">{{ t("machine.mode") }}</div>
+                <div class="hero__value">{{ rawValue("mode") || "—" }}</div>
+              </div>
             </div>
           </div>
 
-          <!-- Tiles row: spindle / parts / tool / cycle -->
-          <div class="tiles">
-            <Tile
-              :label="t('machine.spindleRpm')"
-              :value="formatNum(parsed('spindle_actual'))"
-              :sub="t('machine.spindleCmd', { n: formatNum(parsed('spindle_cmd'), 0) })"
-              icon="rotate_right"
-            />
-            <Tile
-              :label="t('machine.parts')"
-              :value="formatNum(parsed('parts'), 0)"
-              icon="inventory_2"
-            />
-            <Tile
-              :label="t('machine.tool')"
-              :value="formatNum(parsed('tool'), 0)"
-              icon="construction"
-            />
-            <Tile
-              :label="t('machine.lastCycle')"
-              :value="rawValue('last_cycle') || '—'"
-              icon="timer"
-            />
-          </div>
-
-          <!-- Position grid: machine vs work -->
-          <div class="positions">
-            <div class="positions__col">
-              <div class="positions__title">{{ t("machine.machinePos") }}</div>
-              <Axis label="X" :value="parsed('pos_x')" />
-              <Axis label="Y" :value="parsed('pos_y')" />
-              <Axis label="Z" :value="parsed('pos_z')" />
+          <!-- RIGHT: Activity feed — its own column so the log scroll
+               doesn't interleave with the rest of the dashboard's
+               vertical extent. -->
+          <div v-if="!kioskMode" class="dashboard-col dashboard-col--activity">
+            <div class="activity">
+              <div class="activity__title">
+                {{ t("machine.activity") }}
+                <button
+                  v-if="cncStore.log.length > 0"
+                  class="activity__clear"
+                  @click="cncStore.clearLog()"
+                  :title="t('machine.activityClear')"
+                >
+                  {{ t("machine.activityClear") }}
+                </button>
+              </div>
+              <div v-if="cncStore.log.length === 0" class="activity__empty">
+                {{ t("machine.activityEmpty") }}
+              </div>
+              <ol v-else class="activity__list">
+                <li
+                  v-for="(entry, i) in cncStore.log"
+                  :key="i"
+                  class="activity__row"
+                  :class="`activity__row--${entry.level}`"
+                >
+                  <span class="activity__ts">{{ fmtTs(entry.ts) }}</span>
+                  <span class="activity__level">{{ entry.level }}</span>
+                  <span class="activity__msg">{{ entry.msg }}</span>
+                </li>
+              </ol>
             </div>
-            <div class="positions__col">
-              <div class="positions__title">{{ t("machine.workPos") }}</div>
-              <Axis label="X" :value="parsed('work_x')" />
-              <Axis label="Y" :value="parsed('work_y')" />
-              <Axis label="Z" :value="parsed('work_z')" />
-            </div>
-            <div class="positions__col">
-              <div class="positions__title">{{ t("machine.g54Offset") }}</div>
-              <Axis label="X" :value="parsed('g54_x')" />
-              <Axis label="Y" :value="parsed('g54_y')" />
-              <Axis label="Z" :value="parsed('g54_z')" />
-            </div>
-          </div>
-
-          <!-- Activity feed: backend log events + status transitions -->
-          <div v-if="!kioskMode" class="activity">
-            <div class="activity__title">
-              {{ t("machine.activity") }}
-              <button
-                v-if="cncStore.log.length > 0"
-                class="activity__clear"
-                @click="cncStore.clearLog()"
-                :title="t('machine.activityClear')"
-              >
-                {{ t("machine.activityClear") }}
-              </button>
-            </div>
-            <div v-if="cncStore.log.length === 0" class="activity__empty">
-              {{ t("machine.activityEmpty") }}
-            </div>
-            <ol v-else class="activity__list">
-              <li
-                v-for="(entry, i) in cncStore.log"
-                :key="i"
-                class="activity__row"
-                :class="`activity__row--${entry.level}`"
-              >
-                <span class="activity__ts">{{ fmtTs(entry.ts) }}</span>
-                <span class="activity__level">{{ entry.level }}</span>
-                <span class="activity__msg">{{ entry.msg }}</span>
-              </li>
-            </ol>
           </div>
         </div>
       </section>
@@ -954,10 +971,57 @@ const Axis = (props: { label: string; value: unknown }) => {
 }
 
 .dashboard-body {
-  flex-direction: column;
+  /* 3-column layout: machine info | live state | activity. The body
+     itself is a flex row; each column owns its own intrinsic height
+     (only the activity feed scrolls). Eliminates the double-scroll
+     where the dashboard body scrolled inside the already-scrolling
+     page. */
+  flex-direction: row;
+  align-items: stretch;
   padding: 1rem;
   gap: 1rem;
-  overflow: auto;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.dashboard-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* LEFT — tiles + positions. Narrow but enough for the 4 tiles and
+   3 axis columns to read cleanly. */
+.dashboard-col--info {
+  flex: 1 1 28%;
+}
+
+/* CENTER — live state. Operator's primary read. Slightly wider than
+   the info column because hero text + status badge wants room. */
+.dashboard-col--state {
+  flex: 1 1 32%;
+}
+
+/* RIGHT — activity feed. Widest column because log lines are dense
+   and benefit from horizontal space. The internal list scrolls. */
+.dashboard-col--activity {
+  flex: 1 1 40%;
+  min-width: 280px;
+}
+
+/* Stack on narrower viewports where the 3-column row would force
+   each cell below readable width. The 1100 px breakpoint matches
+   roughly when the tiles row starts to wrap unhappily. */
+@media (max-width: 1100px) {
+  .dashboard-body {
+    flex-direction: column;
+    overflow: auto;
+  }
+  .dashboard-col {
+    flex: 0 0 auto;
+  }
 }
 
 /* Hero row */
@@ -1271,13 +1335,18 @@ const Axis = (props: { label: string; value: unknown }) => {
   font-size: 0.95rem;
 }
 
-/* Activity log — backend log events + status transitions */
+/* Activity log — backend log events + status transitions. Fills the
+   activity column; the inner list is the only scroll surface in the
+   dashboard now. */
 .activity {
   background: var(--alt-background, #fafafa);
   border: 1px solid var(--border-color, #eee);
   border-radius: 6px;
   padding: 0.6rem 0.8rem;
-  margin-top: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .activity__title {
@@ -1318,7 +1387,10 @@ const Axis = (props: { label: string; value: unknown }) => {
   list-style: none;
   margin: 0;
   padding: 0;
-  max-height: 14rem;
+  /* Cap the log at half the viewport so a long session doesn't push
+     the rest of /machine off-screen, but keep its own scroll so the
+     newest entries are reachable without scrolling the whole page. */
+  max-height: 50vh;
   overflow-y: auto;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.8rem;
