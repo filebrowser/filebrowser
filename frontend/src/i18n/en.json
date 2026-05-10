@@ -138,7 +138,9 @@
     "showOffline": "Show offline",
     "showEmpty": "Show empty pockets",
     "visibleCount": "{n} of {total}",
-    "noMatch": "No slots match the current filter."
+    "noMatch": "No slots match the current filter.",
+    "showMagazine": "Show magazine ({n} loaded)",
+    "hideMagazine": "Hide magazine"
   },
   "errors": {
     "forbidden": "You don't have permissions to access this.",

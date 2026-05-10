@@ -72,6 +72,7 @@
         <table class="tool-table">
           <thead>
             <tr>
+              <th class="thumb-col"></th>
               <th
                 v-for="col in columns"
                 :key="col.key"
@@ -92,6 +93,15 @@
               :key="row.slot"
               :class="rowClass(row)"
             >
+              <td class="thumb-col">
+                <ToolGeometryView
+                  :slot-number="row.slot"
+                  :length-ratio="ratioL(row.effective_length)"
+                  :diameter-ratio="ratioD(row.effective_diameter)"
+                  :width="24"
+                  :height="44"
+                />
+              </td>
               <td>{{ row.slot }}</td>
               <td class="num">{{ fmt(row.length_geom) }}</td>
               <td class="num">{{ fmt(row.length_wear) }}</td>
@@ -112,12 +122,43 @@
               </td>
             </tr>
             <tr v-if="displayRows.length === 0">
-              <td colspan="8" class="tool-card__no-match">
+              <td colspan="9" class="tool-card__no-match">
                 {{ t("toolTable.noMatch") }}
               </td>
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- Magazine: side-by-side scale view of every loaded tool. All
+           bodies share one length and diameter scale so spotting a
+           mis-loaded slot is instant — the sticking-out-too-far tool
+           jumps out visually before you scan the numbers. -->
+      <div v-if="latest && loadedSlots.length > 0" class="tool-card__magazine">
+        <button class="link-btn" @click="showMagazine = !showMagazine">
+          {{ showMagazine ? t("toolTable.hideMagazine") : t("toolTable.showMagazine", { n: loadedSlots.length }) }}
+        </button>
+        <div v-if="showMagazine" class="magazine-strip">
+          <div
+            v-for="row in loadedSlots"
+            :key="row.slot"
+            class="magazine-figure"
+            :title="`T${row.slot} — ⌀${fmt(row.effective_diameter)} L${fmt(row.effective_length)}`"
+          >
+            <ToolGeometryView
+              :slot-number="row.slot"
+              :length-ratio="ratioL(row.effective_length)"
+              :diameter-ratio="ratioD(row.effective_diameter)"
+              :width="48"
+              :height="180"
+            />
+            <div class="magazine-figure__label">
+              <strong>T{{ row.slot }}</strong>
+              <span>⌀ {{ fmt(row.effective_diameter) }}</span>
+              <span>L {{ fmt(row.effective_length) }}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -128,6 +169,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { cnc as cncApi } from "@/api";
 import type { ToolTable, ToolTableSlot } from "@/api/cnc";
+import ToolGeometryView from "@/components/ToolGeometryView.vue";
 
 const props = defineProps<{
   machineId?: string;
@@ -157,6 +199,7 @@ const folder = ref<string>("");
 const search = ref("");
 const showOffline = ref(true);
 const showEmpty = ref(false);
+const showMagazine = ref(false);
 type SortKey =
   | "slot"
   | "length_geom"
@@ -218,6 +261,46 @@ const rowClass = (r: ToolTableSlot) => ({
   "is-empty": r.empty && !hasErr(r),
   "is-offline": hasErr(r),
 });
+
+// Loaded tools only — empty pockets and offline slots have no useful
+// geometry to render. The magazine view + per-row thumbnails both
+// scale against the loaded population, so missing/empty rows render
+// as the dashed placeholder instead of a misleadingly-tiny shape.
+const loadedSlots = computed(() => {
+  if (!latest.value) return [];
+  return latest.value.slots.filter(
+    (r) => !r.empty && !hasErr(r) &&
+      typeof r.effective_length === "number" &&
+      typeof r.effective_diameter === "number"
+  );
+});
+
+// Magazine-wide max length / diameter — used as the denominator for
+// the scaling ratios so all tools render against one shared scale.
+// Floor at a small positive so a single-tool magazine still draws.
+const maxLen = computed(() => {
+  let m = 0;
+  for (const r of loadedSlots.value) {
+    if (typeof r.effective_length === "number" && r.effective_length > m) {
+      m = r.effective_length;
+    }
+  }
+  return m > 0 ? m : 1;
+});
+const maxDia = computed(() => {
+  let m = 0;
+  for (const r of loadedSlots.value) {
+    if (typeof r.effective_diameter === "number" && r.effective_diameter > m) {
+      m = r.effective_diameter;
+    }
+  }
+  return m > 0 ? m : 0.5;
+});
+
+const ratioL = (len: number | undefined) =>
+  typeof len === "number" && len > 0 ? len / maxLen.value : undefined;
+const ratioD = (dia: number | undefined) =>
+  typeof dia === "number" && dia > 0 ? dia / maxDia.value : undefined;
 
 const displayRows = computed(() => {
   if (!latest.value) return [];
@@ -531,5 +614,60 @@ onMounted(loadLatest);
   text-align: center;
   padding: 1rem 0;
   color: var(--fg-muted, #888);
+}
+
+.thumb-col {
+  width: 28px;
+  text-align: center;
+  padding: 0.2rem 0.3rem;
+}
+
+/* Magazine: tools rendered to scale on one shared scale. Bottom-
+   align so the cutting-tip reference line is consistent — long
+   tools hang out further at the top. */
+.tool-card__magazine {
+  margin-top: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.magazine-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding: 0.8rem 0.6rem 0.4rem;
+  background: var(--alt-background, #fafafa);
+  border-radius: 6px;
+  border: 1px solid var(--border-color, #eee);
+  align-items: flex-end;
+}
+
+.magazine-figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.2rem 0.3rem;
+  border-radius: 4px;
+  cursor: help;
+}
+
+.magazine-figure:hover {
+  background: var(--surface-hover, rgba(33, 150, 243, 0.05));
+}
+
+.magazine-figure__label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.7rem;
+  color: var(--fg-muted, #666);
+  font-variant-numeric: tabular-nums;
+}
+
+.magazine-figure__label strong {
+  color: var(--fg, #333);
+  font-size: 0.78rem;
 }
 </style>
