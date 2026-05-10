@@ -34,6 +34,7 @@
     "marked-katex-extension": "^5.1.6",
     "material-icons": "^1.13.14",
     "normalize.css": "^8.0.1",
+    "online-3d-viewer": "^0.16.0",
     "pinia": "^3.0.4",
     "pretty-bytes": "^7.1.0",
     "qrcode.vue": "^3.6.0",

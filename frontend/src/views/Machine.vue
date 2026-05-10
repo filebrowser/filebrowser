@@ -244,6 +244,17 @@
           </div>
         </div>
       </section>
+
+      <!-- 3D part viewer below the NC card when a sibling model exists -->
+      <section v-if="cncStore.filePath && siblings.model_url" class="machine-card part-card">
+        <div class="card-header">
+          <i class="material-icons">view_in_ar</i>
+          {{ siblings.model_name }}
+        </div>
+        <div class="part-card__body">
+          <Part3DViewer :url="siblings.model_url" />
+        </div>
+      </section>
     </div>
   </div>
 </template>
@@ -255,6 +266,7 @@ import { cnc as cncApi, files as filesApi } from "@/api";
 import type { CncCheckResult, CncMetric } from "@/api/cnc";
 import GCode3DViewer from "@/components/GCode3DViewer.vue";
 import MachineNcMirror from "@/components/MachineNcMirror.vue";
+import Part3DViewer from "@/components/Part3DViewer.vue";
 import { useAuthStore } from "@/stores/auth";
 import { useCncStore } from "@/stores/cnc";
 import { useLayoutStore } from "@/stores/layout";
@@ -928,6 +940,13 @@ const Axis = (props: { label: string; value: unknown }) => {
   .nc-split__pane {
     height: 50vh;
   }
+}
+
+/* Part 3D viewer card sits below the NC card */
+.part-card .part-card__body {
+  height: 50vh;
+  min-height: 380px;
+  position: relative;
 }
 
 /* Live send progress strip — visible only while streaming */

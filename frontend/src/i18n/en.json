@@ -102,6 +102,7 @@
     "ncLoading": "Loading NC…",
     "drawing": "Drawing",
     "model": "Model",
+    "partLoading": "Loading part…",
     "rtspNotSupported": "RTSP isn't browser-renderable. Set up a go2rtc proxy to convert to HLS, then paste the .m3u8 URL into Settings → Machine."
   },
   "errors": {
