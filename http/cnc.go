@@ -17,7 +17,10 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
 	"path"
+	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -27,6 +30,12 @@ import (
 	"github.com/filebrowser/filebrowser/v2/cnc"
 	"github.com/filebrowser/filebrowser/v2/settings"
 )
+
+// toolTableShareDir is the user-scope-relative folder where tool-table
+// JSON dumps live. Dumps land at
+// "<this>/<machine-id>/<RFC3339>.json" — visible in the regular file
+// browser, downloadable, deletable.
+const toolTableShareDir = "/cnc-tool-tables"
 
 // cncSettingsBody is the wire shape the Machine settings tab POSTs and
 // reads. MachineToken is GET-only (minted server-side). Machines is
@@ -416,6 +425,233 @@ func cncProbeToolsHandler(registry *cnc.Registry) handleFunc {
 		}
 		return renderJSON(w, r, rep)
 	})
+}
+
+// toolTableHistoryEntry is the lightweight summary returned by the
+// list endpoint — just enough to drive the history dropdown without
+// loading every JSON dump into memory.
+type toolTableHistoryEntry struct {
+	// Path is user-scope-relative — pluggable into <a href="/files{path}">.
+	Path           string    `json:"path"`
+	Filename       string    `json:"filename"`
+	ModifiedAt     time.Time `json:"modified_at"`
+	SizeBytes      int64     `json:"size_bytes"`
+	SlotsRequested int       `json:"slots_requested,omitempty"`
+	SlotsRead      int       `json:"slots_read,omitempty"`
+}
+
+// cncToolTableReadHandler reads the live tool table from the controller,
+// writes it to <user-scope>/cnc-tool-tables/<machine-id>/<RFC3339>.json,
+// and returns the table.
+func cncToolTableReadHandler(registry *cnc.Registry) handleFunc {
+	return withAdmin(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		st, machineID, code, err := resolveStreamer(registry, r)
+		if err != nil {
+			return code, err
+		}
+		slots := 30
+		if q := r.URL.Query().Get("slots"); q != "" {
+			n, err := strconv.Atoi(q)
+			if err != nil || n < 1 || n > 200 {
+				return http.StatusBadRequest, fmt.Errorf("slots must be 1..200")
+			}
+			slots = n
+		}
+		ctx, cancel := context.WithTimeout(r.Context(), 90*time.Second)
+		defer cancel()
+		tbl, err := st.ReadToolTable(ctx, slots)
+		if err != nil {
+			return errToStatus(err), err
+		}
+
+		if err := persistToolTable(d, machineID, tbl); err != nil {
+			// Persisting is best-effort — surface the error in the
+			// JSON but don't fail the read. Operator gets the live
+			// data plus a hint that the history dump didn't land.
+			return renderJSON(w, r, map[string]any{
+				"table":         tbl,
+				"persist_error": err.Error(),
+			})
+		}
+		return renderJSON(w, r, map[string]any{"table": tbl})
+	})
+}
+
+// cncToolTableLatestHandler returns the latest persisted tool-table
+// dump (or 204 No Content if none exists yet). Reading is a normal
+// user op — operators want the dashboard to show the last-known table
+// without needing admin to trigger a fresh read.
+func cncToolTableLatestHandler(registry *cnc.Registry) handleFunc {
+	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		_, machineID, code, err := resolveStreamer(registry, r)
+		if err != nil {
+			return code, err
+		}
+		dir := toolTableDirAbs(d, machineID)
+		latest, err := newestJSONIn(dir)
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+		if latest == "" {
+			w.WriteHeader(http.StatusNoContent)
+			return 0, nil
+		}
+		buf, err := os.ReadFile(latest)
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+		// Pass through verbatim — table is already valid JSON. The
+		// frontend wraps it in {"table": ...} the same as the read
+		// handler so downstream parsing is uniform.
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(`{"table":`))
+		w.Write(buf)
+		w.Write([]byte(`}`))
+		return 0, nil
+	})
+}
+
+// cncToolTableHistoryHandler lists the per-machine dump folder so the
+// dashboard can show "previous reads" without scraping the file UI.
+// Newest-first.
+func cncToolTableHistoryHandler(registry *cnc.Registry) handleFunc {
+	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		_, machineID, code, err := resolveStreamer(registry, r)
+		if err != nil {
+			return code, err
+		}
+		dir := toolTableDirAbs(d, machineID)
+		shareRel := path.Join(toolTableShareDir, sanitizeMachineID(machineID))
+		entries, err := os.ReadDir(dir)
+		if err != nil {
+			if os.IsNotExist(err) {
+				return renderJSON(w, r, map[string]any{
+					"machine_id": machineID,
+					"folder":     shareRel,
+					"entries":    []toolTableHistoryEntry{},
+				})
+			}
+			return http.StatusInternalServerError, err
+		}
+
+		out := make([]toolTableHistoryEntry, 0, len(entries))
+		for _, e := range entries {
+			if e.IsDir() || !strings.HasSuffix(e.Name(), ".json") {
+				continue
+			}
+			info, err := e.Info()
+			if err != nil {
+				continue
+			}
+			ent := toolTableHistoryEntry{
+				Path:       path.Join(shareRel, e.Name()),
+				Filename:   e.Name(),
+				ModifiedAt: info.ModTime(),
+				SizeBytes:  info.Size(),
+			}
+			// Cheap header-only parse so the dropdown can show
+			// slots-read at a glance. Don't load the full slots
+			// array — a 200-slot dump is ~30 KB and we'd be reading
+			// dozens of them.
+			if buf, err := os.ReadFile(filepath.Join(dir, e.Name())); err == nil {
+				var hdr struct {
+					SlotsRequested int `json:"slots_requested"`
+					SlotsRead      int `json:"slots_read"`
+				}
+				_ = json.Unmarshal(buf, &hdr)
+				ent.SlotsRequested = hdr.SlotsRequested
+				ent.SlotsRead = hdr.SlotsRead
+			}
+			out = append(out, ent)
+		}
+		sort.Slice(out, func(i, j int) bool {
+			return out[i].ModifiedAt.After(out[j].ModifiedAt)
+		})
+		return renderJSON(w, r, map[string]any{
+			"machine_id": machineID,
+			"folder":     shareRel,
+			"entries":    out,
+		})
+	})
+}
+
+// persistToolTable writes the table as <RFC3339>.json into the
+// per-machine subfolder under the user scope. The folder is created
+// on first write so an operator who never runs a read sees no clutter
+// in their browser.
+func persistToolTable(d *data, machineID string, tbl *cnc.ToolTable) error {
+	dir := toolTableDirAbs(d, machineID)
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return fmt.Errorf("mkdir tool-table dir: %w", err)
+	}
+	// Filesystem-safe RFC3339 — colons aren't legal on FAT/exFAT
+	// (which the USB-gadget mass-storage image uses for the
+	// Haas-side mount), so swap them for hyphens.
+	stamp := tbl.ReadAt.UTC().Format("2006-01-02T15-04-05Z")
+	name := stamp + ".json"
+	full := filepath.Join(dir, name)
+	buf, err := json.MarshalIndent(tbl, "", "  ")
+	if err != nil {
+		return err
+	}
+	tmp := full + ".tmp"
+	if err := os.WriteFile(tmp, buf, 0o644); err != nil {
+		return err
+	}
+	return os.Rename(tmp, full)
+}
+
+func toolTableDirAbs(d *data, machineID string) string {
+	rel := path.Join(toolTableShareDir, sanitizeMachineID(machineID))
+	return d.user.FullPath(rel)
+}
+
+// sanitizeMachineID strips path separators and traversal chars from the
+// machine ID so a malicious settings entry can't escape the dump dir.
+// Machine IDs are server-minted (random base64) but defense in depth.
+func sanitizeMachineID(id string) string {
+	if id == "" {
+		return "default"
+	}
+	repl := strings.NewReplacer(
+		"/", "_",
+		"\\", "_",
+		"..", "_",
+		string(os.PathSeparator), "_",
+	)
+	cleaned := repl.Replace(id)
+	if cleaned == "" {
+		return "default"
+	}
+	return cleaned
+}
+
+func newestJSONIn(dir string) (string, error) {
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return "", nil
+		}
+		return "", err
+	}
+	var (
+		newest    string
+		newestMod time.Time
+	)
+	for _, e := range entries {
+		if e.IsDir() || !strings.HasSuffix(e.Name(), ".json") {
+			continue
+		}
+		info, err := e.Info()
+		if err != nil {
+			continue
+		}
+		if info.ModTime().After(newestMod) {
+			newestMod = info.ModTime()
+			newest = filepath.Join(dir, e.Name())
+		}
+	}
+	return newest, nil
 }
 
 type cncStartBody struct {

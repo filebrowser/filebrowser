@@ -227,6 +227,15 @@
         </div>
       </section>
 
+      <!-- Tool-table readout — manual refresh, persisted as JSON
+           dumps under /cnc-tool-tables/<machine-id>/ in the user share
+           so history is browsable in the file UI. -->
+      <ToolTablePanel
+        v-if="!kioskMode"
+        :machine-id="undefined"
+        :cnc-running="cncStore.running"
+      />
+
       <!-- NC code + toolpath, side-by-side. Only when a job has a
            file path (running, or just ended and we still have it). -->
       <section v-if="cncStore.filePath" class="machine-card nc-card">
@@ -305,6 +314,7 @@ import type { CncCheckResult, CncMetric } from "@/api/cnc";
 import GCode3DViewer from "@/components/GCode3DViewer.vue";
 import MachineNcMirror from "@/components/MachineNcMirror.vue";
 import Part3DViewer from "@/components/Part3DViewer.vue";
+import ToolTablePanel from "@/components/ToolTablePanel.vue";
 import { useAuthStore } from "@/stores/auth";
 import { useCncStore } from "@/stores/cnc";
 import { useLayoutStore } from "@/stores/layout";

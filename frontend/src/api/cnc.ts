@@ -149,6 +149,77 @@ export function probeTools(slots = 30, machineId?: string) {
   });
 }
 
+// ── Tool table (live readout, persisted as JSON in user share) ─────────────
+
+export interface ToolTableSlot {
+  slot: number;
+  length_geom?: number;
+  length_wear?: number;
+  diameter_geom?: number;
+  diameter_wear?: number;
+  effective_length?: number;
+  effective_diameter?: number;
+  empty?: boolean;
+  errors?: Record<string, string>;
+}
+
+export interface ToolTable {
+  machine_id: string;
+  machine_name?: string;
+  bridge_address: string;
+  read_at: string;
+  duration_ms: number;
+  slots_requested: number;
+  slots_read: number;
+  slots: ToolTableSlot[];
+}
+
+export interface ToolTableEnvelope {
+  table: ToolTable;
+  persist_error?: string;
+}
+
+export interface ToolTableHistoryEntry {
+  path: string;
+  filename: string;
+  modified_at: string;
+  size_bytes: number;
+  slots_requested?: number;
+  slots_read?: number;
+}
+
+export interface ToolTableHistory {
+  machine_id: string;
+  folder: string;
+  entries: ToolTableHistoryEntry[];
+}
+
+export function readToolTable(slots = 30, machineId?: string) {
+  const params = new URLSearchParams({ slots: String(slots) });
+  if (machineId) params.set("machine_id", machineId);
+  return fetchJSON<ToolTableEnvelope>(`/api/cnc/tool-table?${params}`, {
+    method: "POST",
+  });
+}
+
+// 204 No Content means "no dump persisted yet" — valid empty state,
+// not an error. fetchJSON would treat it as a non-200 throw so we hit
+// the lower-level fetchURL.
+export async function getLatestToolTable(
+  machineId?: string
+): Promise<ToolTable | null> {
+  const q = machineId ? `?machine_id=${encodeURIComponent(machineId)}` : "";
+  const res = await fetchURL(`/api/cnc/tool-table${q}`, {});
+  if (res.status === 204) return null;
+  const env = (await res.json()) as ToolTableEnvelope;
+  return env.table ?? null;
+}
+
+export function getToolTableHistory(machineId?: string) {
+  const q = machineId ? `?machine_id=${encodeURIComponent(machineId)}` : "";
+  return fetchJSON<ToolTableHistory>(`/api/cnc/tool-table/history${q}`, {});
+}
+
 export interface CncMetric {
   key: string;
   label: string;
