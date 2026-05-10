@@ -37,6 +37,14 @@
   margin: 0.5em 0 0;
 }
 
+#login.turnstile form {
+  min-width: 300px;
+}
+
+#login #turnstile {
+  margin: 0.5em 0 0;
+}
+
 #login .wrong {
   background: var(--red);
   color: #fff;

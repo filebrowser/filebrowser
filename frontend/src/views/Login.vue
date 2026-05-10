@@ -1,5 +1,5 @@
 <template>
-  <div id="login" :class="{ recaptcha: recaptcha }">
+  <div id="login" :class="{ recaptcha: recaptcha, turnstile: turnstile }">
     <form @submit="submit">
       <img :src="logoURL" alt="File Browser" />
       <h1>{{ name }}</h1>
@@ -31,6 +31,7 @@
       />
 
       <div v-if="recaptcha" id="recaptcha"></div>
+      <div v-if="turnstile" id="turnstile"></div>
       <input
         class="button button--block"
         type="submit"
@@ -52,6 +53,8 @@ import {
   logoURL,
   recaptcha,
   recaptchaKey,
+  turnstile,
+  turnstileKey,
   signup,
 } from "@/utils/constants";
 import { inject, onMounted, ref } from "vue";
@@ -91,6 +94,16 @@ const submit = async (event: Event) => {
     }
   }
 
+  let turnstileToken = "";
+  if (turnstile) {
+    turnstileToken = window.turnstile.getResponse();
+
+    if (turnstileToken === "") {
+      error.value = t("login.wrongCredentials");
+      return;
+    }
+  }
+
   if (createMode.value) {
     if (password.value !== passwordConfirm.value) {
       error.value = t("login.passwordsDontMatch");
@@ -103,7 +116,7 @@ const submit = async (event: Event) => {
       await auth.signup(username.value, password.value);
     }
 
-    await auth.login(username.value, password.value, captcha);
+    await auth.login(username.value, password.value, captcha, turnstileToken);
     router.push({ path: redirect });
   } catch (e: any) {
     // console.error(e);
@@ -128,12 +141,20 @@ const submit = async (event: Event) => {
 
 // Run hooks
 onMounted(() => {
-  if (!recaptcha) return;
-
-  window.grecaptcha.ready(function () {
-    window.grecaptcha.render("recaptcha", {
-      sitekey: recaptchaKey,
+  if (recaptcha) {
+    window.grecaptcha.ready(function () {
+      window.grecaptcha.render("recaptcha", {
+        sitekey: recaptchaKey,
+      });
     });
-  });
+  }
+
+  if (turnstile) {
+    window.turnstile.ready(function () {
+      window.turnstile.render("#turnstile", {
+        sitekey: turnstileKey,
+      });
+    });
+  }
 });
 </script>

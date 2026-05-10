@@ -50,6 +50,7 @@ func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, fSys 
 		"EnableExec":            d.server.EnableExec,
 		"TusSettings":           d.settings.Tus,
 		"HideLoginButton":       d.settings.HideLoginButton,
+		"Turnstile":             false,
 	}
 
 	if d.settings.Branding.Files != "" {
@@ -77,6 +78,11 @@ func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, fSys 
 			data["ReCaptcha"] = auther.ReCaptcha.Key != "" && auther.ReCaptcha.Secret != ""
 			data["ReCaptchaHost"] = auther.ReCaptcha.Host
 			data["ReCaptchaKey"] = auther.ReCaptcha.Key
+		}
+
+		if auther.Turnstile != nil {
+			data["Turnstile"] = auther.Turnstile.Key != "" && auther.Turnstile.Secret != ""
+			data["TurnstileKey"] = auther.Turnstile.Key
 		}
 	}
 
