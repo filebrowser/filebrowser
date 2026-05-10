@@ -288,7 +288,7 @@
     "machineCamera": "Camera",
     "machineCameraUrl": "Camera URL (HLS .m3u8 or MJPEG snapshot)",
     "machineToken": "API token (server-to-server)",
-    "machineTokenHelp": "Long-lived bearer for external services that call /api/cnc/state or /api/cnc/qcode without a filebrowser session — e.g. Home Assistant scripts, monitoring agents, custom dashboards. Send as `Authorization: Bearer <token>`. Regenerating invalidates the old value.",
+    "machineTokenHelp": "Long-lived bearer for external services that call /api/cnc/state or /api/cnc/qcode without a filebrowser session — e.g. Home Assistant scripts, monitoring agents, custom dashboards. Send it in the Authorization header as a Bearer token. Regenerating invalidates the old value.",
     "machineTokenEmpty": "(not generated yet — click Regenerate)",
     "machineTokenRegenerate": "Regenerate token",
     "machineTokenRegenerated": "New machine token generated.",
