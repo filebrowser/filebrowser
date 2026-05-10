@@ -148,7 +148,16 @@
             </thead>
             <tbody>
               <tr v-for="tu in preflight.tools" :key="tu.tool" :class="`tool-row--${tu.status}`">
-                <td><strong>T{{ tu.tool }}</strong></td>
+                <td>
+                  <strong>T{{ tu.tool }}</strong>
+                  <span
+                    v-if="tu.uses_cutter_comp"
+                    class="tool-comp-pill"
+                    :title="t('sendWizard.cutterCompTitle')"
+                  >
+                    G41
+                  </span>
+                </td>
                 <td class="tool-expected">
                   <div v-if="tu.expected_diameter !== undefined">⌀ {{ tu.expected_diameter.toFixed(4) }}</div>
                   <div v-if="tu.comment" class="tool-comment">{{ tu.comment }}</div>
@@ -595,6 +604,23 @@ watch(destinationId, (id, prev) => {
 .wizard-tools .tool-comment {
   color: var(--fg-muted, #888);
   font-size: 0.78rem;
+}
+
+/* G41 pill next to the T-number for tools that activate cutter comp.
+   Visual cue so the operator can scan the table for "this tool MUST
+   have a real diameter or the cut is wrong." */
+.tool-comp-pill {
+  display: inline-block;
+  margin-left: 0.3rem;
+  padding: 0.05rem 0.35rem;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  background: rgba(33, 150, 243, 0.12);
+  color: #1976d2;
+  vertical-align: middle;
+  cursor: help;
 }
 
 .wizard-tools .tool-actual,

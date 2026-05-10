@@ -297,6 +297,11 @@ export interface PreflightToolUsage {
   comment?: string;
   expected_diameter?: number;
   expected_corner_radius?: number;
+  // Set when the program activates G41/G42 while this tool is the
+  // most-recently-selected T-code. Surfaces a "uses G41" pill in the
+  // wizard tool row; also flips the status to warn when the diameter
+  // offset is 0 since cutter comp + D=0 produces silent wrong cuts.
+  uses_cutter_comp?: boolean;
   in_table: boolean;
   loaded: boolean;
   empty_pocket: boolean;

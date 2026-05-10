@@ -178,6 +178,7 @@
     "spindleSwap": "spindle currently has T{from} → program will swap to T{to}",
     "spindleMatch": "spindle has T{n} (no swap on first M06)",
     "spindleUnknown": "spindle tool unknown (metric stale)",
+    "cutterCompTitle": "Program activates G41/G42 cutter compensation while this tool is selected — diameter offset must be non-zero in the tool table",
     "tool": "Tool",
     "expected": "Expected (NC)",
     "actual": "Actual (table)",

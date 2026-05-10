@@ -28,6 +28,14 @@ type ToolUsage struct {
 	Comment              string   `json:"comment,omitempty"`
 	ExpectedDiameter     *float64 `json:"expected_diameter,omitempty"`
 	ExpectedCornerRadius *float64 `json:"expected_corner_radius,omitempty"`
+	// UsesCutterComp is true when a G41/G42 modal block fires while
+	// this tool is the most-recently-selected T-code. CAM output
+	// almost always pairs T<n> + G41/G42 + D<n> on the same setup
+	// block, so the heuristic of "G41/42 belongs to the active T"
+	// catches the standard pattern. Used to escalate a missing /
+	// zero-diameter tool to a hard problem — cutter comp with D=0
+	// produces wrong cuts silently.
+	UsesCutterComp bool `json:"uses_cutter_comp,omitempty"`
 	// Tool-table state for the slot whose number matches Tool.
 	InTable        bool     `json:"in_table"`
 	Loaded         bool     `json:"loaded"`       // table read OK + non-zero length
@@ -110,6 +118,12 @@ var toolCommentHeader = regexp.MustCompile(`(?i)^\s*T(\d{1,3})\s*(.*)$`)
 var diamRe = regexp.MustCompile(`(?i)\bD\s*=\s*([0-9.]+)`)
 var cornerRe = regexp.MustCompile(`(?i)\bCR\s*=\s*([0-9.]+)`)
 
+// G41 = cutter compensation left, G42 = right. Word-boundary on the
+// trailing edge so G410 (extended G-code, not standard) doesn't false-
+// match. G40 cancels comp; tracked separately because operators
+// sometimes interleave G41/G40/G41 within a single tool's block.
+var cutterCompOn = regexp.MustCompile(`(?i)\bG4[12]\b`)
+
 // BuildPreflight reads the NC file at absPath, parses tool usage, and
 // joins it against `table` (typically the most recent persisted
 // tool-table dump for `machineID`). table may be nil — in that case
@@ -148,6 +162,10 @@ func BuildPreflight(
 	// startingTool is the first T-code we see in the program (program
 	// order, not lowest tool number). Captured during pass 2 below.
 	var startingTool *int
+	// lastActiveTool — the most-recent T-code seen on a real (non-
+	// comment) line. Used to attribute G41/G42 cutter-comp blocks to
+	// the tool that's about to cut with them.
+	var lastActiveTool int
 
 	scanner := bufio.NewScanner(f)
 	scanner.Buffer(make([]byte, 64*1024), 1024*1024)
@@ -192,6 +210,19 @@ func BuildPreflight(
 				v := n
 				startingTool = &v
 			}
+			// Track most-recent T for the cutter-comp pairing below.
+			lastActiveTool = n
+		}
+
+		// Pass 3 — cutter compensation on the same comment-stripped
+		// line. CAM output almost always emits a setup block like
+		// "T5 M06 / G43 H5 / G41 D5 / X… Y…" so the most-recent T
+		// is the right owner. We don't try to follow G40-cancel /
+		// G41-re-enable pairs across blocks — once a tool has used
+		// comp anywhere in its program section, the diameter offset
+		// matters for that tool.
+		if lastActiveTool > 0 && cutterCompOn.MatchString(stripped) {
+			get(lastActiveTool).UsesCutterComp = true
 		}
 	}
 
@@ -250,7 +281,11 @@ func BuildPreflight(
 		slot, ok := tableSlots[t.Tool]
 		if !ok {
 			t.Status = "missing"
-			t.StatusReason = fmt.Sprintf("slot %d not covered by last read (slots_requested=%d)", t.Tool, table.SlotsRequested)
+			reason := fmt.Sprintf("slot %d not covered by last read (slots_requested=%d)", t.Tool, table.SlotsRequested)
+			if t.UsesCutterComp {
+				reason += " — uses G41/G42, diameter offset will be 0"
+			}
+			t.StatusReason = reason
 			pf.Summary.Missing++
 			continue
 		}
@@ -267,12 +302,26 @@ func BuildPreflight(
 		if slot.Empty {
 			t.EmptyPocket = true
 			t.Status = "empty"
-			t.StatusReason = "table read OK, every value 0 — no tool in pocket"
+			reason := "table read OK, every value 0 — no tool in pocket"
+			if t.UsesCutterComp {
+				reason += " — G41/G42 with D=0 produces wrong cuts"
+			}
+			t.StatusReason = reason
 			pf.Summary.Empty++
 			continue
 		}
 		t.Loaded = true
 		t.ActualDiameter = slot.EffectiveDiameter
+		// Diameter sanity for cutter comp: even when the slot reads
+		// non-zero length (so it's not "empty"), a 0 effective
+		// diameter renders G41/G42 useless. Flag as warn so the
+		// operator notices before the part comes out wrong.
+		if t.UsesCutterComp && (t.ActualDiameter == nil || *t.ActualDiameter == 0) {
+			t.Status = "warn"
+			t.StatusReason = "uses G41/G42 but tool table has diameter 0 — cutter comp will not apply"
+			pf.Summary.Warn++
+			continue
+		}
 		if t.ExpectedDiameter != nil && t.ActualDiameter != nil {
 			delta := *t.ActualDiameter - *t.ExpectedDiameter
 			t.DiameterDelta = &delta
