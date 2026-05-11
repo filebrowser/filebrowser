@@ -194,6 +194,7 @@
     "diameterWear": "Dia wear",
     "diameterEff": "Dia eff",
     "status": "Status",
+    "description": "Description",
     "loaded": "loaded",
     "emptyPocket": "empty",
     "offline": "offline",

@@ -54,7 +54,7 @@
 
             <!-- Tools tab -->
             <div v-show="activeTab === 'tools'" class="m-main__filltab">
-              <ToolsTab />
+              <ToolsTab :preflight="preflight" />
             </div>
 
             <!-- File tab -->

@@ -123,6 +123,7 @@
                 </span>
               </th>
               <th>{{ t("toolTable.status") }}</th>
+              <th v-if="hasComments">{{ t("toolTable.description") }}</th>
             </tr>
           </thead>
           <tbody>
@@ -158,9 +159,15 @@
                   {{ t("toolTable.loaded") }}
                 </span>
               </td>
+              <td v-if="hasComments" class="tool-table__desc">
+                <MfgAnnotatedText
+                  v-if="props.toolComments?.[row.slot]"
+                  :text="props.toolComments[row.slot]"
+                />
+              </td>
             </tr>
             <tr v-if="displayRows.length === 0">
-              <td colspan="9" class="tool-card__no-match">
+              <td :colspan="hasComments ? 10 : 9" class="tool-card__no-match">
                 {{ t("toolTable.noMatch") }}
               </td>
             </tr>
@@ -208,10 +215,16 @@ import { useI18n } from "vue-i18n";
 import { cnc as cncApi } from "@/api";
 import type { ToolTable, ToolTableSlot, ToolTableDiff } from "@/api/cnc";
 import ToolGeometryView from "@/components/ToolGeometryView.vue";
+import MfgAnnotatedText from "@/components/machine/MfgAnnotatedText.vue";
 
 const props = defineProps<{
   machineId?: string;
   cncRunning: boolean;
+  // Optional per-slot description string (typically the CAM tool-list
+  // comment from preflight). Renders in a new "Description" column
+  // when present; column is hidden entirely when the map is empty so
+  // installs that never load a program don't see a blank column.
+  toolComments?: Record<number, string>;
 }>();
 
 const { t } = useI18n();
@@ -234,6 +247,18 @@ const latest = ref<ToolTable | null>(null);
 const reading = ref(false);
 const errMsg = ref<string>("");
 const folder = ref<string>("");
+
+// True when the parent passed at least one comment — gates the
+// "Description" column so installs without any preflight context
+// don't see a blank column.
+const hasComments = computed(() => {
+  const c = props.toolComments;
+  if (!c) return false;
+  for (const k in c) {
+    if (c[k]) return true;
+  }
+  return false;
+});
 
 const diffResult = ref<ToolTableDiff | null>(null);
 const diffing = ref(false);
@@ -749,6 +774,13 @@ onMounted(loadLatest);
   font-size: 0.75rem;
 }
 
+.tool-table__desc {
+  max-width: 22rem;
+  white-space: normal;
+  word-break: break-word;
+  color: var(--fg-muted, #555);
+  font-size: 11px;
+}
 .tool-table td.num,
 .tool-table th.num {
   text-align: right;
