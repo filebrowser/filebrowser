@@ -73,7 +73,9 @@
             <li v-for="(entry, i) in filteredLog" :key="i" :class="`m-activity-row m-activity-row--${entry.level}`">
               <span class="m-activity-row__ts">{{ fmtTs(entry.ts) }}</span>
               <span class="m-activity-row__level">{{ entry.level }}</span>
-              <span class="m-activity-row__msg">{{ entry.msg }}</span>
+              <span class="m-activity-row__msg">
+                <CodeAnnotatedMessage :msg="entry.msg" />
+              </span>
             </li>
             <li v-if="filteredLog.length === 0" class="m-activity-empty">
               {{ t("machine.activityEmpty") }}
@@ -91,6 +93,7 @@ import { useI18n } from "vue-i18n";
 import { useCncStore } from "@/stores/cnc";
 import { cnc as cncApi } from "@/api";
 import type { CncCheckResult } from "@/api/cnc";
+import CodeAnnotatedMessage from "./CodeAnnotatedMessage.vue";
 
 const { t } = useI18n();
 const cnc = useCncStore();

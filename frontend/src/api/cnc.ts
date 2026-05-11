@@ -467,3 +467,32 @@ export function getState(machineId?: string) {
   const q = machineId ? `?machine_id=${encodeURIComponent(machineId)}` : "";
   return fetchJSON<CncStateSnapshot>(`/api/cnc/state${q}`, {});
 }
+
+// ── Haas alarm/setting/parameter code catalog ───────────────────────────────
+
+import type { CodeKind, CodeEntry } from "@/utils/codeRefs";
+export type { CodeKind, CodeEntry } from "@/utils/codeRefs";
+
+export interface CodeLookupResponse {
+  ok: boolean;
+  kind: CodeKind;
+  entry: CodeEntry;
+}
+
+export function lookupCode(kind: CodeKind, number: number) {
+  return fetchJSON<CodeLookupResponse>(
+    `/api/cnc/codes/lookup?kind=${encodeURIComponent(kind)}&number=${number}`,
+    {}
+  );
+}
+
+export function searchCodes(q: string, kind?: CodeKind, limit?: number) {
+  const params = new URLSearchParams();
+  if (q) params.set("q", q);
+  if (kind) params.set("kind", kind);
+  if (limit) params.set("limit", String(limit));
+  return fetchJSON<{ count: number; results: CodeEntry[] }>(
+    `/api/cnc/codes/search?${params.toString()}`,
+    {}
+  );
+}
