@@ -35,6 +35,11 @@ export interface CncMachine {
   // Off by default; enable on machines that use DPRNT for in-cycle
   // probing or telemetry output.
   dprntCapture?: boolean;
+  // When true, /api/cnc/auto-send is enabled for this machine. The
+  // pipeline runs preflight and starts the send in one round-trip
+  // when everything checks out. Operators still press CYCLE START
+  // — auto-send does NOT trigger the cycle.
+  autoSendEnabled?: boolean;
 }
 
 export interface CncSettings {
@@ -104,6 +109,33 @@ export function start(
   if (machineId) body.machine_id = machineId;
   if (queueId) body.queue_id = queueId;
   return fetchJSON<{ job_id: string }>(`/api/cnc/start`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+// AutoSendResponse — see http/cnc_autosend.go. `started` is true when
+// the pipeline accepted the send and a streamer job is now running;
+// false when blocked (the UI should fall back to the manual wizard
+// and the `preflight` payload is the same shape /api/cnc/preflight
+// returns).
+export interface AutoSendResponse {
+  started: boolean;
+  job_id?: string;
+  blocked_reason?: string;
+  preflight?: Preflight;
+}
+
+export function autoSend(
+  filePath: string,
+  method: SendMethod = "mem",
+  machineId?: string,
+  queueId?: string
+) {
+  const body: Record<string, string> = { file_path: filePath, method };
+  if (machineId) body.machine_id = machineId;
+  if (queueId) body.queue_id = queueId;
+  return fetchJSON<AutoSendResponse>(`/api/cnc/auto-send`, {
     method: "POST",
     body: JSON.stringify(body),
   });

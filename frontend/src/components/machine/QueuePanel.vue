@@ -68,6 +68,13 @@
           </template>
           <template v-else>
             <button
+              v-if="autoSendEnabled"
+              class="m-queue-row__btn m-queue-row__btn--auto"
+              :disabled="anyInFlight"
+              :title="anyInFlight ? t('machine.queueBusy') : t('machine.queueAutoSendTitle')"
+              @click.stop="onAutoSend(item)"
+            >⚡</button>
+            <button
               v-if="openSendId !== item.id"
               class="m-queue-row__btn m-queue-row__btn--send"
               :disabled="anyInFlight"
@@ -202,6 +209,33 @@ const onSend = async (item: QueueItem, method: SendMethod) => {
     await cnc.sendFromQueue(item, method);
   } catch (e) {
     /* error surfaces via store + log; the row stays "queued" */
+    console.error(e);
+  }
+};
+
+// autoSendEnabled mirrors the active machine's flag. The button only
+// shows when the machine has opted in — otherwise the regular send
+// disclosure is the only path.
+const autoSendEnabled = computed(
+  () => !!cnc.currentMachine?.autoSendEnabled
+);
+
+// onAutoSend hits /api/cnc/auto-send. On block (preflight failed or
+// spindle swap pending) we fall back to opening the send disclosure
+// so the operator can confirm in the manual path. The block reason is
+// pushed to the activity log so it's visible without a modal.
+const onAutoSend = async (item: QueueItem) => {
+  if (anyInFlight.value) return;
+  try {
+    const r = await cnc.autoSendFromQueue(item, "mem");
+    if (!r.started) {
+      cnc.pushLog(
+        "warn",
+        `auto-send blocked: ${r.blocked_reason || "preflight not green"}`
+      );
+      openSendId.value = item.id;
+    }
+  } catch (e) {
     console.error(e);
   }
 };
@@ -366,7 +400,8 @@ defineExpose({ toggle });
   border-color: rgba(33, 150, 243, 0.4);
   background: rgba(33, 150, 243, 0.06);
 }
-.m-queue-row--locked .m-queue-row__btn--send { opacity: 0.4; cursor: not-allowed; }
+.m-queue-row--locked .m-queue-row__btn--send,
+.m-queue-row--locked .m-queue-row__btn--auto { opacity: 0.4; cursor: not-allowed; }
 
 .m-queue-row__handle { color: var(--fg-muted, #aaa); cursor: grab; user-select: none; font-size: 10px; }
 .m-queue-row--sending .m-queue-row__handle,
@@ -404,6 +439,7 @@ defineExpose({ toggle });
 }
 .m-queue-row__btn:hover:not(:disabled) { background: var(--alt-background, #f4f4f4); }
 .m-queue-row__btn--send { color: #1976d2; }
+.m-queue-row__btn--auto { color: #b85100; }
 .m-queue-row__btn--cancel { color: #c0392b; }
 .m-queue-row__spacer { flex: 1 1 0; }
 .m-queue-row__send-opt {

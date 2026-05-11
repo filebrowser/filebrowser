@@ -99,6 +99,14 @@ type Machine struct {
 	// during a job. Operators using DPRNT for in-cycle probing /
 	// measurement output should turn it on.
 	DPRNTCapture bool `json:"dprntCapture,omitempty"`
+	// AutoSendEnabled gates the /api/cnc/auto-send pipeline for this
+	// machine. When on, sends that pass an all-green preflight (no
+	// missing / empty / warn tools, no spindle swap) can fire in
+	// one step instead of the operator clicking through the wizard.
+	// Hard-block preflight still applies if RequirePreflight is on.
+	// CYCLE START is NOT triggered — operators still press the
+	// physical button. Off by default.
+	AutoSendEnabled bool `json:"autoSendEnabled,omitempty"`
 }
 
 // EffectiveAxes returns the axes to render for this machine. Defaults

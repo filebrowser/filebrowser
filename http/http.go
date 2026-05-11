@@ -106,6 +106,7 @@ func NewHandler(
 	cncRouter.PathPrefix("/queue/").Handler(monkey(cncQueueRemoveHandler(registry), "")).Methods("DELETE")
 	cncRouter.Handle("/codes/lookup", monkey(cncCodesLookupHandler, "")).Methods("GET")
 	cncRouter.Handle("/codes/search", monkey(cncCodesSearchHandler, "")).Methods("GET")
+	cncRouter.Handle("/auto-send", monkey(cncAutoSendHandler(registry), "")).Methods("POST")
 
 	api.PathPrefix("/raw").Handler(monkey(rawHandler, "/api/raw")).Methods("GET")
 	api.PathPrefix("/preview/{size}/{path:.*}").

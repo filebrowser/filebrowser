@@ -331,6 +331,20 @@ export const useCncStore = defineStore("cnc", {
       );
     },
 
+    // autoSendFromQueue runs /api/cnc/auto-send. On a clean preflight
+    // the streamer starts immediately and the WS picks it up; on a
+    // block the response carries blocked_reason + the preflight payload
+    // so the caller can fall back to the wizard with both already in
+    // hand. Throws on transport / server error.
+    async autoSendFromQueue(item: QueueItem, method: SendMethod) {
+      return cncApi.autoSend(
+        item.file_path,
+        method,
+        this.currentMachineId || undefined,
+        item.id
+      );
+    },
+
     pushLog(level: string, msg: string) {
       this.log.unshift({ ts: Date.now(), level, msg });
       if (this.log.length > LOG_BUFFER_MAX) {

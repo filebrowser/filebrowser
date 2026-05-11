@@ -155,6 +155,19 @@
             </p>
 
             <p>
+              <label class="small">
+                <input
+                  type="checkbox"
+                  v-model="machine.autoSendEnabled"
+                />
+                {{ t("settings.machineAutoSendEnabled") }}
+              </label>
+              <span class="small machine-row__hint">
+                {{ t("settings.machineAutoSendEnabledHelp") }}
+              </span>
+            </p>
+
+            <p>
               <label class="small">{{ t("settings.machineCameraType") }}</label>
               <select class="input input--block" v-model="machine.cameraType">
                 <option value="auto">{{ t("settings.machineCameraTypeAuto") }}</option>
