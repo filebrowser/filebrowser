@@ -17,6 +17,10 @@ package cnc
 //                reorder / state transition). Queue carries the
 //                whole post-mutation snapshot so subscribers can
 //                replace their local copy without a refetch.
+//   - "dprnt"  — a Haas DPRNT[…] macro line emitted over RS-232 during
+//                a streaming job. Text holds the line as received,
+//                terminator stripped. Only emitted when the active
+//                Machine has DPRNTCapture enabled.
 type Event struct {
 	Type   string      `json:"type"`
 	N      int64       `json:"n,omitempty"`

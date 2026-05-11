@@ -142,6 +142,19 @@
             </p>
 
             <p>
+              <label class="small">
+                <input
+                  type="checkbox"
+                  v-model="machine.dprntCapture"
+                />
+                {{ t("settings.machineDprntCapture") }}
+              </label>
+              <span class="small machine-row__hint">
+                {{ t("settings.machineDprntCaptureHelp") }}
+              </span>
+            </p>
+
+            <p>
               <label class="small">{{ t("settings.machineCameraType") }}</label>
               <select class="input input--block" v-model="machine.cameraType">
                 <option value="auto">{{ t("settings.machineCameraTypeAuto") }}</option>

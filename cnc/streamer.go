@@ -122,6 +122,9 @@ type job struct {
 	cancel      context.CancelFunc
 	done        chan struct{} // closed when the streaming goroutine exits
 	queryCh     chan *queryReq
+	// dprnt is non-nil when DPRNTCapture is enabled on this Machine.
+	// Owned by run(); never touched from another goroutine.
+	dprnt *dprntBuffer
 }
 
 // SendMethod tells the operator which controller-side mode they're
@@ -231,6 +234,9 @@ func (s *Streamer) Start(absPath, displayPath string, method SendMethod) (*Statu
 		cancel:      cancel,
 		done:        make(chan struct{}),
 		queryCh:     make(chan *queryReq, queryQueueDepth),
+	}
+	if m.DPRNTCapture {
+		j.dprnt = &dprntBuffer{}
 	}
 	s.job = j
 	s.lastError = ""
@@ -475,6 +481,18 @@ func (s *Streamer) run(ctx context.Context, j *job, host string, port int) {
 		default:
 		}
 
+		// DPRNT scavenger — opt-in per Machine.DPRNTCapture. A 3ms
+		// non-blocking read between writes is enough to grab the
+		// human-paced output of a DPRNT[…] macro line without
+		// stealing bytes from a subsequent query exchange.
+		if j.dprnt != nil {
+			_, _ = j.dprnt.scavengeOnce(
+				conn,
+				func(text string) { s.emit(Event{Type: "dprnt", Text: text}) },
+				func(level, msg string) { s.logf(level, msg) },
+			)
+		}
+
 		line := strings.TrimRight(scanner.Text(), "\r\n")
 		if _, err := conn.Write([]byte(line + "\r\n")); err != nil {
 			s.recordError(fmt.Errorf("write line %d: %w", j.lineCurrent.Load()+1, err))
@@ -495,6 +513,17 @@ func (s *Streamer) run(ctx context.Context, j *job, host string, port int) {
 		s.recordError(fmt.Errorf("read source: %w", err))
 	} else {
 		s.logf("info", "stream complete: %d lines sent", j.lineCurrent.Load())
+	}
+
+	// Final DPRNT drain — programs that emit DPRNT[…] near M30 would
+	// otherwise lose the last line because run() returns immediately
+	// after EOF. Best-effort; no retry on partial frames.
+	if j.dprnt != nil {
+		_, _ = j.dprnt.scavengeOnce(
+			conn,
+			func(text string) { s.emit(Event{Type: "dprnt", Text: text}) },
+			func(level, msg string) { s.logf(level, msg) },
+		)
 	}
 
 	// Drain any queries enqueued during the final line so callers don't

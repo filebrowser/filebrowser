@@ -444,6 +444,12 @@ export const useCncStore = defineStore("cnc", {
           } else if (ev.type === "queue" && Array.isArray(ev.queue)) {
             this.queue = ev.queue as QueueItem[];
             this.queueLoaded = true;
+          } else if (ev.type === "dprnt" && typeof ev.text === "string") {
+            // DPRNT macro output during a stream. Surface in the
+            // activity log as an info entry prefixed so operators can
+            // filter — Haas DPRNT is a niche feature used for in-cycle
+            // probing output and homemade telemetry.
+            this.pushLog("info", `DPRNT: ${ev.text}`);
           }
         } catch {
           /* ignore malformed frames */

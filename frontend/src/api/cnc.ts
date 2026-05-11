@@ -30,6 +30,11 @@ export interface CncMachine {
   // Inches threshold for the ∆ CMD column on the dashboard. Falls back
   // to 0.001" when 0 / unset.
   positionToleranceIn?: number;
+  // When true, the streamer scavenges DPRNT[…] macro output between
+  // line writes during a job and emits it as WS "dprnt" events.
+  // Off by default; enable on machines that use DPRNT for in-cycle
+  // probing or telemetry output.
+  dprntCapture?: boolean;
 }
 
 export interface CncSettings {

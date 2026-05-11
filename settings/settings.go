@@ -93,6 +93,12 @@ type Machine struct {
 	// and machine position that flips the dashboard's Δ-CMD readout
 	// from green to amber. 0 / unset falls back to 0.001".
 	PositionToleranceIn float64 `json:"positionToleranceIn,omitempty"`
+	// DPRNTCapture enables a per-write scavenger on the streaming
+	// socket that surfaces Haas DPRNT macro output as live events
+	// on the WS feed. Off by default — adds a 1-2ms per-line read
+	// during a job. Operators using DPRNT for in-cycle probing /
+	// measurement output should turn it on.
+	DPRNTCapture bool `json:"dprntCapture,omitempty"`
 }
 
 // EffectiveAxes returns the axes to render for this machine. Defaults
