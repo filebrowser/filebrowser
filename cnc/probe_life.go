@@ -35,24 +35,77 @@ type ToolLifeProbeSample struct {
 
 // ToolLifeProbeReport is the response from POST /api/cnc/probe-tool-life.
 type ToolLifeProbeReport struct {
-	Start          int                   `json:"start"`
-	End            int                   `json:"end"`
-	Step           int                   `json:"step"`
-	Probed         int                   `json:"probed"`         // count of macros queried
-	OK             int                   `json:"ok"`             // count of clean reads
-	Empty          int                   `json:"empty"`          // count of clean reads where number == 0
-	NonZero        int                   `json:"non_zero"`       // count of clean reads where number != 0
-	Errors         int                   `json:"errors"`         // count of failed queries
-	DurationMs     float64               `json:"duration_ms"`
-	BridgeAddress  string                `json:"bridge_address"`
+	Start         int     `json:"start"`
+	End           int     `json:"end"`
+	Step          int     `json:"step"`
+	Probed        int     `json:"probed"`   // count of macros queried
+	OK            int     `json:"ok"`       // count of clean reads
+	Empty         int     `json:"empty"`    // count of clean reads where number == 0
+	NonZero       int     `json:"non_zero"` // count of clean reads where number != 0
+	Errors        int     `json:"errors"`   // count of failed queries
+	DurationMs    float64 `json:"duration_ms"`
+	BridgeAddress string  `json:"bridge_address"`
 	// Samples are sorted with non-zero entries first (most interesting
 	// for the operator) followed by errors, then zeros, then anything
 	// else. Capped at SampleCap entries to keep the payload small
 	// even for a 500-macro probe — the counts above describe the full
 	// scan.
-	Samples        []ToolLifeProbeSample `json:"samples"`
-	Verdict        string                `json:"verdict"`
-	Recommendation string                `json:"recommendation"`
+	Samples []ToolLifeProbeSample `json:"samples"`
+	// Clusters describes contiguous runs of non-zero macros (gap <= step).
+	// A per-slot tool-life counter table will show up here as one long
+	// cluster, which is the single most useful summary for the operator
+	// trying to pin a macro range.
+	Clusters       []MacroCluster `json:"clusters,omitempty"`
+	Verdict        string         `json:"verdict"`
+	Recommendation string         `json:"recommendation"`
+}
+
+// MacroCluster describes a contiguous run of macros that carry non-zero
+// values. Operators reading the probe report want runs like "3122..3141
+// (20 entries)" surfaced as one row, not 20 individual hits.
+type MacroCluster struct {
+	Start int `json:"start"`
+	End   int `json:"end"`
+	Count int `json:"count"`
+}
+
+// FindNonZeroClusters scans an UNSORTED-by-macro samples slice (the
+// probe report sorts by interest, so we re-sort by macro here) and
+// returns contiguous runs where each non-zero sample is within `step`
+// of the previous non-zero entry. Zero values and errors break a
+// cluster. step <= 0 is treated as 1.
+func FindNonZeroClusters(samples []ToolLifeProbeSample, step int) []MacroCluster {
+	if step <= 0 {
+		step = 1
+	}
+	// Copy + sort ascending by macro so detection works against the
+	// raw scan order, not the by-interest sort the report applies.
+	type entry struct {
+		macro int
+		hot   bool
+	}
+	entries := make([]entry, 0, len(samples))
+	for _, s := range samples {
+		hot := s.Number != nil && *s.Number != 0
+		entries = append(entries, entry{macro: s.Macro, hot: hot})
+	}
+	sort.Slice(entries, func(i, j int) bool { return entries[i].macro < entries[j].macro })
+	out := []MacroCluster{}
+	var cur *MacroCluster
+	for _, e := range entries {
+		if !e.hot {
+			cur = nil
+			continue
+		}
+		if cur != nil && e.macro-cur.End <= step {
+			cur.End = e.macro
+			cur.Count++
+			continue
+		}
+		out = append(out, MacroCluster{Start: e.macro, End: e.macro, Count: 1})
+		cur = &out[len(out)-1]
+	}
+	return out
 }
 
 // Per-call ceilings. The bridge is shared with the streamer's poll
@@ -143,6 +196,11 @@ func (s *Streamer) ProbeToolLife(ctx context.Context, start, end, step int) (*To
 	}
 	rep.Probed = len(all)
 
+	// Compute clusters BEFORE the interest-sort + cap so a long run of
+	// populated macros is reflected even if the operator's sample list
+	// gets truncated for payload size.
+	rep.Clusters = FindNonZeroClusters(all, step)
+
 	// Sort: non-zero numbers first (most interesting for the operator),
 	// then errors, then zero values, then anything else. Stable sort
 	// so ties keep ascending macro order — easier to spot a base+slot
@@ -208,6 +266,24 @@ func classifyLifeProbe(rep *ToolLifeProbeReport) (string, string) {
 			break
 		}
 	}
+	// Cluster line — if there's a contiguous run of populated macros,
+	// surface it explicitly. A per-slot counter table almost always
+	// shows up as one cluster spanning the magazine size.
+	clusterNote := ""
+	if len(rep.Clusters) > 0 {
+		best := rep.Clusters[0]
+		for _, c := range rep.Clusters[1:] {
+			if c.Count > best.Count {
+				best = c
+			}
+		}
+		if best.Count >= 3 {
+			clusterNote = fmt.Sprintf(
+				" Longest run: #%d..#%d (%d entries) — likely a per-slot table.",
+				best.Start, best.End, best.Count)
+		}
+	}
 	return "candidates-found",
-		fmt.Sprintf("Non-zero macros: %s. Cross-reference each against a known tool change (run a few cycles, re-probe, look for the macro that incremented).", hot.String())
+		fmt.Sprintf("Non-zero macros: %s.%s Cross-reference each against a known tool change (run a few cycles, re-probe, look for the macro that incremented).",
+			hot.String(), clusterNote)
 }

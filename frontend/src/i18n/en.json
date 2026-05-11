@@ -424,6 +424,7 @@
     "machinePositionToleranceHelp": "Threshold for the Δ-CMD column on the /machine dashboard. Differences below this stay green; above it amber. Default 0.001\".",
     "machineDprntCapture": "Capture DPRNT macro output",
     "machineDprntCaptureHelp": "When on, the streamer scavenges DPRNT[…] macro output between line writes during a job and surfaces each line as a live event in the activity log. Adds ~3ms per G-code line — enable only on machines that use DPRNT for in-cycle probing or telemetry.",
+    "toolLifeProbeClusters": "Populated runs",
     "machineBrand": "Manufacturer",
     "machineBrandHelp": "Only Haas is wired into the streamer today. Other brands round-trip through settings so migration is easier when their protocol lands.",
     "machineBrandHaas": "Haas",

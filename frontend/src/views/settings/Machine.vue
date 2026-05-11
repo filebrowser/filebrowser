@@ -234,6 +234,20 @@
                   ms: Math.round(lifeProbeResults[machine.id].duration_ms),
                 }) }}
               </p>
+              <p
+                v-if="(lifeProbeResults[machine.id].clusters || []).length > 0"
+                class="small"
+              >
+                <strong>{{ t("settings.toolLifeProbeClusters") }}:</strong>
+                <span
+                  v-for="(c, idx) in (lifeProbeResults[machine.id].clusters || [])"
+                  :key="idx"
+                  class="probe-cluster"
+                >
+                  <code>#{{ c.start }}..#{{ c.end }}</code>
+                  <span class="small">({{ c.count }})</span>
+                </span>
+              </p>
               <table
                 v-if="lifeProbeResults[machine.id].samples.length > 0"
                 class="probe-table"

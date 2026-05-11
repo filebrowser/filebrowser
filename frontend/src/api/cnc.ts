@@ -238,6 +238,12 @@ export interface ToolLifeProbeSample {
   error?: string;
 }
 
+export interface MacroCluster {
+  start: number;
+  end: number;
+  count: number;
+}
+
 export interface ToolLifeProbeReport {
   start: number;
   end: number;
@@ -250,6 +256,9 @@ export interface ToolLifeProbeReport {
   duration_ms: number;
   bridge_address: string;
   samples: ToolLifeProbeSample[];
+  // Contiguous runs of non-zero macros (gap ≤ step). Present when the
+  // probe found any populated macro; omitted otherwise.
+  clusters?: MacroCluster[];
   verdict: string;
   recommendation: string;
 }
