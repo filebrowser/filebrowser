@@ -61,6 +61,44 @@
 
         <template v-else>
           <h3>{{ t("machine.connModalActivity") }}</h3>
+
+          <!-- Haas codes lookup — operator types a number or keyword;
+               results render below. Independent of the log filters. -->
+          <div class="m-modal__codes-lookup">
+            <input
+              v-model="lookupQuery"
+              class="m-modal__codes-input"
+              :placeholder="t('machine.connModalCodesPlaceholder')"
+              @keyup.enter="runLookup"
+            />
+            <select v-model="lookupKind" class="m-modal__codes-kind">
+              <option value="">{{ t("machine.connModalCodesAny") }}</option>
+              <option value="setting">setting</option>
+              <option value="alarm">alarm</option>
+              <option value="parameter">parameter</option>
+            </select>
+            <button class="m-modal__btn" :disabled="lookingUp" @click="runLookup">
+              {{ lookingUp ? "…" : t("machine.connModalCodesLookup") }}
+            </button>
+          </div>
+          <div v-if="lookupError" class="m-modal__err">{{ lookupError }}</div>
+          <ol v-if="lookupResults.length > 0" class="m-modal__codes-results">
+            <li
+              v-for="r in lookupResults"
+              :key="`${r.kind}-${r.number}`"
+              class="m-codes-result"
+            >
+              <div class="m-codes-result__head">
+                <span class="m-codes-result__kind">{{ r.kind }}</span>
+                <span class="m-codes-result__num">{{ r.number }}</span>
+                <span class="m-codes-result__title">{{ r.title }}</span>
+                <span v-if="r.category" class="m-codes-result__cat">{{ r.category }}</span>
+              </div>
+              <div class="m-codes-result__body">{{ r.summary }}</div>
+              <div v-if="r.hint" class="m-codes-result__hint">{{ r.hint }}</div>
+            </li>
+          </ol>
+
           <div class="m-modal__activity-filters">
             <label v-for="lvl in ['info', 'warn', 'error']" :key="lvl">
               <input type="checkbox" v-model="filterLevels" :value="lvl" />
@@ -92,7 +130,7 @@ import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useCncStore } from "@/stores/cnc";
 import { cnc as cncApi } from "@/api";
-import type { CncCheckResult } from "@/api/cnc";
+import type { CncCheckResult, CodeKind, CodeEntry } from "@/api/cnc";
 import CodeAnnotatedMessage from "./CodeAnnotatedMessage.vue";
 
 const { t } = useI18n();
@@ -135,6 +173,61 @@ const runCheck = async () => {
 };
 
 const fmtTs = (ts: number) => new Date(ts).toLocaleTimeString();
+
+// ── Codes lookup ─────────────────────────────────────────────────────────
+// The Activity tab's lookup field accepts either a bare number (calls
+// /api/cnc/codes/lookup with the selected kind) or free text (falls
+// through to /api/cnc/codes/search). The selected kind narrows search;
+// blank kind matches all three.
+const lookupQuery = ref("");
+const lookupKind = ref<"" | CodeKind>("");
+const lookupResults = ref<CodeEntry[]>([]);
+const lookupError = ref("");
+const lookingUp = ref(false);
+
+const runLookup = async () => {
+  const q = lookupQuery.value.trim();
+  if (!q) {
+    lookupResults.value = [];
+    lookupError.value = "";
+    return;
+  }
+  lookingUp.value = true;
+  lookupError.value = "";
+  try {
+    // Pure-numeric input → direct lookup. Kind defaults to "setting"
+    // (most common operator question) when not specified.
+    const asNumber = /^\d+$/.test(q) ? parseInt(q, 10) : null;
+    if (asNumber !== null) {
+      const kind: CodeKind = (lookupKind.value || "setting") as CodeKind;
+      const r = await cncApi.lookupCode(kind, asNumber);
+      if (r.ok) {
+        lookupResults.value = [r.entry];
+      } else {
+        lookupResults.value = [];
+        lookupError.value = t("machine.connModalCodesNotFound", {
+          kind,
+          number: asNumber,
+        });
+      }
+      return;
+    }
+    // Free-text — falls through to search. Empty kind = all.
+    const r = await cncApi.searchCodes(
+      q,
+      (lookupKind.value || undefined) as CodeKind | undefined,
+      30
+    );
+    lookupResults.value = r.results;
+    if (r.results.length === 0) {
+      lookupError.value = t("machine.connModalCodesNoMatches");
+    }
+  } catch (e: any) {
+    lookupError.value = e?.message || String(e);
+  } finally {
+    lookingUp.value = false;
+  }
+};
 </script>
 
 <style scoped>
@@ -220,6 +313,69 @@ const fmtTs = (ts: number) => new Date(ts).toLocaleTimeString();
   cursor: pointer;
 }
 .m-modal__btn:hover:not(:disabled) { filter: brightness(0.97); }
+
+.m-modal__codes-lookup {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.m-modal__codes-input {
+  flex: 1 1 0;
+  padding: 4px 6px;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 3px;
+  font: inherit;
+}
+.m-modal__codes-kind {
+  padding: 4px 6px;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 3px;
+  font: inherit;
+  background: var(--surface, #fff);
+}
+.m-modal__codes-results {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  max-height: 28vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.m-codes-result {
+  padding: 6px 8px;
+  border-left: 2px solid rgba(24, 95, 165, 0.4);
+  background: rgba(24, 95, 165, 0.04);
+  margin-bottom: 4px;
+  border-radius: 0 3px 3px 0;
+}
+.m-codes-result__head {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 11px;
+}
+.m-codes-result__kind {
+  text-transform: lowercase;
+  color: #185fa5;
+}
+.m-codes-result__num { font-weight: 600; }
+.m-codes-result__title { color: var(--fg, #222); flex: 1 1 0; }
+.m-codes-result__cat {
+  font-size: 9px;
+  color: var(--fg-muted, #888);
+  text-transform: uppercase;
+}
+.m-codes-result__body {
+  font-size: 11px;
+  color: var(--fg-muted, #555);
+  margin-top: 2px;
+}
+.m-codes-result__hint {
+  font-size: 11px;
+  color: #b85100;
+  margin-top: 2px;
+  font-style: italic;
+}
 
 .m-modal__activity-filters {
   display: flex;
