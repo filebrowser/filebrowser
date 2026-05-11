@@ -675,6 +675,104 @@ func cncToolTableHistoryHandler(registry *cnc.Registry) handleFunc {
 	})
 }
 
+// cncToolTableDiffHandler joins two persisted tool-table dumps and
+// returns the SlotDiff list. Operators tracking wear use this to spot
+// which tools shifted between probes. Filenames come from the
+// /api/cnc/tool-table/history endpoint (newest-first dropdown).
+//
+// Query params (all optional):
+//
+//	machine_id  — standard machine selector
+//	old, new    — basenames inside the machine's history folder. If
+//	              `new` is omitted, defaults to the newest dump; if
+//	              `old` is omitted, defaults to the second-newest.
+//	dia_tol     — diameter drift threshold in inches (default 0.005)
+//	len_tol     — length drift threshold in inches (default 0.002)
+func cncToolTableDiffHandler(registry *cnc.Registry) handleFunc {
+	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		_, machineID, code, err := resolveStreamer(registry, r)
+		if err != nil {
+			return code, err
+		}
+		dir := toolTableDirAbs(d, machineID)
+		entries, derr := os.ReadDir(dir)
+		if derr != nil {
+			if os.IsNotExist(derr) {
+				return http.StatusNotFound, fmt.Errorf("no tool-table history for this machine")
+			}
+			return http.StatusInternalServerError, derr
+		}
+		jsonNames := make([]string, 0, len(entries))
+		for _, e := range entries {
+			if e.IsDir() || !strings.HasSuffix(e.Name(), ".json") {
+				continue
+			}
+			jsonNames = append(jsonNames, e.Name())
+		}
+		// Filenames are RFC3339 timestamps with colons replaced by
+		// hyphens, so a string sort puts oldest-first.
+		sort.Strings(jsonNames)
+
+		q := r.URL.Query()
+		oldName := q.Get("old")
+		newName := q.Get("new")
+		if newName == "" {
+			if len(jsonNames) == 0 {
+				return http.StatusNotFound, fmt.Errorf("no dumps in history")
+			}
+			newName = jsonNames[len(jsonNames)-1]
+		}
+		if oldName == "" {
+			// Default to the entry just before `new` in chronological
+			// order. If new is the oldest available, there's nothing to
+			// compare against and we return a 400 — operator likely hit
+			// the diff button with only one read on file.
+			idx := -1
+			for i, n := range jsonNames {
+				if n == newName {
+					idx = i
+					break
+				}
+			}
+			if idx <= 0 {
+				return http.StatusBadRequest, fmt.Errorf(
+					"need at least two reads on file to diff (or pass ?old=<filename>)")
+			}
+			oldName = jsonNames[idx-1]
+		}
+		// Reject filenames that try to break out of the history dir.
+		if strings.ContainsRune(oldName, '/') || strings.ContainsRune(newName, '/') {
+			return http.StatusBadRequest, errors.New("filenames must be basenames")
+		}
+
+		oldTable, err := readToolTableDump(dir, oldName)
+		if err != nil {
+			return http.StatusBadRequest, fmt.Errorf("old read: %w", err)
+		}
+		newTable, err := readToolTableDump(dir, newName)
+		if err != nil {
+			return http.StatusBadRequest, fmt.Errorf("new read: %w", err)
+		}
+
+		diaTol, _ := strconv.ParseFloat(q.Get("dia_tol"), 64)
+		lenTol, _ := strconv.ParseFloat(q.Get("len_tol"), 64)
+		diff := cnc.DiffToolTables(oldTable, newTable, diaTol, lenTol)
+		return renderJSON(w, r, diff)
+	})
+}
+
+func readToolTableDump(dir, name string) (*cnc.ToolTable, error) {
+	buf, err := os.ReadFile(filepath.Join(dir, name))
+	if err != nil {
+		return nil, err
+	}
+	var t cnc.ToolTable
+	if err := json.Unmarshal(buf, &t); err != nil {
+		return nil, fmt.Errorf("parse %s: %w", name, err)
+	}
+	return &t, nil
+}
+
 // persistToolTable writes the table as <RFC3339>.json into the
 // per-machine subfolder under the user scope. The folder is created
 // on first write so an operator who never runs a read sees no clutter

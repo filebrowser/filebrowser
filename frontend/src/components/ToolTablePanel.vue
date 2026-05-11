@@ -46,6 +46,44 @@
         <a v-if="folder" :href="folderHref" class="tool-card__folder">
           {{ t("toolTable.history") }}
         </a>
+        <button
+          v-if="folder"
+          class="tool-card__difflink"
+          :disabled="diffing"
+          @click="runDiff"
+        >
+          {{ diffing ? "…" : t("toolTable.diffPrev") }}
+        </button>
+      </div>
+
+      <div v-if="diffResult" class="tool-card__diff">
+        <div class="tool-card__diff-head">
+          <strong>{{ t("toolTable.diffHeader") }}</strong>
+          <span class="small">
+            {{ t("toolTable.diffSummary", {
+              added: diffResult.summary.added,
+              removed: diffResult.summary.removed,
+              dia: diffResult.summary.drift_diameter + diffResult.summary.drift_both,
+              len: diffResult.summary.drift_length + diffResult.summary.drift_both,
+              unchanged: diffResult.summary.unchanged,
+            }) }}
+          </span>
+          <button class="tool-card__diff-close" @click="diffResult = null">✕</button>
+        </div>
+        <p v-if="diffError" class="tool-card__diff-err">{{ diffError }}</p>
+        <ul v-if="diffResult.slots.length > 0" class="tool-card__diff-list">
+          <li v-for="s in diffResult.slots" :key="s.slot" :class="`diff-row diff-row--${s.change}`">
+            <span class="diff-row__slot">T{{ s.slot }}</span>
+            <span class="diff-row__change">{{ t(`toolTable.diffChange_${s.change}`) }}</span>
+            <span v-if="s.diameter_delta !== undefined" class="diff-row__delta">
+              ⌀ Δ {{ s.diameter_delta >= 0 ? "+" : "" }}{{ s.diameter_delta.toFixed(4) }}
+            </span>
+            <span v-if="s.length_delta !== undefined" class="diff-row__delta">
+              L Δ {{ s.length_delta >= 0 ? "+" : "" }}{{ s.length_delta.toFixed(4) }}
+            </span>
+          </li>
+        </ul>
+        <p v-else class="small tool-card__diff-empty">{{ t("toolTable.diffNoChange") }}</p>
       </div>
 
       <div v-if="latest" class="tool-card__filterbar">
@@ -168,7 +206,7 @@
 import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { cnc as cncApi } from "@/api";
-import type { ToolTable, ToolTableSlot } from "@/api/cnc";
+import type { ToolTable, ToolTableSlot, ToolTableDiff } from "@/api/cnc";
 import ToolGeometryView from "@/components/ToolGeometryView.vue";
 
 const props = defineProps<{
@@ -196,6 +234,26 @@ const latest = ref<ToolTable | null>(null);
 const reading = ref(false);
 const errMsg = ref<string>("");
 const folder = ref<string>("");
+
+const diffResult = ref<ToolTableDiff | null>(null);
+const diffing = ref(false);
+const diffError = ref("");
+
+const runDiff = async () => {
+  if (diffing.value) return;
+  diffing.value = true;
+  diffError.value = "";
+  try {
+    diffResult.value = await cncApi.diffToolTables({
+      machineId: props.machineId,
+    });
+  } catch (e: any) {
+    diffResult.value = null;
+    diffError.value = e?.message || String(e);
+  } finally {
+    diffing.value = false;
+  }
+};
 
 const search = ref("");
 const showOffline = ref(true);
@@ -529,6 +587,78 @@ onMounted(loadLatest);
 .tool-card__folder:hover {
   text-decoration: underline;
 }
+
+.tool-card__difflink {
+  background: none;
+  border: 0;
+  color: var(--primaryColor, #2196f3);
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+}
+.tool-card__difflink:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.tool-card__diff {
+  margin: 6px 0 10px;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 4px;
+  padding: 6px 8px;
+  background: rgba(24, 95, 165, 0.03);
+}
+.tool-card__diff-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.tool-card__diff-head .small {
+  flex: 1 1 0;
+  color: var(--fg-muted, #666);
+  font-size: 11px;
+}
+.tool-card__diff-close {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--fg-muted, #888);
+}
+.tool-card__diff-err {
+  color: #c62828;
+  margin: 4px 0;
+  font-size: 11px;
+}
+.tool-card__diff-empty {
+  color: var(--fg-muted, #666);
+  margin: 4px 0;
+}
+.tool-card__diff-list {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  max-height: 24vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.diff-row {
+  display: grid;
+  grid-template-columns: 3rem 1fr auto auto;
+  gap: 8px;
+  padding: 2px 0;
+  font-size: 11px;
+  border-bottom: 1px solid var(--border-color, #f4f4f4);
+}
+.diff-row__slot { font-weight: 600; }
+.diff-row__change { color: var(--fg-muted, #555); }
+.diff-row__delta { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.diff-row--added .diff-row__change { color: #2e7d32; }
+.diff-row--removed .diff-row__change { color: #c62828; }
+.diff-row--drift_diameter .diff-row__change,
+.diff-row--drift_length .diff-row__change,
+.diff-row--drift_both .diff-row__change { color: #b85100; }
+.diff-row--offline_then .diff-row__change,
+.diff-row--offline_now .diff-row__change { color: #888; }
 
 .tool-card__filterbar {
   display: flex;

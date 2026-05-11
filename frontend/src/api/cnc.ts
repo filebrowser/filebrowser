@@ -387,6 +387,71 @@ export function getToolTableHistory(machineId?: string) {
   return fetchJSON<ToolTableHistory>(`/api/cnc/tool-table/history${q}`, {});
 }
 
+// ── Tool-table diff (history comparison) ─────────────────────────────────
+
+export type SlotChange =
+  | "unchanged"
+  | "added"
+  | "removed"
+  | "drift_diameter"
+  | "drift_length"
+  | "drift_both"
+  | "offline_then"
+  | "offline_now";
+
+export interface SlotDiff {
+  slot: number;
+  change: SlotChange;
+  old_diameter?: number;
+  new_diameter?: number;
+  diameter_delta?: number;
+  old_length?: number;
+  new_length?: number;
+  length_delta?: number;
+  note?: string;
+}
+
+export interface DiffSummary {
+  added: number;
+  removed: number;
+  drift_diameter: number;
+  drift_length: number;
+  drift_both: number;
+  offline_then: number;
+  offline_now: number;
+  unchanged: number;
+}
+
+export interface ToolTableDiff {
+  machine_id: string;
+  old_read_at: string;
+  new_read_at: string;
+  diameter_tolerance: number;
+  length_tolerance: number;
+  summary: DiffSummary;
+  slots: SlotDiff[];
+}
+
+export function diffToolTables(opts: {
+  machineId?: string;
+  oldFile?: string;
+  newFile?: string;
+  diaTol?: number;
+  lenTol?: number;
+}) {
+  const params = new URLSearchParams();
+  if (opts.machineId) params.set("machine_id", opts.machineId);
+  if (opts.oldFile) params.set("old", opts.oldFile);
+  if (opts.newFile) params.set("new", opts.newFile);
+  if (opts.diaTol !== undefined) params.set("dia_tol", String(opts.diaTol));
+  if (opts.lenTol !== undefined) params.set("len_tol", String(opts.lenTol));
+  const qs = params.toString();
+  return fetchJSON<ToolTableDiff>(
+    `/api/cnc/tool-table/diff${qs ? `?${qs}` : ""}`,
+    {}
+  );
+}
+
 // ── Pre-flight tool check (NC ↔ tool table) ─────────────────────────────────
 
 export type PreflightStatus = "ok" | "warn" | "empty" | "offline" | "missing";
