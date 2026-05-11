@@ -71,6 +71,23 @@ func TestDprntDrainDiscardsQCodeFrame(t *testing.T) {
 	}
 }
 
+func TestDprntSidecarPath(t *testing.T) {
+	cases := []struct {
+		absPath string
+		jobID   string
+		want    string
+	}{
+		{"/srv/share/nc/part.nc", "abc123", "/srv/share/nc/part.nc.abc123.dprnt.log"},
+		{"/tmp/x.txt", "j-1", "/tmp/x.txt.j-1.dprnt.log"},
+	}
+	for _, c := range cases {
+		got := dprntSidecarPath(c.absPath, c.jobID)
+		if got != c.want {
+			t.Errorf("sidecarPath(%q, %q) = %q, want %q", c.absPath, c.jobID, got, c.want)
+		}
+	}
+}
+
 func TestDprntDrainOversizedBufferFlushed(t *testing.T) {
 	d := &dprntBuffer{}
 	huge := make([]byte, dprntMaxLineBytes+10)

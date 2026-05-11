@@ -17,10 +17,39 @@ package cnc
 
 import (
 	"bytes"
+	"fmt"
 	"net"
 	"strings"
 	"time"
 )
+
+// dprntSidecarPath returns the on-disk path where the streamer should
+// persist DPRNT output for one job. Naming: "<absPath>.<job-id>.dprnt.log".
+// Lives next to the NC source so it's reachable through the regular
+// file browser without a separate UI surface.
+func dprntSidecarPath(absPath, jobID string) string {
+	return absPath + "." + jobID + ".dprnt.log"
+}
+
+// dprntSink returns the per-line emit callback the scavenger calls. It
+// fans out to both the WS feed and (when set) the per-job sidecar file.
+// File writes are best-effort; failures log a warn but don't unwind
+// the streaming loop.
+func (s *Streamer) dprntSink(j *job) func(text string) {
+	return func(text string) {
+		s.emit(Event{Type: "dprnt", Text: text})
+		if j.dprntLog == nil {
+			return
+		}
+		if _, err := fmt.Fprintln(j.dprntLog, text); err != nil {
+			s.logf("warn", "dprnt sidecar write failed: %v", err)
+			// Don't try again — keep the activity log clean and let the
+			// WS event continue to carry the data.
+			_ = j.dprntLog.Close()
+			j.dprntLog = nil
+		}
+	}
+}
 
 // dprntScavengeDeadline is how long we'll wait per scavenge before
 // giving up and returning to the line-write loop. Kept tiny because

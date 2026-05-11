@@ -125,6 +125,12 @@ type job struct {
 	// dprnt is non-nil when DPRNTCapture is enabled on this Machine.
 	// Owned by run(); never touched from another goroutine.
 	dprnt *dprntBuffer
+	// dprntLog is the sidecar file every captured DPRNT line gets
+	// appended to (when DPRNTCapture is on). Path is
+	// "<absPath>.<job-id>.dprnt.log". Best-effort — a write failure
+	// logs a warn but does not abort the job.
+	dprntLog     *os.File
+	dprntLogPath string
 }
 
 // SendMethod tells the operator which controller-side mode they're
@@ -237,6 +243,15 @@ func (s *Streamer) Start(absPath, displayPath string, method SendMethod) (*Statu
 	}
 	if m.DPRNTCapture {
 		j.dprnt = &dprntBuffer{}
+		j.dprntLogPath = dprntSidecarPath(absPath, j.id)
+		if f, ferr := os.OpenFile(j.dprntLogPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o644); ferr == nil {
+			fmt.Fprintf(f, "# DPRNT capture for job %s — %s — started %s\n",
+				j.id, displayPath, j.startedAt.Format(time.RFC3339))
+			j.dprntLog = f
+		} else {
+			// Don't fail the send over a sidecar — log and continue.
+			s.lastError = "dprnt sidecar open failed: " + ferr.Error()
+		}
 	}
 	s.job = j
 	s.lastError = ""
@@ -438,6 +453,15 @@ func (s *Streamer) run(ctx context.Context, j *job, host string, port int) {
 		// New() leaves the marker in place — exactly the case Z-15
 		// is designed to catch.
 		clearMarkerFor(s.machineID)
+		// Close the DPRNT sidecar (if any) after the final drain has
+		// fired. Footer line lets a reader spot truncation.
+		if j.dprntLog != nil {
+			fmt.Fprintf(j.dprntLog, "# DPRNT capture closed at %s — line %d/%d\n",
+				time.Now().UTC().Format(time.RFC3339),
+				j.lineCurrent.Load(), j.lineTotal)
+			_ = j.dprntLog.Close()
+			j.dprntLog = nil
+		}
 		// Emit the idle status event AFTER s.job has been cleared so
 		// subscribers see the post-job snapshot, not a stale "running".
 		s.emit(Event{Type: "status", Status: s.Status()})
@@ -488,7 +512,7 @@ func (s *Streamer) run(ctx context.Context, j *job, host string, port int) {
 		if j.dprnt != nil {
 			_, _ = j.dprnt.scavengeOnce(
 				conn,
-				func(text string) { s.emit(Event{Type: "dprnt", Text: text}) },
+				s.dprntSink(j),
 				func(level, msg string) { s.logf(level, msg) },
 			)
 		}
@@ -521,7 +545,7 @@ func (s *Streamer) run(ctx context.Context, j *job, host string, port int) {
 	if j.dprnt != nil {
 		_, _ = j.dprnt.scavengeOnce(
 			conn,
-			func(text string) { s.emit(Event{Type: "dprnt", Text: text}) },
+			s.dprntSink(j),
 			func(level, msg string) { s.logf(level, msg) },
 		)
 	}
