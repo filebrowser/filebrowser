@@ -124,10 +124,12 @@ func getJSONAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (au
 	if err != nil {
 		return nil, err
 	}
+
 	key, err := flags.GetString("recaptcha.key")
 	if err != nil {
 		return nil, err
 	}
+
 	secret, err := flags.GetString("recaptcha.secret")
 	if err != nil {
 		return nil, err
@@ -138,11 +140,13 @@ func getJSONAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (au
 			key = kmap["key"].(string)
 		}
 	}
+
 	if secret == "" {
 		if smap, ok := defaultAuther["recaptcha"].(map[string]interface{}); ok {
 			secret = smap["secret"].(string)
 		}
 	}
+
 	if key != "" && secret != "" {
 		jsonAuth.ReCaptcha = &auth.ReCaptcha{
 			Host:   host,
@@ -155,6 +159,7 @@ func getJSONAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (au
 	if err != nil {
 		return nil, err
 	}
+
 	turnstileSecret, err := flags.GetString("turnstile.secret")
 	if err != nil {
 		return nil, err
@@ -167,6 +172,7 @@ func getJSONAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (au
 			}
 		}
 	}
+
 	if turnstileSecret == "" {
 		if smap, ok := defaultAuther["turnstile"].(map[string]interface{}); ok {
 			if v, ok := smap["secret"].(string); ok {
@@ -174,6 +180,7 @@ func getJSONAuth(flags *pflag.FlagSet, defaultAuther map[string]interface{}) (au
 			}
 		}
 	}
+
 	if turnstileKey != "" && turnstileSecret != "" {
 		if jsonAuth.ReCaptcha != nil {
 			return nil, errors.New("recaptcha and turnstile cannot be enabled at the same time")
