@@ -563,13 +563,17 @@ const displayRows = computed(() => {
     return loaded || (offline && showOffline.value) || (empty && showEmpty.value);
   });
 
-  // Free-text search across slot number and any numeric value (matches
-  // partial number strings — typing "0.5" finds 0.5011, etc).
+  // Free-text search across slot number, measured numerics, the
+  // description (NC comment or library fallback), and the library's
+  // vendor / tool type / product id / geometry numbers. Typing
+  // "helical", "ball", "81460", "0.5", or "3 flute" all hit.
   const q = search.value.trim().toLowerCase();
   if (q) {
     rows = rows.filter((r) => {
+      // Slot number
       if (String(r.slot).includes(q)) return true;
-      const fields: (number | undefined)[] = [
+      // Live measured numerics
+      const nums: (number | undefined)[] = [
         r.length_geom,
         r.length_wear,
         r.effective_length,
@@ -577,9 +581,36 @@ const displayRows = computed(() => {
         r.diameter_wear,
         r.effective_diameter,
       ];
-      return fields.some(
-        (f) => typeof f === "number" && f.toFixed(4).includes(q)
-      );
+      if (nums.some((f) => typeof f === "number" && f.toFixed(4).includes(q))) return true;
+      // Description (merged NC + library)
+      const desc = effectiveComments.value[r.slot];
+      if (desc && desc.toLowerCase().includes(q)) return true;
+      // Library entry (vendor, type, product, geometry)
+      const lib = libraryBySlot.value[r.slot];
+      if (lib) {
+        if (lib.vendor && lib.vendor.toLowerCase().includes(q)) return true;
+        if (lib.type && lib.type.toLowerCase().includes(q)) return true;
+        if (lib["product-id"] && lib["product-id"].toLowerCase().includes(q)) return true;
+        // Holder description (catches "CAT40", "ER25", etc.)
+        if (lib.holder?.description && lib.holder.description.toLowerCase().includes(q)) return true;
+        if (lib.holder?.vendor && lib.holder.vendor.toLowerCase().includes(q)) return true;
+        // Geometry numbers — DC, OAL, LCF, LB, RE, NOF formatted as
+        // human-typeable strings.
+        const g = lib.geometry || {};
+        const libNums: Array<[number | undefined, number]> = [
+          [g.DC, 4],
+          [g.OAL, 4],
+          [g.LCF, 4],
+          [g.LB, 4],
+          [g.RE, 4],
+          [g.SFDM, 4],
+          [g.NOF, 0],
+        ];
+        if (libNums.some(([v, prec]) => typeof v === "number" && v.toFixed(prec).includes(q))) return true;
+        // "3 flute(s)" or "4 flutes"
+        if (typeof g.NOF === "number" && q.includes("flute") && q.includes(String(g.NOF))) return true;
+      }
+      return false;
     });
   }
 

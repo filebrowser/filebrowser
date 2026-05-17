@@ -217,7 +217,7 @@
     "loaded": "loaded",
     "emptyPocket": "empty",
     "offline": "offline",
-    "searchPlaceholder": "Filter (slot or value)…",
+    "searchPlaceholder": "Filter (slot, value, vendor, type, description)…",
     "showOffline": "Show offline",
     "showEmpty": "Show empty pockets",
     "visibleCount": "{n} of {total}",
