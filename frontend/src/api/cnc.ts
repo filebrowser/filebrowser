@@ -532,6 +532,75 @@ export function diffToolTables(opts: {
   );
 }
 
+// ── Fusion 360 tool library ──────────────────────────────────────────────
+
+export interface FusionHolderSegment {
+  height: number;
+  "lower-diameter": number;
+  "upper-diameter": number;
+}
+
+export interface FusionToolEntry {
+  description?: string;
+  geometry?: {
+    DC?: number;
+    NOF?: number;
+    OAL?: number;
+    LCF?: number;
+    LB?: number;
+    RE?: number;
+    TA?: number;
+    SFDM?: number;
+    "shoulder-diameter"?: number;
+    "shoulder-length"?: number;
+  };
+  holder?: {
+    description?: string;
+    gaugeLength?: number;
+    segments?: FusionHolderSegment[];
+    vendor?: string;
+  };
+  "post-process"?: {
+    number?: number;
+    comment?: string;
+  };
+  "product-id"?: string;
+  "product-link"?: string;
+  type?: string;
+  unit?: string;
+  vendor?: string;
+}
+
+export interface ToolLibraryResponse {
+  data: FusionToolEntry[];
+  loaded: boolean;
+  uploaded_at?: string;
+  assigned_slots: number[];
+  version?: number;
+}
+
+export function getToolLibrary() {
+  return fetchJSON<ToolLibraryResponse>(`/api/cnc/tool-library`, {});
+}
+
+export function getToolLibrarySlot(slot: number) {
+  return fetchJSON<FusionToolEntry>(`/api/cnc/tool-library/slot/${slot}`, {});
+}
+
+export async function uploadToolLibrary(
+  rawJson: string
+): Promise<{ loaded: boolean; uploaded_at?: string; assigned_slots: number[]; count: number }> {
+  return fetchJSON(`/api/cnc/tool-library`, {
+    method: "PUT",
+    body: rawJson,
+    headers: { "Content-Type": "application/json" },
+  } as any);
+}
+
+export async function clearToolLibrary(): Promise<void> {
+  await fetchURL(`/api/cnc/tool-library`, { method: "DELETE" });
+}
+
 // ── Pre-flight tool check (NC ↔ tool table) ─────────────────────────────────
 
 export type PreflightStatus = "ok" | "warn" | "empty" | "offline" | "missing";

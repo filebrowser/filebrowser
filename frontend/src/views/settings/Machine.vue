@@ -388,6 +388,50 @@
               {{ discordTesting ? t("settings.discordTesting") : t("settings.discordTest") }}
             </button>
           </p>
+
+          <!-- Fusion 360 tool library import -->
+          <h3>{{ t("settings.toolLibraryTitle") }}</h3>
+          <p class="small">{{ t("settings.toolLibraryHelp") }}</p>
+          <p v-if="toolLibraryLoaded" class="small machine-row__hint">
+            {{ t("settings.toolLibraryStatus", {
+              count: toolLibraryAssignedSlots.length,
+              when: formatToolLibraryTime(toolLibraryUploadedAt),
+            }) }}
+            ·
+            <span>{{ t("settings.toolLibrarySlots") }}: {{ toolLibraryAssignedSlots.join(", ") || "—" }}</span>
+          </p>
+          <p v-else class="small machine-row__hint">
+            {{ t("settings.toolLibraryEmpty") }}
+          </p>
+          <p>
+            <input
+              ref="toolLibraryFileInput"
+              type="file"
+              accept=".json,application/json"
+              @change="onToolLibraryFile"
+            />
+          </p>
+          <p v-if="toolLibraryError" class="small machine-row__err">
+            {{ toolLibraryError }}
+          </p>
+          <p>
+            <button
+              type="button"
+              class="button button--flat"
+              :disabled="toolLibraryUploading"
+              @click="uploadToolLibraryFile"
+            >
+              {{ toolLibraryUploading ? t("settings.toolLibraryUploading") : t("settings.toolLibraryUpload") }}
+            </button>
+            <button
+              v-if="toolLibraryLoaded"
+              type="button"
+              class="button button--flat"
+              @click="clearToolLibrary"
+            >
+              {{ t("settings.toolLibraryClear") }}
+            </button>
+          </p>
         </div>
 
         <div class="card-action">
@@ -469,6 +513,79 @@ const testDiscord = async () => {
     $showError(e);
   } finally {
     discordTesting.value = false;
+  }
+};
+
+// ── Fusion 360 tool library ─────────────────────────────────────────────
+const toolLibraryFileInput = ref<HTMLInputElement | null>(null);
+const toolLibraryLoaded = ref(false);
+const toolLibraryUploadedAt = ref<string | null>(null);
+const toolLibraryAssignedSlots = ref<number[]>([]);
+const toolLibraryUploading = ref(false);
+const toolLibraryError = ref("");
+
+const refreshToolLibraryStatus = async () => {
+  try {
+    const lib = await api.getToolLibrary();
+    toolLibraryLoaded.value = !!lib.loaded;
+    toolLibraryUploadedAt.value = lib.uploaded_at || null;
+    toolLibraryAssignedSlots.value = lib.assigned_slots || [];
+  } catch {
+    // Non-admin or no library yet; render the empty state.
+    toolLibraryLoaded.value = false;
+    toolLibraryUploadedAt.value = null;
+    toolLibraryAssignedSlots.value = [];
+  }
+};
+
+const onToolLibraryFile = () => {
+  // Selecting a new file invalidates any prior error message.
+  toolLibraryError.value = "";
+};
+
+const uploadToolLibraryFile = async () => {
+  toolLibraryError.value = "";
+  const inputEl = toolLibraryFileInput.value;
+  const file = inputEl?.files?.[0];
+  if (!file) {
+    toolLibraryError.value = t("settings.toolLibraryNoFile");
+    return;
+  }
+  toolLibraryUploading.value = true;
+  try {
+    const text = await file.text();
+    const res = await api.uploadToolLibrary(text);
+    toolLibraryLoaded.value = !!res.loaded;
+    toolLibraryUploadedAt.value = res.uploaded_at || null;
+    toolLibraryAssignedSlots.value = res.assigned_slots || [];
+    if (inputEl) inputEl.value = "";
+    $showSuccess(t("settings.toolLibraryUploaded", { count: res.count }));
+  } catch (e: any) {
+    toolLibraryError.value = e?.message || String(e);
+    $showError(e);
+  } finally {
+    toolLibraryUploading.value = false;
+  }
+};
+
+const clearToolLibrary = async () => {
+  try {
+    await api.clearToolLibrary();
+    toolLibraryLoaded.value = false;
+    toolLibraryUploadedAt.value = null;
+    toolLibraryAssignedSlots.value = [];
+    $showSuccess(t("settings.toolLibraryCleared"));
+  } catch (e: any) {
+    $showError(e);
+  }
+};
+
+const formatToolLibraryTime = (iso: string | null): string => {
+  if (!iso) return "—";
+  try {
+    return new Date(iso).toLocaleString();
+  } catch {
+    return iso;
   }
 };
 
@@ -678,6 +795,7 @@ onMounted(async () => {
     } catch {
       /* non-admin fetch fails 403 — fine, the section just stays at defaults */
     }
+    await refreshToolLibraryStatus();
   } catch (err) {
     if (err instanceof Error) {
       error.value = err as StatusError;

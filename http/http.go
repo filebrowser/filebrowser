@@ -115,6 +115,10 @@ func NewHandler(
 	cncRouter.Handle("/notifications", monkey(cncNotificationsPutHandler(), "")).Methods("PUT")
 	cncRouter.Handle("/notifications/test", monkey(cncNotificationsTestHandler(registry), "")).Methods("POST")
 	cncRouter.Handle("/host-stats", monkey(cncHostStatsHandler, "")).Methods("GET")
+	cncRouter.Handle("/tool-library", monkey(cncToolLibraryGetHandler(registry), "")).Methods("GET")
+	cncRouter.Handle("/tool-library", monkey(cncToolLibraryPutHandler(registry), "")).Methods("PUT")
+	cncRouter.Handle("/tool-library", monkey(cncToolLibraryDeleteHandler(registry), "")).Methods("DELETE")
+	cncRouter.PathPrefix("/tool-library/slot/").Handler(monkey(cncToolLibrarySlotHandler(registry), "")).Methods("GET")
 
 	api.PathPrefix("/raw").Handler(monkey(rawHandler, "/api/raw")).Methods("GET")
 	api.PathPrefix("/preview/{size}/{path:.*}").

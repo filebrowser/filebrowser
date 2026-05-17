@@ -27,6 +27,7 @@ type Registry struct {
 	aggregators map[string]*Aggregator
 	queues      *QueueStore
 	notifier    *Notifier
+	library     *LibraryStore
 	bgCtx       context.Context
 	bgCancel    context.CancelFunc
 }
@@ -49,6 +50,11 @@ func NewRegistry(s settingsReader) *Registry {
 	if qs, err := NewQueueStore("", nil); err == nil {
 		r.queues = qs
 	}
+	// Same shape for the tool library — load is best-effort, a bad
+	// file just means the panel falls back to live-only Q-code data.
+	if ls, err := NewLibraryStore(""); err == nil {
+		r.library = ls
+	}
 	r.notifier = NewNotifier(s)
 	r.Refresh()
 	return r
@@ -61,6 +67,10 @@ func (r *Registry) Notifier() *Notifier { return r.notifier }
 // Queues returns the shared QueueStore. May be nil when persistence
 // failed at boot — callers should nil-check.
 func (r *Registry) Queues() *QueueStore { return r.queues }
+
+// LibraryStore returns the shared tool-library store. May be nil
+// when persistence failed at boot.
+func (r *Registry) LibraryStore() *LibraryStore { return r.library }
 
 // Refresh diffs settings.Cnc.Machines against the live registry,
 // adding pairs for new IDs and stopping pairs for removed ones.

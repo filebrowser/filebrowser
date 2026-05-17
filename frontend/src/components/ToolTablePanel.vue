@@ -161,9 +161,17 @@
               </td>
               <td v-if="hasComments" class="tool-table__desc">
                 <MfgAnnotatedText
-                  v-if="props.toolComments?.[row.slot]"
-                  :text="props.toolComments[row.slot]"
+                  v-if="effectiveComments[row.slot]"
+                  :text="effectiveComments[row.slot]"
                 />
+                <a
+                  v-if="libraryBySlot[row.slot]?.['product-link']"
+                  :href="libraryBySlot[row.slot]?.['product-link']"
+                  target="_blank"
+                  rel="noopener"
+                  class="tool-table__lib-link"
+                  :title="t('toolTable.libraryProductLink')"
+                >↗</a>
               </td>
             </tr>
             <tr v-if="displayRows.length === 0">
@@ -248,14 +256,76 @@ const reading = ref(false);
 const errMsg = ref<string>("");
 const folder = ref<string>("");
 
-// True when the parent passed at least one comment — gates the
-// "Description" column so installs without any preflight context
-// don't see a blank column.
+// ── Tool library enrichment ────────────────────────────────────────────
+// Fusion 360 library uploaded via Settings → Machine → Tool library.
+// Indexed once on mount; per-slot description falls back to the
+// library entry when the NC preflight didn't provide one.
+import type { FusionToolEntry } from "@/api/cnc";
+const libraryBySlot = ref<Record<number, FusionToolEntry>>({});
+const loadLibrary = async () => {
+  try {
+    const lib = await cncApi.getToolLibrary();
+    if (!lib.loaded) {
+      libraryBySlot.value = {};
+      return;
+    }
+    const idx: Record<number, FusionToolEntry> = {};
+    for (const t of lib.data || []) {
+      const n = t["post-process"]?.number;
+      if (typeof n === "number" && n > 0 && !idx[n]) {
+        idx[n] = t;
+      }
+    }
+    libraryBySlot.value = idx;
+  } catch {
+    libraryBySlot.value = {};
+  }
+};
+
+// Build a single description string per pocket from the library —
+// vendor + part + dimensions in a one-liner. Used when the NC
+// preflight didn't supply a comment for that slot.
+const librarySlotDescription = (n: number): string | null => {
+  const t = libraryBySlot.value[n];
+  if (!t) return null;
+  if (t.description) return t.description;
+  // Fall back to a synthesised description from geometry when the
+  // operator didn't fill the description field.
+  const g = t.geometry || {};
+  const bits: string[] = [];
+  if (t.type) bits.push(t.type);
+  if (g.DC) bits.push(`D=${g.DC}`);
+  if (g.NOF) bits.push(`${g.NOF} flutes`);
+  if (g.RE) bits.push(`R=${g.RE}`);
+  if (t.vendor) bits.unshift(t.vendor);
+  return bits.length ? bits.join(" · ") : null;
+};
+
+// effectiveComments merges NC preflight comments with library
+// descriptions. NC comment wins (more program-specific); library
+// description fills the gap.
+const effectiveComments = computed<Record<number, string>>(() => {
+  const out: Record<number, string> = {};
+  const passthrough = props.toolComments || {};
+  for (const k in passthrough) {
+    if (passthrough[k]) out[Number(k)] = passthrough[k];
+  }
+  for (const n in libraryBySlot.value) {
+    const num = Number(n);
+    if (out[num]) continue;
+    const fallback = librarySlotDescription(num);
+    if (fallback) out[num] = fallback;
+  }
+  return out;
+});
+
+// True when the parent passed at least one comment OR the library
+// has entries — gates the "Description" column so installs without
+// any context don't see a blank column.
 const hasComments = computed(() => {
-  const c = props.toolComments;
-  if (!c) return false;
-  for (const k in c) {
-    if (c[k]) return true;
+  const map = effectiveComments.value;
+  for (const k in map) {
+    if (map[k]) return true;
   }
   return false;
 });
@@ -537,7 +607,10 @@ watch(
   }
 );
 
-onMounted(loadLatest);
+onMounted(() => {
+  loadLatest();
+  loadLibrary();
+});
 </script>
 
 <style scoped>
@@ -781,6 +854,13 @@ onMounted(loadLatest);
   color: var(--fg-muted, #555);
   font-size: 11px;
 }
+.tool-table__lib-link {
+  margin-left: 4px;
+  color: var(--primary-color, #2196f3);
+  text-decoration: none;
+  font-size: 11px;
+}
+.tool-table__lib-link:hover { text-decoration: underline; }
 .tool-table td.num,
 .tool-table th.num {
   text-align: right;
