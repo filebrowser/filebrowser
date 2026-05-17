@@ -1,5 +1,5 @@
 <template>
-  <div class="m-chapters" v-if="chapters.length > 0">
+  <div class="m-chapters" v-if="chapters.length > 0" :style="topStyle">
     <button
       class="m-chapters__btn"
       :title="t('machine.chaptersTitle', { n: chapters.length })"
@@ -37,7 +37,15 @@ const { t } = useI18n();
 const props = defineProps<{
   chapters: Chapter[];
   currentLine: number;
+  // Pixel offset from the top of the parent pane. Machine.vue bumps
+  // this up when the "Attached as current" banner is visible so the
+  // toolpath toggle doesn't collide with it.
+  topOffset?: number;
 }>();
+
+const topStyle = computed(() => ({
+  top: `${props.topOffset ?? 6}px`,
+}));
 
 const emit = defineEmits<{ (e: "jump", line: number): void }>();
 
@@ -74,7 +82,6 @@ const onJump = (line: number) => {
 <style scoped>
 .m-chapters {
   position: absolute;
-  top: 6px;
   left: 6px;
   z-index: 2;
   display: flex;

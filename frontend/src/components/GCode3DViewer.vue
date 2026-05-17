@@ -6,7 +6,7 @@
         {{ pointCount.toLocaleString() }} pts
         <span v-if="lastTruncated" class="truncated-badge">truncated</span>
       </span>
-      <button class="viewer-btn" @click="resetCamera" title="Reset camera">
+      <button class="viewer-btn" @click="resetCamera" title="Fit program to view">
         ⌂
       </button>
     </div>
@@ -18,6 +18,12 @@
 import { onMounted, onBeforeUnmount, ref, watch, nextTick } from "vue";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+
+// Re-export the class types we need. `import * as THREE` makes the
+// module a value namespace; vue-tsc won't let us use THREE.Box3 as a
+// type annotation directly, so we pull them out with `typeof`.
+type Box3 = InstanceType<typeof THREE.Box3>;
+type PerspectiveCamera = InstanceType<typeof THREE.PerspectiveCamera>;
 
 const props = defineProps<{
   gcode: string;
@@ -507,7 +513,13 @@ function updateGeometry(gcode: string) {
 
   sceneCenter = center.clone();
   const maxDim = Math.max(size.x || 1, size.y || 1, size.z || 1);
-  sceneDist = maxDim * 2.5;
+
+  // Proper fit-to-sphere: place the camera just far enough that the
+  // bounding sphere subtends an angle smaller than the smaller of
+  // vertical / horizontal FOV. The old heuristic (sceneDist =
+  // maxDim * 2.5 along three axes) was loose AND ignored aspect, so
+  // tall narrow programs landed off-center in wide viewports.
+  sceneDist = fitDistance(bbox, camera);
 
   camera.position.set(
     center.x + sceneDist,
@@ -526,6 +538,23 @@ function updateGeometry(gcode: string) {
 
   // Crosshair size scales with part — visible but never engulfing.
   ensureHighlightCross(maxDim * 0.04);
+}
+
+// fitDistance returns the per-axis offset the iso-camera should use
+// so the bounding sphere fills ~85% of the smaller viewport dimension.
+// camera position is set to (center + (d, d, d)); actual distance from
+// the center is d*sqrt(3), so we divide the required straight-line
+// distance accordingly.
+function fitDistance(bbox: Box3, cam: PerspectiveCamera): number {
+  const sphere = bbox.getBoundingSphere(new THREE.Sphere());
+  const r = Math.max(sphere.radius, 1e-3);
+  const vfov = (cam.fov * Math.PI) / 180;
+  const aspect = cam.aspect || 1;
+  const hfov = 2 * Math.atan(Math.tan(vfov / 2) * aspect);
+  const tightFov = Math.min(vfov, hfov);
+  const pad = 1.15; // ~15% breathing room so the program isn't flush with the edge
+  const requiredDist = (r / Math.sin(tightFov / 2)) * pad;
+  return requiredDist / Math.sqrt(3);
 }
 
 // ── Cursor → 3D highlight ────────────────────────────────────────────────────
@@ -568,8 +597,23 @@ function highlightMachineLine(line: number | null | undefined) {
 }
 
 // ── Camera reset ─────────────────────────────────────────────────────────────
+// Recomputes the fit distance against the current geometry's bbox so
+// the button works regardless of aspect-ratio changes since the last
+// fit (e.g. resized window / panel splitter dragged).
 function resetCamera() {
   if (!camera || !controls || !sceneCenter) return;
+  const obj = feedLines || rapidLines;
+  if (obj && obj.geometry.boundingBox === null) {
+    obj.geometry.computeBoundingBox();
+  }
+  const bbox = new THREE.Box3();
+  for (const o of [feedLines, rapidLines]) {
+    if (!o || !o.geometry.boundingBox) continue;
+    bbox.union(o.geometry.boundingBox);
+  }
+  if (!bbox.isEmpty()) {
+    sceneDist = fitDistance(bbox, camera);
+  }
   camera.position.set(
     sceneCenter.x + sceneDist,
     sceneCenter.y + sceneDist,

@@ -49,6 +49,7 @@
                 <ChapterList
                   :chapters="chapters"
                   :current-line="Number(cnc.lineCurrent) || 0"
+                  :top-offset="cnc.attachedFile && !cnc.running ? 36 : 6"
                   @jump="onChapterJump"
                 />
                 <GcodeFollow
@@ -296,7 +297,14 @@ const loadJobFolder = async (filePath: string) => {
 const fetchNc = async (path: string) => {
   ncLoading.value = true;
   try {
-    const res = await filesApi.fetch(path);
+    // filesApi.fetch calls removePrefix on its URL — that helper
+    // strips two leading slash-segments (designed for router paths
+    // like "/files/sub/x.nc"). The CNC layer carries share-relative
+    // paths like "/sub/x.nc", so we re-add the "/files" prefix
+    // here so removePrefix lands on the right thing. Without this
+    // a share-root attach ("/program.nc") collapses to "/" and the
+    // API returns the directory listing instead of the file.
+    const res = await filesApi.fetch("/files" + path);
     ncContent.value = (res as any).content ?? "";
   } catch {
     ncContent.value = null;
