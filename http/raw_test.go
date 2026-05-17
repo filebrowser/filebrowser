@@ -70,6 +70,14 @@ func TestSetContentDisposition(t *testing.T) {
 			if got != tc.expected {
 				t.Errorf("Content-Disposition = %q, want %q", got, tc.expected)
 			}
+
+			contentType := recorder.Header().Get("Content-Type")
+			if tc.inline && contentType != "" {
+				t.Errorf("Content-Type = %q, want empty", contentType)
+			}
+			if !tc.inline && contentType != "application/octet-stream" {
+				t.Errorf("Content-Type = %q, want application/octet-stream", contentType)
+			}
 		})
 	}
 }
