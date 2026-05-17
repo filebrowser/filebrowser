@@ -142,10 +142,10 @@
                 />
               </td>
               <td>{{ row.slot }}</td>
-              <td class="num">{{ fmt(row.length_geom) }}</td>
+              <td class="num" :class="lenDeltaCls(row)" :title="lenTooltip(row)">{{ fmt(row.length_geom) }}</td>
               <td class="num">{{ fmt(row.length_wear) }}</td>
               <td class="num">{{ fmt(row.effective_length) }}</td>
-              <td class="num">{{ fmt(row.diameter_geom) }}</td>
+              <td class="num" :class="dcDeltaCls(row)" :title="dcTooltip(row)">{{ fmt(row.diameter_geom) }}</td>
               <td class="num">{{ fmt(row.diameter_wear) }}</td>
               <td class="num">{{ fmt(row.effective_diameter) }}</td>
               <td class="status">
@@ -310,6 +310,73 @@ const librarySlotDescription = (n: number): string | null => {
   if (g.RE) bits.push(`R=${g.RE}`);
   if (t.vendor) bits.unshift(t.vendor);
   return bits.length ? bits.join(" · ") : null;
+};
+
+// ── Library vs measured comparison ─────────────────────────────────────
+// When the operator has uploaded their Fusion library, surface a
+// per-row delta between what the library expects and what the
+// controller actually read. Helps catch:
+//   - Wrong tool loaded in slot
+//   - Significant wear (diameter delta)
+//   - Wrong holder / wrong stickout
+// Tolerance defaults to 0.005" for diameter, 0.010" for length —
+// matches the existing tool-table diff helper.
+const DCTolerance = 0.005;
+const LengthTolerance = 0.010;
+
+const expectedDC = (slot: number): number | null => {
+  const dc = libraryBySlot.value[slot]?.geometry?.DC;
+  return typeof dc === "number" ? dc : null;
+};
+const expectedLength = (slot: number): number | null => {
+  const t = libraryBySlot.value[slot];
+  if (!t) return null;
+  const gauge = t.holder?.gaugeLength;
+  const lb = t.geometry?.LB;
+  if (typeof gauge !== "number" || typeof lb !== "number") return null;
+  return gauge + lb;
+};
+const measuredDC = (row: any): number | null => {
+  const v = row.diameter_geom;
+  return typeof v === "number" ? v : null;
+};
+const measuredLen = (row: any): number | null => {
+  const v = row.length_geom;
+  return typeof v === "number" ? v : null;
+};
+const dcDeltaCls = (row: any): string => {
+  const exp = expectedDC(row.slot);
+  const meas = measuredDC(row);
+  if (exp == null || meas == null) return "";
+  return Math.abs(meas - exp) > DCTolerance
+    ? "tool-table__delta-warn"
+    : "tool-table__delta-ok";
+};
+const lenDeltaCls = (row: any): string => {
+  const exp = expectedLength(row.slot);
+  const meas = measuredLen(row);
+  if (exp == null || meas == null) return "";
+  return Math.abs(meas - exp) > LengthTolerance
+    ? "tool-table__delta-warn"
+    : "tool-table__delta-ok";
+};
+const dcTooltip = (row: any): string => {
+  const exp = expectedDC(row.slot);
+  const meas = measuredDC(row);
+  if (exp == null) return "";
+  if (meas == null) return `Library expects ⌀${exp.toFixed(4)} (not measured yet)`;
+  const d = meas - exp;
+  const sign = d >= 0 ? "+" : "";
+  return `Library expects ⌀${exp.toFixed(4)} — measured ⌀${meas.toFixed(4)} (Δ ${sign}${d.toFixed(4)})`;
+};
+const lenTooltip = (row: any): string => {
+  const exp = expectedLength(row.slot);
+  const meas = measuredLen(row);
+  if (exp == null) return "";
+  if (meas == null) return `Library expects ${exp.toFixed(4)} long (not measured yet)`;
+  const d = meas - exp;
+  const sign = d >= 0 ? "+" : "";
+  return `Library expects ${exp.toFixed(4)} — measured ${meas.toFixed(4)} (Δ ${sign}${d.toFixed(4)})`;
 };
 
 // effectiveComments merges NC preflight comments with library
@@ -872,6 +939,31 @@ onMounted(() => {
   font-size: 11px;
 }
 .tool-table__lib-link:hover { text-decoration: underline; }
+
+/* Library-vs-measured delta cues. Subtle so the table doesn't look
+   alarming for normal wear, but obvious enough to catch a loaded-the-
+   wrong-tool mistake at a glance. */
+.tool-table__delta-ok {
+  position: relative;
+}
+.tool-table__delta-ok::after {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin-left: 4px;
+  border-radius: 50%;
+  background: #639922;
+  vertical-align: middle;
+}
+.tool-table__delta-warn {
+  color: #BA7517;
+  font-weight: 600;
+}
+.tool-table__delta-warn::after {
+  content: " ⚠";
+  font-size: 10px;
+}
 .tool-table td.num,
 .tool-table th.num {
   text-align: right;
