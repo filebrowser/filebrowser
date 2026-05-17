@@ -272,20 +272,35 @@ const metricFloat = (key: string): number | null => {
   const v = parseFloat(m.value);
   return Number.isFinite(v) ? v : null;
 };
+// Position is only a useful proxy for "what line are we on" when the
+// machine is actually moving. Spindle alone isn't enough — feed hold
+// can leave the spindle running with motion stopped, and spindle
+// warm-up has spindle on before the first cut. We trust the metric's
+// last_update timestamp: the aggregator only emits a "metric" event
+// on value change, so a fresh last_update means the value actually
+// moved.
+const MOVEMENT_WINDOW_MS = 5_000;
+const metricUpdatedRecently = (key: string): boolean => {
+  const m = cnc.metrics[key];
+  if (!m || !m.last_update) return false;
+  const t = Date.parse(m.last_update);
+  if (Number.isNaN(t)) return false;
+  // Reading `now.value` here keeps the computed reactive: as the 1s
+  // tick advances, the gate flips back to false when motion stops.
+  return now.value - t < MOVEMENT_WINDOW_MS;
+};
 const estimatedLine = computed<number>(() => {
-  // Real job wins.
+  // Real streaming job wins.
   const real = Number(cnc.lineCurrent) || 0;
   if (cnc.running && real > 0) return real;
-  // Attached follow-along path. The heuristic only fires while there's
-  // evidence the controller is actually executing — otherwise the
-  // macro / position snap to whatever the machine last touched, which
-  // produces misleading "fast-forward to end" highlights when the
-  // operator just finished uploading and hasn't pressed Cycle Start.
+  // Attached follow-along path: macro #3030 is the only authoritative
+  // source while running from controller memory. Position is a
+  // fallback for machines whose firmware doesn't populate the macro,
+  // gated on actual motion (no fake "we're on line N" during feed
+  // hold, spindle warm-up, or post-program idle with spindle still
+  // running for the next op).
   if (!cnc.attachedFile || !lineMap.value) return 0;
-  const spindleRpm = metricFloat("spindle_actual");
-  const isCutting = (spindleRpm ?? 0) > 0;
-  if (!isCutting) return 0;
-  // 1. Haas block-number macro
+  // 1. Haas block-number macro — authoritative when populated.
   const blockMetric = cnc.metrics.current_block;
   if (blockMetric && blockMetric.value && !blockMetric.stale) {
     const n = parseInt(blockMetric.value, 10);
@@ -294,7 +309,13 @@ const estimatedLine = computed<number>(() => {
       if (hit) return hit;
     }
   }
-  // 2. Position heuristic — only if we have all three Mach axes
+  // 2. Position heuristic — only when ANY mach axis updated in the
+  // last 5s. Stale position = machine not moving = don't guess a line.
+  const moving =
+    metricUpdatedRecently("pos_x") ||
+    metricUpdatedRecently("pos_y") ||
+    metricUpdatedRecently("pos_z");
+  if (!moving) return 0;
   const x = metricFloat("pos_x");
   const y = metricFloat("pos_y");
   const z = metricFloat("pos_z");
@@ -386,20 +407,17 @@ watch(
   { immediate: false }
 );
 
-// ── ETA derived locally so the right rail can display "02:14 left" ──
+// ── ETA + reactive clock for stale-metric checks ──────────────────────
+// 1s tick runs for the lifetime of /machine. Drives the ETA timer
+// during a streaming job AND the "is position fresh enough to trust"
+// gate that estimatedLine uses to decide whether to fall back to the
+// position heuristic. Cost is negligible; making it conditional was
+// causing the line indicator to freeze on the last-moving line after
+// motion stopped (no tick → computed never re-evaluated).
 const now = ref(Date.now());
-let nowTimer: ReturnType<typeof setInterval> | null = null;
-watch(
-  () => cnc.running,
-  (running) => {
-    if (running && !nowTimer) {
-      nowTimer = setInterval(() => (now.value = Date.now()), 1000);
-    } else if (!running && nowTimer) {
-      clearInterval(nowTimer);
-      nowTimer = null;
-    }
-  },
-  { immediate: true }
+let nowTimer: ReturnType<typeof setInterval> | null = setInterval(
+  () => (now.value = Date.now()),
+  1000
 );
 const etaMs = computed<number | null>(() => {
   if (!cnc.running) return null;
