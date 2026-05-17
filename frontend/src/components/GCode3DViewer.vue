@@ -339,7 +339,14 @@ function initThree() {
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x1a1a1a);
 
+  // Machine-tool convention: +Z is up (away from work), -Z is into the
+  // part. Three.js defaults to +Y up, which would render G-code Z
+  // motion as depth-into-screen — confusing for an operator who reads
+  // a Z command as vertical. Telling the camera (and OrbitControls)
+  // that +Z is up makes the rendered axes match the machine, so a
+  // ramp-down at Z-0.1 visibly descends on screen.
   camera = new THREE.PerspectiveCamera(50, width / height, 0.01, 50000);
+  camera.up.set(0, 0, 1);
   camera.position.set(0, 0, 200);
 
   scene.add(new THREE.AmbientLight(0xffffff, 0.8));
