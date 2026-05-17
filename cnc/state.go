@@ -53,6 +53,13 @@ var defaultMetricSpecs = []metricSpec{
 	{"last_cycle", "Last cycle time", 303, nil, 10 * time.Second},
 	{"parts", "Parts counter", 402, nil, 3 * time.Second},
 	{"status_combined", "Program / status", 500, nil, 3 * time.Second},
+	// #3030 is the read-only "block number being executed" Haas macro on
+	// most Next Gen + classic firmware. Populated when running a program
+	// (any source — MEM, DNC, SD card, ethernet drop), 0 / unset while
+	// idle. Used by the dashboard to follow along on attached files
+	// where there's no Streamer.line_current. Falls back to a position-
+	// to-line heuristic on the frontend when this stays 0.
+	{"current_block", "Current N-block", 600, ptr(3030), 1500 * time.Millisecond},
 	{"spindle_actual", "Spindle RPM (actual)", 600, ptr(3027), 3 * time.Second},
 	{"spindle_cmd", "Spindle RPM (commanded)", 600, ptr(1815), 5 * time.Second},
 	{"pos_x", "Machine X", 600, ptr(5021), 2500 * time.Millisecond},

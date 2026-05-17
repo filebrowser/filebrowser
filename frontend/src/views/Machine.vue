@@ -48,7 +48,7 @@
                 </div>
                 <ChapterList
                   :chapters="chapters"
-                  :current-line="Number(cnc.lineCurrent) || 0"
+                  :current-line="estimatedLine"
                   :top-offset="cnc.attachedFile && !cnc.running ? 36 : 6"
                   @jump="onChapterJump"
                 />
@@ -56,7 +56,7 @@
                   v-if="ncContent !== null"
                   ref="gcodeFollowRef"
                   :gcode="ncContent"
-                  :machine-line="Number(cnc.lineCurrent) || 0"
+                  :machine-line="estimatedLine"
                 />
                 <div v-else class="m-pane__hint">
                   {{ ncLoading ? t("machine.ncLoading") : t("machine.ncIdle") }}
@@ -66,7 +66,7 @@
                 <GCode3DViewer
                   v-if="ncContent !== null"
                   :gcode="ncContent"
-                  :machine-line="Number(cnc.lineCurrent) || 0"
+                  :machine-line="estimatedLine"
                 />
                 <div v-else class="m-pane__hint m-pane__hint--dark">
                   {{ t("machine.viewerIdle") }}
@@ -146,6 +146,7 @@ import TabStrip from "@/components/machine/TabStrip.vue";
 import type { FileTabSpec } from "@/components/machine/TabStrip.vue";
 import GcodeFollow from "@/components/machine/GcodeFollow.vue";
 import ChapterList from "@/components/machine/ChapterList.vue";
+import { buildLineMap, resolveByN, resolveByPosition } from "@/utils/ncLineMap";
 import RightRail from "@/components/machine/RightRail.vue";
 import QueuePanel from "@/components/machine/QueuePanel.vue";
 import ConnectionModal from "@/components/machine/ConnectionModal.vue";
@@ -252,6 +253,50 @@ const refreshChapters = async (path: string) => {
 const onChapterJump = (line: number) => {
   gcodeFollowRef.value?.jumpTo(line);
 };
+
+// ── Line follow ────────────────────────────────────────────────────────
+// When the streamer is sending the program, lineCurrent is authoritative.
+// When the file is only ATTACHED (operator ran it from SD card / Memory),
+// the streamer never sees the bytes — so fall back to:
+//   1. Haas macro #3030 (current N-block) → resolve N → source line
+//   2. Position match: nearest line whose modal X/Y/Z matches Mach pos
+// The position fallback is coarse (~0.25" tolerance) but good enough to
+// anchor the read on a paused program, which is the common case.
+const lineMap = computed(() => {
+  if (!ncContent.value) return null;
+  return buildLineMap(ncContent.value);
+});
+const metricFloat = (key: string): number | null => {
+  const m = cnc.metrics[key];
+  if (!m || !m.value || m.stale) return null;
+  const v = parseFloat(m.value);
+  return Number.isFinite(v) ? v : null;
+};
+const estimatedLine = computed<number>(() => {
+  // Real job wins.
+  const real = Number(cnc.lineCurrent) || 0;
+  if (cnc.running && real > 0) return real;
+  // Attached follow-along path.
+  if (!cnc.attachedFile || !lineMap.value) return real;
+  // 1. Haas block-number macro
+  const blockMetric = cnc.metrics.current_block;
+  if (blockMetric && blockMetric.value && !blockMetric.stale) {
+    const n = parseInt(blockMetric.value, 10);
+    if (n > 0) {
+      const hit = resolveByN(lineMap.value, n);
+      if (hit) return hit;
+    }
+  }
+  // 2. Position heuristic — only if we have all three Mach axes
+  const x = metricFloat("pos_x");
+  const y = metricFloat("pos_y");
+  const z = metricFloat("pos_z");
+  if (x != null && y != null && z != null) {
+    const hit = resolveByPosition(lineMap.value, { x, y, z });
+    if (hit) return hit;
+  }
+  return real;
+});
 
 const fileIcon = (name: string): string => {
   const lower = name.toLowerCase();
