@@ -192,6 +192,35 @@ export function getChapters(filePath: string) {
   return fetchJSON<ChapterList>(`/api/cnc/chapters?${params}`, {});
 }
 
+// ── Discord notifications ─────────────────────────────────────────────────
+
+export type NotifyCategory = "machine_info" | "failures" | "operation_starts";
+
+export interface NotificationsConfig {
+  botToken?: string;
+  botTokenIsMasked?: boolean;
+  channelId?: string;
+  categories?: NotifyCategory[];
+  knownCategories?: NotifyCategory[];
+}
+
+export function getNotifications() {
+  return fetchJSON<NotificationsConfig>(`/api/cnc/notifications`, {});
+}
+
+export async function putNotifications(cfg: NotificationsConfig) {
+  await fetchURL(`/api/cnc/notifications`, {
+    method: "PUT",
+    body: JSON.stringify(cfg),
+  });
+}
+
+export function testNotifications() {
+  return fetchJSON<{ ok: boolean }>(`/api/cnc/notifications/test`, {
+    method: "POST",
+  });
+}
+
 // ── Queue (per-machine staging area) ──────────────────────────────────────
 
 export type QueueState = "queued" | "sending" | "running";

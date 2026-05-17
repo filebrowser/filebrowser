@@ -317,6 +317,77 @@
               {{ t("settings.machineTokenRegenerate") }}
             </button>
           </p>
+
+          <!-- External connections — Discord bot notifications -->
+          <h3>{{ t("settings.externalConnections") }}</h3>
+          <p class="small">{{ t("settings.externalConnectionsHelp") }}</p>
+
+          <p>
+            <label class="small">{{ t("settings.discordBotToken") }}</label>
+            <input
+              class="input input--block"
+              type="password"
+              autocomplete="off"
+              :placeholder="discord.botTokenIsMasked
+                ? t('settings.discordTokenPlaceholderSet')
+                : t('settings.discordTokenPlaceholderEmpty')"
+              v-model="discordTokenInput"
+            />
+            <span class="small machine-row__hint">
+              {{ t("settings.discordBotTokenHelp") }}
+            </span>
+          </p>
+
+          <p>
+            <label class="small">{{ t("settings.discordChannelId") }}</label>
+            <input
+              class="input input--block"
+              type="text"
+              autocomplete="off"
+              v-model="discord.channelId"
+              placeholder="1234567890123456789"
+            />
+          </p>
+
+          <p>
+            <label class="small">{{ t("settings.discordCategories") }}</label>
+            <span class="machine-axes">
+              <label
+                v-for="c in (discord.knownCategories || [])"
+                :key="c"
+                class="machine-axes__item"
+              >
+                <input
+                  type="checkbox"
+                  :value="c"
+                  :checked="(discord.categories || []).includes(c)"
+                  @change="toggleDiscordCategory(c, ($event.target as HTMLInputElement).checked)"
+                />
+                {{ t(`settings.discordCategory_${c}`) }}
+              </label>
+            </span>
+            <span class="small machine-row__hint">
+              {{ t("settings.discordCategoriesHelp") }}
+            </span>
+          </p>
+
+          <p>
+            <button
+              type="button"
+              class="button button--flat"
+              @click="saveDiscord"
+            >
+              {{ t("settings.discordSave") }}
+            </button>
+            <button
+              type="button"
+              class="button button--flat"
+              :disabled="discordTesting"
+              @click="testDiscord"
+            >
+              {{ discordTesting ? t("settings.discordTesting") : t("settings.discordTest") }}
+            </button>
+          </p>
         </div>
 
         <div class="card-action">
@@ -333,7 +404,14 @@
 
 <script setup lang="ts">
 import { cnc as api } from "@/api";
-import type { CncMachine, CncSettings, ProbeToolsReport, ToolLifeProbeReport } from "@/api/cnc";
+import type {
+  CncMachine,
+  CncSettings,
+  NotificationsConfig,
+  NotifyCategory,
+  ProbeToolsReport,
+  ToolLifeProbeReport,
+} from "@/api/cnc";
 import { fetchURL } from "@/api/utils";
 import { StatusError } from "@/api/utils";
 import { useLayoutStore } from "@/stores/layout";
@@ -343,6 +421,56 @@ import { useI18n } from "vue-i18n";
 
 const error = ref<StatusError | null>(null);
 const settings = ref<CncSettings | null>(null);
+
+// Discord notifications — loaded from /api/cnc/notifications on mount.
+// discordTokenInput is the form-only field; users either leave it
+// blank (keep existing) or paste a new token to replace. We never
+// pre-fill it because the GET handler masks the saved value.
+const discord = ref<NotificationsConfig>({
+  botToken: "",
+  botTokenIsMasked: false,
+  channelId: "",
+  categories: [],
+  knownCategories: [],
+});
+const discordTokenInput = ref("");
+const discordTesting = ref(false);
+
+const toggleDiscordCategory = (cat: string, checked: boolean) => {
+  const cur = (discord.value.categories || []).slice();
+  const i = cur.indexOf(cat as NotifyCategory);
+  if (checked && i < 0) cur.push(cat as NotifyCategory);
+  if (!checked && i >= 0) cur.splice(i, 1);
+  discord.value.categories = cur;
+};
+
+const saveDiscord = async () => {
+  try {
+    await api.putNotifications({
+      // Empty / mask string preserves the saved token server-side.
+      botToken: discordTokenInput.value || "",
+      channelId: discord.value.channelId,
+      categories: discord.value.categories,
+    });
+    discordTokenInput.value = "";
+    discord.value = await api.getNotifications();
+    $showSuccess(t("settings.discordSaved"));
+  } catch (e: any) {
+    $showError(e);
+  }
+};
+
+const testDiscord = async () => {
+  discordTesting.value = true;
+  try {
+    await api.testNotifications();
+    $showSuccess(t("settings.discordTestOk"));
+  } catch (e: any) {
+    $showError(e);
+  } finally {
+    discordTesting.value = false;
+  }
+};
 
 // Probe is per-machine — keep results keyed by machine ID so each
 // row's panel renders only its own outcome.
@@ -545,6 +673,11 @@ onMounted(async () => {
       ...m,
     }));
     settings.value = fetched;
+    try {
+      discord.value = await api.getNotifications();
+    } catch {
+      /* non-admin fetch fails 403 — fine, the section just stays at defaults */
+    }
   } catch (err) {
     if (err instanceof Error) {
       error.value = err as StatusError;

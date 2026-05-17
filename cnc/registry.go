@@ -12,6 +12,7 @@ package cnc
 
 import (
 	"context"
+	"fmt"
 	"sync"
 
 	"github.com/filebrowser/filebrowser/v2/settings"
@@ -25,6 +26,7 @@ type Registry struct {
 	streamers   map[string]*Streamer
 	aggregators map[string]*Aggregator
 	queues      *QueueStore
+	notifier    *Notifier
 	bgCtx       context.Context
 	bgCancel    context.CancelFunc
 }
@@ -47,9 +49,14 @@ func NewRegistry(s settingsReader) *Registry {
 	if qs, err := NewQueueStore("", nil); err == nil {
 		r.queues = qs
 	}
+	r.notifier = NewNotifier(s)
 	r.Refresh()
 	return r
 }
+
+// Notifier returns the shared Discord notifier. Always non-nil; the
+// notifier itself no-ops when DiscordConfig isn't fully wired.
+func (r *Registry) Notifier() *Notifier { return r.notifier }
 
 // Queues returns the shared QueueStore. May be nil when persistence
 // failed at boot — callers should nil-check.
@@ -133,6 +140,9 @@ func (r *Registry) watchQueueAutoMatch(ctx context.Context, machineID string, st
 	feed := st.Subscribe()
 	defer st.Unsubscribe(feed)
 	var lastProgram string
+	var wasRunning bool
+	var lastAttachedFile string
+	machineLabel := r.machineLabel(machineID)
 	for {
 		select {
 		case <-ctx.Done():
@@ -170,9 +180,71 @@ func (r *Registry) watchQueueAutoMatch(ctx context.Context, machineID string, st
 				} else if ev.Status.Running && r.queues != nil {
 					r.queues.MarkProgress(machineID, int(ev.Status.LineCurrent), int(ev.Status.LineTotal))
 				}
+				// Discord notifications — operator-initiated job starts
+				// trip the operation_starts category; idle transitions
+				// trip machine_info; manual attach also trips
+				// operation_starts since it's an explicit "follow this
+				// program" action.
+				if ev.Status.Running && !wasRunning {
+					r.notifyAsync(NotifyCategoryOperationStarts,
+						fmt.Sprintf("▶️ %s — started %s (%d lines)",
+							machineLabel, ev.Status.FilePath, ev.Status.LineTotal))
+				} else if !ev.Status.Running && wasRunning {
+					r.notifyAsync(NotifyCategoryMachineInfo,
+						fmt.Sprintf("⏹️ %s — job ended at line %d",
+							machineLabel, ev.Status.LineCurrent))
+				}
+				wasRunning = ev.Status.Running
+				if ev.Status.AttachedFile != "" && ev.Status.AttachedFile != lastAttachedFile {
+					r.notifyAsync(NotifyCategoryOperationStarts,
+						fmt.Sprintf("🔗 %s — attached to %s (%s)",
+							machineLabel, ev.Status.AttachedFile, ev.Status.AttachedSource))
+				}
+				lastAttachedFile = ev.Status.AttachedFile
+				if ev.Status.HaasLastError != "" {
+					r.notifyAsync(NotifyCategoryFailures,
+						fmt.Sprintf("⚠️ %s — %s",
+							machineLabel, ev.Status.HaasLastError))
+				}
+			case "log":
+				if ev.Level == "error" {
+					r.notifyAsync(NotifyCategoryFailures,
+						fmt.Sprintf("⚠️ %s — %s", machineLabel, ev.Msg))
+				}
 			}
 		}
 	}
+}
+
+// notifyAsync fires the Discord post off the watcher goroutine. The
+// notifier itself rate-limits per category; we don't block the event
+// loop on a network call.
+func (r *Registry) notifyAsync(category, content string) {
+	if r.notifier == nil {
+		return
+	}
+	go func() {
+		_ = r.notifier.Send(r.bgCtx, category, content)
+	}()
+}
+
+// machineLabel renders "Name" or just the ID when no name is set.
+// Avoids a settings.Get() per event by caching at watcher-spawn time
+// — operators rarely rename mid-session.
+func (r *Registry) machineLabel(id string) string {
+	s, err := r.settings.Get()
+	if err != nil {
+		return id
+	}
+	for _, m := range s.Cnc.Machines {
+		if m.ID == id {
+			if m.Name != "" {
+				return m.Name
+			}
+			return id
+		}
+	}
+	return id
 }
 
 // extractProgram pulls the program ID (e.g. "O00057") out of a parsed

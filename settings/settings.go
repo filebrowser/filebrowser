@@ -43,10 +43,47 @@ type Cnc struct {
 	// per-machine — one token covers all machines under this install.
 	MachineToken string `json:"machineToken"`
 
+	// Discord drives push notifications via a bot the admin sets up
+	// once. Off until both BotToken AND ChannelID are populated AND
+	// at least one Category is enabled. See cnc/notify.go.
+	Discord DiscordConfig `json:"discord,omitempty"`
+
 	// ── Legacy fields (deprecated; migrated into Machines[0]) ──
 	HaasHost  string `json:"haasHost,omitempty"`
 	HaasPort  int    `json:"haasPort,omitempty"`
 	CameraURL string `json:"cameraUrl,omitempty"`
+}
+
+// DiscordConfig drives push notifications to a Discord channel.
+// BotToken is stored write-only — GET handlers mask it before
+// returning, so the admin can verify "something is set" without the
+// raw value bouncing around the UI. PUT replaces it; the admin
+// rotates by pasting a new value.
+//
+// Categories is a list of opt-in event types — empty list disables
+// notifications even when the token is set. Known values:
+//   "machine_info"     — status changes (running on/off, recovery)
+//   "failures"         — alarms / errors / dial failures
+//   "operation_starts" — Send or Attach initiated from the dashboard
+type DiscordConfig struct {
+	BotToken   string   `json:"botToken,omitempty"`
+	ChannelID  string   `json:"channelId,omitempty"`
+	Categories []string `json:"categories,omitempty"`
+}
+
+// Enabled reports whether notifications are wired up enough to fire.
+func (d DiscordConfig) Enabled() bool {
+	return d.BotToken != "" && d.ChannelID != "" && len(d.Categories) > 0
+}
+
+// CategoryEnabled reports whether `cat` is in the admin-selected list.
+func (d DiscordConfig) CategoryEnabled(cat string) bool {
+	for _, c := range d.Categories {
+		if c == cat {
+			return true
+		}
+	}
+	return false
 }
 
 // Machine is one configured CNC controller.
