@@ -136,10 +136,27 @@ systemctl enable --now go2rtc.service
 
 sleep 2
 if systemctl is-active --quiet go2rtc.service; then
+  # Verify go2rtc is actually serving HTTP, not just that systemd
+  # thinks the process is alive. The streams endpoint returns "{}" when
+  # nothing is connected — good enough for a smoke test.
+  if ! curl -fsS --max-time 3 "http://127.0.0.1:${GO2RTC_PORT}/api/streams" >/dev/null; then
+    echo "go2rtc service is active but the API isn't responding on port ${GO2RTC_PORT}." >&2
+    echo "Check 'sudo journalctl -u go2rtc -n 80' for the cause." >&2
+    exit 1
+  fi
   echo
   echo "go2rtc is running on :$GO2RTC_PORT"
   echo
-  host="$(hostname -f 2>/dev/null || hostname)"
+  # Prefer the .local form so the operator's browser machine can reach
+  # the Pi via mDNS. hostname -f returns the bare short name on a
+  # default Pi install (no DNS suffix configured) which only works
+  # from inside the LAN's resolver — useless from a laptop.
+  raw="$(hostname -s 2>/dev/null || hostname)"
+  if [[ "$raw" == *.* ]]; then
+    host="$raw"
+  else
+    host="${raw}.local"
+  fi
   echo "Paste this into Settings → Machine → Camera URL:"
   echo
   echo "  http://${host}:${GO2RTC_PORT}/api/stream.m3u8?src=${GO2RTC_STREAM_NAME}"
@@ -147,6 +164,8 @@ if systemctl is-active --quiet go2rtc.service; then
   echo "Set Camera type = HLS (or leave Auto — the .m3u8 suffix routes correctly)."
   echo
   echo "Web UI for live diagnostics: http://${host}:${GO2RTC_PORT}"
+  echo "If the URL above doesn't resolve from your laptop, try the Pi's LAN IP:"
+  echo "  http://$(hostname -I | awk '{print $1}'):${GO2RTC_PORT}/api/stream.m3u8?src=${GO2RTC_STREAM_NAME}"
 else
   echo "go2rtc failed to start — check journalctl -u go2rtc -n 80" >&2
   exit 1
