@@ -29,7 +29,7 @@
     "rename": "이름 바꾸기",
     "replace": "대체",
     "reportIssue": "문제 보고",
-    "resumeTransfer": "Resume previous transfert",
+    "resumeTransfer": "Resume previous transfer",
     "resumeTransferTooltip": "Skip all conflicting files, except the ones that are smaller on the server as we suppose that their transfert has been interrupted.",
     "save": "저장",
     "schedule": "일정",
