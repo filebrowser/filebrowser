@@ -29,6 +29,18 @@ const workerUrls = import.meta.glob(
   { eager: true, query: "?url", import: "default" }
 ) as UrlMap;
 
+// Ace extensions — most notably ext-searchbox, which Ace dynamically
+// loads when the user opens Find (Ctrl-F). Without this glob, Ace
+// requests "/files/ext-searchbox.js" relative to the page, the SPA
+// catch-all returns index.html, and the editor blows up with
+// "Unexpected token '<'" / "Cannot read properties of undefined
+// (reading 'Search')". Bundling these the same way as themes/modes
+// keeps Find / Goto-line / etc. working on the air-gapped Pi.
+const extUrls = import.meta.glob(
+  "../../node_modules/ace-builds/src-min-noconflict/ext-*.js",
+  { eager: true, query: "?url", import: "default" }
+) as UrlMap;
+
 const nameOf = (path: string, prefix: string): string | null => {
   const m = new RegExp(`/${prefix}-([^/]+?)\\.js$`).exec(path);
   return m ? m[1] : null;
@@ -48,4 +60,10 @@ for (const [path, url] of Object.entries(modeUrls)) {
 for (const [path, url] of Object.entries(workerUrls)) {
   const name = nameOf(path, "worker");
   if (name) ace.config.setModuleUrl(`ace/mode/${name}_worker`, url);
+}
+
+// Extensions register under ace/ext/<name> — file name is ext-<name>.js.
+for (const [path, url] of Object.entries(extUrls)) {
+  const name = nameOf(path, "ext");
+  if (name) ace.config.setModuleUrl(`ace/ext/${name}`, url);
 }
