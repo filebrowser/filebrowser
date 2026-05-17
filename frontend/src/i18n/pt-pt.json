@@ -29,6 +29,8 @@
     "rename": "Mudar o nome",
     "replace": "Substituir",
     "reportIssue": "Reportar problema",
+    "resumeTransfer": "Resume previous transfert",
+    "resumeTransferTooltip": "Skip all conflicting files, except the ones that are smaller on the server as we suppose that their transfert has been interrupted.",
     "save": "Guardar",
     "schedule": "Agendar",
     "search": "Pesquisar",

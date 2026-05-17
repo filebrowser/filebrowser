@@ -29,6 +29,8 @@
     "rename": "Hernoemen",
     "replace": "Vervangen",
     "reportIssue": "Probleem melden",
+    "resumeTransfer": "Vorige overdracht hervatten",
+    "resumeTransferTooltip": "Alle conflicterende bestanden overslaan, behalve de bestanden die kleiner zijn op de server, omdat we veronderstellen dat hun overdracht is onderbroken.",
     "save": "Opslaan",
     "schedule": "Plannen",
     "search": "Zoeken",
