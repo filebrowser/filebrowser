@@ -675,6 +675,31 @@ func cncToolTableHistoryHandler(registry *cnc.Registry) handleFunc {
 	})
 }
 
+// cncChaptersHandler parses an NC file for operation-header comments
+// and returns the TOC for the dashboard's chapter list. Read-only,
+// no streamer interaction. Single query param: file_path.
+func cncChaptersHandler() handleFunc {
+	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		if !d.user.Perm.Modify {
+			return http.StatusForbidden, nil
+		}
+		filePath := r.URL.Query().Get("file_path")
+		if filePath == "" {
+			return http.StatusBadRequest, errors.New("file_path required")
+		}
+		clean := path.Clean(ensureLeading(filePath))
+		if strings.Contains(clean, "..") {
+			return http.StatusBadRequest, errors.New("file_path must not escape the share")
+		}
+		absPath := d.user.FullPath(clean)
+		list, err := cnc.BuildChapters(absPath, clean)
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+		return renderJSON(w, r, list)
+	})
+}
+
 // cncToolTableDiffHandler joins two persisted tool-table dumps and
 // returns the SlotDiff list. Operators tracking wear use this to spot
 // which tools shifted between probes. Filenames come from the

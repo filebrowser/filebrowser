@@ -110,6 +110,7 @@ func NewHandler(
 	cncRouter.Handle("/auto-send", monkey(cncAutoSendHandler(registry), "")).Methods("POST")
 	cncRouter.Handle("/attach", monkey(cncAttachHandler(registry), "")).Methods("POST")
 	cncRouter.Handle("/attach", monkey(cncDetachHandler(registry), "")).Methods("DELETE")
+	cncRouter.Handle("/chapters", monkey(cncChaptersHandler(), "")).Methods("GET")
 
 	api.PathPrefix("/raw").Handler(monkey(rawHandler, "/api/raw")).Methods("GET")
 	api.PathPrefix("/preview/{size}/{path:.*}").

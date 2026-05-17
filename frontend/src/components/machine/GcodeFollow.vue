@@ -74,6 +74,25 @@ watch(() => props.gcode, () => {
   if (following.value) nextTick(scrollToMachineLine);
 });
 
+// Exposed so the parent (Machine.vue) can drive chapter jumps. We
+// detach follow when jumping so a live line update doesn't yank the
+// operator back away from the chapter they just clicked.
+const jumpTo = (line: number) => {
+  if (!line || line < 1) return;
+  following.value = false;
+  nextTick(() => {
+    const sc = scrollEl.value;
+    if (!sc) return;
+    const idx = Math.max(0, line - 1);
+    const target = sc.children[idx] as HTMLElement | undefined;
+    if (!target) return;
+    const wantTop = target.offsetTop - sc.clientHeight / 2 + target.clientHeight / 2;
+    sc.scrollTo({ top: Math.max(0, wantTop), behavior: "smooth" });
+  });
+};
+
+defineExpose({ jumpTo });
+
 onBeforeUnmount(() => {
   following.value = false;
 });

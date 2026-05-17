@@ -174,6 +174,24 @@ export function detachFile(machineId?: string) {
   });
 }
 
+// ── NC chapters (operation-header comment TOC) ────────────────────────────
+
+export interface Chapter {
+  line: number;
+  comment: string;
+}
+
+export interface ChapterList {
+  file_path: string;
+  total: number;
+  chapters: Chapter[];
+}
+
+export function getChapters(filePath: string) {
+  const params = new URLSearchParams({ file_path: filePath });
+  return fetchJSON<ChapterList>(`/api/cnc/chapters?${params}`, {});
+}
+
 // ── Queue (per-machine staging area) ──────────────────────────────────────
 
 export type QueueState = "queued" | "sending" | "running";

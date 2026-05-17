@@ -46,8 +46,14 @@
                     {{ t('machine.attachDetach') }}
                   </button>
                 </div>
+                <ChapterList
+                  :chapters="chapters"
+                  :current-line="Number(cnc.lineCurrent) || 0"
+                  @jump="onChapterJump"
+                />
                 <GcodeFollow
                   v-if="ncContent !== null"
+                  ref="gcodeFollowRef"
                   :gcode="ncContent"
                   :machine-line="Number(cnc.lineCurrent) || 0"
                 />
@@ -138,6 +144,7 @@ import HeroStateBar from "@/components/machine/HeroStateBar.vue";
 import TabStrip from "@/components/machine/TabStrip.vue";
 import type { FileTabSpec } from "@/components/machine/TabStrip.vue";
 import GcodeFollow from "@/components/machine/GcodeFollow.vue";
+import ChapterList from "@/components/machine/ChapterList.vue";
 import RightRail from "@/components/machine/RightRail.vue";
 import QueuePanel from "@/components/machine/QueuePanel.vue";
 import ConnectionModal from "@/components/machine/ConnectionModal.vue";
@@ -194,7 +201,7 @@ const onSelectTab = (tab: string) => {
 
 // ── Tool mismatch counter (drives "Tools ⚠ N") ──
 // Re-uses the preflight result against the current NC file.
-import type { Preflight } from "@/api/cnc";
+import type { Preflight, Chapter } from "@/api/cnc";
 const preflight = ref<Preflight | null>(null);
 const toolMismatchCount = computed(() => {
   const p = preflight.value;
@@ -221,6 +228,29 @@ const refreshPreflight = async (path: string) => {
 const ncContent = ref<string | null>(null);
 const ncLoading = ref(false);
 const fileTabs = ref<FileTabSpec[]>([]);
+
+// Chapter TOC for the active NC file. Derived per fetchNc; the
+// ChapterList overlay renders the popover + current-op pill, and
+// chapter clicks call gcodeFollowRef.jumpTo(line).
+const chapters = ref<Chapter[]>([]);
+const gcodeFollowRef = ref<InstanceType<typeof GcodeFollow> | null>(null);
+
+const refreshChapters = async (path: string) => {
+  if (!path) {
+    chapters.value = [];
+    return;
+  }
+  try {
+    const r = await cncApi.getChapters(path);
+    chapters.value = r.chapters || [];
+  } catch {
+    chapters.value = [];
+  }
+};
+
+const onChapterJump = (line: number) => {
+  gcodeFollowRef.value?.jumpTo(line);
+};
 
 const fileIcon = (name: string): string => {
   const lower = name.toLowerCase();
@@ -285,10 +315,12 @@ watch(
       fetchNc(p);
       loadJobFolder(p);
       refreshPreflight(p);
+      refreshChapters(p);
     } else {
       ncContent.value = null;
       fileTabs.value = [];
       preflight.value = null;
+      chapters.value = [];
     }
   },
   { immediate: false }
@@ -388,6 +420,7 @@ onMounted(async () => {
     fetchNc(initial);
     loadJobFolder(initial);
     refreshPreflight(initial);
+    refreshChapters(initial);
   }
 });
 
@@ -465,6 +498,7 @@ onBeforeUnmount(() => {
 }
 
 .m-pane {
+  position: relative;
   border-radius: 6px;
   overflow: hidden;
   min-height: 0;
