@@ -1,6 +1,8 @@
 package cnc
 
 import (
+	"encoding/json"
+	"strings"
 	"testing"
 	"time"
 )
@@ -33,6 +35,24 @@ func TestDiffEmptyVsEmpty(t *testing.T) {
 	}
 	if out.Summary != (DiffSummary{}) {
 		t.Fatalf("empty diff summary should be zero, got %+v", out.Summary)
+	}
+}
+
+// TestDiffSlotsAlwaysMarshalsAsArray protects against the regression
+// where a no-change diff produced slots: null in the JSON, crashing
+// the frontend's .length read with "Cannot read properties of null".
+func TestDiffSlotsAlwaysMarshalsAsArray(t *testing.T) {
+	out := DiffToolTables(&ToolTable{}, &ToolTable{}, 0, 0)
+	buf, err := json.Marshal(out)
+	if err != nil {
+		t.Fatalf("marshal: %v", err)
+	}
+	got := string(buf)
+	if strings.Contains(got, `"slots":null`) {
+		t.Fatalf("slots must marshal as [] not null: %s", got)
+	}
+	if !strings.Contains(got, `"slots":[]`) {
+		t.Fatalf("expected slots:[] in output, got: %s", got)
 	}
 }
 

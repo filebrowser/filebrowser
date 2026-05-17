@@ -104,6 +104,10 @@ func DiffToolTables(oldT, newT *ToolTable, diaTol, lenTol float64) *ToolTableDif
 	out := &ToolTableDiff{
 		DiameterTolerance: diaTol,
 		LengthTolerance:   lenTol,
+		// Init as empty slice (not nil) so the JSON response always
+		// has slots: [] when there are no changes — frontend reads
+		// .length on it and a null crashes the diff panel.
+		Slots: []SlotDiff{},
 	}
 	oldSlots := indexSlots(oldT)
 	newSlots := indexSlots(newT)

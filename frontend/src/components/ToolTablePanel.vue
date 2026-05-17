@@ -71,8 +71,8 @@
           <button class="tool-card__diff-close" @click="diffResult = null">✕</button>
         </div>
         <p v-if="diffError" class="tool-card__diff-err">{{ diffError }}</p>
-        <ul v-if="diffResult.slots.length > 0" class="tool-card__diff-list">
-          <li v-for="s in diffResult.slots" :key="s.slot" :class="`diff-row diff-row--${s.change}`">
+        <ul v-if="(diffResult.slots ?? []).length > 0" class="tool-card__diff-list">
+          <li v-for="s in (diffResult.slots ?? [])" :key="s.slot" :class="`diff-row diff-row--${s.change}`">
             <span class="diff-row__slot">T{{ s.slot }}</span>
             <span class="diff-row__change">{{ t(`toolTable.diffChange_${s.change}`) }}</span>
             <span v-if="s.diameter_delta !== undefined" class="diff-row__delta">
