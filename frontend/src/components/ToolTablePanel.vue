@@ -196,7 +196,8 @@
             v-for="row in loadedSlots"
             :key="row.slot"
             class="magazine-figure"
-            :title="`T${row.slot} — ⌀${fmt(row.effective_diameter)} L${fmt(row.effective_length)}`"
+            :class="{ 'magazine-figure--active': activeTool === row.slot }"
+            :title="`T${row.slot} — ⌀${fmt(row.effective_diameter)} L${fmt(row.effective_length)}${activeTool === row.slot ? ' · in spindle' : ''}`"
           >
             <!-- Prefer the library-driven revolved profile when available;
                  fall back to the simple length-vs-diameter rectangle for
@@ -234,6 +235,20 @@ import { cnc as cncApi } from "@/api";
 import type { ToolTable, ToolTableSlot, ToolTableDiff } from "@/api/cnc";
 import ToolGeometryView from "@/components/ToolGeometryView.vue";
 import ToolProfileSvg from "@/components/machine/ToolProfileSvg.vue";
+import { useCncStore } from "@/stores/cnc";
+
+const cnc = useCncStore();
+
+// activeTool tracks the controller's currently-selected tool (Q201
+// via the aggregator). Used to highlight the matching figure in the
+// magazine so the operator can see at a glance which one is in the
+// spindle right now.
+const activeTool = computed<number | null>(() => {
+  const m = cnc.metrics.tool;
+  if (!m || !m.value || m.stale) return null;
+  const n = parseInt(m.value, 10);
+  return Number.isFinite(n) && n > 0 ? n : null;
+});
 import MfgAnnotatedText from "@/components/machine/MfgAnnotatedText.vue";
 
 const props = defineProps<{
@@ -1054,6 +1069,16 @@ onMounted(() => {
 
 .magazine-figure:hover {
   background: var(--surface-hover, rgba(33, 150, 243, 0.05));
+}
+/* Currently-loaded tool (Q201 from the controller). Stands out in
+   the magazine so the operator can see which figure is "in the
+   spindle right now" while scanning. */
+.magazine-figure--active {
+  background: rgba(24, 95, 165, 0.18);
+  outline: 1px solid rgba(24, 95, 165, 0.6);
+}
+.magazine-figure--active .magazine-figure__label strong {
+  color: #185FA5;
 }
 
 .magazine-figure__label {
