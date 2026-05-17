@@ -8,6 +8,7 @@ import (
 	"net/url"
 	gopath "path"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/mholt/archives"
@@ -71,13 +72,26 @@ func parseQueryAlgorithm(r *http.Request) (string, archives.Archival, error) {
 }
 
 func setContentDisposition(w http.ResponseWriter, r *http.Request, file *files.FileInfo) {
+	disposition := "attachment"
 	if r.URL.Query().Get("inline") == "true" {
-		// As per RFC6266 section 4.3
-		w.Header().Set("Content-Disposition", "inline; filename*=utf-8''"+url.PathEscape(file.Name))
-	} else {
-		// As per RFC6266 section 4.3
-		w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.PathEscape(file.Name))
+		disposition = "inline"
 	}
+
+	header := disposition + "; filename*=utf-8''" + url.PathEscape(file.Name)
+	if isASCIIFilename(file.Name) {
+		header = disposition + "; filename=" + strconv.Quote(file.Name) + "; filename*=utf-8''" + url.PathEscape(file.Name)
+	}
+	// As per RFC6266 section 4.3
+	w.Header().Set("Content-Disposition", header)
+}
+
+func isASCIIFilename(name string) bool {
+	for _, r := range name {
+		if r < 0x20 || r > 0x7e {
+			return false
+		}
+	}
+	return name != ""
 }
 
 var rawHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {

@@ -20,12 +20,17 @@ func TestSetContentDisposition(t *testing.T) {
 		"inline simple filename": {
 			filename: "document.pdf",
 			inline:   true,
-			expected: "inline; filename*=utf-8''" + url.PathEscape("document.pdf"),
+			expected: `inline; filename="document.pdf"; filename*=utf-8''` + url.PathEscape("document.pdf"),
 		},
 		"attachment simple filename": {
 			filename: "document.pdf",
 			inline:   false,
-			expected: "attachment; filename*=utf-8''" + url.PathEscape("document.pdf"),
+			expected: `attachment; filename="document.pdf"; filename*=utf-8''` + url.PathEscape("document.pdf"),
+		},
+		"attachment gpx filename keeps original extension": {
+			filename: "abc.gpx",
+			inline:   false,
+			expected: `attachment; filename="abc.gpx"; filename*=utf-8''` + url.PathEscape("abc.gpx"),
 		},
 		"inline non-ASCII filename": {
 			filename: "日本語.txt",
@@ -40,12 +45,12 @@ func TestSetContentDisposition(t *testing.T) {
 		"inline filename with spaces": {
 			filename: "my file.txt",
 			inline:   true,
-			expected: "inline; filename*=utf-8''" + url.PathEscape("my file.txt"),
+			expected: `inline; filename="my file.txt"; filename*=utf-8''` + url.PathEscape("my file.txt"),
 		},
 		"attachment filename with spaces": {
 			filename: "my file.txt",
 			inline:   false,
-			expected: "attachment; filename*=utf-8''" + url.PathEscape("my file.txt"),
+			expected: `attachment; filename="my file.txt"; filename*=utf-8''` + url.PathEscape("my file.txt"),
 		},
 	}
 
