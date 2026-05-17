@@ -40,6 +40,12 @@ export interface CncMachine {
   // when everything checks out. Operators still press CYCLE START
   // — auto-send does NOT trigger the cycle.
   autoSendEnabled?: boolean;
+  // Pocket numbers that must NOT be touched by a tool-probe routine
+  // (e.g. the OMP probe itself, chip fan, dust shoe). Surfaced as a
+  // "🚫 probe" badge in the tool table so an operator running the
+  // controller-side Probe All Tools macro can see at a glance which
+  // slots they must exclude from the probe list.
+  noProbeSlots?: number[];
 }
 
 export interface CncSettings {

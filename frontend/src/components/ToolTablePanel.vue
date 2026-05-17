@@ -158,6 +158,11 @@
                 <span v-else class="badge badge--ok">
                   {{ t("toolTable.loaded") }}
                 </span>
+                <span
+                  v-if="isNoProbeSlot(row.slot)"
+                  class="badge badge--noprobe"
+                  :title="t('toolTable.noProbeTitle')"
+                >🚫 {{ t("toolTable.noProbe") }}</span>
               </td>
               <td v-if="hasComments" class="tool-table__desc">
                 <MfgAnnotatedText
@@ -249,6 +254,17 @@ const activeTool = computed<number | null>(() => {
   const n = parseInt(m.value, 10);
   return Number.isFinite(n) && n > 0 ? n : null;
 });
+
+// isNoProbeSlot checks the per-machine "no-probe" list configured in
+// Settings → Machine. Surfaces a 🚫 badge in the status column so an
+// operator running the controller-side Probe All Tools macro can see
+// at a glance which slots they must exclude — chip fans, dust shoes,
+// and the probe itself.
+const noProbeSlotSet = computed<Set<number>>(() => {
+  const m = cnc.machines.find((x) => x.id === props.machineId);
+  return new Set(m?.noProbeSlots || []);
+});
+const isNoProbeSlot = (n: number) => noProbeSlotSet.value.has(n);
 import MfgAnnotatedText from "@/components/machine/MfgAnnotatedText.vue";
 
 const props = defineProps<{
@@ -1047,6 +1063,18 @@ onMounted(() => {
 .badge--err {
   background: rgba(198, 40, 40, 0.12);
   color: #c62828;
+  cursor: help;
+}
+
+/* Marks a pocket as "do not probe" — chip fan / dust shoe / the probe
+   itself. Stands out from the green ok-loaded badge so an operator
+   eyeballing the list before running Probe All Tools immediately sees
+   which slots to exclude. */
+.badge--noprobe {
+  margin-left: 4px;
+  background: rgba(186, 117, 23, 0.16);
+  color: #BA7517;
+  font-weight: 600;
   cursor: help;
 }
 

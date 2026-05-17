@@ -144,6 +144,29 @@ type Machine struct {
 	// CYCLE START is NOT triggered — operators still press the
 	// physical button. Off by default.
 	AutoSendEnabled bool `json:"autoSendEnabled,omitempty"`
+	// NoProbeSlots is the list of pocket numbers that must NOT be
+	// touched by a tool-probe routine — typically the probe itself
+	// (e.g. OMP-40 in T20) and non-cutting hardware like a chip fan or
+	// dust shoe. Surfaced in the tool table as a "🚫 probe" badge so an
+	// operator running the controller-side Probe All Tools macro can
+	// see at a glance which slots they must exclude. Empty by default.
+	//
+	// Background: operator hit the OMP with the spindle when "probe
+	// all tools" was on but the probe slot wasn't excluded. This list
+	// makes the exclusion visually obvious next to the tool readout.
+	NoProbeSlots []int `json:"noProbeSlots,omitempty"`
+}
+
+// IsNoProbeSlot reports whether slot n is in the no-probe list.
+// Linear scan — the list is short (a Haas magazine is at most 200
+// slots; the no-probe list is typically 1-3 entries).
+func (m Machine) IsNoProbeSlot(n int) bool {
+	for _, s := range m.NoProbeSlots {
+		if s == n {
+			return true
+		}
+	}
+	return false
 }
 
 // EffectiveAxes returns the axes to render for this machine. Defaults

@@ -142,6 +142,21 @@
             </p>
 
             <p>
+              <label class="small">{{ t("settings.machineNoProbeSlots") }}</label>
+              <input
+                class="input input--block"
+                type="text"
+                inputmode="numeric"
+                :value="(machine.noProbeSlots || []).join(', ')"
+                placeholder="20, 18"
+                @input="machine.noProbeSlots = parseSlotList(($event.target as HTMLInputElement).value)"
+              />
+              <span class="small machine-row__hint">
+                {{ t("settings.machineNoProbeSlotsHelp") }}
+              </span>
+            </p>
+
+            <p>
               <label class="small">
                 <input
                   type="checkbox"
@@ -611,6 +626,22 @@ const probeResultClass = (id: string) => {
 // operator can compare both outcomes at a glance.
 const lifeProbingId = ref<string | null>(null);
 const lifeProbeResults = ref<Record<string, ToolLifeProbeReport>>({});
+
+// Parse a free-form comma/space-separated slot list into a sorted,
+// deduplicated, valid-range int array. Operator-facing input — be
+// generous on separators so "20, 18", "20 18", "20,18", "T20 T18"
+// all work.
+const parseSlotList = (raw: string): number[] => {
+  if (!raw) return [];
+  const out = new Set<number>();
+  for (const part of raw.split(/[\s,;]+/)) {
+    const m = part.match(/(\d+)/);
+    if (!m) continue;
+    const n = parseInt(m[1], 10);
+    if (Number.isFinite(n) && n >= 1 && n <= 200) out.add(n);
+  }
+  return Array.from(out).sort((a, b) => a - b);
+};
 
 const allAxes = ["X", "Y", "Z", "A", "B", "C"] as const;
 const toggleAxis = (m: CncMachine, ax: string, on: boolean) => {
