@@ -276,8 +276,15 @@ const estimatedLine = computed<number>(() => {
   // Real job wins.
   const real = Number(cnc.lineCurrent) || 0;
   if (cnc.running && real > 0) return real;
-  // Attached follow-along path.
-  if (!cnc.attachedFile || !lineMap.value) return real;
+  // Attached follow-along path. The heuristic only fires while there's
+  // evidence the controller is actually executing — otherwise the
+  // macro / position snap to whatever the machine last touched, which
+  // produces misleading "fast-forward to end" highlights when the
+  // operator just finished uploading and hasn't pressed Cycle Start.
+  if (!cnc.attachedFile || !lineMap.value) return 0;
+  const spindleRpm = metricFloat("spindle_actual");
+  const isCutting = (spindleRpm ?? 0) > 0;
+  if (!isCutting) return 0;
   // 1. Haas block-number macro
   const blockMetric = cnc.metrics.current_block;
   if (blockMetric && blockMetric.value && !blockMetric.stale) {
@@ -295,7 +302,7 @@ const estimatedLine = computed<number>(() => {
     const hit = resolveByPosition(lineMap.value, { x, y, z });
     if (hit) return hit;
   }
-  return real;
+  return 0;
 });
 
 const fileIcon = (name: string): string => {
@@ -563,10 +570,13 @@ onBeforeUnmount(() => {
 .m-main__gcode3d {
   flex: 1;
   display: grid;
-  /* G-code on the left at ~38% — operator wants to see what's running
-     but the editor doesn't need half the screen. Toolpath viewer
-     takes the rest. */
-  grid-template-columns: minmax(280px, 0.6fr) 1fr;
+  /* G-code pane sized to fit the longest expected line (~66 chars at
+     12px monospace ≈ 480px), no more. Operator confirmed real-program
+     lines like
+       (T14 D=0.375 CR=0. TAPER=45deg - ZMIN=0.0681 - chamfer mill)
+     plus ~10% slack is the upper bound. Everything else goes to the
+     toolpath viewer. */
+  grid-template-columns: minmax(480px, 0.36fr) 1fr;
   gap: 6px;
   min-height: 0;
 }
