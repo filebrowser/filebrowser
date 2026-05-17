@@ -78,6 +78,13 @@
     "recoveryAck": "Acknowledge",
     "recoveryAcking": "Acknowledging…"
   },
+  "hostStats": {
+    "temp": "CPU temp",
+    "load1m": "Load (1 min)",
+    "memUsed": "Memory used",
+    "diskUsed": "Disk used",
+    "uptime": "Uptime"
+  },
   "machine": {
     "cameraTitle": "Camera",
     "dashboardTitle": "Live state",

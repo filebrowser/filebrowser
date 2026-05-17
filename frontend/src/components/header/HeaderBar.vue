@@ -20,6 +20,7 @@
     <slot />
 
     <CncStatusPill />
+    <HostStatsPill />
 
     <div
       id="dropdown"
@@ -52,6 +53,7 @@ import { logoURL } from "@/utils/constants";
 import Action from "@/components/header/Action.vue";
 import CncRecoveryBanner from "@/components/header/CncRecoveryBanner.vue";
 import CncStatusPill from "@/components/header/CncStatusPill.vue";
+import HostStatsPill from "@/components/header/HostStatsPill.vue";
 import { computed, onMounted, useSlots } from "vue";
 import { useI18n } from "vue-i18n";
 import { useCncStore } from "@/stores/cnc";

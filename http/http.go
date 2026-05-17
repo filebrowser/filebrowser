@@ -114,6 +114,7 @@ func NewHandler(
 	cncRouter.Handle("/notifications", monkey(cncNotificationsGetHandler, "")).Methods("GET")
 	cncRouter.Handle("/notifications", monkey(cncNotificationsPutHandler(), "")).Methods("PUT")
 	cncRouter.Handle("/notifications/test", monkey(cncNotificationsTestHandler(registry), "")).Methods("POST")
+	cncRouter.Handle("/host-stats", monkey(cncHostStatsHandler, "")).Methods("GET")
 
 	api.PathPrefix("/raw").Handler(monkey(rawHandler, "/api/raw")).Methods("GET")
 	api.PathPrefix("/preview/{size}/{path:.*}").
