@@ -5,6 +5,8 @@ const baseURL: string = window.FileBrowser.BaseURL;
 const staticURL: string = window.FileBrowser.StaticURL;
 const recaptcha: string = window.FileBrowser.ReCaptcha;
 const recaptchaKey: string = window.FileBrowser.ReCaptchaKey;
+const turnstile: boolean = window.FileBrowser.Turnstile;
+const turnstileKey: string = window.FileBrowser.TurnstileKey;
 const signup: boolean = window.FileBrowser.Signup;
 const version: string = window.FileBrowser.Version;
 const logoURL = `${staticURL}/img/logo.svg`;
@@ -29,6 +31,8 @@ export {
   logoURL,
   recaptcha,
   recaptchaKey,
+  turnstile,
+  turnstileKey,
   signup,
   version,
   noAuth,

@@ -12,6 +12,10 @@
     <script src="[{[ .ReCaptchaHost ]}]/recaptcha/api.js?render=explicit"></script>
     [{[ end ]}]
 
+    [{[ if .Turnstile -]}]
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
+    [{[ end ]}]
+
     <title>
       [{[ if .Name -]}][{[ .Name ]}][{[ else ]}]File Browser[{[ end ]}]
     </title>
