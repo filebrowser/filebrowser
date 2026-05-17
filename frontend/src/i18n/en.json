@@ -225,7 +225,19 @@
     "visibleCount": "{n} of {total}",
     "noMatch": "No slots match the current filter.",
     "showMagazine": "Show magazine ({n} loaded)",
-    "hideMagazine": "Hide magazine"
+    "hideMagazine": "Hide magazine",
+    "editRowTitle": "Edit this slot's offsets (local-only — does not write to the controller)",
+    "editTitle": "Edit T{slot}",
+    "editIntro": "Local override. Saves a new history dump with this slot marked as manually edited. Does NOT push values to the controller — the next tool-table read will replace these.",
+    "editCopyFromLabel": "Copy from another slot",
+    "editCopyFromNone": "— off —",
+    "editCopyFromHint": "On save, T{src}'s offsets will be copied into T{dst}.",
+    "editFieldsLabel": "Per-field override",
+    "editCancel": "Cancel",
+    "editSave": "Save edit",
+    "editSaving": "Saving…",
+    "editFootnote": "Write-back to the controller is a future, explicit action — until then this only changes what the dashboard shows.",
+    "manuallyEditedAt": "Manually edited at {ts}"
   },
   "sendWizard": {
     "title": "Send to machine",

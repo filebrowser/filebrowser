@@ -415,7 +415,7 @@ watch(
 // causing the line indicator to freeze on the last-moving line after
 // motion stopped (no tick → computed never re-evaluated).
 const now = ref(Date.now());
-let nowTimer: ReturnType<typeof setInterval> | null = setInterval(
+const nowTimer: ReturnType<typeof setInterval> = setInterval(
   () => (now.value = Date.now()),
   1000
 );
@@ -534,7 +534,7 @@ const onDetach = async () => {
 };
 
 onBeforeUnmount(() => {
-  if (nowTimer) clearInterval(nowTimer);
+  clearInterval(nowTimer);
   if (stateHeartbeat) clearInterval(stateHeartbeat);
 });
 </script>

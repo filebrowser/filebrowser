@@ -124,6 +124,7 @@
               </th>
               <th>{{ t("toolTable.status") }}</th>
               <th v-if="hasComments">{{ t("toolTable.description") }}</th>
+              <th class="tool-table__action-col"></th>
             </tr>
           </thead>
           <tbody>
@@ -132,8 +133,19 @@
               :key="row.slot"
               :class="rowClass(row)"
             >
+              <!-- Library entry present → revolved-profile SVG; otherwise
+                   fall back to the simple length-vs-diameter rectangle.
+                   Matches the magazine strip's behaviour so the operator
+                   sees the same shape in both places. -->
               <td class="thumb-col">
+                <ToolProfileSvg
+                  v-if="libraryBySlot[row.slot]"
+                  :entry="libraryBySlot[row.slot]"
+                  :width="20"
+                  :height="36"
+                />
                 <ToolGeometryView
+                  v-else
                   :slot-number="row.slot"
                   :length-ratio="ratioL(row.effective_length)"
                   :diameter-ratio="ratioD(row.effective_diameter)"
@@ -141,7 +153,14 @@
                   :height="32"
                 />
               </td>
-              <td>{{ row.slot }}</td>
+              <td>
+                {{ row.slot }}
+                <span
+                  v-if="row.manually_edited"
+                  class="tool-table__edit-mark"
+                  :title="t('toolTable.manuallyEditedAt', { ts: fmtTs(row.edited_at || '') })"
+                >✎</span>
+              </td>
               <td class="num" :class="lenDeltaCls(row)" :title="lenTooltip(row)">{{ fmt(row.length_geom) }}</td>
               <td class="num">{{ fmt(row.length_wear) }}</td>
               <td class="num">{{ fmt(row.effective_length) }}</td>
@@ -178,15 +197,32 @@
                   :title="t('toolTable.libraryProductLink')"
                 >↗</a>
               </td>
+              <td class="tool-table__action-col">
+                <button
+                  class="tool-table__edit-btn"
+                  :title="t('toolTable.editRowTitle')"
+                  @click="openEdit(row)"
+                >✎</button>
+              </td>
             </tr>
             <tr v-if="displayRows.length === 0">
-              <td :colspan="hasComments ? 10 : 9" class="tool-card__no-match">
+              <td :colspan="hasComments ? 11 : 10" class="tool-card__no-match">
                 {{ t("toolTable.noMatch") }}
               </td>
             </tr>
           </tbody>
         </table>
       </div>
+
+      <ToolEditDialog
+        v-if="editRow"
+        :slot-num="editRow.slot"
+        :machine-id="props.machineId"
+        :current="editRow"
+        :candidates="latest?.slots || []"
+        @close="editRow = null"
+        @saved="onEdited"
+      />
 
       <!-- Magazine: side-by-side scale view of every loaded tool. All
            bodies share one length and diameter scale so spotting a
@@ -266,6 +302,7 @@ const noProbeSlotSet = computed<Set<number>>(() => {
 });
 const isNoProbeSlot = (n: number) => noProbeSlotSet.value.has(n);
 import MfgAnnotatedText from "@/components/machine/MfgAnnotatedText.vue";
+import ToolEditDialog from "@/components/machine/ToolEditDialog.vue";
 
 const props = defineProps<{
   machineId?: string;
@@ -442,6 +479,18 @@ const hasComments = computed(() => {
 const diffResult = ref<ToolTableDiff | null>(null);
 const diffing = ref(false);
 const diffError = ref("");
+
+// Inline edit dialog state. editRow is the slot the operator clicked
+// "edit" on; null hides the dialog. After a successful save we re-fetch
+// the latest dump so the new manually-edited marker + values render.
+const editRow = ref<ToolTableSlot | null>(null);
+const openEdit = (r: ToolTableSlot) => {
+  if (props.cncRunning) return;
+  editRow.value = r;
+};
+const onEdited = () => {
+  loadLatest();
+};
 
 const runDiff = async () => {
   if (diffing.value) return;
@@ -1088,6 +1137,35 @@ onMounted(() => {
   width: 24px;
   text-align: center;
   padding: 0.15rem 0.2rem;
+}
+
+.tool-table__action-col {
+  width: 28px;
+  text-align: right;
+  padding: 0.15rem 0.2rem;
+}
+.tool-table__edit-btn {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--fg-muted, #888);
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+.tool-table__edit-btn:hover {
+  background: rgba(24, 95, 165, 0.08);
+  color: #185FA5;
+}
+/* The ✎ marker on the slot number flags rows whose offsets came from
+   an in-dashboard override rather than the controller — operator
+   training-wheels for the "did this number come from the machine?"
+   question. */
+.tool-table__edit-mark {
+  margin-left: 4px;
+  color: #BA7517;
+  font-size: 10px;
+  cursor: help;
 }
 
 /* Magazine: tools rendered to scale on one shared scale. Bottom-

@@ -411,6 +411,11 @@ export interface ToolTableSlot {
   effective_diameter?: number;
   empty?: boolean;
   errors?: Record<string, string>;
+  // True when the operator overrode this slot in the dashboard without
+  // a controller read. Carries forward across reads until the
+  // controller reports a fresh value for the slot. See edit endpoint.
+  manually_edited?: boolean;
+  edited_at?: string;
 }
 
 export interface ToolTable {
@@ -422,6 +427,10 @@ export interface ToolTable {
   slots_requested: number;
   slots_read: number;
   slots: ToolTableSlot[];
+  // "edit" when this dump originated from an operator-side override
+  // rather than a controller readout. Empty / "read" for the normal
+  // case. Older dumps don't carry the field at all.
+  source?: string;
 }
 
 export interface ToolTableEnvelope {
@@ -516,6 +525,36 @@ export interface ToolTableDiff {
   length_tolerance: number;
   summary: DiffSummary;
   slots: SlotDiff[];
+}
+
+// editToolTableSlot persists an operator-side override to the latest
+// dump (creating a new history entry). copyFromSlot, when set, copies
+// the four offsets from that slot in the prior dump and ignores the
+// numeric fields. P1 — no controller write-back; the next read replaces
+// the override.
+export function editToolTableSlot(opts: {
+  slot: number;
+  machineId?: string;
+  lengthGeom?: number;
+  lengthWear?: number;
+  diameterGeom?: number;
+  diameterWear?: number;
+  copyFromSlot?: number;
+}) {
+  const body: Record<string, unknown> = { slot: opts.slot };
+  if (opts.copyFromSlot) body.copy_from_slot = opts.copyFromSlot;
+  if (opts.lengthGeom !== undefined) body.length_geom = opts.lengthGeom;
+  if (opts.lengthWear !== undefined) body.length_wear = opts.lengthWear;
+  if (opts.diameterGeom !== undefined) body.diameter_geom = opts.diameterGeom;
+  if (opts.diameterWear !== undefined) body.diameter_wear = opts.diameterWear;
+  const q = opts.machineId
+    ? `?machine_id=${encodeURIComponent(opts.machineId)}`
+    : "";
+  return fetchJSON<ToolTableEnvelope>(`/api/cnc/tool-table/edit${q}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
 }
 
 export function diffToolTables(opts: {
