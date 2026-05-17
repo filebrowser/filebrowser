@@ -2,9 +2,11 @@ package bolt
 
 import (
 	"errors"
+	"time"
 
 	"github.com/asdine/storm/v3"
 	"github.com/asdine/storm/v3/q"
+	bolt "go.etcd.io/bbolt"
 
 	fberrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/share"
@@ -65,7 +67,25 @@ func (s shareBackend) Gets(path string, id uint) ([]*share.Link, error) {
 }
 
 func (s shareBackend) Save(l *share.Link) error {
-	return s.db.Save(l)
+	return s.db.Bolt.Update(func(tx *bolt.Tx) error {
+		dbx := s.db.WithTransaction(tx)
+
+		var existing share.Link
+		err := dbx.One("Hash", l.Hash, &existing)
+		switch {
+		case errors.Is(err, storm.ErrNotFound):
+		case err != nil:
+			return err
+		case existing.Expire != 0 && existing.Expire <= time.Now().Unix():
+			if err := dbx.DeleteStruct(&share.Link{Hash: existing.Hash}); err != nil && !errors.Is(err, storm.ErrNotFound) {
+				return err
+			}
+		default:
+			return fberrors.ErrExist
+		}
+
+		return dbx.Save(l)
+	})
 }
 
 func (s shareBackend) Delete(hash string) error {
