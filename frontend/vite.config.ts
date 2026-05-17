@@ -5,15 +5,26 @@ import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite";
 import legacy from "@vitejs/plugin-legacy";
 import { compression } from "vite-plugin-compression2";
 
+// Legacy bundle (Babel + ES5 polyfills) doubles build time on a Pi —
+// PLUGIN_TIMINGS showed 42% of build cost in vite:legacy-post-process
+// + 33% in vite:terser. We only need it if operators have IE/very old
+// browsers, which is not the case for an internal CNC dashboard. Opt
+// in via INCLUDE_LEGACY=1 if a deployment ever needs it.
+const includeLegacy = process.env.INCLUDE_LEGACY === "1";
+
 const plugins = [
   vue(),
   VueI18nPlugin({
     include: [path.resolve(__dirname, "./src/i18n/**/*.json")],
   }),
-  legacy({
-    // defaults already drop IE support
-    targets: ["defaults"],
-  }),
+  ...(includeLegacy
+    ? [
+        legacy({
+          // defaults already drop IE support
+          targets: ["defaults"],
+        }),
+      ]
+    : []),
   compression({ include: /\.js$/, deleteOriginalAssets: false }),
 ];
 
@@ -47,6 +58,15 @@ export default defineConfig(({ command }) => {
       resolve,
       base: "",
       build: {
+        // esbuild is ~10x faster than terser at comparable compression
+        // for our bundle. Saves 30-60s on a Pi 4 build; meaningful for
+        // operators who rebuild on the device. terser still available
+        // via INCLUDE_LEGACY=1 (plugin-legacy pulls it in regardless).
+        minify: "esbuild",
+        // chunkSizeWarningLimit raised: a couple of our chunks
+        // (codemirror + three) genuinely belong as single units; the
+        // 500 KB default is noise on this app.
+        chunkSizeWarningLimit: 1500,
         rollupOptions: {
           input: {
             index: path.resolve(__dirname, "./public/index.html"),
