@@ -21,7 +21,8 @@ type ProxyAuth struct {
 func (a ProxyAuth) Auth(r *http.Request, usr users.Store, setting *settings.Settings, srv *settings.Server) (*users.User, error) {
 	username := r.Header.Get(a.Header)
 	user, err := usr.Get(srv.Root, username)
-	if errors.Is(err, fberrors.ErrNotExist) {
+	noCreateUser := r.Header.Get("X-Auth-No-Create-User")
+	if errors.Is(err, fberrors.ErrNotExist) && noCreateUser != "true" {
 		return a.createUser(usr, setting, srv, username)
 	}
 	return user, err
