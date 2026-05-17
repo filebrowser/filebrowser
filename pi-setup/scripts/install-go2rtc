@@ -19,7 +19,10 @@
 
 set -euo pipefail
 
-GO2RTC_VERSION="${GO2RTC_VERSION:-1.10.1}"   # https://github.com/AlexxIT/go2rtc/releases
+GO2RTC_VERSION="${GO2RTC_VERSION:-1.9.14}"   # https://github.com/AlexxIT/go2rtc/releases
+# When unset, install picks the GitHub "latest" tag automatically. Pin
+# explicitly via GO2RTC_VERSION=x.y.z if you want a specific build.
+GO2RTC_AUTOLATEST="${GO2RTC_AUTOLATEST:-yes}"
 GO2RTC_USER="${GO2RTC_USER:-go2rtc}"
 GO2RTC_HOME="/var/lib/go2rtc"
 GO2RTC_BIN="/usr/local/bin/go2rtc"
@@ -77,7 +80,31 @@ if [[ "$need_download" == "yes" ]]; then
   url="https://github.com/AlexxIT/go2rtc/releases/download/v${GO2RTC_VERSION}/go2rtc_linux_${GO2RTC_ARCH}"
   echo "Downloading $url"
   tmp="$(mktemp)"
-  curl -fL --retry 3 -o "$tmp" "$url"
+  if ! curl -fL --retry 3 -o "$tmp" "$url"; then
+    rm -f "$tmp"
+    # The pinned tag isn't published any more (AlexxIT occasionally
+    # retracts a release). Fall back to whatever GitHub returns as
+    # "latest" so a fresh Pi setup doesn't dead-end on a 404.
+    if [[ "$GO2RTC_AUTOLATEST" == "yes" ]]; then
+      echo "Pinned v${GO2RTC_VERSION} 404'd — resolving GitHub /releases/latest"
+      latest_tag="$(curl -fsSL https://api.github.com/repos/AlexxIT/go2rtc/releases/latest \
+        | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p' | head -n1)"
+      if [[ -z "$latest_tag" ]]; then
+        echo "Couldn't resolve latest go2rtc release. Set GO2RTC_VERSION=x.y.z and rerun." >&2
+        exit 1
+      fi
+      # Strip leading v so the rest of the script (which echoes
+      # version numbers without v) stays consistent.
+      GO2RTC_VERSION="${latest_tag#v}"
+      url="https://github.com/AlexxIT/go2rtc/releases/download/${latest_tag}/go2rtc_linux_${GO2RTC_ARCH}"
+      echo "Falling back to $url"
+      tmp="$(mktemp)"
+      curl -fL --retry 3 -o "$tmp" "$url"
+    else
+      echo "Set GO2RTC_AUTOLATEST=yes to fall through to GitHub /releases/latest." >&2
+      exit 1
+    fi
+  fi
   install -m 0755 "$tmp" "$GO2RTC_BIN"
   rm -f "$tmp"
 fi
