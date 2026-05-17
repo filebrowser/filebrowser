@@ -456,6 +456,7 @@
     "machineHaasPort": "Bridge port",
     "machineToolSlots": "Tool magazine size",
     "machineToolSlotsHelp": "How many tool slots to read on a tool-table refresh. Set to your machine's actual pocket count (e.g. 20 for a 20-pocket carousel) — the read auto-skips empty slots after a length probe, so this just bounds the scan. 0 falls back to 30.",
+    "machineToolSlotsCarouselTodo": "🚧 TODO: carousel-style magazines are assumed (offset N = pocket N). Side-mount / arm-style machines with arbitrary tool↔pocket mapping aren't modelled yet — if you have one, the pocket/offset distinction matters and we'll need a per-tool mapping table here.",
     "machineRequirePreflight": "Require preflight pass before Send",
     "machineRequirePreflightHelp": "Server-side gate. When enabled, /api/cnc/start refuses programs whose tools aren't loaded in the latest tool-table dump (missing or empty pocket). Off by default — the wizard always soft-warns. Turn on once your tool table is reliably up to date.",
     "machineAxes": "Axes enabled",

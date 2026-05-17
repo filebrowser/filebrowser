@@ -92,6 +92,9 @@
               <span class="small machine-row__hint">
                 {{ t("settings.machineToolSlotsHelp") }}
               </span>
+              <span class="small machine-row__todo">
+                {{ t("settings.machineToolSlotsCarouselTodo") }}
+              </span>
             </p>
 
             <p>
@@ -878,6 +881,19 @@ onMounted(async () => {
   display: block;
   margin-top: 0.2rem;
   color: var(--fg-muted, #888);
+}
+/* TODO-style note. Stronger than a help hint because it's flagging a
+   real limitation operators should know about. Stops short of looking
+   like an error — orange/dashed reads as "not done yet". */
+.machine-row__todo {
+  display: block;
+  margin-top: 0.3rem;
+  padding: 0.4rem 0.6rem;
+  background: rgba(186, 117, 23, 0.08);
+  border-left: 3px dashed #BA7517;
+  color: #8a5612;
+  border-radius: 3px;
+  font-size: 0.85em;
 }
 
 .machine-row__delete {
