@@ -60,6 +60,15 @@ type Status struct {
 	// /api/cnc/recovery/ack.
 	RecoveryPending  bool   `json:"recovery_pending,omitempty"`
 	RecoveryFilePath string `json:"recovery_file_path,omitempty"`
+
+	// Attachment surfaces when the operator (or future O-number
+	// auto-match) has marked a filebrowser file as "this is what the
+	// controller is actually running" without the streamer having
+	// pushed it. AttachedFile is share-relative. Cleared when Running
+	// becomes true (real job wins) or via DELETE /api/cnc/attach.
+	AttachedFile   string    `json:"attached_file,omitempty"`
+	AttachedSource string    `json:"attached_source,omitempty"` // "manual" | "auto"
+	AttachedAt     time.Time `json:"attached_at,omitempty"`
 }
 
 // Streamer is the long-lived singleton. One per process. Holds the
@@ -76,6 +85,17 @@ type Streamer struct {
 	// last* are kept across jobs so /status can show the most
 	// recent error after the streamer goes idle. Read with mu held.
 	lastError string
+
+	// Attachment — operator-marked "this file is what the controller
+	// is actually running, even though we didn't send it." Drives
+	// /machine's follow-along when an NC program was loaded from SD
+	// card / Ethernet drop and the streamer isn't holding the socket.
+	// Cleared automatically when a real streaming job starts (the job's
+	// own file becomes truth) or via Detach. All three fields move
+	// together under mu.
+	attachedFile   string // share-relative path
+	attachedSource string // "manual" | "auto" (future: O-number auto-match)
+	attachedAt     time.Time
 
 	// pendingRecovery is set when New() finds an orphaned active-job
 	// marker (i.e. previous instance crashed mid-job). Start refuses
@@ -255,6 +275,10 @@ func (s *Streamer) Start(absPath, displayPath string, method SendMethod) (*Statu
 	}
 	s.job = j
 	s.lastError = ""
+	// A real send supersedes any attachment — the job's file is truth.
+	s.attachedFile = ""
+	s.attachedSource = ""
+	s.attachedAt = time.Time{}
 	s.mu.Unlock()
 
 	// Persist the active-job marker AFTER the job is in s.job so a
@@ -362,7 +386,63 @@ func (s *Streamer) Status() *Status {
 		st.RecoveryPending = true
 		st.RecoveryFilePath = s.pendingRecovery.DisplayPath
 	}
+	// Attachment only surfaces when no real job is running — a live
+	// stream's file is truth, the attachment is a separate concept
+	// for "controller is running this but we didn't push it."
+	if s.job == nil && s.attachedFile != "" {
+		st.AttachedFile = s.attachedFile
+		st.AttachedSource = s.attachedSource
+		st.AttachedAt = s.attachedAt
+	}
 	return st
+}
+
+// Attach marks a filebrowser file as the program the controller is
+// currently running, without the streamer having pushed it. Used when
+// the operator loaded the program from SD card / Ethernet drop and
+// wants /machine to follow along anyway. source distinguishes operator
+// confirmation ("manual") from a future O-number heuristic ("auto").
+//
+// Refused while a real job is running — the job's own file is truth.
+// Replaces any previous attachment.
+func (s *Streamer) Attach(filePath, source string) error {
+	if filePath == "" {
+		return fmt.Errorf("file_path required")
+	}
+	if source == "" {
+		source = "manual"
+	}
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.job != nil {
+		return fmt.Errorf("can't attach during a streaming job")
+	}
+	s.attachedFile = filePath
+	s.attachedSource = source
+	s.attachedAt = time.Now().UTC()
+	return nil
+}
+
+// EmitStatus broadcasts the current Status to WS subscribers. Exposed
+// so HTTP handlers can fan out after mutating attachment state without
+// going through a poll cycle.
+func (s *Streamer) EmitStatus() {
+	s.emit(Event{Type: "status", Status: s.Status()})
+}
+
+// Detach clears the current attachment. No-op when nothing is
+// attached. Returns true when an attachment actually cleared so the
+// HTTP layer can decide whether to emit a status broadcast.
+func (s *Streamer) Detach() bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.attachedFile == "" {
+		return false
+	}
+	s.attachedFile = ""
+	s.attachedSource = ""
+	s.attachedAt = time.Time{}
+	return true
 }
 
 // Query runs one Q-code round-trip. When idle, opens a transient TCP

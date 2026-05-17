@@ -105,6 +105,13 @@ interface CncState {
   haasLastError: string;
   recoveryPending: boolean;
   recoveryFilePath: string;
+  // Attachment: operator-marked "this filebrowser file is what's
+  // running on the controller, even though we didn't push it via the
+  // bridge." Drives /machine follow-along when there's no streaming
+  // job. effectiveFilePath getter falls back to attached when
+  // filePath is empty.
+  attachedFile: string;
+  attachedSource: "manual" | "auto" | "";
   // Last raw status (handy if a future surface wants more fields).
   raw: CncStatus | null;
   // Internal: tells the pill component when to show "?", "running", "idle".
@@ -144,6 +151,8 @@ export const useCncStore = defineStore("cnc", {
     haasLastError: "",
     recoveryPending: false,
     recoveryFilePath: "",
+    attachedFile: "",
+    attachedSource: "",
     raw: null,
     initialized: false,
     metrics: {},
@@ -160,6 +169,13 @@ export const useCncStore = defineStore("cnc", {
     currentMachine(state): CncMachine | undefined {
       return state.machines.find((m) => m.id === state.currentMachineId);
     },
+    // The file the dashboard should follow along with. A real streaming
+    // job's filePath wins; otherwise fall back to whatever's attached
+    // (operator-marked "this is what's running"). Empty string when
+    // neither is set — components then render their "no file" hint.
+    effectiveFilePath(state): string {
+      return state.filePath || state.attachedFile;
+    },
   },
   actions: {
     applyStatus(s: CncStatus) {
@@ -173,6 +189,8 @@ export const useCncStore = defineStore("cnc", {
       this.haasLastError = s.haas_last_error ?? "";
       this.recoveryPending = !!s.recovery_pending;
       this.recoveryFilePath = s.recovery_file_path ?? "";
+      this.attachedFile = s.attached_file ?? "";
+      this.attachedSource = (s.attached_source as "manual" | "auto") ?? "";
       this.raw = s;
       this.initialized = true;
     },
@@ -233,6 +251,8 @@ export const useCncStore = defineStore("cnc", {
       this.haasLastError = "";
       this.recoveryPending = false;
       this.recoveryFilePath = "";
+      this.attachedFile = "";
+      this.attachedSource = "";
       this.raw = null;
       this.metrics = {};
       this.metricsSeeded = false;
@@ -329,6 +349,24 @@ export const useCncStore = defineStore("cnc", {
         this.currentMachineId || undefined,
         item.id
       );
+    },
+
+    // Mark a file as the program the controller is currently running,
+    // without sending it via the bridge. Server updates the streamer's
+    // attachment + emits a status broadcast, so subscribed dashboards
+    // pick up the change without a second poll.
+    async attachFile(filePath: string) {
+      const s = await cncApi.attachFile(
+        filePath,
+        this.currentMachineId || undefined,
+        "manual"
+      );
+      this.applyStatus(s);
+    },
+
+    async detachFile() {
+      const s = await cncApi.detachFile(this.currentMachineId || undefined);
+      this.applyStatus(s);
     },
 
     // autoSendFromQueue runs /api/cnc/auto-send. On a clean preflight

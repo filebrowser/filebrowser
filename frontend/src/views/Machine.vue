@@ -31,6 +31,21 @@
             <!-- G-code + 3D (default) -->
             <div v-show="activeTab === 'gcode'" class="m-main__gcode3d">
               <div class="m-pane m-pane--code">
+                <div
+                  v-if="cnc.attachedFile && !cnc.running"
+                  class="m-pane__attached"
+                  :class="{ 'm-pane__attached--auto': cnc.attachedSource === 'auto' }"
+                >
+                  <span class="m-pane__attached-label">
+                    {{ cnc.attachedSource === 'auto'
+                      ? t('machine.attachedBadgeAuto')
+                      : t('machine.attachedBadge') }}
+                  </span>
+                  <span class="m-pane__attached-path">{{ cnc.attachedFile }}</span>
+                  <button class="m-pane__attached-detach" @click="onDetach">
+                    {{ t('machine.attachDetach') }}
+                  </button>
+                </div>
                 <GcodeFollow
                   v-if="ncContent !== null"
                   :gcode="ncContent"
@@ -260,8 +275,11 @@ const fetchNc = async (path: string) => {
   }
 };
 
+// Drive everything off effectiveFilePath (real job's file OR
+// operator-attached file). Switches to/from attachment refresh the
+// preview without a manual reload.
 watch(
-  () => cnc.filePath,
+  () => cnc.effectiveFilePath,
   (p) => {
     if (p) {
       fetchNc(p);
@@ -365,19 +383,31 @@ onMounted(async () => {
   await loadMachineCfg();
   await cnc.seedMetrics();
   await cnc.loadQueue();
-  if (cnc.filePath) {
-    fetchNc(cnc.filePath);
-    loadJobFolder(cnc.filePath);
-    refreshPreflight(cnc.filePath);
+  const initial = cnc.effectiveFilePath;
+  if (initial) {
+    fetchNc(initial);
+    loadJobFolder(initial);
+    refreshPreflight(initial);
   }
 });
 
 watch(() => cnc.currentMachineId, async (id) => {
   if (id) {
     await loadMachineCfg();
-    if (cnc.filePath) refreshPreflight(cnc.filePath);
+    const eff = cnc.effectiveFilePath;
+    if (eff) refreshPreflight(eff);
   }
 });
+
+// Detach handler — clears the attachment + emits a status broadcast
+// server-side so any other open dashboard tabs reset too.
+const onDetach = async () => {
+  try {
+    await cnc.detachFile();
+  } catch {
+    /* surface via store log if needed */
+  }
+};
 
 onBeforeUnmount(() => {
   if (nowTimer) clearInterval(nowTimer);
@@ -452,6 +482,45 @@ onBeforeUnmount(() => {
   font-size: 12px;
 }
 .m-pane__hint--dark { color: #888780; }
+
+.m-pane__attached {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  background: rgba(24, 95, 165, 0.16);
+  color: #cfe6ff;
+  font-size: 11px;
+  border-bottom: 1px solid rgba(24, 95, 165, 0.4);
+}
+.m-pane__attached--auto {
+  background: rgba(184, 81, 0, 0.18);
+  color: #ffd5a8;
+  border-bottom-color: rgba(184, 81, 0, 0.45);
+}
+.m-pane__attached-label {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+.m-pane__attached-path {
+  flex: 1 1 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.m-pane__attached-detach {
+  background: none;
+  border: 1px solid currentColor;
+  color: inherit;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font: inherit;
+  cursor: pointer;
+}
+.m-pane__attached-detach:hover { background: rgba(255, 255, 255, 0.08); }
 
 .m-main__filltab {
   flex: 1;

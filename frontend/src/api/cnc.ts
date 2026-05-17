@@ -75,6 +75,15 @@ export interface CncStatus {
   haas_last_error?: string;
   recovery_pending?: boolean;
   recovery_file_path?: string;
+  // Attachment surfaces when no real job is running but the operator
+  // (or future O-number auto-match) has marked a file as the active
+  // program. The dashboard uses attached_file for follow-along
+  // alongside the live line_current metric, with a UI badge so the
+  // operator knows it might not actually be the file on the
+  // controller.
+  attached_file?: string;
+  attached_source?: "manual" | "auto";
+  attached_at?: string;
 }
 
 export function getSettings() {
@@ -138,6 +147,30 @@ export function autoSend(
   return fetchJSON<AutoSendResponse>(`/api/cnc/auto-send`, {
     method: "POST",
     body: JSON.stringify(body),
+  });
+}
+
+// Mark a filebrowser file as the program the controller is actually
+// running, without the streamer pushing it. Useful when the operator
+// loaded the program from SD card / Ethernet drop and wants the
+// dashboard to follow along anyway.
+export function attachFile(
+  filePath: string,
+  machineId?: string,
+  source: "manual" | "auto" = "manual"
+) {
+  const body: Record<string, string> = { file_path: filePath, source };
+  if (machineId) body.machine_id = machineId;
+  return fetchJSON<CncStatus>(`/api/cnc/attach`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+export function detachFile(machineId?: string) {
+  const q = machineId ? `?machine_id=${encodeURIComponent(machineId)}` : "";
+  return fetchJSON<CncStatus>(`/api/cnc/attach${q}`, {
+    method: "DELETE",
   });
 }
 

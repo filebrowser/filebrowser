@@ -38,6 +38,13 @@
         @action="promptSendToMachine()"
       />
       <action
+        v-if="isGcodeFile && authStore.user?.perm.modify && !cncRunning"
+        icon="link"
+        :label="t('buttons.attachToMachine')"
+        :title="t('buttons.attachToMachineTitle')"
+        @action="attachToRunning()"
+      />
+      <action
         v-if="isGcodeFile && authStore.user?.perm.modify && cncRunning"
         icon="stop_circle"
         :label="t('buttons.stopMachine')"
@@ -297,6 +304,23 @@ const toggleFollowMachine = () => {
   if (followMachine.value && machineLine.value != null) {
     snapToLine(machineLine.value);
   }
+};
+
+// Attach this file as the program currently running on the machine,
+// without pushing bytes via the bridge. For when the operator loaded
+// the program from SD card / Ethernet drop and just wants the
+// dashboard to follow along. Pushes the operator to /machine on
+// success so they immediately see the follow-along view.
+const attachToRunning = async () => {
+  const filePath = "/" + (fileStore.req?.path?.replace(/^\/+/, "") ?? "");
+  try {
+    await cncStore.attachFile(filePath);
+  } catch (e: any) {
+    $showError(e);
+    return;
+  }
+  followMachine.value = true;
+  router.push({ name: "Machine" });
 };
 
 const promptSendToMachine = async () => {

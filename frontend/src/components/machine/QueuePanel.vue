@@ -88,6 +88,13 @@
               <button class="m-queue-row__send-opt" @click.stop="onSend(item, 'dnc')">
                 DNC
               </button>
+              <button
+                class="m-queue-row__send-opt m-queue-row__send-opt--attach"
+                :title="t('machine.queueAttachTitle')"
+                @click.stop="onAttach(item)"
+              >
+                {{ t("machine.queueAttach") }}
+              </button>
               <button class="m-queue-row__btn" @click.stop="openSendId = ''">✕</button>
             </template>
           </template>
@@ -237,6 +244,21 @@ const onAutoSend = async (item: QueueItem) => {
     }
   } catch (e) {
     console.error(e);
+  }
+};
+
+// onAttach marks the file as the program currently running on the
+// controller without pushing it via the bridge. Use when the
+// operator loaded the program from SD card / Ethernet drop and
+// wants /machine to follow along. Logs the action to activity so
+// the operator can spot a mis-attach in the trail.
+const onAttach = async (item: QueueItem) => {
+  openSendId.value = "";
+  try {
+    await cnc.attachFile(item.file_path);
+    cnc.pushLog("info", `attached: ${item.file_path}`);
+  } catch (e: any) {
+    cnc.pushLog("error", `attach failed: ${e?.message || String(e)}`);
   }
 };
 
