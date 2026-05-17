@@ -169,12 +169,12 @@ onBeforeUnmount(() => { if (snapshotTimer) clearInterval(snapshotTimer); });
 .m-card {
   background: var(--alt-background, #fafafa);
   border-radius: 6px;
-  padding: 6px 8px;
+  padding: 10px 12px;
   flex-shrink: 0;
   border: 1px solid var(--border-color, #eee);
 }
 .m-card__label {
-  font-size: 9px;
+  font-size: 10px;
   color: var(--fg-muted, #888);
   letter-spacing: 0.5px;
   font-weight: 500;
@@ -184,21 +184,21 @@ onBeforeUnmount(() => { if (snapshotTimer) clearInterval(snapshotTimer); });
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-top: 2px;
+  margin-top: 4px;
 }
 .m-progress-num {
-  font-size: 11px;
+  font-size: 16px;
   color: var(--textPrimary, #222);
-  font-weight: 500;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
-.m-progress-eta { font-size: 9px; color: var(--fg-muted, #888); }
+.m-progress-eta { font-size: 11px; color: var(--fg-muted, #888); }
 .m-progress-bar {
-  height: 3px;
+  height: 4px;
   background: var(--border-color, #e2e2e2);
   border-radius: 2px;
   overflow: hidden;
-  margin-top: 3px;
+  margin-top: 6px;
 }
 .m-progress-fill {
   height: 100%;
@@ -208,21 +208,23 @@ onBeforeUnmount(() => { if (snapshotTimer) clearInterval(snapshotTimer); });
 
 .m-pos-table {
   display: grid;
-  grid-template-columns: 12px 1fr 1fr 1fr;
-  gap: 2px 4px;
+  /* Position is the operator's primary read while standing at the
+     machine — make it large enough to glance from a few feet away. */
+  grid-template-columns: 22px 1fr 1fr 1fr;
+  gap: 4px 8px;
   font-variant-numeric: tabular-nums;
-  margin-top: 3px;
+  margin-top: 6px;
 }
 .m-pos-th {
-  font-size: 8px;
+  font-size: 10px;
   color: var(--fg-muted, #888);
   font-weight: 500;
   text-align: right;
   letter-spacing: 0.3px;
 }
-.m-pos-th-axis { font-size: 8px; }
-.m-pos-axis { font-size: 10px; color: #185FA5; font-weight: 500; }
-.m-pos-val { font-size: 10px; color: var(--textPrimary, #222); text-align: right; }
+.m-pos-th-axis { font-size: 10px; }
+.m-pos-axis { font-size: 18px; color: #185FA5; font-weight: 600; }
+.m-pos-val { font-size: 18px; color: var(--textPrimary, #222); text-align: right; font-weight: 500; }
 .m-pos-val--ok { color: #639922; }
 .m-pos-val--warn { color: #BA7517; }
 .m-pos-val--unknown { color: var(--fg-muted, #888); }

@@ -537,7 +537,11 @@ onBeforeUnmount(() => {
 .m-main {
   flex: 1;
   display: grid;
-  grid-template-columns: 1fr 220px;
+  /* Right rail bumped from 220px → 320px so position values can render
+     at operator-readable size from across the shop. G-code splits to
+     a 1:1.6 ratio so the toolpath viewer dominates over the editor —
+     the operator already knows the program; they want to see the cut. */
+  grid-template-columns: 1fr 320px;
   gap: 8px;
   min-height: 0;
 }
@@ -559,7 +563,10 @@ onBeforeUnmount(() => {
 .m-main__gcode3d {
   flex: 1;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* G-code on the left at ~38% — operator wants to see what's running
+     but the editor doesn't need half the screen. Toolpath viewer
+     takes the rest. */
+  grid-template-columns: minmax(280px, 0.6fr) 1fr;
   gap: 6px;
   min-height: 0;
 }

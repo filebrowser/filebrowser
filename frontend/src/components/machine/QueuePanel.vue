@@ -390,6 +390,12 @@ defineExpose({ toggle });
 .m-queue__body {
   border-top: 1px solid var(--border-color, #eee);
   padding: 4px 8px 6px;
+  /* Cap the open queue so it never crowds the main dashboard. A
+     long queue scrolls inside this body; the rest of /machine stays
+     fully visible. */
+  max-height: 30vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .m-queue__empty {
   padding: 8px;
