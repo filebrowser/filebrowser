@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.63.4](https://github.com/filebrowser/filebrowser/compare/v2.63.3...v2.63.4) (2026-05-17)
+
+
+### Bug Fixes
+
+* show item shares from all users to admins ([#5941](https://github.com/filebrowser/filebrowser/issues/5941)) ([9cc18a8](https://github.com/filebrowser/filebrowser/commit/9cc18a81e3e1b8bf96795bfbe3d83ced294ecfd7))
+
 ## [2.63.3](https://github.com/filebrowser/filebrowser/compare/v2.63.2...v2.63.3) (2026-05-05)
 
 
