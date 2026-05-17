@@ -67,6 +67,22 @@ if [[ -z "$RTSP_URL" ]]; then
   exit 1
 fi
 
+# Default to video-only: go2rtc v1.9.14 panics in pkg/aac.RTPToADTS
+# (slice bounds out of range) when it tries to convert UniFi Protect's
+# AAC audio frames for an HLS consumer. The crash loop renders the
+# stream unusable from the browser. Suffix #media=video on URLs that
+# don't already have an explicit media= fragment so audio is never
+# requested upstream — mill cams don't need audio anyway.
+# Opt out with GO2RTC_INCLUDE_AUDIO=yes if the user wants audio AND
+# is on a build that has the AAC bug fixed.
+if [[ "${GO2RTC_INCLUDE_AUDIO:-no}" != "yes" ]] && [[ "$RTSP_URL" != *"media="* ]]; then
+  if [[ "$RTSP_URL" == *"#"* ]]; then
+    RTSP_URL="${RTSP_URL}&media=video"
+  else
+    RTSP_URL="${RTSP_URL}#media=video"
+  fi
+fi
+
 # ── Download binary (skip if same version already present) ──────────────────
 need_download="yes"
 if [[ -x "$GO2RTC_BIN" ]]; then
