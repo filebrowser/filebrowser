@@ -1,6 +1,9 @@
 package share
 
 import (
+	"errors"
+	"fmt"
+	"strings"
 	"time"
 
 	fberrors "github.com/filebrowser/filebrowser/v2/errors"
@@ -112,6 +115,20 @@ func (s *Storage) Gets(path string, id uint) ([]*Link, error) {
 
 // Save wraps a StorageBackend.Save
 func (s *Storage) Save(l *Link) error {
+	l.Hash = strings.TrimSpace(l.Hash)
+	if l.Hash == "" {
+		return fmt.Errorf("share key cannot be empty: %w", fberrors.ErrInvalidRequestParams)
+	}
+
+	_, err := s.GetByHash(l.Hash)
+	switch {
+	case err == nil:
+		return fmt.Errorf("share key already exists: %w", fberrors.ErrExist)
+	case errors.Is(err, fberrors.ErrNotExist):
+	default:
+		return err
+	}
+
 	return s.back.Save(l)
 }
 
