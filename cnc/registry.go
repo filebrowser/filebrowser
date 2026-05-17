@@ -220,6 +220,14 @@ func (r *Registry) watchQueueAutoMatch(ctx context.Context, machineID string, st
 					r.notifyAsync(NotifyCategoryOperationStarts,
 						fmt.Sprintf("🔗 %s — attached to %s (%s)",
 							machineLabel, ev.Status.AttachedFile, ev.Status.AttachedSource))
+					// Attached state changing means the operator just
+					// initiated a follow-along (manually, post-send, or
+					// O-number match). Wake the aggregator so position
+					// + current_block metrics keep flowing for the
+					// duration of the panel-cycle execution.
+					if ag, _ := r.Aggregator(machineID); ag != nil {
+						ag.Wake(0)
+					}
 				}
 				lastAttachedFile = ev.Status.AttachedFile
 				if ev.Status.HaasLastError != "" {

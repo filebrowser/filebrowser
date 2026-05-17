@@ -563,9 +563,22 @@ func (s *Streamer) runTransient(ctx context.Context, host string, port, qCode in
 // the next iteration if testing on the real Haas needs it.
 func (s *Streamer) run(ctx context.Context, j *job, host string, port int) {
 	defer close(j.done)
+	// MEM-mode sends the whole program then the operator presses Cycle
+	// Start at the panel. DNC drips through the controller. Either way,
+	// after the streamer's bytes finish, the controller starts executing
+	// from memory — at which point lineCurrent is no longer meaningful.
+	// Stash the displayPath in attached state on clean exit so the
+	// dashboard's line-follow heuristic (macro #3030 + position) has a
+	// file to anchor against.
+	cleanExit := false
 	defer func() {
 		s.mu.Lock()
 		s.job = nil
+		if cleanExit {
+			s.attachedFile = j.displayPath
+			s.attachedSource = "auto"
+			s.attachedAt = time.Now().UTC()
+		}
 		s.mu.Unlock()
 		// Marker is cleared on clean exit (whether the source EOFed,
 		// the user clicked Stop, or the dial/write failed and we're
@@ -657,6 +670,11 @@ func (s *Streamer) run(ctx context.Context, j *job, host string, port int) {
 		s.recordError(fmt.Errorf("read source: %w", err))
 	} else {
 		s.logf("info", "stream complete: %d lines sent", j.lineCurrent.Load())
+		// Flip the post-job auto-attach flag so the dashboard keeps
+		// following the program through the controller's memory
+		// execution. Only set on clean EOF — a write error or operator
+		// Stop leaves attached state alone.
+		cleanExit = true
 	}
 
 	// Final DPRNT drain — programs that emit DPRNT[…] near M30 would

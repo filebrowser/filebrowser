@@ -458,6 +458,14 @@ const promptStopMachine = () => {
 };
 
 // ── Lifecycle ──
+// Heartbeat: /api/cnc/state Wakes the aggregator for 5 min. /machine
+// is the only page where operators actually want continuous polling
+// (header-pill mounts on every page and would over-poll the bridge if
+// it called /state). Pinging /state every 4 min from this view keeps
+// position + current_block metrics flowing through long-running cycles
+// without ever letting the wake window expire.
+let stateHeartbeat: ReturnType<typeof setInterval> | null = null;
+
 onMounted(async () => {
   // ?machine_id= overrides persisted selection on this tab.
   const requested = route.query.machine_id;
@@ -475,6 +483,11 @@ onMounted(async () => {
     refreshPreflight(initial);
     refreshChapters(initial);
   }
+  stateHeartbeat = setInterval(() => {
+    cnc.seedMetrics().catch(() => {
+      /* transient; next tick retries */
+    });
+  }, 4 * 60 * 1000);
 });
 
 watch(() => cnc.currentMachineId, async (id) => {
@@ -497,6 +510,7 @@ const onDetach = async () => {
 
 onBeforeUnmount(() => {
   if (nowTimer) clearInterval(nowTimer);
+  if (stateHeartbeat) clearInterval(stateHeartbeat);
 });
 </script>
 
