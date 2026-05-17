@@ -262,8 +262,10 @@ var userPutHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request
 
 	err = d.store.Users.Update(req.Data, req.Which...)
 	if err != nil {
+		log.Printf("Update user error: %v", err)
 		return http.StatusInternalServerError, err
 	}
 
+	log.Printf("User %d updated successfully. Fields: %v, Favorites: %v", req.Data.ID, req.Which, req.Data.Favorites)
 	return http.StatusOK, nil
 })

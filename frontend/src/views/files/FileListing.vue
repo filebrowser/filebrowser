@@ -78,6 +78,11 @@
           :label="t('buttons.selectMultiple')"
           @action="toggleMultipleSelection"
         />
+        <action
+          :icon="isFavorite ? 'star' : 'star_border'"
+          :label="t('buttons.favorite')"
+          @action="toggleFavorite"
+        />
       </template>
     </header-bar>
 
@@ -947,6 +952,37 @@ const sort = async (by: string) => {
   }
 
   fileStore.reload = true;
+};
+
+const isFavorite = computed(() => {
+  if (!authStore.user?.favorites) return false;
+  const path = removePrefix(route.path);
+  const normalizedPath =
+    path.length > 1 && path.endsWith("/") ? path.slice(0, -1) : path;
+  return authStore.user.favorites.includes(normalizedPath);
+});
+
+const toggleFavorite = async () => {
+  if (!authStore.user) return;
+
+  const path = removePrefix(route.path);
+  const normalizedPath =
+    path.length > 1 && path.endsWith("/") ? path.slice(0, -1) : path;
+
+  let favorites = [...(authStore.user.favorites ?? [])];
+
+  if (favorites.includes(normalizedPath)) {
+    favorites = favorites.filter((f) => f !== normalizedPath);
+  } else {
+    favorites.push(normalizedPath);
+  }
+
+  try {
+    await users.update({ id: authStore.user.id, favorites }, ["favorites"]);
+    authStore.updateUser({ favorites });
+  } catch (e: any) {
+    $showError(e);
+  }
 };
 
 const openSearch = () => {
