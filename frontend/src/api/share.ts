@@ -17,6 +17,7 @@ export async function remove(hash: string) {
 
 export async function create(
   url: string,
+  hash = "",
   password = "",
   expires = "",
   unit = "hours"
@@ -27,8 +28,9 @@ export async function create(
     url += `?expires=${expires}&unit=${unit}`;
   }
   let body = "{}";
-  if (password != "" || expires !== "" || unit !== "hours") {
+  if (hash != "" || password != "" || expires !== "" || unit !== "hours") {
     body = JSON.stringify({
+      hash: hash,
       password: password,
       expires: expires.toString(), // backend expects string not number
       unit: unit,
