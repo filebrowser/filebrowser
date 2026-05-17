@@ -267,6 +267,27 @@ func (qs *QueueStore) MarkSending(machineID, id, method string) (*QueueItem, err
 	return hit, qs.persistLocked(machineID)
 }
 
+// FindByONumber returns a copy of the first queue item whose
+// OnumberHint matches onum (after normalization), or nil when no
+// queue row matches. Used by the registry auto-attach watcher to
+// resolve a controller-reported O-number to a known file path
+// without scanning the filesystem.
+func (qs *QueueStore) FindByONumber(machineID, onum string) *QueueItem {
+	if onum == "" {
+		return nil
+	}
+	onum = normalizeONumber(onum)
+	qs.mu.Lock()
+	defer qs.mu.Unlock()
+	for _, it := range qs.queues[machineID] {
+		if it.OnumberHint == onum {
+			out := it
+			return &out
+		}
+	}
+	return nil
+}
+
 // PromoteByONumber finds the item matching onum and promotes it to
 // "running". Used by the streamer when a status frame reports a new
 // program is executing — covers the SD-card / USB / pre-existing

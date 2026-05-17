@@ -76,8 +76,8 @@ export interface CncStatus {
   recovery_pending?: boolean;
   recovery_file_path?: string;
   // Attachment surfaces when no real job is running but the operator
-  // (or future O-number auto-match) has marked a file as the active
-  // program. The dashboard uses attached_file for follow-along
+  // (manual) or the registry's O-number auto-match (auto) has marked
+  // a file as the active program. The dashboard uses attached_file for follow-along
   // alongside the live line_current metric, with a UI badge so the
   // operator knows it might not actually be the file on the
   // controller.

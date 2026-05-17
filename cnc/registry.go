@@ -164,6 +164,20 @@ func (r *Registry) watchQueueAutoMatch(ctx context.Context, machineID string, st
 				if r.queues != nil {
 					r.queues.PromoteByONumber(machineID, prog)
 					st.EmitQueueSnapshot(r.queues.List(machineID))
+					// Auto-attach: when the controller reports a new
+					// O-number, mark the matching queue item's file as
+					// attached so /machine can follow along even when the
+					// program came from SD card / USB / Ethernet drop.
+					// Manual attaches win — AttachAuto is a no-op if a
+					// manual attach is already active. The downstream
+					// status event triggers the existing attached-file
+					// Discord notification (source = "auto") so no extra
+					// notify call is needed here.
+					if it := r.queues.FindByONumber(machineID, prog); it != nil {
+						if st.AttachAuto(it.FilePath) {
+							st.EmitStatus()
+						}
+					}
 				}
 			case "status":
 				if ev.Status == nil {
@@ -177,6 +191,13 @@ func (r *Registry) watchQueueAutoMatch(ctx context.Context, machineID string, st
 					r.queues.ClearInFlight(machineID)
 					st.EmitQueueSnapshot(r.queues.List(machineID))
 					lastProgram = ""
+					// Auto-attaches are tied to the running program;
+					// clear them on idle so a stale entry doesn't keep
+					// /machine pointed at the wrong file. Manual
+					// attaches stay until the operator detaches.
+					if st.DetachAuto() {
+						st.EmitStatus()
+					}
 				} else if ev.Status.Running && r.queues != nil {
 					r.queues.MarkProgress(machineID, int(ev.Status.LineCurrent), int(ev.Status.LineTotal))
 				}

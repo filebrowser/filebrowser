@@ -61,8 +61,8 @@ type Status struct {
 	RecoveryPending  bool   `json:"recovery_pending,omitempty"`
 	RecoveryFilePath string `json:"recovery_file_path,omitempty"`
 
-	// Attachment surfaces when the operator (or future O-number
-	// auto-match) has marked a filebrowser file as "this is what the
+	// Attachment surfaces when the operator (manual) or the registry's
+	// O-number auto-match (auto) has marked a filebrowser file as "this is what the
 	// controller is actually running" without the streamer having
 	// pushed it. AttachedFile is share-relative. Cleared when Running
 	// becomes true (real job wins) or via DELETE /api/cnc/attach.
@@ -94,7 +94,7 @@ type Streamer struct {
 	// own file becomes truth) or via Detach. All three fields move
 	// together under mu.
 	attachedFile   string // share-relative path
-	attachedSource string // "manual" | "auto" (future: O-number auto-match)
+	attachedSource string // "manual" (operator clicked Attach) or "auto" (registry O-number match)
 	attachedAt     time.Time
 
 	// pendingRecovery is set when New() finds an orphaned active-job
@@ -401,7 +401,7 @@ func (s *Streamer) Status() *Status {
 // currently running, without the streamer having pushed it. Used when
 // the operator loaded the program from SD card / Ethernet drop and
 // wants /machine to follow along anyway. source distinguishes operator
-// confirmation ("manual") from a future O-number heuristic ("auto").
+// confirmation ("manual") from the registry's O-number heuristic ("auto").
 //
 // Refused while a real job is running — the job's own file is truth.
 // Replaces any previous attachment.
@@ -428,6 +428,46 @@ func (s *Streamer) Attach(filePath, source string) error {
 // going through a poll cycle.
 func (s *Streamer) EmitStatus() {
 	s.emit(Event{Type: "status", Status: s.Status()})
+}
+
+// AttachAuto attaches filePath with source="auto" but only when no
+// manual attach is currently active and no real job is running.
+// Atomic: the source-check and the write happen under the same lock
+// so a race between watcher and HTTP attach can't silently overwrite
+// a manual choice. Returns true when the attachment changed.
+func (s *Streamer) AttachAuto(filePath string) bool {
+	if filePath == "" {
+		return false
+	}
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.job != nil {
+		return false
+	}
+	if s.attachedSource == "manual" {
+		return false
+	}
+	if s.attachedFile == filePath && s.attachedSource == "auto" {
+		return false
+	}
+	s.attachedFile = filePath
+	s.attachedSource = "auto"
+	s.attachedAt = time.Now().UTC()
+	return true
+}
+
+// DetachAuto clears an auto-attach but leaves a manual attach alone.
+// Returns true when the attachment actually cleared.
+func (s *Streamer) DetachAuto() bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.attachedSource != "auto" {
+		return false
+	}
+	s.attachedFile = ""
+	s.attachedSource = ""
+	s.attachedAt = time.Time{}
+	return true
 }
 
 // Detach clears the current attachment. No-op when nothing is
