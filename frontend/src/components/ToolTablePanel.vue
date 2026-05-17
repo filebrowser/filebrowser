@@ -198,7 +198,17 @@
             class="magazine-figure"
             :title="`T${row.slot} — ⌀${fmt(row.effective_diameter)} L${fmt(row.effective_length)}`"
           >
+            <!-- Prefer the library-driven revolved profile when available;
+                 fall back to the simple length-vs-diameter rectangle for
+                 pockets the operator hasn't catalogued in Fusion yet. -->
+            <ToolProfileSvg
+              v-if="libraryBySlot[row.slot]"
+              :entry="libraryBySlot[row.slot]"
+              :width="48"
+              :height="160"
+            />
             <ToolGeometryView
+              v-else
               :slot-number="row.slot"
               :length-ratio="ratioL(row.effective_length)"
               :diameter-ratio="ratioD(row.effective_diameter)"
@@ -223,6 +233,7 @@ import { useI18n } from "vue-i18n";
 import { cnc as cncApi } from "@/api";
 import type { ToolTable, ToolTableSlot, ToolTableDiff } from "@/api/cnc";
 import ToolGeometryView from "@/components/ToolGeometryView.vue";
+import ToolProfileSvg from "@/components/machine/ToolProfileSvg.vue";
 import MfgAnnotatedText from "@/components/machine/MfgAnnotatedText.vue";
 
 const props = defineProps<{
