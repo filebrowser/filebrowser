@@ -16,8 +16,8 @@
 
 :root.dark #login {
   background-image:
-    radial-gradient(ellipse at 20% 50%, rgba(59, 130, 246, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.04) 0%, transparent 50%);
+    radial-gradient(ellipse at 20% 50%, rgba(250, 204, 21, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(250, 204, 21, 0.03) 0%, transparent 50%);
 }
 
 #login img {
@@ -25,7 +25,7 @@
   height: 3.5em;
   margin: 0 auto;
   display: block;
-  filter: drop-shadow(0 2px 8px rgba(59, 130, 246, 0.2));
+  filter: drop-shadow(0 2px 8px var(--focus-ring));
 }
 
 #login h1 {

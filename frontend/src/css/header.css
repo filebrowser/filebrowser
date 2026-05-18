@@ -17,7 +17,7 @@ header {
 }
 
 :root.dark header {
-  background: rgba(30, 41, 59, 0.85);
+  background: rgba(10, 10, 10, 0.9);
 }
 
 header > * {
@@ -101,7 +101,7 @@ header .menu-button {
 
 #search #input:focus-within {
   border-color: var(--blue);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 3px var(--focus-ring);
   background: var(--surfacePrimary);
 }
 

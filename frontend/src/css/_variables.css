@@ -53,38 +53,57 @@
   --transition-base: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* Selection */
+  /* Focus & Selection */
+  --focus-ring: rgba(59, 130, 246, 0.15);
   --selected-bg: rgba(59, 130, 246, 0.12);
   --selected-border: rgba(59, 130, 246, 0.3);
+
+  /* Button & Progress */
+  --button-text: #ffffff;
+  --progress-end: #60a5fa;
 }
 
 :root.dark {
+  --blue: #facc15;
+  --dark-blue: #eab308;
+
+  --icon-yellow: #facc15;
+  --icon-blue: #60a5fa;
+  --icon-green: #4ade80;
+  --icon-orange: #fb923c;
+  --icon-red: #f87171;
+  --icon-violet: #a78bfa;
+
   --input-red: rgb(127, 29, 29);
   --input-green: rgb(20, 83, 45);
 
   --action: rgba(255, 255, 255, 0.9);
 
-  --background: rgb(15, 23, 42);
-  --surfacePrimary: rgb(30, 41, 59);
-  --surfaceSecondary: rgb(51, 65, 85);
-  --surfaceTertiary: rgb(71, 85, 105);
+  --background: #000000;
+  --surfacePrimary: #0a0a0a;
+  --surfaceSecondary: #141414;
+  --surfaceTertiary: #1f1f1f;
   --textPrimary: rgba(255, 255, 255, 0.6);
-  --textSecondary: rgba(255, 255, 255, 0.9);
+  --textSecondary: rgba(255, 255, 255, 0.92);
   --divider: rgba(255, 255, 255, 0.08);
   --iconPrimary: rgb(255, 255, 255);
   --iconSecondary: rgb(255, 255, 255);
   --iconTertiary: rgba(255, 255, 255, 0.5);
-  --hover: rgba(255, 255, 255, 0.06);
-  --borderPrimary: rgba(255, 255, 255, 0.06);
-  --borderSecondary: rgba(255, 255, 255, 0.12);
+  --hover: rgba(255, 255, 255, 0.07);
+  --borderPrimary: rgba(255, 255, 255, 0.08);
+  --borderSecondary: rgba(255, 255, 255, 0.14);
   --dividerPrimary: rgba(30, 30, 30, 0.4);
   --dividerSecondary: rgba(30, 30, 30, 0.6);
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
 
-  --selected-bg: rgba(59, 130, 246, 0.2);
-  --selected-border: rgba(59, 130, 246, 0.4);
+  --focus-ring: rgba(250, 204, 21, 0.2);
+  --selected-bg: rgba(250, 204, 21, 0.12);
+  --selected-border: rgba(250, 204, 21, 0.3);
+
+  --button-text: #0a0a0a;
+  --progress-end: #fde047;
 }

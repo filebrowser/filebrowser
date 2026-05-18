@@ -5,7 +5,7 @@
   border-radius: var(--radius-md);
   cursor: pointer;
   background: var(--blue);
-  color: white;
+  color: var(--button-text);
   border: 1px solid transparent;
   box-shadow: var(--shadow-sm);
   transition: all var(--transition-fast);

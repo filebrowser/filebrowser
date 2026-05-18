@@ -172,7 +172,7 @@ html[dir="rtl"] .breadcrumbs a {
 
 .progress div {
   height: 100%;
-  background: linear-gradient(90deg, var(--blue), #60a5fa);
+  background: linear-gradient(90deg, var(--blue), var(--progress-end));
   width: 0;
   transition: width var(--transition-base);
   border-radius: 0 2px 2px 0;
@@ -217,7 +217,7 @@ body > div[style*="z-index: 9990"] {
 }
 
 #modal-background .button:focus {
-  outline: 2px solid rgba(59, 130, 246, 0.3);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
