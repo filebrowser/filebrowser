@@ -1,20 +1,26 @@
 .input {
-  background: var(--surfacePrimary);
+  background: var(--surfaceSecondary);
   color: var(--textSecondary);
   border: 1px solid var(--borderPrimary);
-  border-radius: 0.1em;
-  padding: 0.5em 1em;
-  transition: 0.2s ease all;
+  border-radius: var(--radius-md);
+  padding: 0.65em 1em;
+  transition: all var(--transition-base);
   margin: 0;
+  font-size: 0.95em;
 }
 
-.input:hover,
-.input:focus {
+.input:hover {
   border-color: var(--borderSecondary);
 }
 
+.input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+  background: var(--surfacePrimary);
+}
+
 .input--block {
-  margin-bottom: 0.5em;
+  margin-bottom: 0.6em;
   display: block;
   width: 100%;
 }

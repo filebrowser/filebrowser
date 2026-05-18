@@ -1,8 +1,10 @@
 header {
   z-index: 1000;
-  background: var(--surfacePrimary);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--divider);
-  box-shadow: 0 0 5px var(--borderPrimary);
+  box-shadow: var(--shadow-sm);
   position: fixed;
   top: 0;
   left: 0;
@@ -12,6 +14,10 @@ header {
   display: flex;
   padding: 0.5em 0.5em 0.5em 1em;
   align-items: center;
+}
+
+:root.dark header {
+  background: rgba(10, 10, 10, 0.9);
 }
 
 header > * {
@@ -83,14 +89,20 @@ header .menu-button {
 
 #search #input {
   background: var(--surfaceSecondary);
-  border-color: var(--surfacePrimary);
+  border: 1px solid var(--borderPrimary);
   display: flex;
   height: 100%;
   padding: 0em 0.75em;
-  border-radius: 0.3em;
-  transition: 0.1s ease all;
+  border-radius: var(--radius-full);
+  transition: all var(--transition-base);
   align-items: center;
   z-index: 2;
+}
+
+#search #input:focus-within {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+  background: var(--surfacePrimary);
 }
 
 #search #input input::placeholder {
@@ -99,9 +111,10 @@ header .menu-button {
 
 #search.active #input {
   border-bottom: 1px solid var(--borderPrimary);
-  box-shadow: 0 0 5px var(--borderPrimary);
+  box-shadow: var(--shadow-md);
   background: var(--surfacePrimary);
   height: 4em;
+  border-radius: 0;
 }
 
 #search.active > div {
@@ -232,9 +245,11 @@ html[dir="rtl"] #search #result ul > * {
 
 #search .boxes {
   border: 1px solid var(--borderPrimary);
-  box-shadow: 0 0 5px var(--borderPrimary);
+  box-shadow: var(--shadow-md);
   background: var(--surfacePrimary);
   margin: 1em 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
 }
 
 #search .boxes h3 {
@@ -267,6 +282,13 @@ html[dir="rtl"] #search .boxes h3 {
   margin-bottom: 1em;
   margin-right: 1em;
   flex-grow: 1;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+#search .boxes > div > div:hover {
+  background: var(--dark-blue);
+  transform: translateY(-1px);
 }
 
 #search .boxes p {
