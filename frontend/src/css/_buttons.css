@@ -1,28 +1,43 @@
 .button {
   outline: 0;
   border: 0;
-  padding: 0.5em 1em;
-  border-radius: 0.1em;
+  padding: 0.6em 1.25em;
+  border-radius: var(--radius-md);
   cursor: pointer;
   background: var(--blue);
-  color: white;
-  border: 1px solid var(--divider);
-  box-shadow: 0 0 5px var(--divider);
-  transition: 0.1s ease all;
+  color: var(--button-text);
+  border: 1px solid transparent;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+  font-weight: 500;
+  font-size: 0.9em;
+  letter-spacing: 0.01em;
 }
 
 .button:hover {
   background-color: var(--dark-blue);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.button:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
 }
 
 .button--block {
   margin: 0 0 0.5em;
   display: block;
   width: 100%;
+  padding: 0.75em 1.25em;
 }
 
 .button--red {
   background: var(--red);
+}
+
+.button--red:hover {
+  background: var(--dark-red);
 }
 
 .button--blue {
@@ -32,13 +47,17 @@
 .button--flat {
   color: var(--dark-blue);
   background: transparent;
-  box-shadow: 0 0 0;
+  box-shadow: none;
   border: 0;
   text-transform: uppercase;
+  font-size: 0.85em;
+  letter-spacing: 0.03em;
 }
 
 .button--flat:hover {
   background: var(--surfaceSecondary);
+  transform: none;
+  box-shadow: none;
 }
 
 .button--flat.button--red {
@@ -52,4 +71,6 @@
 .button[disabled] {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
