@@ -1,32 +1,66 @@
 #login {
-  background: var(--surfacePrimary);
+  background: var(--background);
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(59, 130, 246, 0.04) 0%, transparent 50%);
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:root.dark #login {
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(59, 130, 246, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.04) 0%, transparent 50%);
 }
 
 #login img {
-  width: 4em;
-  height: 4em;
+  width: 3.5em;
+  height: 3.5em;
   margin: 0 auto;
   display: block;
+  filter: drop-shadow(0 2px 8px rgba(59, 130, 246, 0.2));
 }
 
 #login h1 {
   text-align: center;
-  font-size: 2.5em;
-  margin: 0.4em 0 0.67em;
+  font-size: 1.75em;
+  font-weight: 600;
+  margin: 0.5em 0 1em;
+  letter-spacing: -0.01em;
+  color: var(--textSecondary);
 }
 
 #login form {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  max-width: 16em;
+  position: relative;
+  top: auto;
+  left: auto;
+  transform: none;
+  max-width: 22em;
   width: 90%;
+  background: var(--surfacePrimary);
+  padding: 2.5em 2em;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--borderPrimary);
+  box-shadow: var(--shadow-xl);
+  animation: loginFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes loginFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 #login.recaptcha form {
@@ -34,24 +68,30 @@
 }
 
 #login #recaptcha {
-  margin: 0.5em 0 0;
+  margin: 0.75em 0 0;
 }
 
 #login .wrong {
   background: var(--red);
   color: #fff;
-  padding: 0.5em;
+  padding: 0.6em 1em;
   text-align: center;
+  border-radius: var(--radius-md);
   animation: 0.2s opac forwards;
+  font-size: 0.9em;
+  margin-bottom: 0.5em;
 }
 
 #login .logout-message {
   background: var(--icon-orange);
   color: #fff;
-  padding: 0.5em;
+  padding: 0.6em 1em;
   text-align: center;
+  border-radius: var(--radius-md);
   animation: 0.2s opac forwards;
   text-transform: none;
+  font-size: 0.9em;
+  margin-bottom: 0.5em;
 }
 
 @keyframes opac {
@@ -69,6 +109,11 @@
   color: var(--blue);
   text-transform: lowercase;
   font-weight: 500;
-  font-size: 0.9rem;
-  margin: 0.5rem 0;
+  font-size: 0.85rem;
+  margin: 0.75rem 0 0;
+  transition: color var(--transition-fast);
+}
+
+#login p:hover {
+  color: var(--dark-blue);
 }

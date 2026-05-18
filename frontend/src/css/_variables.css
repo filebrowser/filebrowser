@@ -1,58 +1,90 @@
 :root {
-  --blue: #2196f3;
-  --dark-blue: #1e88e5;
-  --red: #f44336;
-  --dark-red: #d32f2f;
-  --moon-grey: #f2f2f2;
+  --blue: #3b82f6;
+  --dark-blue: #2563eb;
+  --red: #ef4444;
+  --dark-red: #dc2626;
+  --moon-grey: #f3f4f6;
 
-  --icon-red: #da4453;
-  --icon-orange: #f47750;
-  --icon-yellow: #fdbc4b;
-  --icon-green: #2ecc71;
-  --icon-blue: #1d99f3;
-  --icon-violet: #9b59b6;
+  --icon-red: #ef4444;
+  --icon-orange: #f97316;
+  --icon-yellow: #eab308;
+  --icon-green: #22c55e;
+  --icon-blue: #3b82f6;
+  --icon-violet: #8b5cf6;
 
-  --input-red: rgb(252, 208, 205);
-  --input-green: rgb(201, 242, 218);
+  --input-red: rgb(254, 226, 226);
+  --input-green: rgb(220, 252, 231);
 
   --item-selected: white;
 
-  --action: rgb(84, 110, 122);
+  --action: rgb(71, 85, 105);
 
-  --background: rgb(250, 250, 250);
+  --background: rgb(248, 250, 252);
   --surfacePrimary: rgb(255, 255, 255);
-  --surfaceSecondary: rgb(230, 230, 230);
-  --divider: rgba(0, 0, 0, 0.05);
+  --surfaceSecondary: rgb(241, 245, 249);
+  --surfaceTertiary: rgb(226, 232, 240);
+  --divider: rgba(0, 0, 0, 0.06);
   --iconPrimary: var(--icon-blue);
   --iconSecondary: rgb(255, 255, 255);
-  --iconTertiary: rgb(204, 204, 204);
-  --textPrimary: rgb(111, 111, 111);
-  --textSecondary: rgb(51, 51, 51);
-  --hover: rgba(0, 0, 0, 0.1);
-  --borderPrimary: rgba(0, 0, 0, 0.1);
-  --borderSecondary: rgba(0, 0, 0, 0.2);
+  --iconTertiary: rgb(148, 163, 184);
+  --textPrimary: rgb(100, 116, 139);
+  --textSecondary: rgb(30, 41, 59);
+  --hover: rgba(0, 0, 0, 0.05);
+  --borderPrimary: rgba(0, 0, 0, 0.08);
+  --borderSecondary: rgba(0, 0, 0, 0.15);
   --dividerPrimary: rgba(255, 255, 255, 0.4);
   --dividerSecondary: rgba(255, 255, 255, 0.9);
+
+  /* Modern spacing & radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+
+  /* Transitions */
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Selection */
+  --selected-bg: rgba(59, 130, 246, 0.12);
+  --selected-border: rgba(59, 130, 246, 0.3);
 }
 
 :root.dark {
-  --input-red: rgb(115, 48, 45);
-  --input-green: rgb(20, 122, 65);
+  --input-red: rgb(127, 29, 29);
+  --input-green: rgb(20, 83, 45);
 
-  --action: rgb(255, 255, 255);
+  --action: rgba(255, 255, 255, 0.9);
 
-  --background: rgb(20, 29, 36);
-  --surfacePrimary: rgb(32, 41, 47);
-  --surfaceSecondary: rgb(58, 65, 71);
+  --background: rgb(15, 23, 42);
+  --surfacePrimary: rgb(30, 41, 59);
+  --surfaceSecondary: rgb(51, 65, 85);
+  --surfaceTertiary: rgb(71, 85, 105);
   --textPrimary: rgba(255, 255, 255, 0.6);
-  --textSecondary: rgba(255, 255, 255, 0.87);
-  --divider: rgba(255, 255, 255, 0.12);
+  --textSecondary: rgba(255, 255, 255, 0.9);
+  --divider: rgba(255, 255, 255, 0.08);
   --iconPrimary: rgb(255, 255, 255);
   --iconSecondary: rgb(255, 255, 255);
-  --iconTertiary: rgb(255, 255, 255);
-  --hover: rgba(255, 255, 255, 0.1);
-  --borderPrimary: rgba(255, 255, 255, 0.05);
-  --borderSecondary: rgba(255, 255, 255, 0.15);
+  --iconTertiary: rgba(255, 255, 255, 0.5);
+  --hover: rgba(255, 255, 255, 0.06);
+  --borderPrimary: rgba(255, 255, 255, 0.06);
+  --borderSecondary: rgba(255, 255, 255, 0.12);
   --dividerPrimary: rgba(30, 30, 30, 0.4);
   --dividerSecondary: rgba(30, 30, 30, 0.6);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+
+  --selected-bg: rgba(59, 130, 246, 0.2);
+  --selected-border: rgba(59, 130, 246, 0.4);
 }

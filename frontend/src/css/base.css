@@ -1,5 +1,8 @@
 body {
-  font-family: "Roboto", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   padding-top: 4em;
   background: var(--background);
   color: var(--textSecondary);
@@ -44,7 +47,7 @@ i.spin {
 }
 
 #app {
-  transition: 0.2s ease padding;
+  transition: padding var(--transition-base);
 }
 
 #app.multiple {
@@ -56,22 +59,38 @@ nav {
   position: fixed;
   top: 4em;
   left: 0;
+  background: var(--surfacePrimary);
+  border-right: 1px solid var(--divider);
+  height: calc(100vh - 4em);
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 999;
 }
 
 html[dir="rtl"] nav {
   left: initial;
   right: 0;
+  border-right: none;
+  border-left: 1px solid var(--divider);
 }
 
 nav .action {
-  width: 100%;
-  display: block;
-  border-radius: 0;
-  font-size: 1.1em;
-  padding: 0.5em;
+  width: calc(100% - 1em);
+  display: flex;
+  align-items: center;
+  border-radius: var(--radius-md);
+  font-size: 0.95em;
+  padding: 0.55em 0.75em;
+  margin: 0.15em 0.5em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  transition: all var(--transition-fast);
+  gap: 0.25em;
+}
+
+nav .action:hover {
+  background: var(--hover);
 }
 
 html[dir="rtl"] nav .action {
@@ -80,6 +99,8 @@ html[dir="rtl"] nav .action {
 
 nav > div {
   border-top: 1px solid var(--divider);
+  margin: 0.25em 0;
+  padding-top: 0.25em;
 }
 
 nav .action > * {
@@ -99,6 +120,7 @@ main {
   position: sticky;
   z-index: 1000;
   top: 4em;
+  padding: 0 0.5em;
 }
 
 .breadcrumbs span,
@@ -110,8 +132,8 @@ main {
 
 .breadcrumbs a {
   color: inherit;
-  transition: 0.1s ease-in;
-  border-radius: 0.125em;
+  transition: all var(--transition-fast);
+  border-radius: var(--radius-sm);
 }
 
 html[dir="rtl"] .breadcrumbs a {
@@ -119,11 +141,17 @@ html[dir="rtl"] .breadcrumbs a {
 }
 
 .breadcrumbs a:hover {
-  background-color: var(--divider);
+  background-color: var(--hover);
+  color: var(--textSecondary);
 }
 
 .breadcrumbs span a {
-  padding: 0.2em;
+  padding: 0.25em 0.4em;
+}
+
+.breadcrumbs .chevron i {
+  font-size: 1.1em;
+  opacity: 0.5;
 }
 
 .files {
@@ -139,13 +167,15 @@ html[dir="rtl"] .breadcrumbs a {
   width: 100%;
   height: 3px;
   z-index: 9999999999;
+  border-radius: 0 0 2px 2px;
 }
 
 .progress div {
   height: 100%;
-  background-color: #40c4ff;
+  background: linear-gradient(90deg, var(--blue), #60a5fa);
   width: 0;
-  transition: 0.2s ease width;
+  transition: width var(--transition-base);
+  border-radius: 0 2px 2px 0;
 }
 
 .break-word {
@@ -187,6 +217,25 @@ body > div[style*="z-index: 9990"] {
 }
 
 #modal-background .button:focus {
-  outline: 1px solid #2195f32d;
-  outline-offset: 1px;
+  outline: 2px solid rgba(59, 130, 246, 0.3);
+  outline-offset: 2px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--borderSecondary);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--textPrimary);
 }
