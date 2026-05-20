@@ -5,9 +5,9 @@ services:
     networks:
       - filebrowser
     ports:
-      - 8000:80
+      - 5302:80
     volumes:
-      - filebrowser:/flux/vault
+      - ${FB_DATA_DIR:-/home/ubuntu/data}:/srv
     environment:
       - FB_REDIS_CACHE_URL=redis://default:filebrowser@redis:6379 # Use rediss:// for ssl
 
@@ -26,7 +26,4 @@ services:
         redis-server --aclfile /tmp/users.acl
 
 networks:
-  filebrowser:
-
-volumes:
   filebrowser:
