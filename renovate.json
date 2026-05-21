@@ -5,6 +5,7 @@
     "group:allNonMajor",
     "group:allDigest",
     ":disableDependencyDashboard",
+    ":disableMajorUpdates",
     ":semanticCommitTypeAll(chore)"
   ],
   "postUpdateOptions": [
