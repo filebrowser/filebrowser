@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.63.5](https://github.com/filebrowser/filebrowser/compare/v2.63.4...v2.63.5) (2026-05-21)
+
+
+### Bug Fixes
+
+* **router:** handle undefined catchAll param on root redirect ([#5955](https://github.com/filebrowser/filebrowser/issues/5955)) ([6ad8160](https://github.com/filebrowser/filebrowser/commit/6ad8160aa3309314c1b471c5090b67c824464396))
+
 ## [2.63.4](https://github.com/filebrowser/filebrowser/compare/v2.63.3...v2.63.4) (2026-05-17)
 
 
