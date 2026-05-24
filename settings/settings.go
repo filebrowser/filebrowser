@@ -52,12 +52,13 @@ func (s *Settings) GetRules() []rules.Rule {
 // an old database that predates these fields. If Configured is false, the
 // server-level CLI/env configuration is used as a fallback.
 type Collabora struct {
-	Configured bool   `json:"configured"`
-	Enabled    bool   `json:"enabled"`
-	URL        string `json:"url"`
-	PublicURL  string `json:"publicURL"`
-	WOPISecret string `json:"wopiSecret"`
-	TokenTTL   string `json:"tokenTTL"`
+	Configured  bool   `json:"configured"`
+	Enabled     bool   `json:"enabled"`
+	URL         string `json:"url"`
+	PublicURL   string `json:"publicURL"`
+	InternalURL string `json:"internalURL"`
+	WOPISecret  string `json:"wopiSecret"`
+	TokenTTL    string `json:"tokenTTL"`
 }
 
 // Server specific settings.
@@ -80,6 +81,7 @@ type Server struct {
 	CollaboraEnabled      bool   `json:"collaboraEnabled"`
 	CollaboraURL          string `json:"collaboraURL"`
 	CollaboraPublicURL    string `json:"collaboraPublicURL"`
+	CollaboraInternalURL  string `json:"collaboraInternalURL"`
 	CollaboraWOPISecret   string `json:"collaboraWOPISecret"`
 	CollaboraTokenTTL     string `json:"collaboraTokenTTL"`
 }
