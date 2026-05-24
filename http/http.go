@@ -29,7 +29,12 @@ func NewHandler(
 	r := mux.NewRouter()
 	r.Use(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.Header().Set("Content-Security-Policy", `default-src 'self'; style-src 'unsafe-inline';`)
+			set, err := store.Settings.Get()
+			if err == nil {
+				w.Header().Set("Content-Security-Policy", contentSecurityPolicy(effectiveCollabora(server, set)))
+			} else {
+				w.Header().Set("Content-Security-Policy", contentSecurityPolicy(effectiveCollabora(server, nil)))
+			}
 			next.ServeHTTP(w, r)
 		})
 	})
@@ -85,6 +90,11 @@ func NewHandler(
 	api.PathPrefix("/command").Handler(monkey(commandsHandler, "/api/command")).Methods("GET")
 	api.PathPrefix("/search").Handler(monkey(searchHandler, "/api/search")).Methods("GET")
 	api.PathPrefix("/subtitle").Handler(monkey(subtitleHandler, "/api/subtitle")).Methods("GET")
+
+	api.Handle("/collabora/open", monkey(collaboraOpenHandler, "")).Methods("GET")
+	api.Handle("/collabora/test", monkey(collaboraTestHandler, "")).Methods("POST")
+	r.Handle("/wopi/files/{id}", monkey(wopiFileHandler, "")).Methods("GET", "POST")
+	r.Handle("/wopi/files/{id}/contents", monkey(wopiFileContentsHandler, "")).Methods("GET", "POST")
 
 	public := api.PathPrefix("/public").Subrouter()
 	public.PathPrefix("/dl").Handler(monkey(publicDlHandler, "/api/public/dl/")).Methods("GET")
