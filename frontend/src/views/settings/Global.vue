@@ -189,6 +189,21 @@
               v-model.trim="settings.collabora.publicURL"
               id="collabora-public-url"
             />
+            <span class="small">{{ t("settings.collaboraPublicURLHelp") }}</span>
+          </p>
+
+          <p>
+            <label for="collabora-internal-url">{{
+              t("settings.collaboraInternalURL")
+            }}</label>
+            <input
+              class="input input--block"
+              type="url"
+              placeholder="http://192.168.68.204:8080"
+              v-model.trim="settings.collabora.internalURL"
+              id="collabora-internal-url"
+            />
+            <span class="small">{{ t("settings.collaboraInternalURLHelp") }}</span>
           </p>
 
           <p>
@@ -420,6 +435,7 @@ const normalizedCollaboraSettings = (): SettingsCollabora => ({
   enabled: Boolean(settings.value?.collabora?.enabled),
   url: settings.value?.collabora?.url?.trim() ?? "",
   publicURL: settings.value?.collabora?.publicURL?.trim() ?? "",
+  internalURL: settings.value?.collabora?.internalURL?.trim() ?? "",
   wopiSecret: settings.value?.collabora?.wopiSecret?.trim() ?? "",
   tokenTTL: settings.value?.collabora?.tokenTTL?.trim() || "2h",
 });
@@ -542,6 +558,7 @@ onMounted(async () => {
         enabled: original.collabora?.enabled ?? false,
         url: original.collabora?.url ?? "",
         publicURL: original.collabora?.publicURL ?? "",
+        internalURL: original.collabora?.internalURL ?? "",
         wopiSecret: original.collabora?.wopiSecret ?? "",
         tokenTTL: original.collabora?.tokenTTL || "2h",
       },
