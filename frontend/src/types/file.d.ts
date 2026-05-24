@@ -9,6 +9,9 @@ interface ResourceBase {
   isSymlink: boolean;
   type: ResourceType;
   url: string;
+  archive?: boolean;
+  archivePath?: string;
+  archiveInnerPath?: string;
 }
 
 interface Resource extends ResourceBase {
@@ -31,6 +34,7 @@ interface ResourceItem extends ResourceBase {
 
 type ResourceType =
   | "dir"
+  | "archive"
   | "video"
   | "audio"
   | "image"
@@ -58,7 +62,7 @@ interface ClipItem {
 
 interface BreadCrumb {
   name: string;
-  url: string;
+  url: string | Record<string, any>;
 }
 
 interface ConflictingItem {
