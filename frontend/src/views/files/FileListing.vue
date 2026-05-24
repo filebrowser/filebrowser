@@ -25,6 +25,12 @@
             show="rename"
           />
           <action
+            v-if="headerButtons.collabora"
+            icon="description"
+            :label="t('buttons.openWithCollabora')"
+            @action="openSelectedWithCollabora"
+          />
+          <action
             v-if="headerButtons.copy"
             id="copy-button"
             icon="content_copy"
@@ -102,6 +108,12 @@
         icon="mode_edit"
         :label="t('buttons.rename')"
         show="rename"
+      />
+      <action
+        v-if="headerButtons.collabora"
+        icon="description"
+        :label="t('buttons.openWithCollabora')"
+        @action="openSelectedWithCollabora"
       />
       <action
         v-if="headerButtons.copy"
@@ -275,6 +287,12 @@
             show="rename"
           />
           <action
+            v-if="headerButtons.collabora"
+            icon="description"
+            :label="t('buttons.openWithCollabora')"
+            @action="openSelectedWithCollabora"
+          />
+          <action
             v-if="headerButtons.copy"
             id="copy-button"
             icon="content_copy"
@@ -345,8 +363,8 @@ import { useClipboardStore } from "@/stores/clipboard";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 
-import { users, files as api } from "@/api";
-import { enableExec } from "@/utils/constants";
+import { collabora, users, files as api } from "@/api";
+import { collaboraEnabled, enableExec } from "@/utils/constants";
 import * as upload from "@/utils/upload";
 import css from "@/utils/css";
 import { throttle } from "lodash-es";
@@ -366,7 +384,7 @@ import {
   ref,
   watch,
 } from "vue";
-import { useRoute, onBeforeRouteUpdate } from "vue-router";
+import { useRoute, useRouter, onBeforeRouteUpdate } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
 import { removePrefix } from "@/api/utils";
@@ -389,6 +407,7 @@ const layoutStore = useLayoutStore();
 const { req } = storeToRefs(fileStore);
 
 const route = useRoute();
+const router = useRouter();
 onBeforeRouteUpdate(() => {
   hideContextMenu();
 });
@@ -473,6 +492,26 @@ const viewIcon = computed(() => {
     : icons[authStore.user.viewMode];
 });
 
+const selectedResource = computed<ResourceItem | null>(() => {
+  if (fileStore.selectedCount !== 1 || !fileStore.req) {
+    return null;
+  }
+
+  return fileStore.req.items[fileStore.selected[0]] ?? null;
+});
+
+const canOpenSelectedWithCollabora = computed(() => {
+  const item = selectedResource.value;
+
+  return !!(
+    collaboraEnabled &&
+    item &&
+    !item.isDir &&
+    authStore.user?.perm.download &&
+    collabora.isSupportedExtension(item.extension)
+  );
+});
+
 const headerButtons = computed(() => {
   return {
     upload: authStore.user?.perm.create,
@@ -484,6 +523,7 @@ const headerButtons = computed(() => {
       fileStore.selectedCount === 1 &&
       authStore.user?.perm.share &&
       authStore.user?.perm.download,
+    collabora: canOpenSelectedWithCollabora.value,
     move: fileStore.selectedCount > 0 && authStore.user?.perm.rename,
     copy: fileStore.selectedCount > 0 && authStore.user?.perm.create,
   };
@@ -971,6 +1011,13 @@ const windowsResize = throttle(() => {
   // Fill but not fit the window
   fillWindow();
 }, 100);
+
+const openSelectedWithCollabora = () => {
+  const item = selectedResource.value;
+  if (!item) return;
+
+  router.push({ path: item.url, query: { office: "true" } });
+};
 
 const download = () => {
   if (fileStore.req === null) return;
