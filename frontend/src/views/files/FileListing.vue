@@ -66,6 +66,13 @@
           :counter="fileStore.selectedCount"
         />
         <action
+          v-if="headerButtons.extract"
+          id="extract-button"
+          icon="folder_zip"
+          :label="archiveExtractLabel"
+          @action="extractArchive"
+        />
+        <action
           v-if="headerButtons.upload"
           icon="file_upload"
           id="upload-button"
@@ -120,6 +127,12 @@
         icon="delete"
         :label="t('buttons.delete')"
         show="delete"
+      />
+      <action
+        v-if="headerButtons.extract"
+        icon="folder_zip"
+        :label="archiveExtractLabel"
+        @action="extractArchive"
       />
     </div>
 
@@ -231,6 +244,10 @@
             v-bind:type="item.type"
             v-bind:size="item.size"
             v-bind:path="item.path"
+            v-bind:archive="item.archive"
+            v-bind:archivePath="item.archivePath"
+            v-bind:archiveInnerPath="item.archiveInnerPath"
+            v-bind:readOnly="isArchiveView"
           >
           </item>
         </div>
@@ -254,6 +271,10 @@
             v-bind:type="item.type"
             v-bind:size="item.size"
             v-bind:path="item.path"
+            v-bind:archive="item.archive"
+            v-bind:archivePath="item.archivePath"
+            v-bind:archiveInnerPath="item.archiveInnerPath"
+            v-bind:readOnly="isArchiveView"
           >
           </item>
         </div>
@@ -301,6 +322,13 @@
             :label="t('buttons.download')"
             @action="download"
             :counter="fileStore.selectedCount"
+          />
+          <action
+            v-if="headerButtons.extract"
+            id="context-extract-button"
+            icon="folder_zip"
+            :label="archiveExtractLabel"
+            @action="extractArchive"
           />
           <action icon="info" :label="t('buttons.info')" show="info" />
         </context-menu>
@@ -366,7 +394,7 @@ import {
   ref,
   watch,
 } from "vue";
-import { useRoute, onBeforeRouteUpdate } from "vue-router";
+import { useRoute, useRouter, onBeforeRouteUpdate } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
 import { removePrefix } from "@/api/utils";
@@ -380,6 +408,7 @@ const isContextMenuVisible = ref<boolean>(false);
 const contextMenuPos = ref<{ x: number; y: number }>({ x: 0, y: 0 });
 
 const $showError = inject<IToastError>("$showError")!;
+const $showSuccess = inject<IToastSuccess>("$showSuccess")!;
 
 const clipboardStore = useClipboardStore();
 const authStore = useAuthStore();
@@ -389,6 +418,7 @@ const layoutStore = useLayoutStore();
 const { req } = storeToRefs(fileStore);
 
 const route = useRoute();
+const router = useRouter();
 onBeforeRouteUpdate(() => {
   hideContextMenu();
 });
@@ -462,6 +492,8 @@ const modifiedIcon = computed(() => {
   return "arrow_upward";
 });
 
+const isArchiveView = computed(() => Boolean(fileStore.req?.archivePath));
+
 const viewIcon = computed(() => {
   const icons = {
     list: "view_module",
@@ -473,19 +505,72 @@ const viewIcon = computed(() => {
     : icons[authStore.user.viewMode];
 });
 
+const selectedItem = computed(() =>
+  fileStore.selectedCount === 1 && fileStore.req
+    ? fileStore.req.items[fileStore.selected[0]]
+    : null
+);
+
+const isSelectedArchiveFile = computed(
+  () =>
+    !isArchiveView.value &&
+    fileStore.selectedCount === 1 &&
+    selectedItem.value?.type === "archive"
+);
+
+const archiveExtractLabel = computed(() => {
+  if (isSelectedArchiveFile.value) {
+    return "Extract this archive";
+  }
+
+  if (isArchiveView.value) {
+    if (selectedItem.value) {
+      return selectedItem.value.isDir
+        ? "Extract this folder"
+        : "Extract this file";
+    }
+
+    const currentInner = fileStore.req?.archiveInnerPath || "/";
+    return currentInner === "/" ? "Extract archive" : "Extract current folder";
+  }
+
+  return "Extract archive";
+});
+
 const headerButtons = computed(() => {
+  const selected = selectedItem.value;
+
   return {
-    upload: authStore.user?.perm.create,
-    download: authStore.user?.perm.download,
-    shell: authStore.user?.perm.execute && enableExec,
-    delete: fileStore.selectedCount > 0 && authStore.user?.perm.delete,
-    rename: fileStore.selectedCount === 1 && authStore.user?.perm.rename,
+    upload: !isArchiveView.value && authStore.user?.perm.create,
+    download:
+      authStore.user?.perm.download &&
+      (!isArchiveView.value || (selected !== null && !selected.isDir)),
+    extract:
+      authStore.user?.perm.create &&
+      ((isArchiveView.value && fileStore.selectedCount <= 1) ||
+        isSelectedArchiveFile.value),
+    shell: !isArchiveView.value && authStore.user?.perm.execute && enableExec,
+    delete:
+      !isArchiveView.value &&
+      fileStore.selectedCount > 0 &&
+      authStore.user?.perm.delete,
+    rename:
+      !isArchiveView.value &&
+      fileStore.selectedCount === 1 &&
+      authStore.user?.perm.rename,
     share:
+      !isArchiveView.value &&
       fileStore.selectedCount === 1 &&
       authStore.user?.perm.share &&
       authStore.user?.perm.download,
-    move: fileStore.selectedCount > 0 && authStore.user?.perm.rename,
-    copy: fileStore.selectedCount > 0 && authStore.user?.perm.create,
+    move:
+      !isArchiveView.value &&
+      fileStore.selectedCount > 0 &&
+      authStore.user?.perm.rename,
+    copy:
+      !isArchiveView.value &&
+      fileStore.selectedCount > 0 &&
+      authStore.user?.perm.create,
   };
 });
 
@@ -528,11 +613,9 @@ onMounted(() => {
   window.addEventListener("scroll", scrollEvent);
   window.addEventListener("resize", windowsResize);
 
-  if (!authStore.user?.perm.create) return;
-  document.addEventListener("dragover", preventDefault);
-  document.addEventListener("dragenter", dragEnter);
-  document.addEventListener("dragleave", dragLeave);
-  document.addEventListener("drop", drop);
+  if (authStore.user?.perm.create && !isArchiveView.value) {
+    addDropListeners();
+  }
 });
 
 onBeforeUnmount(() => {
@@ -541,11 +624,7 @@ onBeforeUnmount(() => {
   window.removeEventListener("scroll", scrollEvent);
   window.removeEventListener("resize", windowsResize);
 
-  if (authStore.user && !authStore.user?.perm.create) return;
-  document.removeEventListener("dragover", preventDefault);
-  document.removeEventListener("dragenter", dragEnter);
-  document.removeEventListener("dragleave", dragLeave);
-  document.removeEventListener("drop", drop);
+  removeDropListeners();
 });
 
 const base64 = (name: string) => Base64.encodeURI(name);
@@ -559,6 +638,10 @@ const keyEvent = (event: KeyboardEvent) => {
   if (event.key === "Escape") {
     // Reset files selection.
     fileStore.selected = [];
+  }
+
+  if (isArchiveView.value) {
+    return;
   }
 
   if (event.key === "Delete") {
@@ -619,6 +702,29 @@ const preventDefault = (event: Event) => {
   // Wrapper around prevent default.
   event.preventDefault();
 };
+const addDropListeners = () => {
+  document.addEventListener("dragover", preventDefault);
+  document.addEventListener("dragenter", dragEnter);
+  document.addEventListener("dragleave", dragLeave);
+  document.addEventListener("drop", drop);
+};
+
+const removeDropListeners = () => {
+  document.removeEventListener("dragover", preventDefault);
+  document.removeEventListener("dragenter", dragEnter);
+  document.removeEventListener("dragleave", dragLeave);
+  document.removeEventListener("drop", drop);
+};
+
+watch(isArchiveView, (archiveView) => {
+  if (!authStore.user?.perm.create) return;
+  if (archiveView) {
+    removeDropListeners();
+  } else {
+    addDropListeners();
+  }
+});
+
 
 const copyCut = (event: Event | KeyboardEvent): void => {
   if ((event.target as HTMLElement).tagName?.toLowerCase() === "input") return;
@@ -785,6 +891,7 @@ const dragLeave = () => {
 
 const drop = async (event: DragEvent) => {
   event.preventDefault();
+  if (isArchiveView.value) return;
   dragCounter.value = 0;
   resetOpacity();
 
@@ -858,6 +965,7 @@ const drop = async (event: DragEvent) => {
 };
 
 const uploadInput = async (event: Event) => {
+  if (isArchiveView.value) return;
   const files = (event.currentTarget as HTMLInputElement)?.files;
   if (files === null) return;
 
@@ -975,6 +1083,14 @@ const windowsResize = throttle(() => {
 const download = () => {
   if (fileStore.req === null) return;
 
+  if (isArchiveView.value) {
+    if (fileStore.selectedCount !== 1) return;
+    const selected = fileStore.req.items[fileStore.selected[0]];
+    if (selected.isDir) return;
+    window.open(api.getDownloadURL(selected, false));
+    return;
+  }
+
   if (
     fileStore.selectedCount === 1 &&
     !fileStore.req.items[fileStore.selected[0]].isDir
@@ -1001,6 +1117,45 @@ const download = () => {
       api.download(format, ...files);
     },
   });
+};
+
+
+const extractArchive = async () => {
+  const item = selectedItem.value;
+  let archivePath = "";
+  let innerPath = "/";
+  let successMessage = "";
+
+  if (isArchiveView.value && fileStore.req?.archivePath) {
+    archivePath = fileStore.req.archivePath;
+    innerPath = item?.archiveInnerPath || fileStore.req.archiveInnerPath || "/";
+
+    if (item) {
+      successMessage = item.isDir
+        ? "Folder extracted to"
+        : "File extracted to";
+    } else {
+      successMessage =
+        innerPath === "/" ? "Archive extracted to" : "Folder extracted to";
+    }
+  } else if (isSelectedArchiveFile.value && item?.url) {
+    archivePath = item.url;
+    innerPath = "/";
+    successMessage = "Archive extracted to";
+  } else {
+    return;
+  }
+
+  try {
+    layoutStore.loading = true;
+    const result = await api.extractArchive(archivePath, innerPath);
+    $showSuccess(`${successMessage} ${result.destination}`);
+    router.push({ path: `/files${result.destination}` });
+  } catch (e: any) {
+    $showError(e);
+  } finally {
+    layoutStore.loading = false;
+  }
 };
 
 const switchView = async () => {
