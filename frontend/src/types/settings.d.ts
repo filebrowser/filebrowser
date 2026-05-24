@@ -9,6 +9,7 @@ interface ISettings {
   rules: any[];
   branding: SettingsBranding;
   tus: SettingsTus;
+  clamav: SettingsClamAV;
   shell: string[];
   commands: SettingsCommand;
 }
@@ -39,6 +40,17 @@ interface SettingsBranding {
 interface SettingsTus {
   chunkSize: number;
   retryCount: number;
+}
+
+interface SettingsClamAV {
+  enabled: boolean;
+  url: string;
+  scanDepth: number;
+}
+
+interface ClamAVTestResponse {
+  status: string;
+  message: string;
 }
 
 interface SettingsCommand {
