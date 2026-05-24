@@ -153,6 +153,62 @@
               />
             </p>
           </div>
+
+
+
+          <h3>{{ t("settings.clamavScanning") }}</h3>
+
+          <p class="small">{{ t("settings.clamavScanningHelp") }}</p>
+
+          <p>
+            <input
+              type="checkbox"
+              v-model="settings.clamav.enabled"
+              id="clamav-enabled"
+            />
+            {{ t("settings.clamavEnable") }}
+          </p>
+
+          <p>
+            <label for="clamav-url">{{ t("settings.clamavUrl") }}</label>
+            <input
+              class="input input--block"
+              type="text"
+              v-model.trim="settings.clamav.url"
+              id="clamav-url"
+              placeholder="http://192.168.68.144:3000/api/v1/scan"
+            />
+          </p>
+
+          <p>
+            <label for="clamav-scan-depth">{{
+              t("settings.clamavScanDepth")
+            }}</label>
+            <vue-number-input
+              controls
+              v-model.number="settings.clamav.scanDepth"
+              id="clamav-scan-depth"
+              :min="0"
+            />
+          </p>
+
+          <p class="small">{{ t("settings.clamavScanDepthHelp") }}</p>
+
+          <p>
+            <button
+              class="button button--flat"
+              type="button"
+              @click.prevent="testClamAV"
+              :disabled="clamAVTesting || !settings.clamav.url"
+            >
+              {{
+                clamAVTesting
+                  ? t("settings.clamavTesting")
+                  : t("settings.clamavTestConnection")
+              }}
+            </button>
+          </p>
+
         </div>
 
         <div class="card-action">
@@ -262,6 +318,7 @@ const error = ref<StatusError | null>(null);
 const originalSettings = ref<ISettings | null>(null);
 const settings = ref<ISettings | null>(null);
 const debounceTimeout = ref<number | null>(null);
+const clamAVTesting = ref(false);
 
 const commandObject = ref<{
   [key: string]: string[] | string;
@@ -307,6 +364,23 @@ const capitalize = (name: string, where: string | RegExp = "_") => {
   }
 
   return name.slice(0, -1);
+};
+
+
+const testClamAV = async () => {
+  if (settings.value === null) return false;
+
+  try {
+    clamAVTesting.value = true;
+    const result = await api.testClamAV(settings.value.clamav);
+    $showSuccess(result.message || t("settings.clamavConnectionSuccessful"));
+  } catch (e: any) {
+    $showError(e);
+  } finally {
+    clamAVTesting.value = false;
+  }
+
+  return true;
 };
 
 const save = async () => {
@@ -397,6 +471,9 @@ onMounted(async () => {
     layoutStore.loading = true;
     const original: ISettings = await api.get();
     const newSettings: ISettings = { ...original, commands: {} };
+    if (!newSettings.clamav) {
+      newSettings.clamav = { enabled: false, url: "", scanDepth: 0 };
+    }
 
     const keys = Object.keys(original.commands) as Array<keyof SettingsCommand>;
     for (const key of keys) {
