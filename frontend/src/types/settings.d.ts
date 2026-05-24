@@ -47,6 +47,7 @@ interface SettingsCollabora {
   enabled: boolean;
   url: string;
   publicURL: string;
+  internalURL: string;
   wopiSecret: string;
   tokenTTL: string;
 }
