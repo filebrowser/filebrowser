@@ -17,7 +17,7 @@
       />
 
       <action
-        v-if="authStore.user?.perm.modify"
+        v-if="authStore.user?.perm.modify && !fileStore.req?.archive"
         id="save-button"
         icon="save"
         :label="t('buttons.save')"
@@ -267,6 +267,7 @@ const handlePageChange = (event: BeforeUnloadEvent) => {
 };
 
 const save = async (throwError?: boolean) => {
+  if (fileStore.req?.archive) return;
   const button = "save";
   buttons.loading("save");
 
@@ -316,7 +317,21 @@ const close = () => {
   finishClose();
 };
 
+const archiveParentPath = (innerPath: string) => {
+  const parts = innerPath.split("/").filter(Boolean);
+  parts.pop();
+  return parts.length === 0 ? "/" : `/${parts.join("/")}`;
+};
+
 const finishClose = () => {
+  if (fileStore.req?.archivePath && fileStore.req?.archiveInnerPath) {
+    router.push({
+      path: fileStore.req.archivePath,
+      query: { archive: archiveParentPath(fileStore.req.archiveInnerPath) },
+    });
+    return;
+  }
+
   const uri = url.removeLastDir(route.path) + "/";
   router.push({ path: uri });
 };

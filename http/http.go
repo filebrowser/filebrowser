@@ -29,7 +29,12 @@ func NewHandler(
 	r := mux.NewRouter()
 	r.Use(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.Header().Set("Content-Security-Policy", `default-src 'self'; style-src 'unsafe-inline';`)
+			set, err := store.Settings.Get()
+			if err == nil {
+				w.Header().Set("Content-Security-Policy", contentSecurityPolicy(effectiveCollabora(server, set)))
+			} else {
+				w.Header().Set("Content-Security-Policy", contentSecurityPolicy(effectiveCollabora(server, nil)))
+			}
 			next.ServeHTTP(w, r)
 		})
 	})
@@ -57,6 +62,14 @@ func NewHandler(
 	users.Handle("/{id:[0-9]+}", monkey(userGetHandler, "")).Methods("GET")
 	users.Handle("/{id:[0-9]+}", monkey(userDeleteHandler, "")).Methods("DELETE")
 
+	api.PathPrefix("/archive/resources").Handler(monkey(archiveResourceHandler, "/api/archive/resources")).Methods("GET")
+	api.PathPrefix("/archive/raw").Handler(monkey(archiveRawHandler, "/api/archive/raw")).Methods("GET")
+	api.PathPrefix("/archive/extract").Handler(monkey(archiveExtractHandler, "/api/archive/extract")).Methods("POST")
+	api.Handle("/archive/create", monkey(archiveCreateHandler, "")).Methods("POST")
+	api.PathPrefix("/archive/jobs").Handler(monkey(archiveCreateJobStatusHandler, "/api/archive/jobs")).Methods("GET")
+	api.PathPrefix("/clamav/jobs").Handler(monkey(clamAVScanJobStatusHandler, "/api/clamav/jobs")).Methods("GET")
+	api.PathPrefix("/clamav/scan").Handler(monkey(clamAVPathScanHandler, "/api/clamav/scan")).Methods("POST")
+
 	api.PathPrefix("/resources/recursive").Handler(monkey(resourceGetRecursiveHandler, "/api/resources/recursive")).Methods("GET")
 	api.PathPrefix("/resources").Handler(monkey(resourceGetHandler, "/api/resources")).Methods("GET")
 	api.PathPrefix("/resources").Handler(monkey(resourceDeleteHandler(fileCache), "/api/resources")).Methods("DELETE")
@@ -78,6 +91,7 @@ func NewHandler(
 
 	api.Handle("/settings", monkey(settingsGetHandler, "")).Methods("GET")
 	api.Handle("/settings", monkey(settingsPutHandler, "")).Methods("PUT")
+	api.Handle("/settings/clamav/test", monkey(settingsClamAVTestHandler, "")).Methods("POST")
 
 	api.PathPrefix("/raw").Handler(monkey(rawHandler, "/api/raw")).Methods("GET")
 	api.PathPrefix("/preview/{size}/{path:.*}").
@@ -85,6 +99,11 @@ func NewHandler(
 	api.PathPrefix("/command").Handler(monkey(commandsHandler, "/api/command")).Methods("GET")
 	api.PathPrefix("/search").Handler(monkey(searchHandler, "/api/search")).Methods("GET")
 	api.PathPrefix("/subtitle").Handler(monkey(subtitleHandler, "/api/subtitle")).Methods("GET")
+
+	api.Handle("/collabora/open", monkey(collaboraOpenHandler, "")).Methods("GET")
+	api.Handle("/collabora/test", monkey(collaboraTestHandler, "")).Methods("POST")
+	r.Handle("/wopi/files/{id}", monkey(wopiFileHandler, "")).Methods("GET", "POST")
+	r.Handle("/wopi/files/{id}/contents", monkey(wopiFileContentsHandler, "")).Methods("GET", "POST")
 
 	public := api.PathPrefix("/public").Subrouter()
 	public.PathPrefix("/dl").Handler(monkey(publicDlHandler, "/api/public/dl/")).Methods("GET")

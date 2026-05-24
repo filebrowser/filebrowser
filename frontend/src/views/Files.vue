@@ -6,7 +6,7 @@
       showLogo
     />
 
-    <breadcrumbs base="/files" />
+    <breadcrumbs v-if="!isCollaboraOfficeView" base="/files" />
     <errors v-if="error" :errorCode="error.status" />
     <component v-else-if="currentView" :is="currentView"></component>
     <div v-else>
@@ -32,7 +32,7 @@ import {
   ref,
   watch,
 } from "vue";
-import { files as api } from "@/api";
+import { collabora, files as api } from "@/api";
 import { storeToRefs } from "pinia";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
@@ -44,10 +44,11 @@ import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import FileListing from "@/views/files/FileListing.vue";
 import { StatusError } from "@/api/utils";
-import { name } from "../utils/constants";
+import { collaboraEnabled, name } from "../utils/constants";
 
 const Editor = defineAsyncComponent(() => import("@/views/files/Editor.vue"));
 const Preview = defineAsyncComponent(() => import("@/views/files/Preview.vue"));
+const Collabora = defineAsyncComponent(() => import("@/views/files/Collabora.vue"));
 
 const layoutStore = useLayoutStore();
 const fileStore = useFileStore();
@@ -62,6 +63,15 @@ let fetchDataController = new AbortController();
 
 const error = ref<StatusError | null>(null);
 
+const isCollaboraOfficeView = computed(() =>
+  route.query.office === "true" &&
+  collaboraEnabled &&
+  !!fileStore.req &&
+  !fileStore.req.archive &&
+  !fileStore.req.isDir &&
+  collabora.isSupportedExtension(fileStore.req.extension)
+);
+
 const currentView = computed(() => {
   if (fileStore.req?.type === undefined) {
     return null;
@@ -69,6 +79,8 @@ const currentView = computed(() => {
 
   if (fileStore.req.isDir) {
     return FileListing;
+  } else if (isCollaboraOfficeView.value) {
+    return Collabora;
   } else if (fileStore.req.extension.toLowerCase() === ".csv") {
     // CSV files use Preview for table view, unless ?edit=true
     if (route.query.edit === "true") {
@@ -158,7 +170,13 @@ const fetchData = async () => {
   fetchDataController.abort();
   fetchDataController = new AbortController();
   try {
-    const res = await api.fetch(url, fetchDataController.signal);
+    const archiveInner = Array.isArray(route.query.archive)
+      ? route.query.archive[0]
+      : route.query.archive;
+    const res =
+      typeof archiveInner === "string"
+        ? await api.fetchArchive(url, archiveInner, fetchDataController.signal)
+        : await api.fetch(url, fetchDataController.signal);
     fileStore.updateRequest(res);
     document.title = `${res.name || t("sidebar.myFiles")} - ${t("files.files")} - ${name}`;
     layoutStore.loading = false;

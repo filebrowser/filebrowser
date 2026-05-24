@@ -1,6 +1,10 @@
 package settings
 
 import (
+	"os"
+	"strconv"
+	"strings"
+
 	fberrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/rules"
 	"github.com/filebrowser/filebrowser/v2/users"
@@ -56,6 +60,15 @@ func (s *Storage) Get() (*Settings, error) {
 
 	if set.DirMode == 0 {
 		set.DirMode = DefaultDirMode
+	}
+
+	if set.ClamAV.URL == "" {
+		set.ClamAV.URL = strings.TrimSpace(os.Getenv("CLAMAV_URL"))
+	}
+	if set.ClamAV.ScanDepth == 0 {
+		if depth, err := strconv.Atoi(strings.TrimSpace(os.Getenv("CLAMAV_SCAN_DEPTH"))); err == nil && depth > 0 {
+			set.ClamAV.ScanDepth = depth
+		}
 	}
 
 	return set, nil

@@ -54,7 +54,13 @@
     "overrideAll": "Alle bestanden in doelmap vervangen",
     "skipAll": "Alle conflicterende bestanden overslaan",
     "renameAll": "Alle bestanden hernoemen (een kopie maken)",
-    "singleDecision": "Voor elk conflicterend bestand besluiten"
+    "singleDecision": "Voor elk conflicterend bestand besluiten",
+    "scanThisFile": "Scan this file",
+    "scanThisFolder": "Scan this folder",
+    "scanSelected": "Scan selected items",
+    "archiveThisFile": "Archive this file",
+    "archiveThisFolder": "Archive this folder",
+    "archiveSelected": "Archive selected items"
   },
   "download": {
     "downloadFile": "Bestand downloaden",
@@ -96,7 +102,10 @@
       "semicolon": "Puntkomma (;)",
       "both": "Beide (,) en (;)"
     },
-    "fileEncoding": "Bestandscodering"
+    "fileEncoding": "Bestandscodering",
+    "scanClean": "Security scan completed. No malware was found in {count} file(s).",
+    "scanCleanMultiple": "Security scan completed. No malware was found in {count} file(s).",
+    "archiveCreated": "Archive created: {destination}"
   },
   "help": {
     "click": "selecteer bestand of map",
@@ -280,7 +289,16 @@
     "userUpdated": "Gebruiker bijgewerkt!",
     "username": "Gebruikersnaam",
     "users": "Gebruikers",
-    "currentPassword": "Uw huidige wachtwoord"
+    "currentPassword": "Uw huidige wachtwoord",
+    "clamavScanning": "ClamAV scanning",
+    "clamavScanningHelp": "Scan every uploaded file with a ClamAV HTTP scanning service before the upload is accepted. The scanner endpoint receives the uploaded file as multipart form field FILES.",
+    "clamavEnable": "Enable ClamAV scanning for uploads",
+    "clamavUrl": "ClamAV scan URL",
+    "clamavScanDepth": "Scan depth",
+    "clamavScanDepthHelp": "Optional. File Browser sends this as X-ClamAV-Scan-Depth. Most ClamAV services control archive recursion on the scanner server through MaxRecursion, so leave this as 0 unless your scan API supports this header.",
+    "clamavTestConnection": "Test connection",
+    "clamavTesting": "Testing...",
+    "clamavConnectionSuccessful": "ClamAV connection successful"
   },
   "sidebar": {
     "diskUsed": "{used} van {total} gebruikt",

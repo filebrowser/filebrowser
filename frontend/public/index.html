@@ -9,7 +9,15 @@
     />
 
     [{[ if .ReCaptcha -]}]
-    <script src="[{[ .ReCaptchaHost ]}]/recaptcha/api.js?render=explicit"></script>
+    <script>
+      (() => {
+        const script = document.createElement("script");
+        script.src = "[{[ .ReCaptchaHost ]}]/recaptcha/api.js?render=explicit";
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+      })();
+    </script>
     [{[ end ]}]
 
     <title>

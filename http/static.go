@@ -49,7 +49,9 @@ func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, fSys 
 		"ResizePreview":         d.server.ResizePreview,
 		"EnableExec":            d.server.EnableExec,
 		"TusSettings":           d.settings.Tus,
+		"ClamAVSettings":        d.settings.ClamAV,
 		"HideLoginButton":       d.settings.HideLoginButton,
+		"CollaboraEnabled":      d.collaboraConfig().Enabled && d.collaboraConfig().URL != "",
 	}
 
 	if d.settings.Branding.Files != "" {

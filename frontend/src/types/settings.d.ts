@@ -9,6 +9,8 @@ interface ISettings {
   rules: any[];
   branding: SettingsBranding;
   tus: SettingsTus;
+  collabora: SettingsCollabora;
+  clamav: SettingsClamAV;
   shell: string[];
   commands: SettingsCommand;
 }
@@ -39,6 +41,28 @@ interface SettingsBranding {
 interface SettingsTus {
   chunkSize: number;
   retryCount: number;
+}
+
+interface SettingsCollabora {
+  configured: boolean;
+  enabled: boolean;
+  url: string;
+  publicURL: string;
+  internalURL: string;
+  wopiSecret: string;
+  tokenTTL: string;
+}
+
+
+interface SettingsClamAV {
+  enabled: boolean;
+  url: string;
+  scanDepth: number;
+}
+
+interface ClamAVTestResponse {
+  status: string;
+  message: string;
 }
 
 interface SettingsCommand {

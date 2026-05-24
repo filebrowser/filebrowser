@@ -165,6 +165,10 @@ func resourcePostHandler(fileCache FileCache) handleFunc {
 				return writeErr
 			}
 
+			if scanErr := scanUploadedFile(r.Context(), d.user.Fs, r.URL.Path, d.settings.ClamAV); scanErr != nil {
+				return scanErr
+			}
+
 			etag := fmt.Sprintf(`"%x%x"`, info.ModTime().UnixNano(), info.Size())
 			w.Header().Set("ETag", etag)
 			return nil
@@ -174,7 +178,7 @@ func resourcePostHandler(fileCache FileCache) handleFunc {
 			_ = d.user.Fs.RemoveAll(r.URL.Path)
 		}
 
-		return errToStatus(err), err
+		return clamAVHTTPStatus(err), err
 	})
 }
 

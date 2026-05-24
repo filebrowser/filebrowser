@@ -207,7 +207,12 @@ func tusPatchHandler(cache UploadCache) handleFunc {
 		if err != nil {
 			return http.StatusInternalServerError, fmt.Errorf("could not open file: %w", err)
 		}
-		defer openFile.Close()
+		fileClosed := false
+		defer func() {
+			if !fileClosed {
+				_ = openFile.Close()
+			}
+		}()
 
 		_, err = openFile.Seek(uploadOffset, 0)
 		if err != nil {
@@ -230,6 +235,17 @@ func tusPatchHandler(cache UploadCache) handleFunc {
 		w.Header().Set("Upload-Offset", strconv.FormatInt(newOffset, 10))
 
 		if newOffset >= uploadLength {
+			if err := openFile.Close(); err != nil {
+				return http.StatusInternalServerError, fmt.Errorf("could not close uploaded file: %w", err)
+			}
+			fileClosed = true
+
+			if scanErr := scanUploadedFile(r.Context(), d.user.Fs, r.URL.Path, d.settings.ClamAV); scanErr != nil {
+				cache.Complete(file.RealPath())
+				_ = d.user.Fs.RemoveAll(r.URL.Path)
+				return clamAVHTTPStatus(scanErr), scanErr
+			}
+
 			cache.Complete(file.RealPath())
 			_ = d.RunHook(func() error { return nil }, "upload", r.URL.Path, "", d.user)
 		}
