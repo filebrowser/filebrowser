@@ -278,7 +278,16 @@
     "userUpdated": "Bruker opprettet!",
     "username": "Brukernavn",
     "users": "Bruker",
-    "currentPassword": "Your Current Password"
+    "currentPassword": "Your Current Password",
+    "clamavScanning": "ClamAV scanning",
+    "clamavScanningHelp": "Scan every uploaded file with a ClamAV HTTP scanning service before the upload is accepted. The scanner endpoint receives the uploaded file as multipart form field FILES.",
+    "clamavEnable": "Enable ClamAV scanning for uploads",
+    "clamavUrl": "ClamAV scan URL",
+    "clamavScanDepth": "Scan depth",
+    "clamavScanDepthHelp": "Optional. File Browser sends this as X-ClamAV-Scan-Depth. Most ClamAV services control archive recursion on the scanner server through MaxRecursion, so leave this as 0 unless your scan API supports this header.",
+    "clamavTestConnection": "Test connection",
+    "clamavTesting": "Testing...",
+    "clamavConnectionSuccessful": "ClamAV connection successful"
   },
   "sidebar": {
     "help": "Hjelp",
