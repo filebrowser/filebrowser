@@ -1,6 +1,6 @@
 <template>
   <div class="t-container">
-    <span>{{ message }}</span>
+    <span class="toast-message-text">{{ message }}</span>
     <button v-if="isReport" class="action" @click.stop="clicked">
       {{ reportText }}
     </button>
@@ -27,6 +27,19 @@ const clicked = () => {
   justify-content: space-between;
   align-items: center;
 }
+.toast-message-text {
+  white-space: normal;
+  line-height: 1.25;
+  font-size: 1rem;
+  text-align: left;
+  margin: 0;
+  display: inline;
+  width: auto;
+  color: inherit;
+  font-weight: inherit;
+}
+
+
 .action {
   text-align: center;
   height: 40px;
