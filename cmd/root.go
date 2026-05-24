@@ -111,6 +111,11 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.Bool("disableExec", true, "disables Command Runner feature")
 	flags.Bool("disableTypeDetectionByHeader", false, "disables type detection by reading file headers")
 	flags.Bool("disableImageResolutionCalc", false, "disables image resolution calculation by reading image files")
+	flags.Bool("collabora.enabled", false, "enable Collabora Online / WOPI integration")
+	flags.String("collabora.url", "", "Collabora Online public URL, for example https://collabora.example.com")
+	flags.String("collabora.publicURL", "", "public File Browser URL used by Collabora for WOPI callbacks; include baseURL if File Browser is mounted under a path")
+	flags.String("collabora.wopiSecret", "", "secret used to sign short-lived Collabora WOPI access tokens; falls back to File Browser key if empty")
+	flags.String("collabora.tokenTTL", "2h", "Collabora WOPI token lifetime")
 }
 
 var rootCmd = &cobra.Command{
@@ -353,6 +358,26 @@ func getServerSettings(v *viper.Viper, st *storage.Storage) (*settings.Server, e
 		server.EnableExec = !v.GetBool("disableExec")
 	}
 
+	if v.IsSet("collabora.enabled") {
+		server.CollaboraEnabled = v.GetBool("collabora.enabled")
+	}
+
+	if v.IsSet("collabora.url") {
+		server.CollaboraURL = v.GetString("collabora.url")
+	}
+
+	if v.IsSet("collabora.publicURL") {
+		server.CollaboraPublicURL = v.GetString("collabora.publicURL")
+	}
+
+	if v.IsSet("collabora.wopiSecret") {
+		server.CollaboraWOPISecret = v.GetString("collabora.wopiSecret")
+	}
+
+	if v.IsSet("collabora.tokenTTL") {
+		server.CollaboraTokenTTL = v.GetString("collabora.tokenTTL")
+	}
+
 	if isAddrSet && isSocketSet {
 		return nil, errors.New("--socket flag cannot be used with --address, --port, --key nor --cert")
 	}
@@ -459,6 +484,11 @@ func quickSetup(v *viper.Viper, s *storage.Storage) error {
 		EnableExec:            !v.GetBool("disableExec"),
 		TypeDetectionByHeader: !v.GetBool("disableTypeDetectionByHeader"),
 		ImageResolutionCal:    !v.GetBool("disableImageResolutionCalc"),
+		CollaboraEnabled:      v.GetBool("collabora.enabled"),
+		CollaboraURL:          v.GetString("collabora.url"),
+		CollaboraPublicURL:    v.GetString("collabora.publicURL"),
+		CollaboraWOPISecret:   v.GetString("collabora.wopiSecret"),
+		CollaboraTokenTTL:     v.GetString("collabora.tokenTTL"),
 	}
 
 	err = s.Settings.SaveServer(ser)
