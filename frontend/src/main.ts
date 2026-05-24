@@ -83,14 +83,36 @@ app.provide("$showSuccess", (message: string) => {
   );
 });
 
+const normalizeErrorToast = (error: Error | string, displayReport: boolean) => {
+  let message = String((error as Error).message || error || "");
+
+  const statusWrappedMessage = message.match(
+    /^\s*\d{3}\s+[^()]*\(([\s\S]*Security scan blocked the upload[\s\S]*)\)\s*$/
+  );
+  if (statusWrappedMessage?.[1]) {
+    message = statusWrappedMessage[1].trim();
+  }
+
+  const isSecurityScanBlock = message.includes(
+    "Security scan blocked the upload"
+  );
+
+  return {
+    message,
+    isReport: !disableExternal && displayReport && !isSecurityScanBlock,
+  };
+};
+
 app.provide("$showError", (error: Error | string, displayReport = true) => {
   const $toast = useToast();
+  const normalized = normalizeErrorToast(error, displayReport);
+
   $toast.error(
     {
       component: CustomToast,
       props: {
-        message: (error as Error).message || error,
-        isReport: !disableExternal && displayReport,
+        message: normalized.message,
+        isReport: normalized.isReport,
         // TODO: could you add this to the component itself?
         reportText: i18n.global.t("buttons.reportIssue"),
       },
