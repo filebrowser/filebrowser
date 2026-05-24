@@ -214,10 +214,10 @@
     "commandRunnerHelp": "Here you can set commands that are executed in the named events. You must write one per line. The environment variables {0} and {1} will be available, being {0} relative to {1}. For more information about this feature and the available environment variables, please read the {2}.",
     "commandsUpdated": "Commands updated!",
     "collabora": "Collabora Online",
-    "collaboraHelp": "Configure Collabora Online / WOPI directly from File Browser. The public File Browser URL must be reachable from the Collabora server.",
+    "collaboraHelp": "Configure Collabora Online / WOPI directly from File Browser. Use both external and internal File Browser URLs when the same server is accessed from public DNS and LAN IP.",
     "collaboraEnabled": "Enable Collabora integration",
     "collaboraURL": "Collabora URL",
-    "collaboraPublicURL": "Public File Browser URL",
+    "collaboraPublicURL": "External File Browser URL",
     "collaboraWOPISecret": "WOPI token secret",
     "collaboraTokenTTL": "WOPI token lifetime",
     "createUserDir": "Auto create user home dir while adding new user",
@@ -295,7 +295,10 @@
     "collaboraTest": "Test Collabora connection",
     "collaboraTesting": "Testing Collabora connection...",
     "collaboraTestPassed": "Collabora connection test passed.",
-    "collaboraTestNeedsAttention": "Collabora connection test completed with warnings or errors."
+    "collaboraTestNeedsAttention": "Collabora connection test completed with warnings or errors.",
+    "collaboraPublicURLHelp": "Used when File Browser is opened through the public/external DNS name, for example https://filebrowser.koszhome.ro.",
+    "collaboraInternalURL": "Internal File Browser URL",
+    "collaboraInternalURLHelp": "Used when File Browser is opened from LAN, for example http://192.168.68.204:8080. Leave empty if you only use the external URL."
   },
   "sidebar": {
     "diskUsed": "{used} of {total} used",
