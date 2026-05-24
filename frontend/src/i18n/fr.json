@@ -29,8 +29,8 @@
     "rename": "Renommer",
     "replace": "Remplacer",
     "reportIssue": "Signaler un problème",
-    "resumeTransfer": "Resume previous transfer",
-    "resumeTransferTooltip": "Skip all conflicting files, except the ones that are smaller on the server as we suppose that their transfert has been interrupted.",
+    "resumeTransfer": "Reprendre le transfert précédent",
+    "resumeTransferTooltip": "Ignorez tous les fichiers en conflit, à l'exception de ceux dont la taille est inférieure sur le serveur, car nous supposons que leur transfert a été interrompu.",
     "save": "Enregistrer",
     "schedule": "Planifier",
     "search": "Rechercher",
@@ -247,7 +247,7 @@
       "execute": "Exécuter des commandes",
       "modify": "Modifier des fichiers",
       "rename": "Renommer ou déplacer des fichiers ou des dossiers",
-      "share": "Share files (require download permission)"
+      "share": "Partager des fichiers (autorisation de téléchargement requise)"
     },
     "permissions": "Permissions",
     "permissionsHelp": "Vous pouvez définir l'utilisateur comme étant un administrateur ou encore choisir les permissions individuellement. Si vous sélectionnez \"Administrateur\", toutes les autres options seront automatiquement activées. La gestion des utilisateurs est un privilège que seul l'administrateur possède.\n",
@@ -283,7 +283,7 @@
     "currentPassword": "Mot de Passe Actuel"
   },
   "sidebar": {
-    "diskUsed": "{used} of {total} used",
+    "diskUsed": "{used} sur {total} utilisés",
     "help": "Aide",
     "hugoNew": "Nouveau Hugo",
     "login": "Login",
