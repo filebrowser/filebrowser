@@ -8,7 +8,9 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
+	"net"
 	"net/http"
+	"net/netip"
 	"net/url"
 	gopath "path"
 	"regexp"
@@ -87,6 +89,7 @@ var collaboraTestHandler = withAdmin(func(w http.ResponseWriter, r *http.Request
 	cfg := req.Collabora
 	cfg.URL = strings.TrimRight(strings.TrimSpace(cfg.URL), "/")
 	cfg.PublicURL = strings.TrimRight(strings.TrimSpace(cfg.PublicURL), "/")
+	cfg.InternalURL = strings.TrimRight(strings.TrimSpace(cfg.InternalURL), "/")
 	cfg.WOPISecret = strings.TrimSpace(cfg.WOPISecret)
 	cfg.TokenTTL = strings.TrimSpace(cfg.TokenTTL)
 	if cfg.TokenTTL == "" {
@@ -115,16 +118,17 @@ var collaboraTestHandler = withAdmin(func(w http.ResponseWriter, r *http.Request
 	}
 	add("collabora_url", "success", "Collabora URL format is valid: "+cfg.URL)
 
-	publicURL, err := url.Parse(cfg.PublicURL)
-	if cfg.PublicURL == "" || err != nil || publicURL.Scheme == "" || publicURL.Host == "" {
-		add("public_url", "error", "Public File Browser URL must be set and must be an absolute URL reachable by the Collabora server.")
+	validExternal := validateCollaboraBaseURL("external_url", "External File Browser URL", cfg.PublicURL, false, add)
+	validInternal := validateCollaboraBaseURL("internal_url", "Internal File Browser URL", cfg.InternalURL, true, add)
+	if !validExternal && !validInternal {
+		add("wopi_urls", "error", "At least one File Browser WOPI URL must be configured. Set External File Browser URL, Internal File Browser URL, or both.")
 		return renderCollaboraTest(w, r, checks), nil
 	}
-	if publicURL.Scheme != "http" && publicURL.Scheme != "https" {
-		add("public_url", "error", "Public File Browser URL must use http or https.")
-		return renderCollaboraTest(w, r, checks), nil
+
+	selectedWOPIURL := selectCollaboraWOPIBaseURL(cfg, r, d)
+	if selectedWOPIURL != "" {
+		add("selected_wopi_url", "success", "For this request File Browser would use WOPI URL: "+selectedWOPIURL)
 	}
-	add("public_url", "success", "Public File Browser URL format is valid: "+cfg.PublicURL)
 
 	if strings.TrimSpace(cfg.WOPISecret) == "" {
 		add("wopi_secret", "warning", "WOPI token secret is empty. File Browser will fall back to the instance key, but a dedicated long random secret is recommended.")
@@ -170,25 +174,8 @@ var collaboraTestHandler = withAdmin(func(w http.ResponseWriter, r *http.Request
 		}
 	}
 
-	wopiProbeURL := strings.TrimRight(cfg.PublicURL, "/") + "/wopi/files/__collabora_test__?access_token=invalid"
-	ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
-	defer cancel()
-	probeReq, err := http.NewRequestWithContext(ctx, http.MethodGet, wopiProbeURL, nil)
-	if err != nil {
-		add("wopi_public_url", "error", "Could not build WOPI probe request: "+err.Error())
-	} else {
-		probeRes, err := http.DefaultClient.Do(probeReq)
-		if err != nil {
-			add("wopi_public_url", "warning", "Public File Browser URL was not reachable from this server: "+err.Error()+". Collabora must be able to reach this URL.")
-		} else {
-			defer probeRes.Body.Close()
-			if probeRes.StatusCode == http.StatusUnauthorized || probeRes.StatusCode == http.StatusNotFound {
-				add("wopi_public_url", "success", "Public File Browser URL reached the WOPI endpoint. Collabora should use this as aliasgroup1/allowed WOPI host.")
-			} else {
-				add("wopi_public_url", "warning", fmt.Sprintf("Public File Browser URL responded with HTTP %d during WOPI probe. Collabora may still fail if aliasgroup1/allowed WOPI host is not set to %s.", probeRes.StatusCode, cfg.PublicURL))
-			}
-		}
-	}
+	probeCollaboraWOPIURL(r.Context(), "external", cfg.PublicURL, add)
+	probeCollaboraWOPIURL(r.Context(), "internal", cfg.InternalURL, add)
 
 	return renderCollaboraTest(w, r, checks), nil
 })
@@ -263,8 +250,8 @@ var collaboraOpenHandler = withUser(func(w http.ResponseWriter, r *http.Request,
 		return http.StatusInternalServerError, err
 	}
 
-	publicURL := collaboraPublicURL(d, r)
-	wopiSrc := strings.TrimRight(publicURL, "/") + "/wopi/files/" + url.PathEscape(fileID)
+	wopiBaseURL := selectCollaboraWOPIBaseURL(cfg, r, d)
+	wopiSrc := strings.TrimRight(wopiBaseURL, "/") + "/wopi/files/" + url.PathEscape(fileID)
 
 	action, err := collaboraActionForExt(r.Context(), cfg.URL, ext, canWrite)
 	if err != nil {
@@ -329,12 +316,93 @@ func wopiFileID(userID uint, filePath string) string {
 	return hex.EncodeToString(sum[:])
 }
 
-func collaboraPublicURL(d *data, r *http.Request) string {
-	cfg := d.collaboraConfig()
-	if strings.TrimSpace(cfg.PublicURL) != "" {
-		return strings.TrimRight(strings.TrimSpace(cfg.PublicURL), "/")
+func validateCollaboraBaseURL(checkName, label, raw string, optional bool, add func(string, string, string)) bool {
+	raw = strings.TrimRight(strings.TrimSpace(raw), "/")
+	if raw == "" {
+		if optional {
+			add(checkName, "warning", label+" is empty. It will not be used for WOPI callbacks.")
+		} else {
+			add(checkName, "warning", label+" is empty. External/public access will only work if another WOPI URL matches the request.")
+		}
+		return false
 	}
 
+	parsed, err := url.Parse(raw)
+	if err != nil || parsed.Scheme == "" || parsed.Host == "" {
+		add(checkName, "error", label+" must be a valid absolute URL.")
+		return false
+	}
+	if parsed.Scheme != "http" && parsed.Scheme != "https" {
+		add(checkName, "error", label+" must use http or https.")
+		return false
+	}
+
+	add(checkName, "success", label+" format is valid: "+raw)
+	return true
+}
+
+func probeCollaboraWOPIURL(ctx context.Context, label, raw string, add func(string, string, string)) {
+	raw = strings.TrimRight(strings.TrimSpace(raw), "/")
+	if raw == "" {
+		return
+	}
+
+	wopiProbeURL := raw + "/wopi/files/__collabora_test__?access_token=invalid"
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
+	probeReq, err := http.NewRequestWithContext(ctx, http.MethodGet, wopiProbeURL, nil)
+	if err != nil {
+		add("wopi_"+label+"_url", "error", "Could not build "+label+" WOPI probe request: "+err.Error())
+		return
+	}
+
+	probeRes, err := http.DefaultClient.Do(probeReq)
+	if err != nil {
+		add("wopi_"+label+"_url", "warning", collaboraLabel(label)+" File Browser URL was not reachable from this server: "+err.Error()+". Collabora must be able to reach this URL when this URL is selected.")
+		return
+	}
+	defer probeRes.Body.Close()
+
+	if probeRes.StatusCode == http.StatusUnauthorized || probeRes.StatusCode == http.StatusNotFound {
+		add("wopi_"+label+"_url", "success", collaboraLabel(label)+" File Browser URL reached the WOPI endpoint. Add this URL to Collabora aliasgroup/allowed WOPI hosts: "+raw)
+		return
+	}
+
+	add("wopi_"+label+"_url", "warning", fmt.Sprintf("%s File Browser URL responded with HTTP %d during WOPI probe. Collabora may still fail if the matching aliasgroup/allowed WOPI host is not set to %s.", collaboraLabel(label), probeRes.StatusCode, raw))
+}
+
+func collaboraLabel(label string) string {
+	if label == "" {
+		return label
+	}
+	return strings.ToUpper(label[:1]) + label[1:]
+}
+
+func selectCollaboraWOPIBaseURL(cfg settings.Collabora, r *http.Request, d *data) string {
+	externalURL := strings.TrimRight(strings.TrimSpace(cfg.PublicURL), "/")
+	internalURL := strings.TrimRight(strings.TrimSpace(cfg.InternalURL), "/")
+	currentURL := currentFileBrowserURL(d, r)
+
+	if internalURL != "" && sameURLOrigin(currentURL, internalURL) {
+		return internalURL
+	}
+	if externalURL != "" && sameURLOrigin(currentURL, externalURL) {
+		return externalURL
+	}
+	if internalURL != "" && requestLooksInternal(currentURL) {
+		return internalURL
+	}
+	if externalURL != "" {
+		return externalURL
+	}
+	if internalURL != "" {
+		return internalURL
+	}
+	return currentURL
+}
+
+func currentFileBrowserURL(d *data, r *http.Request) string {
 	scheme := r.Header.Get("X-Forwarded-Proto")
 	if scheme == "" {
 		if r.TLS != nil {
@@ -350,6 +418,57 @@ func collaboraPublicURL(d *data, r *http.Request) string {
 	}
 
 	return strings.TrimRight(scheme+"://"+host+d.server.BaseURL, "/")
+}
+
+func sameURLOrigin(left, right string) bool {
+	l, err := url.Parse(strings.TrimSpace(left))
+	if err != nil || l.Scheme == "" || l.Host == "" {
+		return false
+	}
+	r, err := url.Parse(strings.TrimSpace(right))
+	if err != nil || r.Scheme == "" || r.Host == "" {
+		return false
+	}
+	return strings.EqualFold(l.Scheme, r.Scheme) && strings.EqualFold(normalizedHostPort(l), normalizedHostPort(r))
+}
+
+func normalizedHostPort(u *url.URL) string {
+	host := strings.ToLower(u.Hostname())
+	port := u.Port()
+	if port == "" {
+		switch u.Scheme {
+		case "http":
+			port = "80"
+		case "https":
+			port = "443"
+		}
+	}
+	if port == "" {
+		return host
+	}
+	return net.JoinHostPort(host, port)
+}
+
+func requestLooksInternal(rawURL string) bool {
+	u, err := url.Parse(strings.TrimSpace(rawURL))
+	if err != nil || u.Host == "" {
+		return false
+	}
+
+	host := strings.ToLower(u.Hostname())
+	if host == "localhost" {
+		return true
+	}
+	if strings.HasSuffix(host, ".local") || strings.HasSuffix(host, ".home") || strings.HasSuffix(host, ".lan") || strings.HasSuffix(host, ".internal") {
+		return true
+	}
+
+	addr, err := netip.ParseAddr(host)
+	if err == nil {
+		return addr.IsLoopback() || addr.IsPrivate() || addr.IsLinkLocalUnicast()
+	}
+
+	return false
 }
 
 func collaboraActionForExt(ctx context.Context, collaboraURL, ext string, canWrite bool) (collaboraDiscoveryAction, error) {

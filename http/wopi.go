@@ -171,7 +171,7 @@ func wopiCheckFileInfoHandler(w http.ResponseWriter, r *http.Request, d *data, c
 		LastModifiedTime:     ctx.Info.ModTime().UTC().Format(time.RFC3339),
 		Version:              wopiVersion(ctx.Info),
 		BreadcrumbBrandName:  "File Browser",
-		BreadcrumbBrandURL:   strings.TrimRight(collaboraPublicURL(d, r), "/"),
+		BreadcrumbBrandURL:   strings.TrimRight(selectCollaboraWOPIBaseURL(d.collaboraConfig(), r, d), "/"),
 		BreadcrumbFolderName: folder,
 	}
 	return renderJSON(w, r, info)
