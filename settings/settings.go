@@ -31,6 +31,7 @@ type Settings struct {
 	LogoutPage            string              `json:"logoutPage"`
 	Branding              Branding            `json:"branding"`
 	Tus                   Tus                 `json:"tus"`
+	ClamAV                ClamAV              `json:"clamav"`
 	Commands              map[string][]string `json:"commands"`
 	Shell                 []string            `json:"shell"`
 	Rules                 []rules.Rule        `json:"rules"`
