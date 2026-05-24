@@ -10,3 +10,11 @@ export async function update(settings: ISettings) {
     body: JSON.stringify(settings),
   });
 }
+
+
+export async function testClamAV(config: SettingsClamAV) {
+  return fetchJSON<ClamAVTestResponse>(`/api/settings/clamav/test`, {
+    method: "POST",
+    body: JSON.stringify(config),
+  });
+}
