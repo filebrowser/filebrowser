@@ -2,6 +2,7 @@ package files
 
 import (
 	"os"
+	"strings"
 	"unicode/utf8"
 )
 
@@ -56,4 +57,19 @@ func IsNamedPipe(mode os.FileMode) bool {
 
 func IsSymlink(mode os.FileMode) bool {
 	return mode&os.ModeSymlink != 0
+}
+
+func IsArchiveName(name string) bool {
+	lower := strings.ToLower(name)
+	archiveExts := []string{
+		".zip", ".tar", ".tar.gz", ".tgz", ".tar.bz2", ".tbz2",
+		".tar.xz", ".txz", ".tar.zst", ".tzst", ".tar.lz4", ".tlz4",
+		".tar.br", ".tar.sz", ".rar", ".7z",
+	}
+	for _, ext := range archiveExts {
+		if strings.HasSuffix(lower, ext) {
+			return true
+		}
+	}
+	return false
 }
