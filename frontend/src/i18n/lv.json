@@ -54,7 +54,13 @@
     "overrideAll": "Replace all files in destination folder",
     "skipAll": "Skip all conflicting files",
     "renameAll": "Rename all files (create a copy)",
-    "singleDecision": "Decide for each conflicting file"
+    "singleDecision": "Decide for each conflicting file",
+    "scanThisFile": "Scan this file",
+    "scanThisFolder": "Scan this folder",
+    "scanSelected": "Scan selected items",
+    "archiveThisFile": "Archive this file",
+    "archiveThisFolder": "Archive this folder",
+    "archiveSelected": "Archive selected items"
   },
   "download": {
     "downloadFile": "Lejupielādēt failu",
@@ -96,7 +102,10 @@
       "semicolon": "Semikols (;)",
       "both": "Gan (,) gan (;)"
     },
-    "fileEncoding": "File Encoding"
+    "fileEncoding": "File Encoding",
+    "scanClean": "Security scan completed. No malware was found in {count} file(s).",
+    "scanCleanMultiple": "Security scan completed. No malware was found in {count} file(s).",
+    "archiveCreated": "Archive created: {destination}"
   },
   "help": {
     "click": "atlasiet failu vai direktoriju",
@@ -280,7 +289,16 @@
     "userUpdated": "Lietotājs atjaunināts!",
     "username": "Lietotājvārds",
     "users": "Lietotāji",
-    "currentPassword": "Your Current Password"
+    "currentPassword": "Your Current Password",
+    "clamavScanning": "ClamAV scanning",
+    "clamavScanningHelp": "Scan every uploaded file with a ClamAV HTTP scanning service before the upload is accepted. The scanner endpoint receives the uploaded file as multipart form field FILES.",
+    "clamavEnable": "Enable ClamAV scanning for uploads",
+    "clamavUrl": "ClamAV scan URL",
+    "clamavScanDepth": "Scan depth",
+    "clamavScanDepthHelp": "Optional. File Browser sends this as X-ClamAV-Scan-Depth. Most ClamAV services control archive recursion on the scanner server through MaxRecursion, so leave this as 0 unless your scan API supports this header.",
+    "clamavTestConnection": "Test connection",
+    "clamavTesting": "Testing...",
+    "clamavConnectionSuccessful": "ClamAV connection successful"
   },
   "sidebar": {
     "diskUsed": "{used} of {total} used",

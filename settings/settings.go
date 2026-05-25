@@ -31,6 +31,9 @@ type Settings struct {
 	LogoutPage            string              `json:"logoutPage"`
 	Branding              Branding            `json:"branding"`
 	Tus                   Tus                 `json:"tus"`
+	Collabora             Collabora           `json:"collabora"`
+	ConvertX              ConvertX            `json:"convertx"`
+	ClamAV                ClamAV              `json:"clamav"`
 	Commands              map[string][]string `json:"commands"`
 	Shell                 []string            `json:"shell"`
 	Rules                 []rules.Rule        `json:"rules"`
@@ -43,6 +46,21 @@ type Settings struct {
 // GetRules implements rules.Provider.
 func (s *Settings) GetRules() []rules.Rule {
 	return s.Rules
+}
+
+// Collabora stores the optional Collabora Online / WOPI integration settings.
+//
+// Configured is used to distinguish an intentionally disabled GUI setting from
+// an old database that predates these fields. If Configured is false, the
+// server-level CLI/env configuration is used as a fallback.
+type Collabora struct {
+	Configured  bool   `json:"configured"`
+	Enabled     bool   `json:"enabled"`
+	URL         string `json:"url"`
+	PublicURL   string `json:"publicURL"`
+	InternalURL string `json:"internalURL"`
+	WOPISecret  string `json:"wopiSecret"`
+	TokenTTL    string `json:"tokenTTL"`
 }
 
 // Server specific settings.
@@ -62,6 +80,12 @@ type Server struct {
 	ImageResolutionCal    bool   `json:"imageResolutionCalculation"`
 	AuthHook              string `json:"authHook"`
 	TokenExpirationTime   string `json:"tokenExpirationTime"`
+	CollaboraEnabled      bool   `json:"collaboraEnabled"`
+	CollaboraURL          string `json:"collaboraURL"`
+	CollaboraPublicURL    string `json:"collaboraPublicURL"`
+	CollaboraInternalURL  string `json:"collaboraInternalURL"`
+	CollaboraWOPISecret   string `json:"collaboraWOPISecret"`
+	CollaboraTokenTTL     string `json:"collaboraTokenTTL"`
 }
 
 // Clean cleans any variables that might need cleaning.

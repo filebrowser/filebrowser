@@ -153,6 +153,241 @@
               />
             </p>
           </div>
+
+          <h3>{{ t("settings.collabora") }}</h3>
+
+          <p class="small">{{ t("settings.collaboraHelp") }}</p>
+
+          <p>
+            <input
+              type="checkbox"
+              v-model="settings.collabora.enabled"
+              id="collabora-enabled"
+            />
+            {{ t("settings.collaboraEnabled") }}
+          </p>
+
+          <p>
+            <label for="collabora-url">{{ t("settings.collaboraURL") }}</label>
+            <input
+              class="input input--block"
+              type="url"
+              placeholder="https://collabora.example.com"
+              v-model.trim="settings.collabora.url"
+              id="collabora-url"
+            />
+          </p>
+
+          <p>
+            <label for="collabora-public-url">{{
+              t("settings.collaboraPublicURL")
+            }}</label>
+            <input
+              class="input input--block"
+              type="url"
+              placeholder="https://files.example.com"
+              v-model.trim="settings.collabora.publicURL"
+              id="collabora-public-url"
+            />
+            <span class="small">{{ t("settings.collaboraPublicURLHelp") }}</span>
+          </p>
+
+          <p>
+            <label for="collabora-internal-url">{{
+              t("settings.collaboraInternalURL")
+            }}</label>
+            <input
+              class="input input--block"
+              type="url"
+              placeholder="http://filebrowser.lan:8080"
+              v-model.trim="settings.collabora.internalURL"
+              id="collabora-internal-url"
+            />
+            <span class="small">{{ t("settings.collaboraInternalURLHelp") }}</span>
+          </p>
+
+          <p>
+            <label for="collabora-wopi-secret">{{
+              t("settings.collaboraWOPISecret")
+            }}</label>
+            <input
+              class="input input--block"
+              type="password"
+              autocomplete="off"
+              placeholder="long random secret"
+              v-model.trim="settings.collabora.wopiSecret"
+              id="collabora-wopi-secret"
+            />
+          </p>
+
+          <p>
+            <label for="collabora-token-ttl">{{
+              t("settings.collaboraTokenTTL")
+            }}</label>
+            <input
+              class="input input--block"
+              type="text"
+              placeholder="2h"
+              v-model.trim="settings.collabora.tokenTTL"
+              id="collabora-token-ttl"
+            />
+          </p>
+
+          <p>
+            <button
+              class="button button--flat"
+              type="button"
+              :disabled="collaboraTesting"
+              @click="testCollabora"
+            >
+              {{
+                collaboraTesting
+                  ? t("settings.collaboraTesting")
+                  : t("settings.collaboraTest")
+              }}
+            </button>
+          </p>
+
+          <div
+            v-if="collaboraTestResult"
+            class="collabora-test-results"
+            :class="{ 'collabora-test-results--ok': collaboraTestResult.ok }"
+          >
+            <p class="small">
+              {{
+                collaboraTestResult.ok
+                  ? t("settings.collaboraTestPassed")
+                  : t("settings.collaboraTestNeedsAttention")
+              }}
+            </p>
+            <ul>
+              <li
+                v-for="check in collaboraTestResult.checks"
+                :key="check.name"
+                :class="`collabora-test-results__item collabora-test-results__item--${check.status}`"
+              >
+                <strong>{{ check.status.toUpperCase() }}</strong>
+                <span>{{ check.message }}</span>
+              </li>
+            </ul>
+          </div>
+
+          <h3>{{ t("settings.convertx") }}</h3>
+
+          <p class="small">{{ t("settings.convertxHelp") }}</p>
+
+          <p>
+            <input
+              type="checkbox"
+              v-model="settings.convertx.enabled"
+              id="convertx-enabled"
+            />
+            {{ t("settings.convertxEnabled") }}
+          </p>
+
+          <p>
+            <label for="convertx-url">{{ t("settings.convertxURL") }}</label>
+            <input
+              class="input input--block"
+              type="url"
+              placeholder="http://convertx.lan:3000"
+              v-model.trim="settings.convertx.url"
+              id="convertx-url"
+            />
+          </p>
+
+          <p>
+            <label for="convertx-api-key">{{ t("settings.convertxAPIKey") }}</label>
+            <input
+              class="input input--block"
+              type="password"
+              autocomplete="off"
+              placeholder="long random secret"
+              v-model.trim="settings.convertx.apiKey"
+              id="convertx-api-key"
+            />
+            <span class="small">{{ t("settings.convertxAPIKeyHelp") }}</span>
+          </p>
+
+          <p>
+            <label for="convertx-timeout">{{ t("settings.convertxTimeout") }}</label>
+            <input
+              class="input input--block"
+              type="text"
+              placeholder="2m"
+              v-model.trim="settings.convertx.timeout"
+              id="convertx-timeout"
+            />
+          </p>
+
+          <p>
+            <button
+              class="button button--flat"
+              type="button"
+              @click.prevent="testConvertX"
+              :disabled="convertXTesting || !settings.convertx.url"
+            >
+              {{
+                convertXTesting
+                  ? t("settings.convertxTesting")
+                  : t("settings.convertxTestConnection")
+              }}
+            </button>
+          </p>
+
+          <h3>{{ t("settings.clamavScanning") }}</h3>
+
+          <p class="small">{{ t("settings.clamavScanningHelp") }}</p>
+
+          <p>
+            <input
+              type="checkbox"
+              v-model="settings.clamav.enabled"
+              id="clamav-enabled"
+            />
+            {{ t("settings.clamavEnable") }}
+          </p>
+
+          <p>
+            <label for="clamav-url">{{ t("settings.clamavUrl") }}</label>
+            <input
+              class="input input--block"
+              type="text"
+              v-model.trim="settings.clamav.url"
+              id="clamav-url"
+              placeholder="http://clamav.lan:3000/api/v1/scan"
+            />
+          </p>
+
+          <p>
+            <label for="clamav-scan-depth">{{
+              t("settings.clamavScanDepth")
+            }}</label>
+            <vue-number-input
+              controls
+              v-model.number="settings.clamav.scanDepth"
+              id="clamav-scan-depth"
+              :min="0"
+            />
+          </p>
+
+          <p class="small">{{ t("settings.clamavScanDepthHelp") }}</p>
+
+          <p>
+            <button
+              class="button button--flat"
+              type="button"
+              @click.prevent="testClamAV"
+              :disabled="clamAVTesting || !settings.clamav.url"
+            >
+              {{
+                clamAVTesting
+                  ? t("settings.clamavTesting")
+                  : t("settings.clamavTestConnection")
+              }}
+            </button>
+          </p>
+
         </div>
 
         <div class="card-action">
@@ -247,6 +482,7 @@
 
 <script setup lang="ts">
 import { settings as api } from "@/api";
+import type { CollaboraTestResponse, ConvertXTestResponse } from "@/api/settings";
 import { StatusError } from "@/api/utils";
 import Rules from "@/components/settings/Rules.vue";
 import Themes from "@/components/settings/Themes.vue";
@@ -262,6 +498,10 @@ const error = ref<StatusError | null>(null);
 const originalSettings = ref<ISettings | null>(null);
 const settings = ref<ISettings | null>(null);
 const debounceTimeout = ref<number | null>(null);
+const collaboraTesting = ref(false);
+const collaboraTestResult = ref<CollaboraTestResponse | null>(null);
+const convertXTesting = ref(false);
+const clamAVTesting = ref(false);
 
 const commandObject = ref<{
   [key: string]: string[] | string;
@@ -309,6 +549,78 @@ const capitalize = (name: string, where: string | RegExp = "_") => {
   return name.slice(0, -1);
 };
 
+const normalizedCollaboraSettings = (): SettingsCollabora => ({
+  configured: true,
+  enabled: Boolean(settings.value?.collabora?.enabled),
+  url: settings.value?.collabora?.url?.trim() ?? "",
+  publicURL: settings.value?.collabora?.publicURL?.trim() ?? "",
+  internalURL: settings.value?.collabora?.internalURL?.trim() ?? "",
+  wopiSecret: settings.value?.collabora?.wopiSecret?.trim() ?? "",
+  tokenTTL: settings.value?.collabora?.tokenTTL?.trim() || "2h",
+});
+
+const normalizedConvertXSettings = (): SettingsConvertX => ({
+  configured: true,
+  enabled: Boolean(settings.value?.convertx?.enabled),
+  url: settings.value?.convertx?.url?.trim().replace(/\/$/, "") ?? "",
+  apiKey: settings.value?.convertx?.apiKey?.trim() ?? "",
+  timeout: settings.value?.convertx?.timeout?.trim() || "2m",
+});
+
+const testCollabora = async () => {
+  if (settings.value === null || collaboraTesting.value) return;
+
+  collaboraTesting.value = true;
+  collaboraTestResult.value = null;
+
+  try {
+    collaboraTestResult.value = await api.testCollabora(
+      normalizedCollaboraSettings()
+    );
+    if (collaboraTestResult.value.ok) {
+      $showSuccess(t("settings.collaboraTestPassed"));
+    } else {
+      $showError(t("settings.collaboraTestNeedsAttention"));
+    }
+  } catch (e: any) {
+    $showError(e);
+  } finally {
+    collaboraTesting.value = false;
+  }
+};
+
+const testConvertX = async () => {
+  if (settings.value === null) return false;
+
+  try {
+    convertXTesting.value = true;
+    const result = await api.testConvertX(normalizedConvertXSettings());
+    $showSuccess(result.message || t("settings.convertxConnectionSuccessful"));
+  } catch (e: any) {
+    $showError(e);
+  } finally {
+    convertXTesting.value = false;
+  }
+
+  return true;
+};
+
+const testClamAV = async () => {
+  if (settings.value === null) return false;
+
+  try {
+    clamAVTesting.value = true;
+    const result = await api.testClamAV(settings.value.clamav);
+    $showSuccess(result.message || t("settings.clamavConnectionSuccessful"));
+  } catch (e: any) {
+    $showError(e);
+  } finally {
+    clamAVTesting.value = false;
+  }
+
+  return true;
+};
+
 const save = async () => {
   if (settings.value === null) return false;
   const newSettings: ISettings = {
@@ -320,6 +632,14 @@ const save = async () => {
         .split(" ")
         .filter((s: string) => s !== "") ?? [],
     commands: {},
+  };
+
+  newSettings.collabora = normalizedCollaboraSettings();
+  newSettings.convertx = normalizedConvertXSettings();
+  newSettings.clamav = {
+    enabled: Boolean(settings.value?.clamav?.enabled),
+    url: settings.value?.clamav?.url?.trim() ?? "",
+    scanDepth: Number(settings.value?.clamav?.scanDepth ?? 0),
   };
 
   const keys = Object.keys(settings.value.commands) as Array<
@@ -396,7 +716,31 @@ onMounted(async () => {
   try {
     layoutStore.loading = true;
     const original: ISettings = await api.get();
-    const newSettings: ISettings = { ...original, commands: {} };
+    const newSettings: ISettings = {
+      ...original,
+      collabora: {
+        configured: original.collabora?.configured ?? true,
+        enabled: original.collabora?.enabled ?? false,
+        url: original.collabora?.url ?? "",
+        publicURL: original.collabora?.publicURL ?? "",
+        internalURL: original.collabora?.internalURL ?? "",
+        wopiSecret: original.collabora?.wopiSecret ?? "",
+        tokenTTL: original.collabora?.tokenTTL || "2h",
+      },
+      convertx: {
+        configured: original.convertx?.configured ?? true,
+        enabled: original.convertx?.enabled ?? false,
+        url: original.convertx?.url ?? "",
+        apiKey: original.convertx?.apiKey ?? "",
+        timeout: original.convertx?.timeout || "2m",
+      },
+      clamav: {
+        enabled: original.clamav?.enabled ?? false,
+        url: original.clamav?.url ?? "",
+        scanDepth: original.clamav?.scanDepth ?? 0,
+      },
+      commands: {},
+    };
 
     const keys = Object.keys(original.commands) as Array<keyof SettingsCommand>;
     for (const key of keys) {
@@ -423,3 +767,42 @@ onBeforeUnmount(() => {
   }
 });
 </script>
+
+
+<style scoped>
+.collabora-test-results {
+  border-left: 4px solid var(--red);
+  margin: 1em 0;
+  padding: 0.75em 1em;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.collabora-test-results--ok {
+  border-left-color: var(--icon-green);
+}
+
+.collabora-test-results ul {
+  margin: 0.5em 0 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.collabora-test-results__item {
+  display: flex;
+  gap: 0.75em;
+  align-items: flex-start;
+  margin: 0.4em 0;
+}
+
+.collabora-test-results__item--success strong {
+  color: var(--icon-green);
+}
+
+.collabora-test-results__item--warning strong {
+  color: var(--icon-yellow);
+}
+
+.collabora-test-results__item--error strong {
+  color: var(--red);
+}
+</style>

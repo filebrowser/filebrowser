@@ -19,10 +19,17 @@
       <template #actions>
         <action
           :disabled="layoutStore.loading"
-          v-if="authStore.user?.perm.rename"
+          v-if="authStore.user?.perm.rename && !fileStore.req?.archive"
           icon="mode_edit"
           :label="$t('buttons.rename')"
           show="rename"
+        />
+        <action
+          :disabled="layoutStore.loading"
+          v-if="canOpenWithCollabora"
+          icon="description"
+          :label="t('buttons.openWithCollabora')"
+          @action="openWithCollabora"
         />
         <action
           :disabled="layoutStore.loading"
@@ -33,7 +40,7 @@
         />
         <action
           :disabled="layoutStore.loading"
-          v-if="authStore.user?.perm.delete"
+          v-if="authStore.user?.perm.delete && !fileStore.req?.archive"
           icon="delete"
           :label="$t('buttons.delete')"
           @action="deleteFile"
@@ -45,6 +52,13 @@
           icon="file_download"
           :label="$t('buttons.download')"
           @action="download"
+        />
+        <action
+          :disabled="layoutStore.loading"
+          v-if="canExtractArchiveFile"
+          icon="folder_zip"
+          label="Extract this file"
+          @action="extractArchiveFile"
         />
         <action
           :disabled="layoutStore.loading"
@@ -138,10 +152,21 @@
               </div>
             </a>
             <a
+              href=""
+              class="button button--flat"
+              v-if="canOpenWithCollabora"
+              @click.prevent="openWithCollabora"
+            >
+              <div>
+                <i class="material-icons">description</i
+                >{{ t("buttons.openWithCollabora") }}
+              </div>
+            </a>
+            <a
               target="_blank"
               :href="previewUrl"
               class="button button--flat"
-              v-if="!fileStore.req?.isDir"
+              v-else-if="!fileStore.req?.isDir"
             >
               <div>
                 <i class="material-icons">open_in_new</i
@@ -184,9 +209,8 @@ import { useAuthStore } from "@/stores/auth";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 
-import { files as api } from "@/api";
-import { createURL } from "@/api/utils";
-import { resizePreview } from "@/utils/constants";
+import { collabora, files as api } from "@/api";
+import { collaboraEnabled, resizePreview } from "@/utils/constants";
 import url from "@/utils/url";
 import { throttle } from "lodash-es";
 import HeaderBar from "@/components/header/HeaderBar.vue";
@@ -268,6 +292,7 @@ const csvError = ref<string>("");
 const player = ref<HTMLVideoElement | HTMLAudioElement | null>(null);
 
 const $showError = inject<IToastError>("$showError")!;
+const $showSuccess = inject<IToastSuccess>("$showSuccess")!;
 
 const authStore = useAuthStore();
 const fileStore = useFileStore();
@@ -290,6 +315,14 @@ const directUrl = computed(() =>
   fileStore.req ? api.getDownloadURL(fileStore.req, true) : ""
 );
 
+const canExtractArchiveFile = computed(() =>
+  Boolean(
+    fileStore.req?.archivePath &&
+      fileStore.req?.archiveInnerPath &&
+      authStore.user?.perm.create
+  )
+);
+
 const previewUrl = computed(() => {
   if (!fileStore.req) {
     return "";
@@ -300,7 +333,7 @@ const previewUrl = computed(() => {
   }
 
   if (isEpub.value) {
-    return createURL("api/raw" + fileStore.req.path, {});
+    return api.getDownloadURL(fileStore.req, true);
   }
 
   return api.getDownloadURL(fileStore.req, true);
@@ -314,6 +347,15 @@ const isCsv = computed(
   () =>
     fileStore.req?.extension.toLowerCase() == ".csv" &&
     fileStore.req.size <= CSV_MAX_SIZE
+);
+
+const canOpenWithCollabora = computed(
+  () =>
+    collaboraEnabled &&
+    !fileStore.req?.archive &&
+    !fileStore.req?.isDir &&
+    authStore.user?.perm.download &&
+    collabora.isSupportedExtension(fileStore.req?.extension)
 );
 
 const isResizeEnabled = computed(() => resizePreview);
@@ -371,12 +413,12 @@ const deleteFile = () => {
 
 const prev = () => {
   hoverNav.value = false;
-  router.replace({ path: previousLink.value });
+  router.replace(previousLink.value);
 };
 
 const next = () => {
   hoverNav.value = false;
-  router.replace({ path: nextLink.value });
+  router.replace(nextLink.value);
 };
 
 const key = (event: KeyboardEvent) => {
@@ -407,8 +449,13 @@ const updatePreview = async () => {
     autoPlay.value = false;
   }
 
-  const dirs = route.fullPath.split("/");
-  name.value = decodeURIComponent(dirs[dirs.length - 1]);
+  if (fileStore.req?.archiveInnerPath) {
+    const innerParts = fileStore.req.archiveInnerPath.split("/").filter(Boolean);
+    name.value = decodeURIComponent(innerParts[innerParts.length - 1] || fileStore.req.name);
+  } else {
+    const dirs = route.fullPath.split("/");
+    name.value = decodeURIComponent(dirs[dirs.length - 1]);
+  }
 
   // Load CSV content if it's a CSV file
   if (isCsv.value && fileStore.req) {
@@ -428,8 +475,10 @@ const updatePreview = async () => {
 
   if (!listing.value) {
     try {
-      const path = url.removeLastDir(route.path);
-      const res = await api.fetch(path);
+      const archiveInner = fileStore.req?.archiveInnerPath;
+      const res = fileStore.req?.archivePath && archiveInner
+        ? await api.fetchArchive(fileStore.req.archivePath, archiveParentPath(archiveInner))
+        : await api.fetch(url.removeLastDir(route.path));
       listing.value = res.items;
     } catch (e: any) {
       $showError(e);
@@ -489,7 +538,21 @@ const toggleNavigation = throttle(function () {
   }, 1500);
 }, 500);
 
+const archiveParentPath = (innerPath: string) => {
+  const parts = innerPath.split("/").filter(Boolean);
+  parts.pop();
+  return parts.length === 0 ? "/" : `/${parts.join("/")}`;
+};
+
 const close = () => {
+  if (fileStore.req?.archivePath && fileStore.req?.archiveInnerPath) {
+    router.push({
+      path: fileStore.req.archivePath,
+      query: { archive: archiveParentPath(fileStore.req.archiveInnerPath) },
+    });
+    return;
+  }
+
   const uri = url.removeLastDir(route.path) + "/";
   router.push({ path: uri });
 };
@@ -497,7 +560,29 @@ const close = () => {
 const download = () => window.open(downloadUrl.value);
 const openDirect = () => window.open(directUrl.value);
 
+const extractArchiveFile = async () => {
+  if (!fileStore.req?.archivePath || !fileStore.req.archiveInnerPath) return;
+
+  try {
+    layoutStore.loading = true;
+    const result = await api.extractArchive(
+      fileStore.req.archivePath,
+      fileStore.req.archiveInnerPath
+    );
+    $showSuccess(`File extracted to ${result.destination}`);
+    router.push({ path: `/files${result.destination}` });
+  } catch (e: any) {
+    $showError(e);
+  } finally {
+    layoutStore.loading = false;
+  }
+};
+
 const editAsText = () => {
   router.push({ path: route.path, query: { edit: "true" } });
+};
+
+const openWithCollabora = () => {
+  router.push({ path: route.path, query: { office: "true" } });
 };
 </script>

@@ -1,6 +1,10 @@
 package settings
 
 import (
+	"os"
+	"strconv"
+	"strings"
+
 	fberrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/rules"
 	"github.com/filebrowser/filebrowser/v2/users"
@@ -58,7 +62,45 @@ func (s *Storage) Get() (*Settings, error) {
 		set.DirMode = DefaultDirMode
 	}
 
+	if set.ClamAV.URL == "" {
+		set.ClamAV.URL = strings.TrimSpace(os.Getenv("CLAMAV_URL"))
+	}
+	if set.ClamAV.ScanDepth == 0 {
+		if depth, err := strconv.Atoi(strings.TrimSpace(os.Getenv("CLAMAV_SCAN_DEPTH"))); err == nil && depth > 0 {
+			set.ClamAV.ScanDepth = depth
+		}
+	}
+
+	if !set.ConvertX.Configured {
+		if set.ConvertX.URL == "" {
+			set.ConvertX.URL = strings.TrimRight(strings.TrimSpace(firstNonEmptyEnv("FB_CONVERTX_URL", "CONVERTX_URL")), "/")
+		}
+		if set.ConvertX.APIKey == "" {
+			set.ConvertX.APIKey = strings.TrimSpace(firstNonEmptyEnv("FB_CONVERTX_API_KEY", "CONVERTX_API_KEY", "CONVERTX_API_TOKEN"))
+		}
+		if set.ConvertX.Timeout == "" {
+			set.ConvertX.Timeout = strings.TrimSpace(firstNonEmptyEnv("FB_CONVERTX_TIMEOUT", "CONVERTX_TIMEOUT"))
+		}
+		if enabled := strings.TrimSpace(firstNonEmptyEnv("FB_CONVERTX_ENABLED", "CONVERTX_ENABLED")); enabled != "" {
+			if parsed, err := strconv.ParseBool(enabled); err == nil {
+				set.ConvertX.Enabled = parsed
+			}
+		}
+	}
+	if set.ConvertX.Timeout == "" {
+		set.ConvertX.Timeout = "2m"
+	}
+
 	return set, nil
+}
+
+func firstNonEmptyEnv(keys ...string) string {
+	for _, key := range keys {
+		if value := os.Getenv(key); value != "" {
+			return value
+		}
+	}
+	return ""
 }
 
 var defaultEvents = []string{

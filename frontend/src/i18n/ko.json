@@ -54,7 +54,13 @@
     "overrideAll": "대상 폴더의 모든 파일을 대체",
     "skipAll": "충돌하는 모든 파일을 건너뛰기",
     "renameAll": "모든 파일의 이름 변경 (복사본 생성)",
-    "singleDecision": "충돌하는 각 파일을 확인"
+    "singleDecision": "충돌하는 각 파일을 확인",
+    "scanThisFile": "Scan this file",
+    "scanThisFolder": "Scan this folder",
+    "scanSelected": "Scan selected items",
+    "archiveThisFile": "Archive this file",
+    "archiveThisFolder": "Archive this folder",
+    "archiveSelected": "Archive selected items"
   },
   "download": {
     "downloadFile": "파일 다운로드",
@@ -96,7 +102,10 @@
       "semicolon": "쌍반점 (;)",
       "both": "(,) 및 (;) 모두"
     },
-    "fileEncoding": "파일 인코딩"
+    "fileEncoding": "파일 인코딩",
+    "scanClean": "Security scan completed. No malware was found in {count} file(s).",
+    "scanCleanMultiple": "Security scan completed. No malware was found in {count} file(s).",
+    "archiveCreated": "Archive created: {destination}"
   },
   "help": {
     "click": "파일 또는 디렉터리 선택",
@@ -280,7 +289,16 @@
     "userUpdated": "사용자 수정됨!",
     "username": "사용자 이름",
     "users": "사용자",
-    "currentPassword": "현재 비밀번호"
+    "currentPassword": "현재 비밀번호",
+    "clamavScanning": "ClamAV scanning",
+    "clamavScanningHelp": "Scan every uploaded file with a ClamAV HTTP scanning service before the upload is accepted. The scanner endpoint receives the uploaded file as multipart form field FILES.",
+    "clamavEnable": "Enable ClamAV scanning for uploads",
+    "clamavUrl": "ClamAV scan URL",
+    "clamavScanDepth": "Scan depth",
+    "clamavScanDepthHelp": "Optional. File Browser sends this as X-ClamAV-Scan-Depth. Most ClamAV services control archive recursion on the scanner server through MaxRecursion, so leave this as 0 unless your scan API supports this header.",
+    "clamavTestConnection": "Test connection",
+    "clamavTesting": "Testing...",
+    "clamavConnectionSuccessful": "ClamAV connection successful"
   },
   "sidebar": {
     "diskUsed": "{used} of {total} used",

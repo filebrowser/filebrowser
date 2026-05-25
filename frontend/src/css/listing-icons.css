@@ -15,6 +15,9 @@
 .file-icons [data-type="blob"] i::before {
   content: "insert_drive_file";
 }
+.file-icons [data-type="archive"] i::before {
+  content: "folder_zip";
+}
 .file-icons [data-type="image"] i::before {
   content: "image";
 }

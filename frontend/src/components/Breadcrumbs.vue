@@ -32,7 +32,7 @@ const props = defineProps<{
   noLink?: boolean;
 }>();
 
-const items = computed(() => {
+const buildPathBreadcrumbs = () => {
   const relativePath = route.path.replace(props.base, "");
   const parts = relativePath.split("/");
 
@@ -47,15 +47,48 @@ const items = computed(() => {
   const breadcrumbs: BreadCrumb[] = [];
 
   for (let i = 0; i < parts.length; i++) {
-    if (i === 0) {
+    const url =
+      i === 0
+        ? props.base + "/" + parts[i]
+        : String(breadcrumbs[i - 1].url).replace(/\/$/, "") + "/" + parts[i];
+
+    breadcrumbs.push({
+      name: decodeURIComponent(parts[i]),
+      url: url + "/",
+    });
+  }
+
+  return breadcrumbs;
+};
+
+const items = computed(() => {
+  const breadcrumbs = buildPathBreadcrumbs();
+  const archiveQuery = Array.isArray(route.query.archive)
+    ? route.query.archive[0]
+    : route.query.archive;
+
+  if (typeof archiveQuery === "string") {
+    if (breadcrumbs.length > 0) {
+      breadcrumbs[breadcrumbs.length - 1].url = {
+        path: route.path,
+        query: { archive: "/" },
+      } as any;
+    }
+
+    const inner = archiveQuery.startsWith("/")
+      ? archiveQuery.substring(1)
+      : archiveQuery;
+    const archiveParts = inner.split("/").filter(Boolean);
+    let currentInner = "";
+
+    for (const part of archiveParts) {
+      currentInner += "/" + part;
       breadcrumbs.push({
-        name: decodeURIComponent(parts[i]),
-        url: props.base + "/" + parts[i] + "/",
-      });
-    } else {
-      breadcrumbs.push({
-        name: decodeURIComponent(parts[i]),
-        url: breadcrumbs[i - 1].url + parts[i] + "/",
+        name: decodeURIComponent(part),
+        url: {
+          path: route.path,
+          query: { archive: currentInner },
+        } as any,
       });
     }
   }
