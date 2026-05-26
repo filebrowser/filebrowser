@@ -1,12 +1,22 @@
 <template>
   <div class="card floating">
     <div class="card-content">
-      <p v-if="!this.isListing || selectedCount === 1">
-        {{ $t("prompts.deleteMessageSingle") }}
+      <p v-if="!isListing || selectedCount === 1">
+        {{ $t("prompts.deleteMessageSingle", { name: deleteName }) }}
       </p>
-      <p v-else>
-        {{ $t("prompts.deleteMessageMultiple", { count: selectedCount }) }}
-      </p>
+      <template v-else>
+        <p>
+          {{ $t("prompts.deleteMessageMultiple", { count: selectedCount }) }}
+        </p>
+        <details>
+          <summary>{{ $t("prompts.showFiles") }}</summary>
+          <ul class="delete-file-list">
+            <li v-for="index in selected" :key="index">
+              {{ req.items[index].name }}
+            </li>
+          </ul>
+        </details>
+      </template>
     </div>
     <div class="card-action">
       <button
@@ -51,6 +61,12 @@ export default {
     ]),
     ...mapState(useLayoutStore, ["currentPrompt"]),
     ...mapWritableState(useFileStore, ["reload", "preselect"]),
+    deleteName() {
+      if (this.isListing && this.selectedCount === 1) {
+        return this.req.items[this.selected[0]].name;
+      }
+      return this.req?.name || "";
+    },
   },
   methods: {
     ...mapActions(useLayoutStore, ["closeHovers"]),
@@ -96,3 +112,18 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.delete-file-list {
+  max-height: 10em;
+  overflow-y: auto;
+  margin: 0.5em 0 0;
+  padding-left: 1.5em;
+}
+
+details summary {
+  cursor: pointer;
+  margin-top: 0.5em;
+  color: var(--blue);
+}
+</style>
