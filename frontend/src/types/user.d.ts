@@ -3,6 +3,7 @@ interface IUser {
   username: string;
   password: string;
   scope: string;
+  scopes?: string[];
   locale: string;
   perm: Permissions;
   commands: string[];
@@ -24,6 +25,7 @@ interface IUserForm {
   username?: string;
   password?: string;
   scope?: string;
+  scopes?: string[];
   locale?: string;
   perm?: Permissions;
   commands?: string[];

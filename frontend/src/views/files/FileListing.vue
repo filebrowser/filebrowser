@@ -473,19 +473,27 @@ const viewIcon = computed(() => {
     : icons[authStore.user.viewMode];
 });
 
+const isAtVirtualRoot = computed(() => {
+  const user = authStore.user;
+  const hasMultiScopes = !!user?.scopes && user.scopes.length > 1;
+  const atRoot = route.path === "/files/" || route.path === "/files";
+  return hasMultiScopes && atRoot;
+});
+
 const headerButtons = computed(() => {
+  const vRoot = isAtVirtualRoot.value;
   return {
-    upload: authStore.user?.perm.create,
+    upload: authStore.user?.perm.create && !vRoot,
     download: authStore.user?.perm.download,
     shell: authStore.user?.perm.execute && enableExec,
-    delete: fileStore.selectedCount > 0 && authStore.user?.perm.delete,
-    rename: fileStore.selectedCount === 1 && authStore.user?.perm.rename,
+    delete: fileStore.selectedCount > 0 && authStore.user?.perm.delete && !vRoot,
+    rename: fileStore.selectedCount === 1 && authStore.user?.perm.rename && !vRoot,
     share:
       fileStore.selectedCount === 1 &&
       authStore.user?.perm.share &&
       authStore.user?.perm.download,
-    move: fileStore.selectedCount > 0 && authStore.user?.perm.rename,
-    copy: fileStore.selectedCount > 0 && authStore.user?.perm.create,
+    move: fileStore.selectedCount > 0 && authStore.user?.perm.rename && !vRoot,
+    copy: fileStore.selectedCount > 0 && authStore.user?.perm.create && !vRoot,
   };
 });
 
@@ -528,7 +536,7 @@ onMounted(() => {
   window.addEventListener("scroll", scrollEvent);
   window.addEventListener("resize", windowsResize);
 
-  if (!authStore.user?.perm.create) return;
+  if (!authStore.user?.perm.create || isAtVirtualRoot.value) return;
   document.addEventListener("dragover", preventDefault);
   document.addEventListener("dragenter", dragEnter);
   document.addEventListener("dragleave", dragLeave);

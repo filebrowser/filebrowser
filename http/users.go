@@ -19,7 +19,7 @@ import (
 )
 
 var (
-	NonModifiableFieldsForNonAdmin = []string{"Username", "Scope", "LockPassword", "Perm", "Commands", "Rules"}
+	NonModifiableFieldsForNonAdmin = []string{"Username", "Scope", "Scopes", "LockPassword", "Perm", "Commands", "Rules"}
 )
 
 type modifyUserRequest struct {
@@ -98,8 +98,9 @@ var userGetHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request
 	}
 
 	u.Password = ""
-	if !d.user.Perm.Admin {
+	if !d.user.Perm.Admin && u.ID != d.user.ID {
 		u.Scope = ""
+		u.Scopes = nil
 	}
 	return renderJSON(w, r, u)
 })
@@ -160,13 +161,29 @@ var userPostHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, d *
 		return http.StatusBadRequest, fberrors.ErrShareRequiresDownload
 	}
 
-	userHome, err := d.settings.MakeUserDir(req.Data.Username, req.Data.Scope, d.server.Root)
-	if err != nil {
-		log.Printf("create user: failed to mkdir user home dir: [%s]", userHome)
-		return http.StatusInternalServerError, err
+	if len(req.Data.Scopes) > 1 {
+		if err = users.ValidateScopes(req.Data.Scopes); err != nil {
+			return http.StatusBadRequest, err
+		}
+		for i, s := range req.Data.Scopes {
+			scopeHome, scopeErr := d.settings.MakeUserDir(req.Data.Username, s, d.server.Root)
+			if scopeErr != nil {
+				log.Printf("create user: failed to mkdir scope dir: [%s]", s)
+				return http.StatusInternalServerError, scopeErr
+			}
+			req.Data.Scopes[i] = scopeHome
+		}
+		req.Data.Scope = req.Data.Scopes[0]
+		log.Printf("user: %s, scopes: %v.", req.Data.Username, req.Data.Scopes)
+	} else {
+		userHome, mkdirErr := d.settings.MakeUserDir(req.Data.Username, req.Data.Scope, d.server.Root)
+		if mkdirErr != nil {
+			log.Printf("create user: failed to mkdir user home dir: [%s]", userHome)
+			return http.StatusInternalServerError, mkdirErr
+		}
+		req.Data.Scope = userHome
+		log.Printf("user: %s, home dir: [%s].", req.Data.Username, userHome)
 	}
-	req.Data.Scope = userHome
-	log.Printf("user: %s, home dir: [%s].", req.Data.Username, userHome)
 
 	err = d.store.Users.Save(req.Data)
 	if err != nil {
@@ -189,6 +206,7 @@ var userPutHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request
 			"username":     {},
 			"password":     {},
 			"scope":        {},
+			"scopes":       {},
 			"lockPassword": {},
 			"commands":     {},
 			"perm":         {},

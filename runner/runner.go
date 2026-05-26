@@ -11,6 +11,13 @@ import (
 	"github.com/filebrowser/filebrowser/v2/users"
 )
 
+func userScopeEnv(user *users.User) string {
+	if len(user.Scopes) > 1 {
+		return strings.Join(user.Scopes, ":")
+	}
+	return user.Scope
+}
+
 // Runner is a commands runner.
 type Runner struct {
 	Enabled bool
@@ -70,7 +77,7 @@ func (r *Runner) exec(raw, evt, path, dst string, user *users.User) error {
 		case "FILE":
 			return path
 		case "SCOPE":
-			return user.Scope
+			return userScopeEnv(user)
 		case "TRIGGER":
 			return evt
 		case "USERNAME":
@@ -91,7 +98,7 @@ func (r *Runner) exec(raw, evt, path, dst string, user *users.User) error {
 
 	cmd := exec.Command(command[0], command[1:]...)
 	cmd.Env = append(os.Environ(), fmt.Sprintf("FILE=%s", path))
-	cmd.Env = append(cmd.Env, fmt.Sprintf("SCOPE=%s", user.Scope))
+	cmd.Env = append(cmd.Env, fmt.Sprintf("SCOPE=%s", userScopeEnv(user)))
 	cmd.Env = append(cmd.Env, fmt.Sprintf("TRIGGER=%s", evt))
 	cmd.Env = append(cmd.Env, fmt.Sprintf("USERNAME=%s", user.Username))
 	cmd.Env = append(cmd.Env, fmt.Sprintf("DESTINATION=%s", dst))

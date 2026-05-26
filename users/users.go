@@ -24,6 +24,7 @@ type User struct {
 	Username              string        `storm:"unique" json:"username"`
 	Password              string        `json:"password"`
 	Scope                 string        `json:"scope"`
+	Scopes                []string      `json:"scopes,omitempty"`
 	Locale                string        `json:"locale"`
 	LockPassword          bool          `json:"lockPassword"`
 	ViewMode              ViewMode      `json:"viewMode"`
@@ -48,6 +49,7 @@ var checkableFields = []string{
 	"Username",
 	"Password",
 	"Scope",
+	"Scopes",
 	"ViewMode",
 	"Commands",
 	"Sorting",
@@ -83,6 +85,12 @@ func (u *User) Clean(baseScope string, fields ...string) error {
 			if u.Sorting.By == "" {
 				u.Sorting.By = "name"
 			}
+		case "Scopes":
+			if len(u.Scopes) > 1 {
+				if err := ValidateScopes(u.Scopes); err != nil {
+					return err
+				}
+			}
 		case "Rules":
 			if u.Rules == nil {
 				u.Rules = []rules.Rule{}
@@ -91,15 +99,29 @@ func (u *User) Clean(baseScope string, fields ...string) error {
 	}
 
 	if u.Fs == nil {
-		scope := u.Scope
-		scope = filepath.Join(baseScope, filepath.Join("/", scope))
-		u.Fs = afero.NewBasePathFs(afero.NewOsFs(), scope)
+		if len(u.Scopes) > 1 {
+			u.Fs = NewVirtualRootFs(baseScope, u.Scopes)
+		} else {
+			scope := u.Scope
+			if len(u.Scopes) == 1 {
+				scope = u.Scopes[0]
+			}
+			scope = filepath.Join(baseScope, filepath.Join("/", scope))
+			u.Fs = afero.NewBasePathFs(afero.NewOsFs(), scope)
+		}
 	}
 
 	return nil
 }
 
 // FullPath gets the full path for a user's relative path.
-func (u *User) FullPath(path string) string {
-	return afero.FullBaseFsPath(u.Fs.(*afero.BasePathFs), path)
+func (u *User) FullPath(filePath string) string {
+	if vfs, ok := u.Fs.(*VirtualRootFs); ok {
+		realPath, err := vfs.RealPath(filePath)
+		if err != nil {
+			return filePath
+		}
+		return realPath
+	}
+	return afero.FullBaseFsPath(u.Fs.(*afero.BasePathFs), filePath)
 }

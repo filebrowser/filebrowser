@@ -23,18 +23,36 @@
 
     <p>
       <label for="scope">{{ t("settings.scope") }}</label>
-      <input
-        :disabled="createUserDirData ?? false"
-        :placeholder="scopePlaceholder"
-        class="input input--block"
-        type="text"
-        v-model="user.scope"
-        id="scope"
-      />
-    </p>
-    <p class="small" v-if="displayHomeDirectoryCheckbox">
-      <input type="checkbox" v-model="createUserDirData" />
-      {{ t("settings.createUserHomeDirectory") }}
+      <div
+        v-for="(_, index) in scopesList"
+        :key="index"
+        class="scope-row"
+      >
+        <input
+          :placeholder="index === 0 ? scopePlaceholder : ''"
+          class="input input--block scope-input"
+          type="text"
+          :value="scopesList[index]"
+          @input="updateScope(index, ($event.target as HTMLInputElement).value)"
+        />
+        <button
+          v-if="scopesList.length > 1"
+          class="button button--flat button--red scope-remove"
+          type="button"
+          @click="removeScope(index)"
+          :title="t('buttons.delete')"
+        >
+          &times;
+        </button>
+      </div>
+      <button
+        v-if="!isDefault"
+        class="button button--flat"
+        type="button"
+        @click="addScope"
+      >
+        + {{ t("settings.addScope") }}
+      </button>
     </p>
 
     <p>
@@ -77,32 +95,62 @@ import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 
-const createUserDirData = ref<boolean | null>(null);
-const originalUserScope = ref<string | null>(null);
+const scopesList = ref<string[]>([""]);
 
 const props = defineProps<{
   user: IUserForm;
   isNew: boolean;
   isDefault: boolean;
   createUserDir?: boolean;
+  userHomeBasePath?: string;
 }>();
 
 onMounted(() => {
-  if (props.user.scope) {
-    originalUserScope.value = props.user.scope;
-    createUserDirData.value = props.createUserDir;
+  if (props.user.scopes && props.user.scopes.length > 0) {
+    scopesList.value = [...props.user.scopes];
+  } else {
+    scopesList.value = [props.user.scope || ""];
   }
 });
+
+function updateScope(index: number, value: string) {
+  scopesList.value[index] = value;
+  syncScopesToUser();
+}
+
+function addScope() {
+  scopesList.value.push("");
+  syncScopesToUser();
+}
+
+function removeScope(index: number) {
+  scopesList.value.splice(index, 1);
+  syncScopesToUser();
+}
+
+function syncScopesToUser() {
+  const filtered = scopesList.value.filter((s) => s.trim() !== "");
+  if (filtered.length > 1) {
+    props.user.scopes = filtered;
+    props.user.scope = filtered[0];
+  } else {
+    props.user.scopes = undefined;
+    props.user.scope = filtered[0] || "";
+  }
+}
 
 const passwordPlaceholder = computed(() =>
   props.isNew ? "" : t("settings.avoidChanges")
 );
 const scopePlaceholder = computed(() =>
-  createUserDirData.value ? t("settings.userScopeGenerationPlaceholder") : ""
+  props.createUserDir ? t("settings.userScopeGenerationPlaceholder") : ""
 );
-const displayHomeDirectoryCheckbox = computed(
-  () => props.isNew && createUserDirData.value
-);
+
+const userHomePath = computed(() => {
+  if (!props.createUserDir || !props.user.username) return "";
+  const base = (props.userHomeBasePath || "/users").replace(/\/+$/, "");
+  return `${base}/${props.user.username}`;
+});
 
 watch(
   () => props.user,
@@ -112,11 +160,29 @@ watch(
   }
 );
 
-watch(createUserDirData, () => {
-  if (props.user?.scope) {
-    props.user.scope = createUserDirData.value
-      ? ""
-      : (originalUserScope.value ?? "");
+watch(userHomePath, (path) => {
+  if (props.isNew && props.createUserDir && path) {
+    scopesList.value[0] = path;
+    syncScopesToUser();
   }
 });
 </script>
+
+<style scoped>
+.scope-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.scope-input {
+  flex: 1;
+}
+
+.scope-remove {
+  padding: 0.25em 0.5em;
+  font-size: 1.2em;
+  line-height: 1;
+}
+</style>

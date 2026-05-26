@@ -12,6 +12,7 @@
           <user-form
             v-model:user="user"
             v-model:createUserDir="createUserDir"
+            :userHomeBasePath="userHomeBasePath"
             :isDefault="false"
             :isNew="isNew"
           />
@@ -65,6 +66,7 @@ const error = ref<StatusError>();
 const originalUser = ref<IUser>();
 const user = ref<IUser>();
 const createUserDir = ref<boolean>(false);
+const userHomeBasePath = ref<string>("/users");
 const isCurrentPasswordRequired = ref<boolean>(false);
 
 const $showError = inject<IToastError>("$showError")!;
@@ -93,9 +95,10 @@ const fetchData = async () => {
 
   try {
     if (isNew.value) {
-      const { defaults, createUserDir: _createUserDir } = await settings.get();
+      const { defaults, createUserDir: _createUserDir, userHomeBasePath: _basePath } = await settings.get();
       isCurrentPasswordRequired.value = authMethod == "json";
       createUserDir.value = _createUserDir;
+      userHomeBasePath.value = _basePath || "/users";
       user.value = {
         ...defaults,
         username: "",

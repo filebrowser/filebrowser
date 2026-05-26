@@ -16,7 +16,7 @@
         <span>{{ $t("sidebar.myFiles") }}</span>
       </button>
 
-      <div v-if="user.perm.create">
+      <div v-if="user.perm.create && !isAtVirtualRoot">
         <button
           @click="showHover('newDir')"
           class="action"
@@ -115,8 +115,9 @@
 </template>
 
 <script>
-import { reactive } from "vue";
+import { reactive, computed } from "vue";
 import { mapActions, mapState } from "pinia";
+import { useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
@@ -142,7 +143,15 @@ export default {
   name: "sidebar",
   setup() {
     const usage = reactive(USAGE_DEFAULT);
-    return { usage, usageAbortController: new AbortController() };
+    const route = useRoute();
+    const authStore = useAuthStore();
+    const isAtVirtualRoot = computed(() => {
+      const user = authStore.user;
+      const hasMultiScopes = !!user?.scopes && user.scopes.length > 1;
+      const atRoot = route.path === "/files/" || route.path === "/files";
+      return hasMultiScopes && atRoot;
+    });
+    return { usage, usageAbortController: new AbortController(), isAtVirtualRoot };
   },
   components: {
     ProgressBar,
