@@ -191,7 +191,6 @@ const drop = async (event: Event) => {
     return;
   }
   const path = el.__vue__.url;
-  const baseItems = (await api.fetch(path)).items;
 
   const action = (overwrite?: boolean, rename?: boolean) => {
     const action =
@@ -205,7 +204,7 @@ const drop = async (event: Event) => {
       .catch($showError);
   };
 
-  const conflict = upload.checkConflict(items, baseItems);
+  const conflict = await upload.checkConflict(items, path);
 
   if (conflict.length > 0) {
     layoutStore.showHover({

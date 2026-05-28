@@ -29,6 +29,8 @@
     "rename": "Renommer",
     "replace": "Remplacer",
     "reportIssue": "Signaler un problème",
+    "resumeTransfer": "Resume previous transfer",
+    "resumeTransferTooltip": "Skip all conflicting files, except the ones that are smaller on the server as we suppose that their transfert has been interrupted.",
     "save": "Enregistrer",
     "schedule": "Planifier",
     "search": "Rechercher",
@@ -119,7 +121,7 @@
     "signup": "S'inscrire",
     "submit": "Se connecter",
     "username": "Utilisateur",
-    "usernameTaken": "Le nom d'utilisateur·ice est déjà pris",
+    "usernameTaken": "Le nom d'utilisateur est déjà pris",
     "wrongCredentials": "Identifiants incorrects !",
     "passwordTooShort": "Le mot de passe doit contenir au moins {min} caractères",
     "logout_reasons": {
@@ -281,6 +283,7 @@
     "currentPassword": "Mot de Passe Actuel"
   },
   "sidebar": {
+    "diskUsed": "{used} of {total} used",
     "help": "Aide",
     "hugoNew": "Nouveau Hugo",
     "login": "Login",

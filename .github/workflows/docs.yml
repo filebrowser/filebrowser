@@ -45,7 +45,7 @@ jobs:
       - name: Build site
         run: task docs
       - name: Upload static files as artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: www/public
       - name: Deploy to GitHub Pages

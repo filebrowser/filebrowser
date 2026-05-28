@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	github.com/asdine/storm/v3 v3.2.1
-	github.com/asticode/go-astisub v0.39.0
+	github.com/asticode/go-astisub v0.40.0
 	github.com/disintegration/imaging v1.6.2
 	github.com/dsoprea/go-exif/v3 v3.0.1
 	github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568
@@ -16,9 +16,9 @@ require (
 	github.com/marusama/semaphore/v2 v2.5.0
 	github.com/mholt/archives v0.1.5
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/redis/go-redis/v9 v9.18.0
+	github.com/redis/go-redis/v9 v9.19.0
 	github.com/samber/lo v1.53.0
-	github.com/shirou/gopsutil/v4 v4.26.3
+	github.com/shirou/gopsutil/v4 v4.26.4
 	github.com/spf13/afero v1.15.0
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/pflag v1.0.10
@@ -44,7 +44,6 @@ require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.6 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
-	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dsnet/compress v0.0.2-0.20230904184137-39efe44ab707 // indirect
 	github.com/dsoprea/go-logging v0.0.0-20200710184922-b02d349568dd // indirect
 	github.com/dsoprea/go-utility/v2 v2.0.0-20221003172846-a3e1774ef349 // indirect

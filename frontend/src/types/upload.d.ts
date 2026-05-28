@@ -16,6 +16,7 @@ interface UploadEntry {
   size: number;
   isDir: boolean;
   fullPath?: string;
+  to?: string;
   file?: File;
   overwrite?: boolean;
 }

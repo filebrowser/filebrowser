@@ -29,6 +29,8 @@
     "rename": "Umbenennen",
     "replace": "Ersetzen",
     "reportIssue": "Problem melden",
+    "resumeTransfer": "Resume previous transfer",
+    "resumeTransferTooltip": "Skip all conflicting files, except the ones that are smaller on the server as we suppose that their transfert has been interrupted.",
     "save": "Speichern",
     "schedule": "Planen",
     "search": "Suchen",
@@ -281,6 +283,7 @@
     "currentPassword": "Dein aktuelles Passwort"
   },
   "sidebar": {
+    "diskUsed": "{used} of {total} used",
     "help": "Hilfe",
     "hugoNew": "Hugo Neu",
     "login": "Anmelden",

@@ -647,7 +647,7 @@ const copyCut = (event: Event | KeyboardEvent): void => {
   });
 };
 
-const paste = (event: Event) => {
+const paste = async (event: Event) => {
   if ((event.target as HTMLElement).tagName?.toLowerCase() === "input") return;
 
   // TODO router location should it be
@@ -696,7 +696,8 @@ const paste = (event: Event) => {
     };
   }
 
-  const conflict = upload.checkConflict(items, fileStore.req!.items);
+  const path = route.path.endsWith("/") ? route.path : route.path + "/";
+  const conflict = await upload.checkConflict(items, path);
 
   if (conflict.length > 0) {
     layoutStore.showHover({
@@ -799,7 +800,6 @@ const drop = async (event: DragEvent) => {
   }
 
   const files: UploadList = (await upload.scanFiles(dt)) as UploadList;
-  let items = fileStore.req.items;
   let path = route.path.endsWith("/") ? route.path : route.path + "/";
 
   if (
@@ -812,13 +812,14 @@ const drop = async (event: DragEvent) => {
     path = el.__vue__.url;
 
     try {
-      items = (await api.fetch(path)).items;
+      (await api.fetch(path)).items;
     } catch (error: any) {
       $showError(error);
+      return;
     }
   }
 
-  const conflict = upload.checkConflict(files, items);
+  const conflict = await upload.checkConflict(files, path);
 
   const preselect = removePrefix(path) + (files[0].fullPath || files[0].name);
 
@@ -856,7 +857,7 @@ const drop = async (event: DragEvent) => {
   fileStore.preselect = preselect;
 };
 
-const uploadInput = (event: Event) => {
+const uploadInput = async (event: Event) => {
   const files = (event.currentTarget as HTMLInputElement)?.files;
   if (files === null) return;
 
@@ -876,7 +877,7 @@ const uploadInput = (event: Event) => {
   }
 
   const path = route.path.endsWith("/") ? route.path : route.path + "/";
-  const conflict = upload.checkConflict(uploadFiles, fileStore.req!.items);
+  const conflict = await upload.checkConflict(uploadFiles, path);
 
   if (conflict.length > 0) {
     layoutStore.showHover({

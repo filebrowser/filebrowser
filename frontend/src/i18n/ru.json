@@ -29,6 +29,8 @@
     "rename": "Переименовать",
     "replace": "Перезаписать",
     "reportIssue": "Сообщить о проблеме",
+    "resumeTransfer": "Resume previous transfer",
+    "resumeTransferTooltip": "Skip all conflicting files, except the ones that are smaller on the server as we suppose that their transfert has been interrupted.",
     "save": "Сохранить",
     "schedule": "Планировка",
     "search": "Поиск",
@@ -281,6 +283,7 @@
     "currentPassword": "Your Current Password"
   },
   "sidebar": {
+    "diskUsed": "{used} of {total} used",
     "help": "Помощь",
     "hugoNew": "Hugo New",
     "login": "Войти",

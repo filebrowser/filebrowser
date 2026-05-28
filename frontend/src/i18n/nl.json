@@ -29,6 +29,8 @@
     "rename": "Hernoemen",
     "replace": "Vervangen",
     "reportIssue": "Probleem melden",
+    "resumeTransfer": "Resume previous transfer",
+    "resumeTransferTooltip": "Alle conflicterende bestanden overslaan, behalve de bestanden die kleiner zijn op de server, omdat we veronderstellen dat hun overdracht is onderbroken.",
     "save": "Opslaan",
     "schedule": "Plannen",
     "search": "Zoeken",
@@ -281,6 +283,7 @@
     "currentPassword": "Uw huidige wachtwoord"
   },
   "sidebar": {
+    "diskUsed": "{used} van {total} gebruikt",
     "help": "Hulp",
     "hugoNew": "Hugo Nieuw",
     "login": "Inloggen",

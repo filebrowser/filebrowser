@@ -57,7 +57,15 @@ var shareListHandler = withPermShare(func(w http.ResponseWriter, r *http.Request
 })
 
 var shareGetsHandler = withPermShare(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-	s, err := d.store.Share.Gets(r.URL.Path, d.user.ID)
+	var (
+		s   []*share.Link
+		err error
+	)
+	if d.user.Perm.Admin {
+		s, err = d.store.Share.GetsByPath(r.URL.Path)
+	} else {
+		s, err = d.store.Share.Gets(r.URL.Path, d.user.ID)
+	}
 	if errors.Is(err, fberrors.ErrNotExist) {
 		return renderJSON(w, r, []*share.Link{})
 	}

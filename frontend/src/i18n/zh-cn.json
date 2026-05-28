@@ -29,6 +29,8 @@
     "rename": "重命名",
     "replace": "替换",
     "reportIssue": "报告问题",
+    "resumeTransfer": "Resume previous transfer",
+    "resumeTransferTooltip": "Skip all conflicting files, except the ones that are smaller on the server as we suppose that their transfert has been interrupted.",
     "save": "保存",
     "schedule": "计划",
     "search": "搜索",
@@ -281,6 +283,7 @@
     "currentPassword": "您当前的密码"
   },
   "sidebar": {
+    "diskUsed": "{used} of {total} used",
     "help": "帮助",
     "hugoNew": "Hugo 新建",
     "login": "登录",

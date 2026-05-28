@@ -29,6 +29,8 @@
     "rename": "Preimenuj",
     "replace": "Zamijeni",
     "reportIssue": "Prijavi grešku",
+    "resumeTransfer": "Resume previous transfer",
+    "resumeTransferTooltip": "Skip all conflicting files, except the ones that are smaller on the server as we suppose that their transfert has been interrupted.",
     "save": "Spremi",
     "schedule": "Zakaži",
     "search": "Pretraži",
@@ -281,6 +283,7 @@
     "currentPassword": "Vaša trenutna lozinka"
   },
   "sidebar": {
+    "diskUsed": "{used} of {total} used",
     "help": "Pomoć",
     "hugoNew": "Hugo New",
     "login": "Prijava",

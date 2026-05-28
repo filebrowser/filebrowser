@@ -49,6 +49,12 @@ export async function fetch(url: string, signal?: AbortSignal) {
   return data;
 }
 
+export async function fetchAll(url: string): Promise<RecursiveEntry[]> {
+  url = removePrefix(url);
+  const res = await fetchURL(`/api/resources/recursive${url}`, {});
+  return (await res.json()) as RecursiveEntry[];
+}
+
 async function resourceAction(url: string, method: ApiMethod, content?: any) {
   url = removePrefix(url);
 

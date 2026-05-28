@@ -29,6 +29,8 @@
     "rename": "Zmień nazwę",
     "replace": "Zamień",
     "reportIssue": "Zgłoś problem",
+    "resumeTransfer": "Resume previous transfer",
+    "resumeTransferTooltip": "Pomiń wszystkie pliki powodujące konflikty, z wyjątkiem tych, które są mniejsze na serwerze, ponieważ podejrzewamy, że ich transfer został przerwany.",
     "save": "Zapisz",
     "schedule": "Harmonogram",
     "search": "Szukaj",
@@ -281,6 +283,7 @@
     "currentPassword": "Twoje aktualne hasło"
   },
   "sidebar": {
+    "diskUsed": "Wykorzystano {used} z {total}",
     "help": "Pomoc",
     "hugoNew": "Nowy Hugo",
     "login": "Zaloguj",
