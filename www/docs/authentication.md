@@ -48,6 +48,10 @@ If filebrowser receives the header `X-Auth-No-Create-User` with the value `true`
 > 
 > File Browser will blindly trust the provided header. If the proxy can be bypassed, an attacker could simply attach the header and get admin access. Please ensure that File Browser is not accessible from untrusted networks, and that the proxy is correctly configured to strip/overwrite the header from client requests.
 
+> [!INFO]
+> 
+> The `Allow users to signup` setting and `--signup` flag does not apply to proxy authentication.
+
 ## Hook Authentication
 
 The Hook Authentication method in FileBrowser allows developers to delegate user authentication to an external script or program. Instead of validating credentials internally, FileBrowser sends the username and password to a custom command defined by the administrator. This command receives the credentials through environment variables and returns key‑value pairs indicating whether the user should be authenticated, blocked, or passed through.
