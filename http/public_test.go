@@ -10,6 +10,7 @@ import (
 	"github.com/asdine/storm/v3"
 	"github.com/spf13/afero"
 
+	"github.com/filebrowser/filebrowser/v2/rules"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/share"
 	"github.com/filebrowser/filebrowser/v2/storage/bolt"
@@ -140,6 +141,110 @@ func TestPublicShareHandlerAuthentication(t *testing.T) {
 				}
 			})
 		}
+	}
+}
+
+// TestPublicShareHandlerRules ensures that owner rules keep applying to paths
+// below a shared directory, even though the share rebases the filesystem onto
+// that directory. A deny rule relative to the owner's scope must not be
+// bypassable by requesting the blocked path through the public share.
+func TestPublicShareHandlerRules(t *testing.T) {
+	t.Parallel()
+
+	testCases := map[string]struct {
+		handler            handleFunc
+		path               string
+		expectedStatusCode int
+	}{
+		"blocked file via dl handler, 403": {
+			handler:            publicDlHandler,
+			path:               "h/private/secret.txt",
+			expectedStatusCode: 403,
+		},
+		"blocked dir listing via share handler, 403": {
+			handler:            publicShareHandler,
+			path:               "h/private/",
+			expectedStatusCode: 403,
+		},
+		"blocked dir download via dl handler, 403": {
+			handler:            publicDlHandler,
+			path:               "h/private/",
+			expectedStatusCode: 403,
+		},
+		"allowed file via dl handler, 200": {
+			handler:            publicDlHandler,
+			path:               "h/public/readme.txt",
+			expectedStatusCode: 200,
+		},
+		"allowed dir listing via share handler, 200": {
+			handler:            publicShareHandler,
+			path:               "h/public/",
+			expectedStatusCode: 200,
+		},
+	}
+
+	for name, tc := range testCases {
+		name, tc := name, tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			dbPath := filepath.Join(t.TempDir(), "db")
+			db, err := storm.Open(dbPath)
+			if err != nil {
+				t.Fatalf("failed to open db: %v", err)
+			}
+			t.Cleanup(func() {
+				if err := db.Close(); err != nil {
+					t.Errorf("failed to close db: %v", err)
+				}
+			})
+
+			storage, err := bolt.NewStorage(db)
+			if err != nil {
+				t.Fatalf("failed to get storage: %v", err)
+			}
+			if err := storage.Share.Save(&share.Link{Hash: "h", UserID: 1, Path: "/projects"}); err != nil {
+				t.Fatalf("failed to save share: %v", err)
+			}
+			if err := storage.Users.Save(&users.User{
+				Username: "username",
+				Password: "pw",
+				Perm:     users.Permissions{Share: true, Download: true},
+				Rules: []rules.Rule{
+					{Allow: false, Path: "/projects/private"},
+				},
+			}); err != nil {
+				t.Fatalf("failed to save user: %v", err)
+			}
+			if err := storage.Settings.Save(&settings.Settings{Key: []byte("key")}); err != nil {
+				t.Fatalf("failed to save settings: %v", err)
+			}
+
+			fs := afero.NewMemMapFs()
+			if err := afero.WriteFile(fs, "/projects/private/secret.txt", []byte("top secret"), 0o600); err != nil {
+				t.Fatalf("failed to write secret file: %v", err)
+			}
+			if err := afero.WriteFile(fs, "/projects/public/readme.txt", []byte("hello"), 0o600); err != nil {
+				t.Fatalf("failed to write public file: %v", err)
+			}
+
+			storage.Users = &customFSUser{
+				Store: storage.Users,
+				fs:    fs,
+			}
+
+			req := newHTTPRequest(t, func(r *http.Request) { r.URL.Path = tc.path })
+
+			recorder := httptest.NewRecorder()
+			handler := handle(tc.handler, "", storage, &settings.Server{})
+
+			handler.ServeHTTP(recorder, req)
+			result := recorder.Result()
+			defer result.Body.Close()
+			if result.StatusCode != tc.expectedStatusCode {
+				t.Errorf("expected status code %d, got status code %d", tc.expectedStatusCode, result.StatusCode)
+			}
+		})
 	}
 }
 
