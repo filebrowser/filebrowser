@@ -80,7 +80,7 @@ func addUserFlags(flags *pflag.FlagSet) {
 	flags.Bool("singleClick", false, "use single clicks only")
 	flags.Bool("redirectAfterCopyMove", false, "redirect to destination after copy/move")
 	flags.Bool("dateFormat", false, "use date format (true for absolute time, false for relative)")
-	flags.Bool("hideDotfiles", false, "hide dotfiles")
+	flags.Bool("hideDotfiles", false, "hide dotfiles in file listings")
 	flags.String("aceEditorTheme", "", "ace editor's syntax highlighting theme for users")
 }
 
