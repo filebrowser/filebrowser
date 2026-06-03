@@ -77,6 +77,7 @@ func setContentDisposition(w http.ResponseWriter, r *http.Request, file *files.F
 	} else {
 		// As per RFC6266 section 4.3
 		w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.PathEscape(file.Name))
+		w.Header().Set("Content-Type", "application/octet-stream")
 	}
 }
 
