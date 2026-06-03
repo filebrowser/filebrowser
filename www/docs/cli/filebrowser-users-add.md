@@ -17,7 +17,7 @@ filebrowser users add <username> <password> [flags]
       --commands strings        a list of the commands a user can execute
       --dateFormat              use date format (true for absolute time, false for relative)
   -h, --help                    help for add
-      --hideDotfiles            hide dotfiles
+      --hideDotfiles            hide dotfiles in file listings
       --locale string           locale for users (default "en")
       --lockPassword            lock password
       --perm.admin              admin perm for users

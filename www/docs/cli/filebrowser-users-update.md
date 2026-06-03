@@ -18,7 +18,7 @@ filebrowser users update <id|username> [flags]
       --commands strings        a list of the commands a user can execute
       --dateFormat              use date format (true for absolute time, false for relative)
   -h, --help                    help for update
-      --hideDotfiles            hide dotfiles
+      --hideDotfiles            hide dotfiles in file listings
       --locale string           locale for users (default "en")
       --lockPassword            lock password
   -p, --password string         new password

@@ -39,7 +39,7 @@ filebrowser config set [flags]
       --disableTypeDetectionByHeader     disables type detection by reading file headers
       --fileMode string                  mode bits that new files are created with (default "0o640")
   -h, --help                             help for set
-      --hideDotfiles                     hide dotfiles
+      --hideDotfiles                     hide dotfiles in file listings
       --hideLoginButton                  hide login button from public pages
   -k, --key string                       tls key
       --locale string                    locale for users (default "en")
