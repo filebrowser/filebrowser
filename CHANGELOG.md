@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.63.6](https://github.com/filebrowser/filebrowser/compare/v2.63.5...v2.63.6) (2026-06-03)
+
+
+### Bug Fixes
+
+* address three security disclosures (archive traversal, login DoS, symlink escape) ([847d08b](https://github.com/filebrowser/filebrowser/commit/847d08bdd135e5c3659f2e6dea2f0cd36617af9b))
+* cross-user unauthorized share-link deletion ([0231b7e](https://github.com/filebrowser/filebrowser/commit/0231b7ebdfbe77a6c54027d30c4856c3fd81ee4d))
+* incorrect access control in public directory shares via rule path rebasing ([e07c59d](https://github.com/filebrowser/filebrowser/commit/e07c59df0b850f5924d5b1683e8609661ddcf534))
+* parse csv files with uneven columns in their rows ([#5965](https://github.com/filebrowser/filebrowser/issues/5965)) ([5328e80](https://github.com/filebrowser/filebrowser/commit/5328e80d2e88d1c279a1250a7dfee4fc96f703ec))
+* remove undocumented hook auth with shell replacement ([34ae34e](https://github.com/filebrowser/filebrowser/commit/34ae34e764d72540c039f1f5ea2ec4c974168c1f))
+
 ## [2.63.5](https://github.com/filebrowser/filebrowser/compare/v2.63.4...v2.63.5) (2026-05-21)
 
 
