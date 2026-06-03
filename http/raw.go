@@ -125,6 +125,12 @@ func getFiles(d *data, path, commonPath string) ([]archives.FileInfo, error) {
 		nameInArchive := strings.TrimPrefix(path, commonPath)
 		nameInArchive = strings.TrimPrefix(nameInArchive, string(filepath.Separator))
 		nameInArchive = filepath.ToSlash(nameInArchive)
+		// filepath.ToSlash only rewrites the host separator, so on a Linux
+		// host a stored backslash survives and is emitted verbatim into the
+		// archive. Windows extractors then treat "\" as a path separator,
+		// allowing the entry to escape the extraction directory (zip-slip).
+		// Strip Windows separators regardless of host OS.
+		nameInArchive = strings.ReplaceAll(nameInArchive, "\\", "/")
 
 		archiveFiles = append(archiveFiles, archives.FileInfo{
 			FileInfo:      info,

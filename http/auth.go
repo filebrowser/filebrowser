@@ -20,6 +20,8 @@ import (
 
 const (
 	DefaultTokenExpirationTime = time.Hour * 2
+
+	maxAuthBodySize = 1 << 20 // 1 MiB
 )
 
 type userInfo struct {
@@ -120,6 +122,10 @@ func withAdmin(fn handleFunc) handleFunc {
 
 func loginHandler(tokenExpireTime time.Duration) handleFunc {
 	return func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		if r.Body != nil {
+			r.Body = http.MaxBytesReader(w, r.Body, maxAuthBodySize)
+		}
+
 		auther, err := d.store.Auth.Get(d.settings.AuthMethod)
 		if err != nil {
 			return http.StatusInternalServerError, err
@@ -142,7 +148,7 @@ type signupBody struct {
 	Password string `json:"password"`
 }
 
-var signupHandler = func(_ http.ResponseWriter, r *http.Request, d *data) (int, error) {
+var signupHandler = func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	if !d.settings.Signup {
 		return http.StatusMethodNotAllowed, nil
 	}
@@ -150,6 +156,8 @@ var signupHandler = func(_ http.ResponseWriter, r *http.Request, d *data) (int, 
 	if r.Body == nil {
 		return http.StatusBadRequest, nil
 	}
+
+	r.Body = http.MaxBytesReader(w, r.Body, maxAuthBodySize)
 
 	info := &signupBody{}
 	err := json.NewDecoder(r.Body).Decode(info)

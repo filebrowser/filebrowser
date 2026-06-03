@@ -133,6 +133,17 @@ func stat(opts *FileOptions) (*FileInfo, error) {
 		return file, nil
 	}
 
+	// The path is a symlink. Refuse to follow it if its on-disk target escapes
+	// the user's scoped root; otherwise a symlink that lives lexically inside
+	// the scope but points outside it would let a restricted user read, write,
+	// or share files beyond their boundary.
+	if file != nil && file.IsSymlink {
+		ok, scopeErr := WithinScope(opts.Fs, opts.Path)
+		if scopeErr != nil || !ok {
+			return nil, os.ErrPermission
+		}
+	}
+
 	// fs doesn't support afero.Lstater interface or the file is a symlink
 	info, err := opts.Fs.Stat(opts.Path)
 	if err != nil {
@@ -163,6 +174,50 @@ func stat(opts *FileOptions) (*FileInfo, error) {
 	}
 
 	return file, nil
+}
+
+// WithinScope reports whether the on-disk target of p — after resolving any
+// symbolic links — stays within the scoped root of fsys. It exists to stop a
+// symlink that lives lexically inside a user's scope but points outside it
+// from being followed for reads, writes, or shares.
+//
+// Paths that do not exist yet (e.g. a brand-new file being created) are
+// validated against their nearest existing ancestor, so legitimate new files
+// are always allowed. For a filesystem that is not scoped with BasePathFs the
+// check is a no-op and returns true.
+//
+// Note: a dangling symlink whose target does not yet exist resolves to its
+// containing directory and is therefore allowed; writing through such a link
+// could still create a file outside the scope. Callers that create files
+// should treat this as best-effort and rely on rejecting existing escaping
+// symlinks, which covers the disclosure and overwrite vectors.
+func WithinScope(fsys afero.Fs, p string) (bool, error) {
+	bfs, ok := fsys.(*afero.BasePathFs)
+	if !ok {
+		// Not a scoped filesystem; nothing to enforce.
+		return true, nil
+	}
+
+	root, err := filepath.EvalSymlinks(afero.FullBaseFsPath(bfs, "/"))
+	if err != nil {
+		return false, err
+	}
+
+	target := afero.FullBaseFsPath(bfs, p)
+	resolved, err := filepath.EvalSymlinks(target)
+	for errors.Is(err, fs.ErrNotExist) {
+		parent := filepath.Dir(target)
+		if parent == target {
+			break
+		}
+		target = parent
+		resolved, err = filepath.EvalSymlinks(target)
+	}
+	if err != nil {
+		return false, err
+	}
+
+	return resolved == root || strings.HasPrefix(resolved, root+string(filepath.Separator)), nil
 }
 
 // Checksum checksums a given File for a given User, using a specific

@@ -295,6 +295,13 @@ func addVersionSuffix(source string, afs afero.Fs) string {
 }
 
 func writeFile(afs afero.Fs, dst string, in io.Reader, fileMode, dirMode fs.FileMode) (os.FileInfo, error) {
+	// Refuse to write through a symlink that escapes the user's scope, so an
+	// overwrite of an existing escaping symlink cannot modify a file outside
+	// the boundary.
+	if ok, err := files.WithinScope(afs, dst); err != nil || !ok {
+		return nil, os.ErrPermission
+	}
+
 	dir, _ := path.Split(dst)
 	err := afs.MkdirAll(dir, dirMode)
 	if err != nil {
