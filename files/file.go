@@ -217,7 +217,17 @@ func WithinScope(fsys afero.Fs, p string) (bool, error) {
 		return false, err
 	}
 
-	return resolved == root || strings.HasPrefix(resolved, root+string(filepath.Separator)), nil
+	// Compare against root with a trailing separator so a sibling like
+	// "/srvother" is not treated as being inside "/srv". When root is itself
+	// the filesystem boundary (e.g. "/"), it already ends in a separator, so
+	// avoid producing "//" — which no path would match — and accept any path
+	// under it.
+	prefix := root
+	if !strings.HasSuffix(prefix, string(filepath.Separator)) {
+		prefix += string(filepath.Separator)
+	}
+
+	return resolved == root || strings.HasPrefix(resolved, prefix), nil
 }
 
 // Checksum checksums a given File for a given User, using a specific
