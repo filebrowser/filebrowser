@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.63.9](https://github.com/filebrowser/filebrowser/compare/v2.63.8...v2.63.9) (2026-06-03)
+
+
+### Bug Fixes
+
+* force octet-stream for attachment downloads ([#5942](https://github.com/filebrowser/filebrowser/issues/5942)) ([103acd1](https://github.com/filebrowser/filebrowser/commit/103acd15fe57554fe0246bfe70a49b6cb4ae0c51))
+* prevent symlink scope escape in copy/move/rename ([cdd666f](https://github.com/filebrowser/filebrowser/commit/cdd666fc95f569ad583c32391e45646fed676dfd))
+* set X-Content-Type-Options: nosniff on raw file responses ([35db07d](https://github.com/filebrowser/filebrowser/commit/35db07d0159c520a6b3c969ac52033593914fadd))
+* use constant-time comparison for share access token ([1951436](https://github.com/filebrowser/filebrowser/commit/19514367adf2d9fe5be2b7666e397979ea679b94))
+
 ## [2.63.8](https://github.com/filebrowser/filebrowser/compare/v2.63.7...v2.63.8) (2026-06-03)
 
 
