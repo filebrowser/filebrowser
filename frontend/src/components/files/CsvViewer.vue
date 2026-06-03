@@ -138,7 +138,11 @@ watchEffect(() => {
       : props.content;
     parse(
       content as string,
-      { delimiter: columnSeparator.value, skip_empty_lines: true },
+      {
+        delimiter: columnSeparator.value,
+        skip_empty_lines: true,
+        relax_column_count: true,
+      },
       (error, output) => {
         if (error) {
           console.error("Failed to parse CSV:", error);
