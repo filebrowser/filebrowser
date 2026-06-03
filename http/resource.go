@@ -228,6 +228,19 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 			return http.StatusForbidden, nil
 		}
 
+		// Refuse to copy/move through a symlink that escapes the user's scope,
+		// for either the source (read escape) or the destination (write
+		// escape). fileutils.Copy/MoveFile operate on the raw afero FS and
+		// follow symlinks, so they bypass the guards in stat()/writeFile().
+		for _, p := range []string{src, dst} {
+			if ok, scopeErr := files.WithinScope(d.user.Fs, p); scopeErr != nil || !ok {
+				if scopeErr != nil {
+					return errToStatus(scopeErr), scopeErr
+				}
+				return http.StatusForbidden, nil
+			}
+		}
+
 		err = checkParent(src, dst)
 		if err != nil {
 			return http.StatusBadRequest, err
