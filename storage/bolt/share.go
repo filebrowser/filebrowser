@@ -2,6 +2,7 @@ package bolt
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/asdine/storm/v3"
 	"github.com/asdine/storm/v3/q"
@@ -76,14 +77,27 @@ func (s shareBackend) Delete(hash string) error {
 	return err
 }
 
-func (s shareBackend) DeleteWithPathPrefix(pathPrefix string) error {
+func (s shareBackend) DeleteWithPathPrefix(pathPrefix string, userID uint) error {
 	var links []share.Link
 	if err := s.db.Prefix("Path", pathPrefix, &links); err != nil {
+		if errors.Is(err, storm.ErrNotFound) {
+			return nil
+		}
 		return err
 	}
 
+	prefix := strings.TrimRight(pathPrefix, "/")
+
 	var err error
 	for _, link := range links {
+		if link.UserID != userID {
+			continue
+		}
+
+		if link.Path != prefix && !strings.HasPrefix(link.Path, prefix+"/") {
+			continue
+		}
+
 		err = errors.Join(err, s.db.DeleteStruct(&share.Link{Hash: link.Hash}))
 	}
 	return err

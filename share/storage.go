@@ -15,7 +15,7 @@ type StorageBackend interface {
 	Gets(path string, id uint) ([]*Link, error)
 	Save(s *Link) error
 	Delete(hash string) error
-	DeleteWithPathPrefix(path string) error
+	DeleteWithPathPrefix(path string, userID uint) error
 }
 
 // Storage is a storage.
@@ -137,6 +137,6 @@ func (s *Storage) Delete(hash string) error {
 	return s.back.Delete(hash)
 }
 
-func (s *Storage) DeleteWithPathPrefix(path string) error {
-	return s.back.DeleteWithPathPrefix(path)
+func (s *Storage) DeleteWithPathPrefix(path string, userID uint) error {
+	return s.back.DeleteWithPathPrefix(path, userID)
 }

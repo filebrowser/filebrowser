@@ -59,7 +59,7 @@ func (f fakeBackend) Delete(_ string) error {
 	return nil
 }
 
-func (f fakeBackend) DeleteWithPathPrefix(_ string) error {
+func (f fakeBackend) DeleteWithPathPrefix(_ string, _ uint) error {
 	return nil
 }
 
