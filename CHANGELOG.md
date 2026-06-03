@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.63.10](https://github.com/filebrowser/filebrowser/compare/v2.63.9...v2.63.10) (2026-06-03)
+
+
+### Bug Fixes
+
+* allow writes when user scope resolves to filesystem root ([6b04cbf](https://github.com/filebrowser/filebrowser/commit/6b04cbf5e9db1f5b9c0b1624843607ce2881cfc4))
+
 ## [2.63.9](https://github.com/filebrowser/filebrowser/compare/v2.63.8...v2.63.9) (2026-06-03)
 
 
