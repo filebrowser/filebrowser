@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.63.7](https://github.com/filebrowser/filebrowser/compare/v2.63.6...v2.63.7) (2026-06-03)
+
+
+### Bug Fixes
+
+* disallow shares for non-existent paths ([166583d](https://github.com/filebrowser/filebrowser/commit/166583db632e088e9f0adce30aec43bb9d9019f4))
+
 ## [2.63.6](https://github.com/filebrowser/filebrowser/compare/v2.63.5...v2.63.6) (2026-06-03)
 
 
