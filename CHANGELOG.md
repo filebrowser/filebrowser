@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.63.8](https://github.com/filebrowser/filebrowser/compare/v2.63.7...v2.63.8) (2026-06-03)
+
+
+### Bug Fixes
+
+* check if share is within scope when creating ([ca019ae](https://github.com/filebrowser/filebrowser/commit/ca019ae7d966a7c28de2b2341271cd13e3458ae6))
+
 ## [2.63.7](https://github.com/filebrowser/filebrowser/compare/v2.63.6...v2.63.7) (2026-06-03)
 
 
