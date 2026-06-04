@@ -128,20 +128,16 @@ func stat(opts *FileOptions) (*FileInfo, error) {
 		}
 	}
 
-	// regular file
-	if file != nil && !file.IsSymlink {
-		return file, nil
-	}
-
-	// The path is a symlink. Refuse to follow it if its on-disk target escapes
-	// the user's scoped root; otherwise a symlink that lives lexically inside
-	// the scope but points outside it would let a restricted user read, write,
-	// or share files beyond their boundary.
-	if file != nil && file.IsSymlink {
+	if file != nil {
 		ok, scopeErr := WithinScope(opts.Fs, opts.Path)
 		if scopeErr != nil || !ok {
 			return nil, os.ErrPermission
 		}
+	}
+
+	// regular file
+	if file != nil && !file.IsSymlink {
+		return file, nil
 	}
 
 	// fs doesn't support afero.Lstater interface or the file is a symlink
@@ -479,6 +475,13 @@ func (i *FileInfo) readListing(checker rules.Checker, readHeader bool, calcImgRe
 		isSymlink, isInvalidLink := false, false
 		if IsSymlink(f.Mode()) {
 			isSymlink = true
+			// A symlink whose on-disk target escapes the scoped root must not be
+			// followed, otherwise the listing would leak the target's metadata
+			// (and downstream access) for files outside the user's scope or the
+			// shared subtree.
+			if ok, scopeErr := WithinScope(i.Fs, fPath); scopeErr != nil || !ok {
+				continue
+			}
 			// It's a symbolic link. We try to follow it. If it doesn't work,
 			// we stay with the link information instead of the target's.
 			info, err := i.Fs.Stat(fPath)

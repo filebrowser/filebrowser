@@ -115,6 +115,10 @@ func getFiles(d *data, path, commonPath string) ([]archives.FileInfo, error) {
 		return nil, nil
 	}
 
+	if ok, err := files.WithinScope(d.user.Fs, path); err != nil || !ok {
+		return nil, nil
+	}
+
 	info, err := d.user.Fs.Stat(path)
 	if err != nil {
 		return nil, err

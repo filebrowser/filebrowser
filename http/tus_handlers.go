@@ -44,6 +44,11 @@ func tusPostHandler(cache UploadCache) handleFunc {
 		if !d.user.Perm.Create || !d.Check(r.URL.Path) {
 			return http.StatusForbidden, nil
 		}
+
+		if ok, scopeErr := files.WithinScope(d.user.Fs, r.URL.Path); scopeErr != nil || !ok {
+			return http.StatusForbidden, nil
+		}
+
 		file, err := files.NewFileInfo(&files.FileOptions{
 			Fs:         d.user.Fs,
 			Path:       r.URL.Path,
@@ -160,6 +165,11 @@ func tusPatchHandler(cache UploadCache) handleFunc {
 		}
 		if r.Header.Get("Content-Type") != "application/offset+octet-stream" {
 			return http.StatusUnsupportedMediaType, nil
+		}
+		// Defense in depth: refuse to write through a symlink that escapes the
+		// scope, in case the target path is (or sits behind) an escaping link.
+		if ok, scopeErr := files.WithinScope(d.user.Fs, r.URL.Path); scopeErr != nil || !ok {
+			return http.StatusForbidden, nil
 		}
 
 		uploadOffset, err := getUploadOffset(r)

@@ -220,7 +220,13 @@ func TestPublicShareHandlerRules(t *testing.T) {
 				t.Fatalf("failed to save settings: %v", err)
 			}
 
-			fs := afero.NewMemMapFs()
+			fs := afero.NewBasePathFs(afero.NewOsFs(), t.TempDir())
+			if err := fs.MkdirAll("/projects/private", 0o755); err != nil {
+				t.Fatalf("failed to create private dir: %v", err)
+			}
+			if err := fs.MkdirAll("/projects/public", 0o755); err != nil {
+				t.Fatalf("failed to create public dir: %v", err)
+			}
 			if err := afero.WriteFile(fs, "/projects/private/secret.txt", []byte("top secret"), 0o600); err != nil {
 				t.Fatalf("failed to write secret file: %v", err)
 			}

@@ -80,4 +80,54 @@ func TestWithinScope(t *testing.T) {
 			t.Fatal("expected escaping symlink to a sibling directory to be rejected")
 		}
 	})
+
+	t.Run("symlink whose target stays within scope is allowed", func(t *testing.T) {
+		scope := t.TempDir()
+		if err := os.MkdirAll(filepath.Join(scope, "real"), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(scope, "real", "f.txt"), []byte("x"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.Symlink(filepath.Join(scope, "real"), filepath.Join(scope, "link")); err != nil {
+			t.Skipf("cannot create symlink: %v", err)
+		}
+		bfs := afero.NewBasePathFs(afero.NewOsFs(), scope)
+
+		ok, err := WithinScope(bfs, "/link/f.txt")
+		if err != nil || !ok {
+			t.Fatalf("expected (true, nil) for an in-scope symlink target, got (%v, %v)", ok, err)
+		}
+	})
+}
+
+// stat must reject a regular file reached through a symlinked ancestor that
+// escapes the scope (GHSA-hf77-9m7w-fq8q), while still serving in-scope files.
+func TestStatRejectsLinkedAncestorEscape(t *testing.T) {
+	scope := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(scope, "shared"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Join(scope, "private"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(scope, "private", "secret.txt"), []byte("secret"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(scope, "shared", "ok.txt"), []byte("ok"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(filepath.Join(scope, "private"), filepath.Join(scope, "shared", "link")); err != nil {
+		t.Skipf("cannot create symlink: %v", err)
+	}
+
+	// Filesystem scoped to the shared directory, as a public share would be.
+	bfs := afero.NewBasePathFs(afero.NewOsFs(), filepath.Join(scope, "shared"))
+
+	if _, err := stat(&FileOptions{Fs: bfs, Path: "/link/secret.txt"}); !os.IsPermission(err) {
+		t.Fatalf("expected permission error for linked-ancestor escape, got %v", err)
+	}
+	if _, err := stat(&FileOptions{Fs: bfs, Path: "/ok.txt"}); err != nil {
+		t.Fatalf("expected in-scope file to be served, got %v", err)
+	}
 }
