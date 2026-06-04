@@ -98,6 +98,7 @@ export default {
           to: this.dest + encodeURIComponent(this.req.items[item].name),
           name: this.req.items[item].name,
           size: this.req.items[item].size,
+          isDir: this.req.items[item].isDir,
           modified: this.req.items[item].modified,
           overwrite: false,
           rename: false,
@@ -122,7 +123,7 @@ export default {
           });
       };
 
-      const conflict = upload.checkConflict(items, this.dest);
+      const conflict = await upload.checkConflict(items, this.dest);
 
       if (conflict.length > 0) {
         this.showHover({
