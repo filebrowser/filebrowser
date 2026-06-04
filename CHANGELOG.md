@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.63.11](https://github.com/filebrowser/filebrowser/compare/v2.63.10...v2.63.11) (2026-06-04)
+
+
+### Bug Fixes
+
+* incomplete fix for symlinked directories let scopes users and public-share recipients read and write files outside of scope ([3471ec2](https://github.com/filebrowser/filebrowser/commit/3471ec2c4b6473831c72ee889cb3c1a6849a1fb1))
+
 ## [2.63.10](https://github.com/filebrowser/filebrowser/compare/v2.63.9...v2.63.10) (2026-06-03)
 
 
