@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.63.12](https://github.com/filebrowser/filebrowser/compare/v2.63.11...v2.63.12) (2026-06-04)
+
+
+### Bug Fixes
+
+* await copy move conflict detection ([#5978](https://github.com/filebrowser/filebrowser/issues/5978)) ([c1abe8f](https://github.com/filebrowser/filebrowser/commit/c1abe8f561208bf36bde70879d1a15ef9de998fa))
+* keep mobile file sort controls visible ([#5977](https://github.com/filebrowser/filebrowser/issues/5977)) ([0bb2768](https://github.com/filebrowser/filebrowser/commit/0bb2768754d11b865d68e72dcd7cebb232a6308a))
+* skip inaccessible children when listing directories ([#5958](https://github.com/filebrowser/filebrowser/issues/5958)) ([7b7ff8a](https://github.com/filebrowser/filebrowser/commit/7b7ff8ae8f97393b2e6ae6e061c1f780077c32b6))
+
 ## [2.63.11](https://github.com/filebrowser/filebrowser/compare/v2.63.10...v2.63.11) (2026-06-04)
 
 
