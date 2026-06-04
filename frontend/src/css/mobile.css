@@ -14,11 +14,26 @@
   body {
     padding-bottom: 5em;
   }
-  #listing.list .item .size {
+  #listing.list .item:not(.header) .size {
     display: none;
   }
-  #listing.list .item .name {
+  #listing.list .item:not(.header) .name {
     width: 60%;
+  }
+  #listing.list .item.header .name {
+    margin-right: 0;
+    width: 45%;
+  }
+  #listing.list .item.header .size {
+    width: 25%;
+  }
+  #listing.list .item.header .modified {
+    width: 30%;
+  }
+  #listing.list .item.header p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   #more {
     display: inherit;
@@ -162,10 +177,22 @@
 }
 
 @media (max-width: 450px) {
-  #listing.list .item .modified {
+  #listing.list .item:not(.header) .modified {
     display: none;
   }
-  #listing.list .item .name {
+  #listing.list .item:not(.header) .name {
     width: 100%;
+  }
+  #listing.list .item.header {
+    padding: 0.75em 0.5em;
+  }
+  #listing.list .item.header .name {
+    width: 34%;
+  }
+  #listing.list .item.header .size {
+    width: 24%;
+  }
+  #listing.list .item.header .modified {
+    width: 42%;
   }
 }
