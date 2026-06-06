@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.63.13](https://github.com/filebrowser/filebrowser/compare/v2.63.12...v2.63.13) (2026-06-06)
+
+
+### Bug Fixes
+
+* copy/move allow overwrite ([a1a514d](https://github.com/filebrowser/filebrowser/commit/a1a514dcbb216d2080412c5354eea1e1fb033050))
+
+
+### Refactorings
+
+* cleanup and simplify upload.ts ([5f7311d](https://github.com/filebrowser/filebrowser/commit/5f7311d32437e98d7c14c7b307a4f68109275535))
+
 ## [2.63.12](https://github.com/filebrowser/filebrowser/compare/v2.63.11...v2.63.12) (2026-06-04)
 
 
