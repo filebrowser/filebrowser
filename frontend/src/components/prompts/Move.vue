@@ -123,7 +123,7 @@ export default {
           });
       };
 
-      const conflict = await upload.checkConflict(items, this.dest);
+      const conflict = await upload.checkConflict(items, this.dest, true);
 
       if (conflict.length > 0) {
         this.showHover({

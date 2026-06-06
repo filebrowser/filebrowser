@@ -179,6 +179,7 @@ const drop = async (event: Event) => {
         to: props.url + encodeURIComponent(fileStore.req?.items[i].name),
         name: fileStore.req?.items[i].name,
         size: fileStore.req?.items[i].size,
+        isDir: fileStore.req?.items[i].isDir,
         modified: fileStore.req?.items[i].modified,
         overwrite: false,
         rename: false,
@@ -204,7 +205,7 @@ const drop = async (event: Event) => {
       .catch($showError);
   };
 
-  const conflict = await upload.checkConflict(items, path);
+  const conflict = await upload.checkConflict(items, path, true);
 
   if (conflict.length > 0) {
     layoutStore.showHover({

@@ -167,6 +167,49 @@ describe("checkConflict", () => {
     expect(conflicts[0].name).toBe("/target/folder/deep/file.txt");
   });
 
+  // Copy/move stats the whole destination, so a same-named directory is a
+  // conflict in its own right (regression for the directory case of #5957).
+  it("reports a directory conflict for copy/move (includeDirectories)", async () => {
+    vi.mocked(api.fetchAll).mockResolvedValue([
+      {
+        path: "/target/folder",
+        name: "folder",
+        size: 0,
+        modified: "2026-06-04T00:00:00Z",
+        isDir: true,
+      },
+    ]);
+
+    const items = [{ ...moveItem("folder", "/files/target/", 0), isDir: true }];
+
+    const conflicts = await checkConflict(items, "/files/target/", true);
+
+    expect(conflicts).toHaveLength(1);
+    expect(conflicts[0].name).toBe("/target/folder");
+  });
+
+  // Uploads merge into an existing folder, so the directory itself must not be
+  // reported — only the files inside it can conflict.
+  it("ignores a directory conflict for uploads (default)", async () => {
+    vi.mocked(api.fetchAll).mockResolvedValue([
+      {
+        path: "/target/folder",
+        name: "folder",
+        size: 0,
+        modified: "2026-06-04T00:00:00Z",
+        isDir: true,
+      },
+    ]);
+
+    const files = [
+      { name: "folder", size: 0, isDir: true, fullPath: "folder" },
+    ];
+
+    const conflicts = await checkConflict(files, "/files/target/");
+
+    expect(conflicts).toHaveLength(0);
+  });
+
   it("returns no conflicts when the recursive listing fails", async () => {
     vi.mocked(api.fetchAll).mockRejectedValue(new Error("404"));
 

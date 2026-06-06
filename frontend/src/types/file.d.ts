@@ -53,6 +53,7 @@ interface ClipItem {
   from: string;
   name: string;
   size?: number;
+  isDir?: boolean;
   modified?: string;
 }
 

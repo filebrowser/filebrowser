@@ -86,7 +86,8 @@ describe("copy and move conflict prompts", () => {
           isDir: false,
         }),
       ],
-      "/files/target/"
+      "/files/target/",
+      true
     );
     expect(context.showHover).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -109,7 +110,8 @@ describe("copy and move conflict prompts", () => {
           isDir: false,
         }),
       ],
-      "/files/target/"
+      "/files/target/",
+      true
     );
     expect(context.showHover).toHaveBeenCalledWith(
       expect.objectContaining({

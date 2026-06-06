@@ -26,16 +26,24 @@ function conflictKey(item: UploadEntry): string {
  * server, so the caller can prompt the user to overwrite/rename/skip.
  *
  * The whole destination tree is fetched once and indexed by path relative to
- * the destination, then every file is looked up directly — no need to mirror
- * the upload's folder structure. Directories are never reported: an existing
- * folder is merged on upload, and a copy/move onto one is rejected server-side.
+ * the destination, then every entry is looked up directly — no need to mirror
+ * the upload's folder structure.
  *
- * @param files    - flat upload list to check
- * @param basePath - server destination path (e.g. "/files/uploads/")
+ * Directory handling differs by action, hence `includeDirectories`:
+ *  - Upload (false): an existing folder is silently merged, so only the
+ *    individual files inside it can conflict.
+ *  - Copy/move (true): the server stats the destination and rejects it whole if
+ *    a same-named entry exists, so the directory itself is a conflict. The list
+ *    only holds the top-level items being moved, so each is reported once.
+ *
+ * @param files              - flat upload list to check
+ * @param basePath           - server destination path (e.g. "/files/uploads/")
+ * @param includeDirectories - report directories as conflicts (copy/move)
  */
 export async function checkConflict(
   files: UploadList,
-  basePath: string
+  basePath: string,
+  includeDirectories = false
 ): Promise<ConflictingResource[]> {
   if (files.length === 0) return [];
 
@@ -62,7 +70,7 @@ export async function checkConflict(
 
   const conflicts: ConflictingResource[] = [];
   files.forEach((file, index) => {
-    if (file.isDir) return; // see directory note above
+    if (file.isDir && !includeDirectories) return; // see directory note above
 
     const server = serverMap.get(conflictKey(file));
     if (!server) return;
