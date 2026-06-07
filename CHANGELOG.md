@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.63.14](https://github.com/filebrowser/filebrowser/compare/v2.63.13...v2.63.14) (2026-06-07)
+
+
+### Bug Fixes
+
+* recursive check ([3406d3d](https://github.com/filebrowser/filebrowser/commit/3406d3d7f98dfc3c16e4ff7ff4a87e3bdfe221dd))
+
+
+### Refactorings
+
+* ScopedFs to avoid escaping symlinks ([7c2c0a1](https://github.com/filebrowser/filebrowser/commit/7c2c0a11b31b2bb214d741005a0b02b1764208b3))
+
 ## [2.63.13](https://github.com/filebrowser/filebrowser/compare/v2.63.12...v2.63.13) (2026-06-06)
 
 
