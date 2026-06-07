@@ -8,13 +8,13 @@ import (
 	"testing"
 
 	"github.com/asdine/storm/v3"
-	"github.com/spf13/afero"
-
+	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/rules"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/share"
 	"github.com/filebrowser/filebrowser/v2/storage/bolt"
 	"github.com/filebrowser/filebrowser/v2/users"
+	"github.com/spf13/afero"
 )
 
 func TestPublicShareHandlerAuthentication(t *testing.T) {
@@ -220,7 +220,7 @@ func TestPublicShareHandlerRules(t *testing.T) {
 				t.Fatalf("failed to save settings: %v", err)
 			}
 
-			fs := afero.NewBasePathFs(afero.NewOsFs(), t.TempDir())
+			fs := files.NewScopedFs(afero.NewOsFs(), t.TempDir())
 			if err := fs.MkdirAll("/projects/private", 0o755); err != nil {
 				t.Fatalf("failed to create private dir: %v", err)
 			}
@@ -276,7 +276,9 @@ func (cu *customFSUser) Get(baseScope string, id interface{}) (*users.User, erro
 	if err != nil {
 		return nil, err
 	}
-	user.Fs = cu.fs
+	// Mirror production (users.User init), where a user's filesystem is always a
+	// scoped, symlink-confining ScopedFs rather than a bare afero.Fs.
+	user.Fs = files.NewScopedFs(cu.fs, "/")
 
 	return user, nil
 }

@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/spf13/afero"
 )
 
@@ -31,7 +32,7 @@ func TestCopyDoesNotDereferenceEscapingSymlink(t *testing.T) {
 		t.Skipf("cannot create symlink: %v", err)
 	}
 
-	afs := afero.NewBasePathFs(afero.NewOsFs(), scope)
+	afs := files.NewScopedFs(afero.NewOsFs(), scope)
 
 	err := Copy(afs, "/srcdir", "/dstdir", 0o644, 0o755)
 	if err == nil {
@@ -58,7 +59,7 @@ func TestCopyAllowsInScopeSymlink(t *testing.T) {
 		t.Skipf("cannot create symlink: %v", err)
 	}
 
-	afs := afero.NewBasePathFs(afero.NewOsFs(), scope)
+	afs := files.NewScopedFs(afero.NewOsFs(), scope)
 
 	if err := Copy(afs, "/srcdir", "/dstdir", 0o644, 0o755); err != nil {
 		t.Fatalf("expected copy of an in-scope symlink to succeed, got: %v", err)

@@ -10,11 +10,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/mholt/archives"
-
 	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/fileutils"
 	"github.com/filebrowser/filebrowser/v2/users"
+	"github.com/mholt/archives"
 )
 
 func slashClean(name string) string {
@@ -112,10 +111,6 @@ var rawHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) 
 
 func getFiles(d *data, path, commonPath string) ([]archives.FileInfo, error) {
 	if !d.Check(path) {
-		return nil, nil
-	}
-
-	if ok, err := files.WithinScope(d.user.Fs, path); err != nil || !ok {
 		return nil, nil
 	}
 

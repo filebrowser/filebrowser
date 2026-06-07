@@ -15,12 +15,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/shirou/gopsutil/v4/disk"
-	"github.com/spf13/afero"
-
 	fberrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/fileutils"
+	"github.com/shirou/gopsutil/v4/disk"
+	"github.com/spf13/afero"
 )
 
 var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
@@ -228,15 +227,6 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 			return http.StatusForbidden, nil
 		}
 
-		for _, p := range []string{src, dst} {
-			if ok, scopeErr := files.WithinScope(d.user.Fs, p); scopeErr != nil || !ok {
-				if scopeErr != nil {
-					return errToStatus(scopeErr), scopeErr
-				}
-				return http.StatusForbidden, nil
-			}
-		}
-
 		err = checkParent(src, dst)
 		if err != nil {
 			return http.StatusBadRequest, err
@@ -304,10 +294,6 @@ func addVersionSuffix(source string, afs afero.Fs) string {
 }
 
 func writeFile(afs afero.Fs, dst string, in io.Reader, fileMode, dirMode fs.FileMode) (os.FileInfo, error) {
-	if ok, err := files.WithinScope(afs, dst); err != nil || !ok {
-		return nil, os.ErrPermission
-	}
-
 	dir, _ := path.Split(dst)
 	err := afs.MkdirAll(dir, dirMode)
 	if err != nil {

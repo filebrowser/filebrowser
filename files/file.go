@@ -22,10 +22,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/spf13/afero"
-
 	fberrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/rules"
+	"github.com/spf13/afero"
 )
 
 var (
@@ -129,13 +128,6 @@ func stat(opts *FileOptions) (*FileInfo, error) {
 		}
 	}
 
-	if file != nil {
-		ok, scopeErr := WithinScope(opts.Fs, opts.Path)
-		if scopeErr != nil || !ok {
-			return nil, os.ErrPermission
-		}
-	}
-
 	// regular file
 	if file != nil && !file.IsSymlink {
 		return file, nil
@@ -171,60 +163,6 @@ func stat(opts *FileOptions) (*FileInfo, error) {
 	}
 
 	return file, nil
-}
-
-// WithinScope reports whether the on-disk target of p — after resolving any
-// symbolic links — stays within the scoped root of fsys. It exists to stop a
-// symlink that lives lexically inside a user's scope but points outside it
-// from being followed for reads, writes, or shares.
-//
-// Paths that do not exist yet (e.g. a brand-new file being created) are
-// validated against their nearest existing ancestor, so legitimate new files
-// are always allowed. For a filesystem that is not scoped with BasePathFs the
-// check is a no-op and returns true.
-//
-// Note: a dangling symlink whose target does not yet exist resolves to its
-// containing directory and is therefore allowed; writing through such a link
-// could still create a file outside the scope. Callers that create files
-// should treat this as best-effort and rely on rejecting existing escaping
-// symlinks, which covers the disclosure and overwrite vectors.
-func WithinScope(fsys afero.Fs, p string) (bool, error) {
-	bfs, ok := fsys.(*afero.BasePathFs)
-	if !ok {
-		// Not a scoped filesystem; nothing to enforce.
-		return true, nil
-	}
-
-	root, err := filepath.EvalSymlinks(afero.FullBaseFsPath(bfs, "/"))
-	if err != nil {
-		return false, err
-	}
-
-	target := afero.FullBaseFsPath(bfs, p)
-	resolved, err := filepath.EvalSymlinks(target)
-	for errors.Is(err, fs.ErrNotExist) {
-		parent := filepath.Dir(target)
-		if parent == target {
-			break
-		}
-		target = parent
-		resolved, err = filepath.EvalSymlinks(target)
-	}
-	if err != nil {
-		return false, err
-	}
-
-	// Compare against root with a trailing separator so a sibling like
-	// "/srvother" is not treated as being inside "/srv". When root is itself
-	// the filesystem boundary (e.g. "/"), it already ends in a separator, so
-	// avoid producing "//" — which no path would match — and accept any path
-	// under it.
-	prefix := root
-	if !strings.HasSuffix(prefix, string(filepath.Separator)) {
-		prefix += string(filepath.Separator)
-	}
-
-	return resolved == root || strings.HasPrefix(resolved, prefix), nil
 }
 
 // Checksum checksums a given File for a given User, using a specific
@@ -475,15 +413,19 @@ func (i *FileInfo) readListing(checker rules.Checker, readHeader bool, calcImgRe
 		isSymlink, isInvalidLink := false, false
 		if IsSymlink(f.Mode()) {
 			isSymlink = true
-			if ok, scopeErr := WithinScope(i.Fs, fPath); scopeErr != nil || !ok {
-				continue
-			}
-			// It's a symbolic link. We try to follow it. If it doesn't work,
-			// we stay with the link information instead of the target's.
+			// It's a symbolic link. We try to follow it. The scoped filesystem
+			// refuses to dereference a link whose target escapes the scope
+			// (permission error); such a link is omitted from the listing
+			// entirely so it cannot leak the target's metadata. Any other
+			// failure means a broken link, which we surface as an invalid link
+			// rather than the target's information.
 			info, err := i.Fs.Stat(fPath)
-			if err == nil {
+			switch {
+			case err == nil:
 				f = info
-			} else {
+			case errors.Is(err, os.ErrPermission):
+				continue
+			default:
 				isInvalidLink = true
 			}
 		}

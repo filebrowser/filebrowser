@@ -11,9 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/spf13/afero"
-
 	"github.com/filebrowser/filebrowser/v2/files"
+	"github.com/spf13/afero"
 )
 
 // keepUploadActive periodically touches the cache entry to prevent eviction during transfer
@@ -42,10 +41,6 @@ func keepUploadActive(cache UploadCache, filePath string) func() {
 func tusPostHandler(cache UploadCache) handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		if !d.user.Perm.Create || !d.Check(r.URL.Path) {
-			return http.StatusForbidden, nil
-		}
-
-		if ok, scopeErr := files.WithinScope(d.user.Fs, r.URL.Path); scopeErr != nil || !ok {
 			return http.StatusForbidden, nil
 		}
 
@@ -165,10 +160,6 @@ func tusPatchHandler(cache UploadCache) handleFunc {
 		}
 		if r.Header.Get("Content-Type") != "application/offset+octet-stream" {
 			return http.StatusUnsupportedMediaType, nil
-		}
-
-		if ok, scopeErr := files.WithinScope(d.user.Fs, r.URL.Path); scopeErr != nil || !ok {
-			return http.StatusForbidden, nil
 		}
 
 		uploadOffset, err := getUploadOffset(r)

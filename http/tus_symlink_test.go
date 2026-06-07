@@ -12,6 +12,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/spf13/afero"
 
+	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/storage/bolt"
 	"github.com/filebrowser/filebrowser/v2/users"
@@ -58,7 +59,7 @@ func TestTusHandlersRejectSymlinkScopeEscape(t *testing.T) {
 	}
 	st.Users = &customFSUser{
 		Store: st.Users,
-		fs:    afero.NewBasePathFs(afero.NewOsFs(), userScope),
+		fs:    files.NewScopedFs(afero.NewOsFs(), userScope),
 	}
 
 	// Forge a valid auth token for user ID 1.
