@@ -475,10 +475,6 @@ func (i *FileInfo) readListing(checker rules.Checker, readHeader bool, calcImgRe
 		isSymlink, isInvalidLink := false, false
 		if IsSymlink(f.Mode()) {
 			isSymlink = true
-			// A symlink whose on-disk target escapes the scoped root must not be
-			// followed, otherwise the listing would leak the target's metadata
-			// (and downstream access) for files outside the user's scope or the
-			// shared subtree.
 			if ok, scopeErr := WithinScope(i.Fs, fPath); scopeErr != nil || !ok {
 				continue
 			}

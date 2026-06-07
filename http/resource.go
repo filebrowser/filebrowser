@@ -228,10 +228,6 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 			return http.StatusForbidden, nil
 		}
 
-		// Refuse to copy/move through a symlink that escapes the user's scope,
-		// for either the source (read escape) or the destination (write
-		// escape). fileutils.Copy/MoveFile operate on the raw afero FS and
-		// follow symlinks, so they bypass the guards in stat()/writeFile().
 		for _, p := range []string{src, dst} {
 			if ok, scopeErr := files.WithinScope(d.user.Fs, p); scopeErr != nil || !ok {
 				if scopeErr != nil {
@@ -308,9 +304,6 @@ func addVersionSuffix(source string, afs afero.Fs) string {
 }
 
 func writeFile(afs afero.Fs, dst string, in io.Reader, fileMode, dirMode fs.FileMode) (os.FileInfo, error) {
-	// Refuse to write through a symlink that escapes the user's scope, so an
-	// overwrite of an existing escaping symlink cannot modify a file outside
-	// the boundary.
 	if ok, err := files.WithinScope(afs, dst); err != nil || !ok {
 		return nil, os.ErrPermission
 	}

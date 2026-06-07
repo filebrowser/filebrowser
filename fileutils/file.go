@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/afero"
+
+	"github.com/filebrowser/filebrowser/v2/files"
 )
 
 // MoveFile moves file from src to dst.
@@ -32,6 +34,13 @@ func MoveFile(afs afero.Fs, src, dst string, fileMode, dirMode fs.FileMode) erro
 // CopyFile copies a file from source to dest and returns
 // an error if any.
 func CopyFile(afs afero.Fs, source, dest string, fileMode, dirMode fs.FileMode) error {
+	if ok, err := files.WithinScope(afs, source); err != nil || !ok {
+		if err != nil {
+			return err
+		}
+		return os.ErrPermission
+	}
+
 	// Open the source file.
 	src, err := afs.Open(source)
 	if err != nil {

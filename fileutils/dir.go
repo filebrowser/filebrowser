@@ -3,14 +3,24 @@ package fileutils
 import (
 	"errors"
 	"io/fs"
+	"os"
 
 	"github.com/spf13/afero"
+
+	"github.com/filebrowser/filebrowser/v2/files"
 )
 
 // CopyDir copies a directory from source to dest and all
 // of its sub-directories. It doesn't stop if it finds an error
 // during the copy. Returns an error if any.
 func CopyDir(afs afero.Fs, source, dest string, fileMode, dirMode fs.FileMode) error {
+	if ok, err := files.WithinScope(afs, source); err != nil || !ok {
+		if err != nil {
+			return err
+		}
+		return os.ErrPermission
+	}
+
 	// Get properties of source.
 	srcinfo, err := afs.Stat(source)
 	if err != nil {
