@@ -212,3 +212,17 @@ func TestReadListingSkipsInaccessibleChildren(t *testing.T) {
 		t.Fatalf("expected one listed directory, got %d", got)
 	}
 }
+
+func TestFileInfoRealPathUsesScopedFsRealPath(t *testing.T) {
+	root := t.TempDir()
+	file := &FileInfo{
+		Fs:   NewScopedFs(afero.NewOsFs(), root),
+		Path: "/root/downloads",
+	}
+
+	got := file.RealPath()
+	want := filepath.Join(root, "root", "downloads")
+	if got != want {
+		t.Fatalf("got %q, want %q", got, want)
+	}
+}

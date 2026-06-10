@@ -35,6 +35,13 @@ func NewScopedFs(source afero.Fs, path string) *ScopedFs {
 // Base returns the underlying *afero.BasePathFs.
 func (s *ScopedFs) Base() *afero.BasePathFs { return s.base }
 
+// RealPath resolves a scoped path to the real on-disk path by delegating to
+// the underlying BasePathFs. This is needed by callers that need the actual
+// filesystem path (e.g. disk.UsageWithContext).
+func (s *ScopedFs) RealPath(name string) (string, error) {
+	return s.base.RealPath(name)
+}
+
 // guard returns an error if name's on-disk target resolves outside the scope.
 func (s *ScopedFs) guard(name string) error {
 	ok, err := s.within(name)
