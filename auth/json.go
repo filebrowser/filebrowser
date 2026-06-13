@@ -22,11 +22,13 @@ type jsonCred struct {
 	Password  string `json:"password"`
 	Username  string `json:"username"`
 	ReCaptcha string `json:"recaptcha"`
+	Turnstile string `json:"turnstile"`
 }
 
 // JSONAuth is a json implementation of an Auther.
 type JSONAuth struct {
 	ReCaptcha *ReCaptcha `json:"recaptcha" yaml:"recaptcha"`
+	Turnstile *Turnstile `json:"turnstile" yaml:"turnstile"`
 }
 
 // Auth authenticates the user via a json in content body.
@@ -45,6 +47,19 @@ func (a JSONAuth) Auth(r *http.Request, usr users.Store, _ *settings.Settings, s
 	// If ReCaptcha is enabled, check the code.
 	if a.ReCaptcha != nil && a.ReCaptcha.Secret != "" {
 		ok, err := a.ReCaptcha.Ok(cred.ReCaptcha)
+
+		if err != nil {
+			return nil, err
+		}
+
+		if !ok {
+			return nil, os.ErrPermission
+		}
+	}
+
+	// If Turnstile is enabled, check the token.
+	if a.Turnstile != nil && a.Turnstile.Secret != "" {
+		ok, err := a.Turnstile.Ok(cred.Turnstile)
 
 		if err != nil {
 			return nil, err
@@ -97,6 +112,48 @@ func (r *ReCaptcha) Ok(response string) (bool, error) {
 
 	resp, err := client.Post(
 		r.Host+reCaptchaAPI,
+		"application/x-www-form-urlencoded",
+		strings.NewReader(body.Encode()),
+	)
+	if err != nil {
+		return false, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return false, nil
+	}
+
+	var data struct {
+		Success bool `json:"success"`
+	}
+
+	err = json.NewDecoder(resp.Body).Decode(&data)
+	if err != nil {
+		return false, err
+	}
+
+	return data.Success, nil
+}
+
+const turnstileAPI = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
+
+// Turnstile identifies a Cloudflare Turnstile connection.
+type Turnstile struct {
+	Key    string `json:"key"`
+	Secret string `json:"secret"`
+}
+
+// Ok checks if a Cloudflare Turnstile token is correct.
+func (t *Turnstile) Ok(response string) (bool, error) {
+	body := url.Values{}
+	body.Set("secret", t.Secret)
+	body.Add("response", response)
+
+	client := &http.Client{}
+
+	resp, err := client.Post(
+		turnstileAPI,
 		"application/x-www-form-urlencoded",
 		strings.NewReader(body.Encode()),
 	)
