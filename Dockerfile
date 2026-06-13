@@ -1,5 +1,5 @@
 ## Multistage build: First stage fetches dependencies
-FROM alpine:3.23 AS fetcher
+FROM alpine:3.24 AS fetcher
 
 # install and copy ca-certificates, mailcap, and tini-static; download JSON.sh
 RUN apk update && \
@@ -7,7 +7,7 @@ RUN apk update && \
     wget -O /JSON.sh https://raw.githubusercontent.com/dominictarr/JSON.sh/0d5e5c77365f63809bf6e77ef44a1f34b0e05840/JSON.sh
 
 ## Second stage: Use lightweight BusyBox image for final runtime environment
-FROM busybox:1.37.0-musl
+FROM busybox:1.38.0-musl
 
 # Define non-root user UID and GID
 ENV UID=1000
