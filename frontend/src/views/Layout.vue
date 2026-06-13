@@ -7,12 +7,15 @@
         }"
       ></div>
     </div>
-    <sidebar></sidebar>
-    <main>
+    <sidebar v-if="!isCollaboraOfficeRoute"></sidebar>
+    <main :class="{ 'office-fullscreen-main': isCollaboraOfficeRoute }">
       <router-view></router-view>
       <shell
         v-if="
-          enableExec && authStore.isLoggedIn && authStore.user?.perm.execute
+          !isCollaboraOfficeRoute &&
+          enableExec &&
+          authStore.isLoggedIn &&
+          authStore.user?.perm.execute
         "
       />
     </main>
@@ -44,6 +47,10 @@ const sentPercent = computed(() =>
   ((uploadStore.sentBytes / uploadStore.totalBytes) * 100).toFixed(2)
 );
 
+const isCollaboraOfficeRoute = computed(
+  () => route.path.startsWith("/files") && route.query.office === "true"
+);
+
 watch(route, () => {
   fileStore.selected = [];
   fileStore.multiple = false;
@@ -52,3 +59,11 @@ watch(route, () => {
   }
 });
 </script>
+
+
+<style scoped>
+main.office-fullscreen-main {
+  margin: 0;
+  width: 100%;
+}
+</style>

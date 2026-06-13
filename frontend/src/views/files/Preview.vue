@@ -26,6 +26,13 @@
         />
         <action
           :disabled="layoutStore.loading"
+          v-if="canOpenWithCollabora"
+          icon="description"
+          :label="t('buttons.openWithCollabora')"
+          @action="openWithCollabora"
+        />
+        <action
+          :disabled="layoutStore.loading"
           v-if="isCsv && authStore.user?.perm.modify"
           icon="edit_note"
           :label="t('buttons.editAsText')"
@@ -138,10 +145,21 @@
               </div>
             </a>
             <a
+              href=""
+              class="button button--flat"
+              v-if="canOpenWithCollabora"
+              @click.prevent="openWithCollabora"
+            >
+              <div>
+                <i class="material-icons">description</i
+                >{{ t("buttons.openWithCollabora") }}
+              </div>
+            </a>
+            <a
               target="_blank"
               :href="previewUrl"
               class="button button--flat"
-              v-if="!fileStore.req?.isDir"
+              v-else-if="!fileStore.req?.isDir"
             >
               <div>
                 <i class="material-icons">open_in_new</i
@@ -184,9 +202,9 @@ import { useAuthStore } from "@/stores/auth";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 
-import { files as api } from "@/api";
+import { collabora, files as api } from "@/api";
 import { createURL } from "@/api/utils";
-import { resizePreview } from "@/utils/constants";
+import { collaboraEnabled, resizePreview } from "@/utils/constants";
 import url from "@/utils/url";
 import { throttle } from "lodash-es";
 import HeaderBar from "@/components/header/HeaderBar.vue";
@@ -314,6 +332,14 @@ const isCsv = computed(
   () =>
     fileStore.req?.extension.toLowerCase() == ".csv" &&
     fileStore.req.size <= CSV_MAX_SIZE
+);
+
+const canOpenWithCollabora = computed(
+  () =>
+    collaboraEnabled &&
+    !fileStore.req?.isDir &&
+    authStore.user?.perm.download &&
+    collabora.isSupportedExtension(fileStore.req?.extension)
 );
 
 const isResizeEnabled = computed(() => resizePreview);
@@ -499,5 +525,9 @@ const openDirect = () => window.open(directUrl.value);
 
 const editAsText = () => {
   router.push({ path: route.path, query: { edit: "true" } });
+};
+
+const openWithCollabora = () => {
+  router.push({ path: route.path, query: { office: "true" } });
 };
 </script>
