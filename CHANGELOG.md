@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.63.15](https://github.com/filebrowser/filebrowser/compare/v2.63.14...v2.63.15) (2026-06-13)
+
+
+### Bug Fixes
+
+* restore ScopedFs RealPath ([#5986](https://github.com/filebrowser/filebrowser/issues/5986)) ([403d2bb](https://github.com/filebrowser/filebrowser/commit/403d2bbd3357aa57e78745b52dcdad3490901bb3))
+
 ## [2.63.14](https://github.com/filebrowser/filebrowser/compare/v2.63.13...v2.63.14) (2026-06-07)
 
 
