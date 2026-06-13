@@ -36,9 +36,21 @@ filebrowser config set --auth.method=proxy --auth.header=X-My-Header
 
 Where `X-My-Header` is the HTTP header provided by your proxy with the username.
 
+### Do not create new users
+
+When you use proxy authentication, by default, if the username you sent in your header does not exist in the database, a new user will be created; you can change this behavior by sending the `X-Auth-No-Create-User` header with the value `true`.
+
+If filebrowser receives the header `X-Auth-No-Create-User` with the value `true` and the username sent in the header does not exist in the database, the request will not be authenticated.
+
+> You will probably need to register users manually from the filebrowser CLI when using the `X-Auth-No-Create-User` header; you can review its documentation [here](cli/filebrowser-users-add.md).
+
 > [!WARNING]
 > 
 > File Browser will blindly trust the provided header. If the proxy can be bypassed, an attacker could simply attach the header and get admin access. Please ensure that File Browser is not accessible from untrusted networks, and that the proxy is correctly configured to strip/overwrite the header from client requests.
+
+> [!INFO]
+> 
+> The `Allow users to signup` setting and `--signup` flag does not apply to proxy authentication.
 
 ## Hook Authentication
 
