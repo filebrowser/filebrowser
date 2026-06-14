@@ -16,19 +16,28 @@
         v-model="username"
         :placeholder="t('login.username')"
       />
-      <input
-        class="input input--block"
-        type="password"
-        v-model="password"
-        :placeholder="t('login.password')"
-      />
-      <input
-        class="input input--block"
-        v-if="createMode"
-        type="password"
-        v-model="passwordConfirm"
-        :placeholder="t('login.passwordConfirm')"
-      />
+      <div class="input-container">
+        <input
+          class="input input--block"
+          :type="showPassword ? 'text' : 'password'"
+          v-model="password"
+          :placeholder="t('login.password')"
+        />
+        <i class="material-icons toggle-password" @click="showPassword = !showPassword">
+          {{ showPassword ? 'visibility_off' : 'visibility' }}
+        </i>
+      </div>
+      <div class="input-container" v-if="createMode">
+        <input
+          class="input input--block"
+          :type="showPassword ? 'text' : 'password'"
+          v-model="passwordConfirm"
+          :placeholder="t('login.passwordConfirm')"
+        />
+        <i class="material-icons toggle-password" @click="showPassword = !showPassword">
+          {{ showPassword ? 'visibility_off' : 'visibility' }}
+        </i>
+      </div>
 
       <div v-if="recaptcha" id="recaptcha"></div>
       <input
@@ -64,6 +73,7 @@ const error = ref<string>("");
 const username = ref<string>("");
 const password = ref<string>("");
 const passwordConfirm = ref<string>("");
+const showPassword = ref<boolean>(false);
 
 const route = useRoute();
 const router = useRouter();
@@ -137,3 +147,30 @@ onMounted(() => {
   });
 });
 </script>
+
+<style scoped>
+.input-container {
+  position: relative;
+  display: block;
+}
+.input-container .input--block {
+  padding-right: 2.5em;
+}
+.toggle-password {
+  position: absolute;
+  right: 0.5em;
+  top: calc(50% - 0.25em); /* Account for 0.5em bottom margin on .input--block */
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #888;
+  user-select: none;
+}
+html[dir="rtl"] .toggle-password {
+  right: auto;
+  left: 0.5em;
+}
+html[dir="rtl"] .input-container .input--block {
+  padding-right: 1em;
+  padding-left: 2.5em;
+}
+</style>
