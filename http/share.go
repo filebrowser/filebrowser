@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -61,7 +62,7 @@ var shareGetsHandler = withPermShare(func(w http.ResponseWriter, r *http.Request
 		err error
 	)
 	if d.user.Perm.Admin {
-		s, err = d.store.Share.GetsByPath(r.URL.Path)
+		s, err = getSharesForAdminPath(d, r.URL.Path)
 	} else {
 		s, err = d.store.Share.Gets(r.URL.Path, d.user.ID)
 	}
@@ -75,6 +76,30 @@ var shareGetsHandler = withPermShare(func(w http.ResponseWriter, r *http.Request
 
 	return renderJSON(w, r, s)
 })
+
+func getSharesForAdminPath(d *data, path string) ([]*share.Link, error) {
+	links, err := d.store.Share.All()
+	if err != nil {
+		return nil, err
+	}
+
+	adminPath := filepath.Clean(d.user.FullPath(path))
+	filtered := make([]*share.Link, 0, len(links))
+	for _, link := range links {
+		owner, err := d.store.Users.Get(d.server.Root, link.UserID)
+		if errors.Is(err, fberrors.ErrNotExist) {
+			continue
+		}
+		if err != nil {
+			return nil, err
+		}
+		if filepath.Clean(owner.FullPath(link.Path)) == adminPath {
+			filtered = append(filtered, link)
+		}
+	}
+
+	return filtered, nil
+}
 
 var shareDeleteHandler = withPermShare(func(_ http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	hash := strings.TrimSuffix(r.URL.Path, "/")
