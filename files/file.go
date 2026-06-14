@@ -35,22 +35,25 @@ var (
 // FileInfo describes a file.
 type FileInfo struct {
 	*Listing
-	Fs         afero.Fs          `json:"-"`
-	Path       string            `json:"path"`
-	Name       string            `json:"name"`
-	Size       int64             `json:"size"`
-	Extension  string            `json:"extension"`
-	ModTime    time.Time         `json:"modified"`
-	Mode       os.FileMode       `json:"mode"`
-	IsDir      bool              `json:"isDir"`
-	IsSymlink  bool              `json:"isSymlink"`
-	Type       string            `json:"type"`
-	Subtitles  []string          `json:"subtitles,omitempty"`
-	Content    string            `json:"content,omitempty"`
-	Checksums  map[string]string `json:"checksums,omitempty"`
-	Token      string            `json:"token,omitempty"`
-	currentDir []os.FileInfo     `json:"-"`
-	Resolution *ImageResolution  `json:"resolution,omitempty"`
+	Fs               afero.Fs          `json:"-"`
+	Path             string            `json:"path"`
+	Name             string            `json:"name"`
+	Size             int64             `json:"size"`
+	Extension        string            `json:"extension"`
+	ModTime          time.Time         `json:"modified"`
+	Mode             os.FileMode       `json:"mode"`
+	IsDir            bool              `json:"isDir"`
+	IsSymlink        bool              `json:"isSymlink"`
+	Type             string            `json:"type"`
+	Subtitles        []string          `json:"subtitles,omitempty"`
+	Content          string            `json:"content,omitempty"`
+	Checksums        map[string]string `json:"checksums,omitempty"`
+	Token            string            `json:"token,omitempty"`
+	currentDir       []os.FileInfo     `json:"-"`
+	Resolution       *ImageResolution  `json:"resolution,omitempty"`
+	Archive          bool              `json:"archive,omitempty"`
+	ArchivePath      string            `json:"archivePath,omitempty"`
+	ArchiveInnerPath string            `json:"archiveInnerPath,omitempty"`
 }
 
 // FileOptions are the options when getting a file info.
@@ -241,6 +244,9 @@ func (i *FileInfo) detectType(modify, saveContent, readHeader bool, calcImgRes b
 	}
 
 	switch {
+	case IsArchiveName(i.Name):
+		i.Type = "archive"
+		return nil
 	case strings.HasPrefix(mimetype, "video"):
 		i.Type = "video"
 		i.detectSubtitles()
