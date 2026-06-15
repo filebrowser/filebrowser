@@ -250,7 +250,7 @@
       "share": "分享文件（需开启下载权限）"
     },
     "permissions": "权限",
-    "permissionsHelp": "可将用户设为管理员，或单独分配各项权限。勾选「管理员」后，将自动勾选所有权限。管理员拥有用户管理权限。\n",
+    "permissionsHelp": "你可以将该用户设置为管理员或单独选择各项权限。如果你选择了“管理员”，则其他的选项会被自动选中，同时该用户可以管理其他用户。\n",
     "profileSettings": "个人设置",
     "redirectAfterCopyMove": "复制/移动后转到目标位置",
     "ruleExample1": "禁止用户访问所有目录下以 . 开头的隐藏文件（隐藏文件, 例如: .git, .gitignore）。\n",
