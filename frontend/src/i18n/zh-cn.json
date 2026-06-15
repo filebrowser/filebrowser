@@ -45,7 +45,7 @@
     "upload": "上传",
     "openFile": "打开文件",
     "openDirect": "查看原始内容",
-    "discardChanges": "放弃更改",
+    "discardChanges": "放弃",
     "stopSearch": "停止搜索",
     "saveChanges": "保存更改",
     "editAsText": "以文本模式编辑",
@@ -109,12 +109,12 @@
     "doubleClick": "打开文件/文件夹",
     "esc": "取消选中或关闭提示框",
     "f1": "打开帮助",
-    "f2": "重命名文件/文件夹",
+    "f2": "重命名文件",
     "help": "帮助"
   },
   "login": {
     "createAnAccount": "注册账号",
-    "loginInstead": "已有账号，去登录",
+    "loginInstead": "已有账号",
     "password": "密码",
     "passwordConfirm": "确认密码",
     "passwordsDontMatch": "两次输入的密码不一致",
@@ -123,7 +123,7 @@
     "username": "用户名",
     "usernameTaken": "用户名已经被使用",
     "wrongCredentials": "用户名或密码错误",
-    "passwordTooShort": "密码长度至少需要 {min} 位",
+    "passwordTooShort": "密码长度至少为 {min} 位字符",
     "logout_reasons": {
       "inactivity": "因长时间未操作，系统已自动登出."
     }
@@ -167,7 +167,7 @@
     "uploadMessage": "请选择上传选项",
     "optionalPassword": "密码（选填，留空则无需密码）",
     "resolution": "分辨率",
-    "discardEditorChanges": "确定要放弃当前编辑的修改吗？",
+    "discardEditorChanges": "是否放弃已修改的内容？",
     "replaceOrSkip": "替换或跳过文件",
     "resolveConflict": "保留哪些文件？",
     "singleConflictResolve": "若同时保留两个版本，复制的文件会自动追加序号。",
