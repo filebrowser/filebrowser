@@ -285,9 +285,9 @@
   "sidebar": {
     "diskUsed": "已使用 {used} / 总容量 {total}",
     "help": "帮助",
-    "hugoNew": "新建 Hugo ",
+    "hugoNew": "Hugo 新建",
     "login": "登录",
-    "logout": "登出",
+    "logout": "退出",
     "myFiles": "我的文件",
     "newFile": "新建文件",
     "newFolder": "新建文件夹",
