@@ -1,6 +1,9 @@
 package files
 
 import (
+	"image"
+	"image/color"
+	"image/jpeg"
 	"os"
 	"path"
 	"path/filepath"
@@ -224,5 +227,107 @@ func TestFileInfoRealPathUsesScopedFsRealPath(t *testing.T) {
 	want := filepath.Join(root, "root", "downloads")
 	if got != want {
 		t.Fatalf("got %q, want %q", got, want)
+	}
+}
+
+type openCountingFs struct {
+	afero.Fs
+	opens map[string]int
+}
+
+func (fs *openCountingFs) Open(name string) (afero.File, error) {
+	fs.opens[path.Clean(name)]++
+	return fs.Fs.Open(name)
+}
+
+func TestDetectTypeSkipsHeaderReadForKnownImageExtension(t *testing.T) {
+	memFs := afero.NewMemMapFs()
+	if err := afero.WriteFile(memFs, "/photo.jpg", []byte("header not needed"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	countingFs := &openCountingFs{Fs: memFs, opens: map[string]int{}}
+	file, err := NewFileInfo(&FileOptions{
+		Fs:         countingFs,
+		Path:       "/photo.jpg",
+		Expand:     true,
+		ReadHeader: true,
+		Checker:    allowAllChecker{},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if file.Type != "image" {
+		t.Fatalf("expected image type, got %q", file.Type)
+	}
+	if got := countingFs.opens["/photo.jpg"]; got != 0 {
+		t.Fatalf("expected known image extension to avoid header reads, got %d opens", got)
+	}
+}
+
+func TestDetectTypeStillReadsHeaderForUnknownExtension(t *testing.T) {
+	memFs := afero.NewMemMapFs()
+	if err := afero.WriteFile(memFs, "/file.unknown", []byte("plain text"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	countingFs := &openCountingFs{Fs: memFs, opens: map[string]int{}}
+	file, err := NewFileInfo(&FileOptions{
+		Fs:         countingFs,
+		Path:       "/file.unknown",
+		Modify:     true,
+		Expand:     true,
+		ReadHeader: true,
+		Checker:    allowAllChecker{},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if file.Type != "text" {
+		t.Fatalf("expected text type, got %q", file.Type)
+	}
+	if got := countingFs.opens["/file.unknown"]; got != 1 {
+		t.Fatalf("expected unknown extension to read one header, got %d opens", got)
+	}
+}
+
+func TestReadListingCalculatesImageResolutionOnce(t *testing.T) {
+	memFs := afero.NewMemMapFs()
+	file, err := memFs.Create("/photo.jpg")
+	if err != nil {
+		t.Fatal(err)
+	}
+	img := image.NewRGBA(image.Rect(0, 0, 10, 10))
+	img.Set(0, 0, color.White)
+	if err := jpeg.Encode(file, img, nil); err != nil {
+		t.Fatal(err)
+	}
+	if err := file.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	countingFs := &openCountingFs{Fs: memFs, opens: map[string]int{}}
+	listing, err := NewFileInfo(&FileOptions{
+		Fs:         countingFs,
+		Path:       "/",
+		Expand:     true,
+		ReadHeader: true,
+		CalcImgRes: true,
+		Checker:    allowAllChecker{},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(listing.Items) != 1 {
+		t.Fatalf("expected one listing item, got %d", len(listing.Items))
+	}
+	if listing.Items[0].Resolution == nil {
+		t.Fatal("expected image resolution to be populated")
+	}
+	if got := countingFs.opens["/photo.jpg"]; got != 1 {
+		t.Fatalf("expected one image open for resolution calculation, got %d", got)
 	}
 }

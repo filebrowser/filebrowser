@@ -232,10 +232,15 @@ func (i *FileInfo) detectType(modify, saveContent, readHeader bool, calcImgRes b
 	mimetype := mime.TypeByExtension(i.Extension)
 
 	var buffer []byte
-	if readHeader {
-		buffer = i.readFirstBytes()
-
-		if mimetype == "" {
+	readBuffer := func() []byte {
+		if buffer == nil {
+			buffer = i.readFirstBytes()
+		}
+		return buffer
+	}
+	if readHeader && mimetype == "" {
+		buffer = readBuffer()
+		if len(buffer) > 0 {
 			mimetype = http.DetectContentType(buffer)
 		}
 	}
@@ -262,7 +267,24 @@ func (i *FileInfo) detectType(modify, saveContent, readHeader bool, calcImgRes b
 	case strings.HasSuffix(mimetype, "pdf"):
 		i.Type = "pdf"
 		return nil
-	case (strings.HasPrefix(mimetype, "text") || !isBinary(buffer)) && i.Size <= 10*1024*1024: // 10 MB
+	case strings.HasPrefix(mimetype, "text") && i.Size <= 10*1024*1024: // 10 MB
+		i.Type = "text"
+
+		if !modify {
+			i.Type = "textImmutable"
+		}
+
+		if saveContent {
+			afs := &afero.Afero{Fs: i.Fs}
+			content, err := afs.ReadFile(i.Path)
+			if err != nil {
+				return err
+			}
+
+			i.Content = string(content)
+		}
+		return nil
+	case i.Size <= 10*1024*1024 && (!readHeader || !isBinary(readBuffer())): // 10 MB
 		i.Type = "text"
 
 		if !modify {
@@ -441,15 +463,6 @@ func (i *FileInfo) readListing(checker rules.Checker, readHeader bool, calcImgRe
 			Extension:  filepath.Ext(name),
 			Path:       fPath,
 			currentDir: dir,
-		}
-
-		if !file.IsDir && strings.HasPrefix(mime.TypeByExtension(file.Extension), "image/") && calcImgRes {
-			resolution, err := calculateImageResolution(file.Fs, file.Path)
-			if err != nil {
-				log.Printf("Error calculating resolution for image %s: %v", file.Path, err)
-			} else {
-				file.Resolution = resolution
-			}
 		}
 
 		if file.IsDir {

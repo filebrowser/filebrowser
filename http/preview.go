@@ -98,7 +98,7 @@ func handleImagePreview(
 		return errToStatus(err), err
 	}
 	if !ok {
-		resizedImage, err = createPreview(imgSvc, fileCache, file, previewSize)
+		resizedImage, err = createPreview(r.Context(), imgSvc, fileCache, file, previewSize)
 		if err != nil {
 			return errToStatus(err), err
 		}
@@ -110,7 +110,7 @@ func handleImagePreview(
 	return 0, nil
 }
 
-func createPreview(imgSvc ImgService, fileCache FileCache,
+func createPreview(ctx context.Context, imgSvc ImgService, fileCache FileCache,
 	file *files.FileInfo, previewSize PreviewSize) ([]byte, error) {
 	fd, err := file.Fs.Open(file.Path)
 	if err != nil {
@@ -138,7 +138,7 @@ func createPreview(imgSvc ImgService, fileCache FileCache,
 	}
 
 	buf := &bytes.Buffer{}
-	if err := imgSvc.Resize(context.Background(), fd, width, height, buf, options...); err != nil {
+	if err := imgSvc.Resize(ctx, fd, width, height, buf, options...); err != nil {
 		return nil, err
 	}
 
