@@ -29,6 +29,7 @@ import (
 	"github.com/filebrowser/filebrowser/v2/img"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/storage"
+	"github.com/filebrowser/filebrowser/v2/thumbnail"
 	"github.com/filebrowser/filebrowser/v2/users"
 )
 
@@ -106,7 +107,7 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.String("socket", "", "socket to listen to (cannot be used with address, port, cert nor key flags)")
 	flags.StringP("baseURL", "b", "", "base url")
 	flags.String("tokenExpirationTime", "2h", "user session timeout")
-	flags.Bool("disableThumbnails", false, "disable image thumbnails")
+	flags.Bool("disableThumbnails", false, "disable thumbnails")
 	flags.Bool("disablePreviewResize", false, "disable resize of image previews")
 	flags.Bool("disableExec", true, "disables Command Runner feature")
 	flags.Bool("disableTypeDetectionByHeader", false, "disables type detection by reading file headers")
@@ -168,6 +169,7 @@ user created with the credentials from options "username" and "password".`,
 			return errors.New("image resize workers count could not be < 1")
 		}
 		imageService := img.New(imgWorkersCount)
+		videoThumbService := thumbnail.NewVideo()
 
 		var fileCache diskcache.Interface = diskcache.NewNoOp()
 		cacheDir := v.GetString("cacheDir")
@@ -235,7 +237,7 @@ user created with the credentials from options "username" and "password".`,
 			panic(err)
 		}
 
-		handler, err := fbhttp.NewHandler(imageService, fileCache, uploadCache, st.Storage, server, assetsFs)
+		handler, err := fbhttp.NewHandler(imageService, videoThumbService, fileCache, uploadCache, st.Storage, server, assetsFs)
 		if err != nil {
 			return err
 		}

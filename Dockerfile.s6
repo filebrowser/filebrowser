@@ -1,7 +1,7 @@
 FROM ghcr.io/linuxserver/baseimage-alpine:3.23
 
 RUN apk update && \
-  apk --no-cache add ca-certificates mailcap jq libcap
+  apk --no-cache add ca-certificates ffmpeg mailcap jq libcap
 
 # Make user and create necessary directories
 RUN mkdir -p /config /database /srv && \

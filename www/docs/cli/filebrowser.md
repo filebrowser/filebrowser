@@ -59,7 +59,7 @@ filebrowser [flags]
       --disableExec                    disables Command Runner feature (default true)
       --disableImageResolutionCalc     disables image resolution calculation by reading image files
       --disablePreviewResize           disable resize of image previews
-      --disableThumbnails              disable image thumbnails
+      --disableThumbnails              disable thumbnails
       --disableTypeDetectionByHeader   disables type detection by reading file headers
   -h, --help                           help for filebrowser
       --imageProcessors int            image processors count (default 4)
@@ -85,4 +85,3 @@ filebrowser [flags]
 * [filebrowser rules](filebrowser-rules.md)	 - Rules management utility
 * [filebrowser users](filebrowser-users.md)	 - Users management utility
 * [filebrowser version](filebrowser-version.md)	 - Print the version number
-

@@ -23,9 +23,12 @@
     @contextmenu="contextMenu"
   >
     <div>
+      <img v-if="showLazyThumbnail" v-lazy="thumbnailUrl" />
       <img
-        v-if="!readOnly && type === 'image' && isThumbsEnabled"
-        v-lazy="thumbnailUrl"
+        v-else-if="showDirectThumbnail"
+        :src="thumbnailUrl"
+        loading="lazy"
+        @error="thumbnailFailed = true"
       />
       <i v-else class="material-icons"></i>
     </div>
@@ -53,7 +56,7 @@ import { filesize } from "@/utils";
 import dayjs from "dayjs";
 import { files as api } from "@/api";
 import * as upload from "@/utils/upload";
-import { computed, inject, ref } from "vue";
+import { computed, inject, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
 const touches = ref<number>(0);
@@ -63,6 +66,7 @@ const longPressTriggered = ref<boolean>(false);
 const longPressDelay = ref<number>(500);
 const startPosition = ref<{ x: number; y: number } | null>(null);
 const moveThreshold = ref<number>(10);
+const thumbnailFailed = ref<boolean>(false);
 
 const $showError = inject<IToastError>("$showError")!;
 const router = useRouter();
@@ -117,6 +121,34 @@ const thumbnailUrl = computed(() => {
 const isThumbsEnabled = computed(() => {
   return enableThumbs;
 });
+
+const supportsThumbnail = computed(() => {
+  return props.type === "image" || props.type === "video";
+});
+
+const showThumbnail = computed(() => {
+  return (
+    !props.readOnly &&
+    isThumbsEnabled.value &&
+    supportsThumbnail.value &&
+    !thumbnailFailed.value
+  );
+});
+
+const showLazyThumbnail = computed(() => {
+  return showThumbnail.value && props.type === "image";
+});
+
+const showDirectThumbnail = computed(() => {
+  return showThumbnail.value && props.type === "video";
+});
+
+watch(
+  () => [props.path, props.modified, props.type],
+  () => {
+    thumbnailFailed.value = false;
+  }
+);
 
 const humanSize = () => {
   return props.type == "invalid_link" ? "invalid link" : filesize(props.size);

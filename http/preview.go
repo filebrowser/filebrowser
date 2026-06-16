@@ -28,13 +28,17 @@ type ImgService interface {
 	Resize(ctx context.Context, in io.Reader, width, height int, out io.Writer, options ...img.Option) error
 }
 
+type VideoThumbService interface {
+	Thumbnail(ctx context.Context, input string, out io.Writer) error
+}
+
 type FileCache interface {
 	Store(ctx context.Context, key string, value []byte) error
 	Load(ctx context.Context, key string) ([]byte, bool, error)
 	Delete(ctx context.Context, key string) error
 }
 
-func previewHandler(imgSvc ImgService, fileCache FileCache, enableThumbnails, resizePreview bool) handleFunc {
+func previewHandler(imgSvc ImgService, videoSvc VideoThumbService, fileCache FileCache, enableThumbnails, resizePreview bool) handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		if !d.user.Perm.Download {
 			return http.StatusAccepted, nil
@@ -63,6 +67,8 @@ func previewHandler(imgSvc ImgService, fileCache FileCache, enableThumbnails, re
 		switch file.Type {
 		case "image":
 			return handleImagePreview(w, r, imgSvc, fileCache, file, previewSize, enableThumbnails, resizePreview)
+		case "video":
+			return handleVideoPreview(w, r, videoSvc, fileCache, file, previewSize, enableThumbnails)
 		default:
 			return http.StatusNotImplemented, fmt.Errorf("can't create preview for %s type", file.Type)
 		}
@@ -110,6 +116,41 @@ func handleImagePreview(
 	return 0, nil
 }
 
+func handleVideoPreview(
+	w http.ResponseWriter,
+	r *http.Request,
+	videoSvc VideoThumbService,
+	fileCache FileCache,
+	file *files.FileInfo,
+	previewSize PreviewSize,
+	enableThumbnails bool,
+) (int, error) {
+	if previewSize != PreviewSizeThumb {
+		return http.StatusNotImplemented, fmt.Errorf("can't create %s preview for video", previewSize)
+	}
+	if !enableThumbnails || videoSvc == nil {
+		return http.StatusNotImplemented, fmt.Errorf("video thumbnails are disabled")
+	}
+
+	cacheKey := previewCacheKey(file, previewSize)
+	thumbnail, ok, err := fileCache.Load(r.Context(), cacheKey)
+	if err != nil {
+		return errToStatus(err), err
+	}
+	if !ok {
+		thumbnail, err = createVideoPreview(r.Context(), videoSvc, fileCache, file, previewSize)
+		if err != nil {
+			return http.StatusNotImplemented, err
+		}
+	}
+
+	w.Header().Set("Cache-Control", "private")
+	w.Header().Set("Content-Type", "image/jpeg")
+	http.ServeContent(w, r, file.Name, file.ModTime, bytes.NewReader(thumbnail))
+
+	return 0, nil
+}
+
 func createPreview(imgSvc ImgService, fileCache FileCache,
 	file *files.FileInfo, previewSize PreviewSize) ([]byte, error) {
 	fd, err := file.Fs.Open(file.Path)
@@ -146,6 +187,23 @@ func createPreview(imgSvc ImgService, fileCache FileCache,
 		cacheKey := previewCacheKey(file, previewSize)
 		if err := fileCache.Store(context.Background(), cacheKey, buf.Bytes()); err != nil {
 			fmt.Printf("failed to cache resized image: %v", err)
+		}
+	}()
+
+	return buf.Bytes(), nil
+}
+
+func createVideoPreview(ctx context.Context, videoSvc VideoThumbService, fileCache FileCache,
+	file *files.FileInfo, previewSize PreviewSize) ([]byte, error) {
+	buf := &bytes.Buffer{}
+	if err := videoSvc.Thumbnail(ctx, file.RealPath(), buf); err != nil {
+		return nil, err
+	}
+
+	go func() {
+		cacheKey := previewCacheKey(file, previewSize)
+		if err := fileCache.Store(context.Background(), cacheKey, buf.Bytes()); err != nil {
+			fmt.Printf("failed to cache video thumbnail: %v", err)
 		}
 	}()
 

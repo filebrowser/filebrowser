@@ -80,6 +80,48 @@ Both `settings.json` and `filebrowser.db` will automatically be initialized if t
 
 File Browser is now up and running. Read the ["First Boot"](#first-boot) section for more information.
 
+## Video Thumbnails
+
+Video thumbnails are generated when thumbnails are enabled and both `ffmpeg`
+and `ffprobe` are available. The Docker images include these tools, so video
+thumbnails work without adding packages to the container.
+
+For Docker-based setups, keep thumbnails enabled and mount persistent
+configuration, database, and file volumes. Named volumes work well for
+File Browser's own state:
+
+```sh
+docker volume create filebrowser-config
+docker volume create filebrowser-database
+
+docker run \
+  --name filebrowser \
+  -p 8000:80 \
+  -v /path/to/files:/srv \
+  -v filebrowser-config:/config \
+  -v filebrowser-database:/database \
+  filebrowser/filebrowser:latest
+```
+
+If you bind-mount host directories for `/srv`, `/config`, or `/database`, make
+sure they are writable by the container user. The standard image runs as UID
+1000 and GID 1000.
+
+Thumbnails are enabled by default. If a persisted database was previously
+configured with thumbnails disabled, re-enable them with:
+
+```sh
+docker run --rm \
+  -v filebrowser-config:/config \
+  -v filebrowser-database:/database \
+  filebrowser/filebrowser:latest \
+  config set --disableThumbnails=false
+```
+
+For non-Docker deployments, install `ffmpeg` and `ffprobe` on the host. If
+either command is missing, video files continue to work normally and the
+interface falls back to the video file icon.
+
 ## First Boot
 
 Your instance is now up and running. File Browser will automatically bootstrap a database, in which the configuration and the users are stored. You can find the address in which your instance is running, as well as the randomly generated password for the user `admin`, in the console logs.
