@@ -92,6 +92,125 @@ func TestScopedFs(t *testing.T) {
 			t.Fatalf("expected in-scope symlink target to be accessible, got %v", err)
 		}
 	})
+
+	// Regression for the dangling-symlink write escape (GHSA-8wc8-hf36-mjh9 /
+	// GHSA-fh54-6rfh-r8f3): a symlink whose target does not exist yet must not be
+	// followed for writes. Previously within() validated the link's in-scope
+	// parent directory, so OpenFile(O_CREATE) dereferenced the link and created
+	// the file at its out-of-scope target.
+	t.Run("write through a dangling escaping symlink is rejected", func(t *testing.T) {
+		base := t.TempDir()
+		scope := filepath.Join(base, "scope")
+		outside := filepath.Join(base, "outside")
+		for _, d := range []string{scope, outside} {
+			if err := os.MkdirAll(d, 0o755); err != nil {
+				t.Fatal(err)
+			}
+		}
+		outsideTarget := filepath.Join(outside, "created.txt") // does not exist yet
+		if err := os.Symlink(outsideTarget, filepath.Join(scope, "evil")); err != nil {
+			t.Skipf("cannot create symlink: %v", err)
+		}
+		fs := NewScopedFs(afero.NewOsFs(), scope)
+
+		f, err := fs.OpenFile("/evil", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0o644)
+		if err == nil {
+			_ = f.Close()
+			t.Fatal("VULNERABLE: write through a dangling escaping symlink was allowed")
+		}
+		if !os.IsPermission(err) {
+			t.Fatalf("expected permission error, got %v", err)
+		}
+		if _, statErr := os.Stat(outsideTarget); statErr == nil {
+			t.Fatal("VULNERABLE: file was created outside the scope")
+		}
+	})
+
+	// A dangling *relative* symlink that lives under an escaping directory
+	// symlink must be resolved against the link's real directory, not its lexical
+	// parent. Otherwise the symlinked ancestor can shift the computed target back
+	// into scope while the real OS write lands outside it.
+	t.Run("write through a dangling relative symlink under a symlinked dir is rejected", func(t *testing.T) {
+		base := t.TempDir()
+		scope := filepath.Join(base, "scope")
+		outside := filepath.Join(base, "outside")
+		for _, d := range []string{scope, outside} {
+			if err := os.MkdirAll(d, 0o755); err != nil {
+				t.Fatal(err)
+			}
+		}
+		// An escaping directory symlink inside the scope: /scope/m -> /base/outside.
+		if err := os.Symlink(outside, filepath.Join(scope, "m")); err != nil {
+			t.Skipf("cannot create symlink: %v", err)
+		}
+		// A relative dangling symlink inside the escaping dir whose target,
+		// resolved against the real directory (/base/outside), is /base/escaped —
+		// outside the scope.
+		if err := os.Symlink("../escaped", filepath.Join(outside, "evil")); err != nil {
+			t.Skipf("cannot create symlink: %v", err)
+		}
+		fs := NewScopedFs(afero.NewOsFs(), scope)
+
+		f, err := fs.OpenFile("/m/evil", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0o644)
+		if err == nil {
+			_ = f.Close()
+			t.Fatal("VULNERABLE: write through a dangling relative symlink under a symlinked dir was allowed")
+		}
+		if !os.IsPermission(err) {
+			t.Fatalf("expected permission error, got %v", err)
+		}
+		if _, statErr := os.Stat(filepath.Join(base, "escaped")); statErr == nil {
+			t.Fatal("VULNERABLE: file was created outside the scope")
+		}
+	})
+
+	// Regression for the symlink-following delete escape (GHSA-hq4g-mpch-f9vp /
+	// GHSA-fmm7-x4gx-8jhr): Remove/RemoveAll used to skip guard(), so RemoveAll
+	// followed a symlinked ancestor escaping the scope and deleted an
+	// out-of-scope file.
+	t.Run("RemoveAll through an escaping symlink is rejected", func(t *testing.T) {
+		base := t.TempDir()
+		scope := filepath.Join(base, "scope")
+		outside := filepath.Join(base, "outside")
+		for _, d := range []string{scope, outside} {
+			if err := os.MkdirAll(d, 0o755); err != nil {
+				t.Fatal(err)
+			}
+		}
+		victim := filepath.Join(outside, "victim.txt")
+		if err := os.WriteFile(victim, []byte("keep"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.Symlink(outside, filepath.Join(scope, "link")); err != nil {
+			t.Skipf("cannot create symlink: %v", err)
+		}
+		fs := NewScopedFs(afero.NewOsFs(), scope)
+
+		if err := fs.RemoveAll("/link/victim.txt"); !os.IsPermission(err) {
+			t.Fatalf("expected RemoveAll through escaping symlink to be rejected, got %v", err)
+		}
+		if _, statErr := os.Stat(victim); statErr != nil {
+			t.Fatalf("VULNERABLE: out-of-scope victim file was deleted: %v", statErr)
+		}
+	})
+
+	// The guard added for the delete escape must not break legitimate deletes of
+	// in-scope files.
+	t.Run("RemoveAll of an in-scope file is allowed", func(t *testing.T) {
+		scope := t.TempDir()
+		target := filepath.Join(scope, "deleteme.txt")
+		if err := os.WriteFile(target, []byte("x"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		fs := NewScopedFs(afero.NewOsFs(), scope)
+
+		if err := fs.RemoveAll("/deleteme.txt"); err != nil {
+			t.Fatalf("expected in-scope RemoveAll to succeed, got %v", err)
+		}
+		if _, statErr := os.Stat(target); statErr == nil {
+			t.Fatal("expected in-scope file to be deleted")
+		}
+	})
 }
 
 // stat must reject a regular file reached through a symlinked ancestor that
