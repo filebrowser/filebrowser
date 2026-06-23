@@ -41,6 +41,7 @@ filebrowser config init [flags]
       --disableThumbnails                disable image thumbnails
       --disableTypeDetectionByHeader     disables type detection by reading file headers
       --fileMode string                  mode bits that new files are created with (default "0o640")
+      --followExternalSymlinks           follow symlinks whose target is outside the user scope (unsafe)
   -h, --help                             help for init
       --hideDotfiles                     hide dotfiles in file listings
       --hideLoginButton                  hide login button from public pages
