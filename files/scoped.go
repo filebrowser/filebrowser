@@ -37,8 +37,31 @@ func NewScopedFs(source afero.Fs, path string) *ScopedFs {
 	return &ScopedFs{base: afero.NewBasePathFs(source, path).(*afero.BasePathFs)}
 }
 
-// Base returns the underlying *afero.BasePathFs.
-func (s *ScopedFs) Base() *afero.BasePathFs { return s.base }
+// NewFs builds a user filesystem rooted at path. When followExternal is true it
+// returns a bare BasePathFs, so symlinks whose target resolves outside the scope
+// are followed; otherwise it returns a ScopedFs that refuses to follow them.
+func NewFs(source afero.Fs, path string, followExternal bool) afero.Fs {
+	if followExternal {
+		return afero.NewBasePathFs(source, path)
+	}
+	return NewScopedFs(source, path)
+}
+
+// BasePath returns the underlying *afero.BasePathFs of a user filesystem built
+// by NewFs, whether it is a *ScopedFs or a bare *afero.BasePathFs, or nil if it
+// is neither.
+func BasePath(fs afero.Fs) *afero.BasePathFs {
+	switch f := fs.(type) {
+	case *ScopedFs:
+		return f.BasePathFs()
+	case *afero.BasePathFs:
+		return f
+	}
+	return nil
+}
+
+// BasePathFs returns the underlying *afero.BasePathFs.
+func (s *ScopedFs) BasePathFs() *afero.BasePathFs { return s.base }
 
 // RealPath resolves a scoped path to the real on-disk path by delegating to
 // the underlying BasePathFs. This is needed by callers that need the actual

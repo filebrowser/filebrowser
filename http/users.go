@@ -71,7 +71,7 @@ func withSelfOrAdmin(fn handleFunc) handleFunc {
 }
 
 var usersGetHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-	users, err := d.store.Users.Gets(d.server.Root)
+	users, err := d.store.Users.Gets(d.server.Root, d.server.FollowExternalSymlinks)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
@@ -88,7 +88,7 @@ var usersGetHandler = withAdmin(func(w http.ResponseWriter, r *http.Request, d *
 })
 
 var userGetHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-	u, err := d.store.Users.Get(d.server.Root, d.raw.(uint))
+	u, err := d.store.Users.Get(d.server.Root, d.server.FollowExternalSymlinks, d.raw.(uint))
 	if errors.Is(err, fberrors.ErrNotExist) {
 		return http.StatusNotFound, err
 	}
@@ -228,7 +228,7 @@ var userPutHandler = withSelfOrAdmin(func(w http.ResponseWriter, r *http.Request
 			}
 		} else {
 			var suser *users.User
-			suser, err = d.store.Users.Get(d.server.Root, d.raw.(uint))
+			suser, err = d.store.Users.Get(d.server.Root, d.server.FollowExternalSymlinks, d.raw.(uint))
 			if err != nil {
 				return http.StatusInternalServerError, err
 			}

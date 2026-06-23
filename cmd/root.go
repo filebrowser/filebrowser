@@ -111,6 +111,7 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.Bool("disableExec", true, "disables Command Runner feature")
 	flags.Bool("disableTypeDetectionByHeader", false, "disables type detection by reading file headers")
 	flags.Bool("disableImageResolutionCalc", false, "disables image resolution calculation by reading image files")
+	flags.Bool("followExternalSymlinks", false, "follow symlinks whose target is outside the user scope (unsafe)")
 }
 
 var rootCmd = &cobra.Command{
@@ -353,6 +354,10 @@ func getServerSettings(v *viper.Viper, st *storage.Storage) (*settings.Server, e
 		server.EnableExec = !v.GetBool("disableExec")
 	}
 
+	if v.IsSet("followExternalSymlinks") {
+		server.FollowExternalSymlinks = v.GetBool("followExternalSymlinks")
+	}
+
 	if isAddrSet && isSocketSet {
 		return nil, errors.New("--socket flag cannot be used with --address, --port, --key nor --cert")
 	}
@@ -367,6 +372,13 @@ func getServerSettings(v *viper.Viper, st *storage.Storage) (*settings.Server, e
 		log.Println("WARNING: This feature has known security vulnerabilities and should not")
 		log.Println("WARNING: you fully understand the risks involved. For more information")
 		log.Println("WARNING: read https://github.com/filebrowser/filebrowser/issues/5199")
+	}
+
+	if server.FollowExternalSymlinks {
+		log.Println("WARNING: Following external symlinks enabled!")
+		log.Println("WARNING: Symlinks pointing outside a user's scope will be followed,")
+		log.Println("WARNING: which can expose files outside that scope. Only enable this if")
+		log.Println("WARNING: you fully understand and trust the contents of every user scope.")
 	}
 
 	return server, nil
@@ -446,19 +458,20 @@ func quickSetup(v *viper.Viper, s *storage.Storage) error {
 	}
 
 	ser := &settings.Server{
-		BaseURL:               v.GetString("baseURL"),
-		Port:                  v.GetString("port"),
-		Log:                   v.GetString("log"),
-		TLSKey:                v.GetString("key"),
-		TLSCert:               v.GetString("cert"),
-		Address:               v.GetString("address"),
-		Root:                  v.GetString("root"),
-		TokenExpirationTime:   v.GetString("tokenExpirationTime"),
-		EnableThumbnails:      !v.GetBool("disableThumbnails"),
-		ResizePreview:         !v.GetBool("disablePreviewResize"),
-		EnableExec:            !v.GetBool("disableExec"),
-		TypeDetectionByHeader: !v.GetBool("disableTypeDetectionByHeader"),
-		ImageResolutionCal:    !v.GetBool("disableImageResolutionCalc"),
+		BaseURL:                v.GetString("baseURL"),
+		Port:                   v.GetString("port"),
+		Log:                    v.GetString("log"),
+		TLSKey:                 v.GetString("key"),
+		TLSCert:                v.GetString("cert"),
+		Address:                v.GetString("address"),
+		Root:                   v.GetString("root"),
+		TokenExpirationTime:    v.GetString("tokenExpirationTime"),
+		EnableThumbnails:       !v.GetBool("disableThumbnails"),
+		ResizePreview:          !v.GetBool("disablePreviewResize"),
+		EnableExec:             !v.GetBool("disableExec"),
+		TypeDetectionByHeader:  !v.GetBool("disableTypeDetectionByHeader"),
+		ImageResolutionCal:     !v.GetBool("disableImageResolutionCalc"),
+		FollowExternalSymlinks: v.GetBool("followExternalSymlinks"),
 	}
 
 	err = s.Settings.SaveServer(ser)

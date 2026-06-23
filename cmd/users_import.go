@@ -40,7 +40,7 @@ list or set it to 0.`,
 		}
 
 		for _, user := range list {
-			err = user.Clean("")
+			err = user.Clean("", false)
 			if err != nil {
 				return err
 			}
@@ -52,7 +52,7 @@ list or set it to 0.`,
 		}
 
 		if replace {
-			oldUsers, userImportErr := st.Users.Gets("")
+			oldUsers, userImportErr := st.Users.Gets("", false)
 			if userImportErr != nil {
 				return userImportErr
 			}
@@ -76,7 +76,7 @@ list or set it to 0.`,
 		}
 
 		for _, user := range list {
-			onDB, err := st.Users.Get("", user.ID)
+			onDB, err := st.Users.Get("", false, user.ID)
 
 			// User exists in DB.
 			if err == nil {
@@ -88,7 +88,7 @@ list or set it to 0.`,
 				// with the new username. If there is, print an error and cancel the
 				// operation
 				if user.Username != onDB.Username {
-					if conflictuous, err := st.Users.Get("", user.Username); err == nil {
+					if conflictuous, err := st.Users.Get("", false, user.Username); err == nil {
 						return usernameConflictError(user.Username, conflictuous.ID, user.ID)
 					}
 				}

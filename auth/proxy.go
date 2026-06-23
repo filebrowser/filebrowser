@@ -20,7 +20,7 @@ type ProxyAuth struct {
 // Auth authenticates the user via an HTTP header.
 func (a ProxyAuth) Auth(r *http.Request, usr users.Store, setting *settings.Settings, srv *settings.Server) (*users.User, error) {
 	username := r.Header.Get(a.Header)
-	user, err := usr.Get(srv.Root, username)
+	user, err := usr.Get(srv.Root, srv.FollowExternalSymlinks, username)
 	if errors.Is(err, fberrors.ErrNotExist) {
 		return a.createUser(usr, setting, srv, username)
 	}

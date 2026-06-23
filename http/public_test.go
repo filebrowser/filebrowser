@@ -269,16 +269,24 @@ func newHTTPRequest(t *testing.T, requestModifiers ...func(*http.Request)) *http
 type customFSUser struct {
 	users.Store
 	fs afero.Fs
+	// followExternal mirrors Server.FollowExternalSymlinks: when set, the
+	// provided fs is used as-is (a bare BasePathFs that follows symlinks);
+	// otherwise it is wrapped in a symlink-confining ScopedFs.
+	followExternal bool
 }
 
-func (cu *customFSUser) Get(baseScope string, id interface{}) (*users.User, error) {
-	user, err := cu.Store.Get(baseScope, id)
+func (cu *customFSUser) Get(baseScope string, followExternalSymlinks bool, id interface{}) (*users.User, error) {
+	user, err := cu.Store.Get(baseScope, followExternalSymlinks, id)
 	if err != nil {
 		return nil, err
 	}
-	// Mirror production (users.User init), where a user's filesystem is always a
-	// scoped, symlink-confining ScopedFs rather than a bare afero.Fs.
-	user.Fs = files.NewScopedFs(cu.fs, "/")
+	// Inject a filesystem rooted at the test's temp scope, standing in for the
+	// one users.User.Clean would build in production.
+	if cu.followExternal {
+		user.Fs = cu.fs
+	} else {
+		user.Fs = files.NewScopedFs(cu.fs, "/")
+	}
 
 	return user, nil
 }

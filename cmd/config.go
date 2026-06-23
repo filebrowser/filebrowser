@@ -229,6 +229,7 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "\tThumbnails Enabled:\t%t\n", ser.EnableThumbnails)
 	fmt.Fprintf(w, "\tResize Preview:\t%t\n", ser.ResizePreview)
 	fmt.Fprintf(w, "\tType Detection by Header:\t%t\n", ser.TypeDetectionByHeader)
+	fmt.Fprintf(w, "\tFollow External Symlinks:\t%t\n", ser.FollowExternalSymlinks)
 
 	fmt.Fprintln(w, "\nTUS:")
 	fmt.Fprintf(w, "\tChunk size:\t%d\n", set.Tus.ChunkSize)

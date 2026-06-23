@@ -36,7 +36,7 @@ func runRules(st *storage.Storage, cmd *cobra.Command, usersFn func(*users.User)
 	}
 	if id != nil {
 		var user *users.User
-		user, err = st.Users.Get("", id)
+		user, err = st.Users.Get("", false, id)
 		if err != nil {
 			return err
 		}

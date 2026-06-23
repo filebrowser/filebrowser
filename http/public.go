@@ -27,7 +27,7 @@ var withHashFile = func(fn handleFunc) handleFunc {
 			return status, err
 		}
 
-		user, err := d.store.Users.Get(d.server.Root, link.UserID)
+		user, err := d.store.Users.Get(d.server.Root, d.server.FollowExternalSymlinks, link.UserID)
 		if err != nil {
 			return errToStatus(err), err
 		}
@@ -63,11 +63,12 @@ var withHashFile = func(fn handleFunc) handleFunc {
 			filePath = ifPath
 		}
 
-		// set fs root to the shared file/folder. ScopedFs (not a bare
-		// BasePathFs) so the share is also symlink-confined: a link inside the
-		// shared subtree that points elsewhere in the owner's scope — outside
-		// the share — must not be followed.
-		d.user.Fs = files.NewScopedFs(d.user.Fs, basePath)
+		// set fs root to the shared file/folder. Unless external symlinks are
+		// explicitly allowed, this is a ScopedFs (not a bare BasePathFs) so the
+		// share is also symlink-confined: a link inside the shared subtree that
+		// points elsewhere in the owner's scope — outside the share — must not be
+		// followed.
+		d.user.Fs = files.NewFs(d.user.Fs, basePath, d.server.FollowExternalSymlinks)
 
 		// the filesystem is now rebased onto basePath, so paths handed to the
 		// rule checker are relative to it. Resolve them back to the user's

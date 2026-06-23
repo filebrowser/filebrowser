@@ -43,9 +43,9 @@ options you want to change.`,
 			user *users.User
 		)
 		if id != 0 {
-			user, err = st.Users.Get("", id)
+			user, err = st.Users.Get("", false, id)
 		} else {
-			user, err = st.Users.Get("", username)
+			user, err = st.Users.Get("", false, username)
 		}
 		if err != nil {
 			return err

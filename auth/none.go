@@ -15,7 +15,7 @@ type NoAuth struct{}
 
 // Auth uses authenticates user 1.
 func (a NoAuth) Auth(_ *http.Request, usr users.Store, _ *settings.Settings, srv *settings.Server) (*users.User, error) {
-	return usr.Get(srv.Root, uint(1))
+	return usr.Get(srv.Root, srv.FollowExternalSymlinks, uint(1))
 }
 
 // LoginPage tells that no auth doesn't require a login page.

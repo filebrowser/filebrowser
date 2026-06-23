@@ -68,7 +68,7 @@ func (a *HookAuth) Auth(r *http.Request, usr users.Store, stg *settings.Settings
 	case "block":
 		return nil, os.ErrPermission
 	case "pass":
-		u, err := a.Users.Get(a.Server.Root, a.Cred.Username)
+		u, err := a.Users.Get(a.Server.Root, a.Server.FollowExternalSymlinks, a.Cred.Username)
 		if err != nil || !users.CheckPwd(a.Cred.Password, u.Password) {
 			return nil, os.ErrPermission
 		}
@@ -129,7 +129,7 @@ func (a *HookAuth) GetValues(s string) {
 
 // SaveUser updates the existing user or creates a new one when not found
 func (a *HookAuth) SaveUser() (*users.User, error) {
-	u, err := a.Users.Get(a.Server.Root, a.Cred.Username)
+	u, err := a.Users.Get(a.Server.Root, a.Server.FollowExternalSymlinks, a.Cred.Username)
 	if err != nil && !errors.Is(err, fberrors.ErrNotExist) {
 		return nil, err
 	}

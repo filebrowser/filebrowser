@@ -126,6 +126,86 @@ func TestPublicShareSymlinkListingOmitsEscapingLink(t *testing.T) {
 	}
 }
 
+// With Server.FollowExternalSymlinks enabled (the opt-in for issue #5998), a
+// symlink inside a public share that points outside it is followed: the file
+// behind it downloads and the link shows up in the share listing. This is the
+// inverse of TestPublicShareSymlinkDescendantDisclosure / ...ListingOmitsEscapingLink.
+func TestPublicShareSymlinkFollowedWhenEnabled(t *testing.T) {
+	scope := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(scope, "shared"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Join(scope, "outside"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(scope, "outside", "data.txt"), []byte("payload"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(filepath.Join(scope, "outside"), filepath.Join(scope, "shared", "link")); err != nil {
+		t.Skipf("cannot create symlink on this platform: %v", err)
+	}
+
+	db, err := storm.Open(filepath.Join(t.TempDir(), "db"))
+	if err != nil {
+		t.Fatalf("failed to open db: %v", err)
+	}
+	t.Cleanup(func() { _ = db.Close() })
+
+	st, err := bolt.NewStorage(db)
+	if err != nil {
+		t.Fatalf("failed to get storage: %v", err)
+	}
+	if err := st.Share.Save(&share.Link{Hash: "h", UserID: 1, Path: "/shared"}); err != nil {
+		t.Fatalf("failed to save share: %v", err)
+	}
+	if err := st.Users.Save(&users.User{
+		Username: "username",
+		Password: "pw",
+		Perm:     users.Permissions{Share: true, Download: true},
+	}); err != nil {
+		t.Fatalf("failed to save user: %v", err)
+	}
+	if err := st.Settings.Save(&settings.Settings{Key: []byte("key")}); err != nil {
+		t.Fatalf("failed to save settings: %v", err)
+	}
+	// Follow-external mode: the user filesystem is a bare BasePathFs.
+	st.Users = &customFSUser{
+		Store:          st.Users,
+		fs:             files.NewFs(afero.NewOsFs(), scope, true),
+		followExternal: true,
+	}
+
+	srv := &settings.Server{FollowExternalSymlinks: true}
+
+	// The file behind the symlink downloads.
+	req := newHTTPRequest(t, func(r *http.Request) { r.URL.Path = "h/link/data.txt" })
+	recorder := httptest.NewRecorder()
+	handle(publicDlHandler, "", st, srv).ServeHTTP(recorder, req)
+	result := recorder.Result()
+	defer result.Body.Close()
+	body, _ := io.ReadAll(result.Body)
+	if result.StatusCode != http.StatusOK {
+		t.Fatalf("expected to download file behind followed symlink, got status=%d body=%q", result.StatusCode, string(body))
+	}
+	if !strings.Contains(string(body), "payload") {
+		t.Fatalf("expected payload content, got %q", string(body))
+	}
+
+	// The link shows up in the share root listing.
+	req = newHTTPRequest(t, func(r *http.Request) { r.URL.Path = "h/" })
+	recorder = httptest.NewRecorder()
+	handle(publicShareHandler, "", st, srv).ServeHTTP(recorder, req)
+	result = recorder.Result()
+	defer result.Body.Close()
+	body, _ = io.ReadAll(result.Body)
+	if result.StatusCode != http.StatusOK {
+		t.Fatalf("share root listing failed: status=%d body=%q", result.StatusCode, string(body))
+	}
+	if !strings.Contains(string(body), "\"link\"") {
+		t.Fatalf("expected followed symlink to appear in listing: %s", string(body))
+	}
+}
+
 // Reproduces the archive variant of GHSA-hf77-9m7w-fq8q: downloading the whole
 // public share as a zip must not pull in files reached through a symlinked
 // descendant.
