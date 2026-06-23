@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.63.16](https://github.com/filebrowser/filebrowser/compare/v2.63.15...v2.63.16) (2026-06-23)
+
+
+### Bug Fixes
+
+* dangling symlink, write, delete scope bugs ([64511ce](https://github.com/filebrowser/filebrowser/commit/64511ce45e3be379e965f7f4fb0929a068d5bb81))
+* restore symlink behavior as opt-in followExternalSymlinks ([a106392](https://github.com/filebrowser/filebrowser/commit/a1063925e15ef27f9d5dc26aae371bbf52af608c))
+
 ## [2.63.15](https://github.com/filebrowser/filebrowser/compare/v2.63.14...v2.63.15) (2026-06-13)
 
 
