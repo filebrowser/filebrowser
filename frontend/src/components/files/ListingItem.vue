@@ -77,6 +77,9 @@ const props = defineProps<{
   index: number;
   readOnly?: boolean;
   path?: string;
+  archive?: boolean;
+  archivePath?: string;
+  archiveInnerPath?: string;
 }>();
 
 const authStore = useAuthStore();
@@ -84,8 +87,9 @@ const fileStore = useFileStore();
 const layoutStore = useLayoutStore();
 
 const singleClick = computed(
-  () => !props.readOnly && authStore.user?.singleClick
+  () => (props.archive || !props.readOnly) && authStore.user?.singleClick
 );
+const isArchiveItem = computed(() => props.type === "archive" && !props.archive);
 const isSelected = computed(
   () => fileStore.selected.indexOf(props.index) !== -1
 );
@@ -325,6 +329,19 @@ const click = (event: Event | KeyboardEvent) => {
 };
 
 const open = () => {
+  if (props.archive && props.archivePath && props.archiveInnerPath) {
+    router.push({
+      path: props.archivePath,
+      query: { archive: props.archiveInnerPath },
+    });
+    return;
+  }
+
+  if (isArchiveItem.value) {
+    router.push({ path: props.url, query: { archive: "/" } });
+    return;
+  }
+
   router.push({ path: props.url });
 };
 
