@@ -13,6 +13,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strings"
 	"syscall"
 	"time"
 
@@ -379,6 +380,18 @@ func getServerSettings(v *viper.Viper, st *storage.Storage) (*settings.Server, e
 		log.Println("WARNING: Symlinks pointing outside a user's scope will be followed,")
 		log.Println("WARNING: which can expose files outside that scope. Only enable this if")
 		log.Println("WARNING: you fully understand and trust the contents of every user scope.")
+	}
+
+	if set, err := st.Settings.Get(); err == nil && set.Signup {
+		scope := strings.TrimSpace(set.Defaults.Scope)
+		scopeIsRoot := scope == "" || scope == "." || scope == "/"
+
+		if !set.CreateUserDir && scopeIsRoot {
+			log.Println("WARNING: Signup is enabled without createUserDir and the default scope is")
+			log.Println("WARNING: the server root, so every self-registered user can read, modify and")
+			log.Println("WARNING: delete all files File Browser serves, including other users' files.")
+			log.Println("WARNING: Enable createUserDir, or set a default scope other than the root.")
+		}
 	}
 
 	return server, nil
