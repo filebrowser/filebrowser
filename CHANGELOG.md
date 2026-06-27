@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.63.17](https://github.com/filebrowser/filebrowser/compare/v2.63.16...v2.63.17) (2026-06-27)
+
+
+### Bug Fixes
+
+* **auth:** reject signup when normalized home dir collides (GHSA-7rc3-g7h6-22m7) ([883a36f](https://github.com/filebrowser/filebrowser/commit/883a36f02fcb69566a8628cb47f18fdc73348387))
+* match admin share paths by owner scope ([#5992](https://github.com/filebrowser/filebrowser/issues/5992)) ([43a404c](https://github.com/filebrowser/filebrowser/commit/43a404ca69bf25553bfbbb2b446f0f53077c6302))
+* normalize recursive listing paths to forward slashes ([#6003](https://github.com/filebrowser/filebrowser/issues/6003)) ([2472fbc](https://github.com/filebrowser/filebrowser/commit/2472fbcd30502606feb11fbc8b8dc4f3803e6641))
+* preserve SRT subtitle line breaks ([#6002](https://github.com/filebrowser/filebrowser/issues/6002)) ([d9cf2f0](https://github.com/filebrowser/filebrowser/commit/d9cf2f0100d2c4892cad8e339eacca96df1aa5b6))
+* **raw:** neutralize backslashes in archive entry names (GHSA-83xp-526h-j3ww) ([8503ba6](https://github.com/filebrowser/filebrowser/commit/8503ba61ff51d48a7313896483d130eb6a5abfe0))
+* **share:** delete exact directory share on trailing-slash delete (GHSA-pp88-jhwj-5qh5) ([f30fca6](https://github.com/filebrowser/filebrowser/commit/f30fca636c1af9ef401e9a82ff60391cb3db97e1))
+* **share:** stop exposing password hash and bypass token in share API (GHSA-833g-cqhp-h72j) ([ec13054](https://github.com/filebrowser/filebrowser/commit/ec130546713c44cd24556907552ac554c7f809c9))
+
 ## [2.63.16](https://github.com/filebrowser/filebrowser/compare/v2.63.15...v2.63.16) (2026-06-23)
 
 
