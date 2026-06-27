@@ -84,6 +84,44 @@ func TestDeleteWithPathPrefix(t *testing.T) {
 	}
 }
 
+// Regression for the trailing-slash delete leaving a stale share
+// (GHSA-pp88-jhwj-5qh5): deleting "/a/" must remove the exact "/a" share and its
+// descendants, not just the descendants. Siblings and other users are untouched.
+func TestDeleteWithPathPrefixTrailingSlash(t *testing.T) {
+	t.Parallel()
+
+	s := newTestShareBackend(t)
+
+	links := []*share.Link{
+		{Hash: "u1-a", Path: "/a", UserID: 1},
+		{Hash: "u1-a-child", Path: "/a/child.txt", UserID: 1},
+		{Hash: "u1-abc", Path: "/abc", UserID: 1}, // sibling sharing a byte prefix
+		{Hash: "u2-a", Path: "/a", UserID: 2},      // other user, must remain
+	}
+	for _, l := range links {
+		if err := s.Save(l); err != nil {
+			t.Fatalf("failed to save link %s: %v", l.Hash, err)
+		}
+	}
+
+	// Delete with a trailing slash, as the resource delete handler does for a
+	// directory request like DELETE /api/resources/a/.
+	if err := s.DeleteWithPathPrefix("/a/", 1); err != nil {
+		t.Fatalf("DeleteWithPathPrefix returned error: %v", err)
+	}
+
+	got := remainingHashes(t, s)
+	want := []string{"u1-abc", "u2-a"}
+	if len(got) != len(want) {
+		t.Fatalf("remaining hashes = %v, want %v", got, want)
+	}
+	for i := range want {
+		if got[i] != want[i] {
+			t.Fatalf("remaining hashes = %v, want %v", got, want)
+		}
+	}
+}
+
 func TestDeleteWithPathPrefixNoMatch(t *testing.T) {
 	t.Parallel()
 

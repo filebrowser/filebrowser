@@ -78,15 +78,16 @@ func (s shareBackend) Delete(hash string) error {
 }
 
 func (s shareBackend) DeleteWithPathPrefix(pathPrefix string, userID uint) error {
+	// Share paths are stored without a trailing slash
+	prefix := strings.TrimRight(pathPrefix, "/")
+
 	var links []share.Link
-	if err := s.db.Prefix("Path", pathPrefix, &links); err != nil {
+	if err := s.db.Prefix("Path", prefix, &links); err != nil {
 		if errors.Is(err, storm.ErrNotFound) {
 			return nil
 		}
 		return err
 	}
-
-	prefix := strings.TrimRight(pathPrefix, "/")
 
 	var err error
 	for _, link := range links {
