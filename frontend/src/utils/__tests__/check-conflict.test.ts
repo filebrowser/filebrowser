@@ -220,4 +220,52 @@ describe("checkConflict", () => {
 
     expect(conflicts).toHaveLength(0);
   });
+
+  // Regression for #5980: a FileBrowser server running on Windows returns
+  // backslash-separated paths from the recursive listing. Without normalizing
+  // them, the prefix strip and key lookup never match, so the conflict modal is
+  // skipped and the backend returns a bare 409.
+  it("detects a conflict for backslash-separated server paths (Windows)", async () => {
+    vi.mocked(api.fetchAll).mockResolvedValue([
+      {
+        path: "\\target\\file.txt",
+        name: "file.txt",
+        size: 10,
+        modified: "2026-06-04T00:00:00Z",
+        isDir: false,
+      },
+    ]);
+
+    const conflicts = await checkConflict(
+      [moveItem("file.txt", "/files/target/")],
+      "/files/target/"
+    );
+
+    expect(conflicts).toHaveLength(1);
+  });
+
+  it("detects nested conflicts for backslash-separated server paths (Windows)", async () => {
+    vi.mocked(api.fetchAll).mockResolvedValue([
+      {
+        path: "\\target\\folder\\nested file.txt",
+        name: "nested file.txt",
+        size: 10,
+        modified: "2026-06-04T00:00:00Z",
+        isDir: false,
+      },
+    ]);
+
+    const files = [
+      {
+        name: "nested file.txt",
+        size: 12,
+        isDir: false,
+        fullPath: "folder/nested file.txt",
+      },
+    ];
+
+    const conflicts = await checkConflict(files, "/files/target/");
+
+    expect(conflicts).toHaveLength(1);
+  });
 });

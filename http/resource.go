@@ -424,7 +424,10 @@ var resourceGetRecursiveHandler = withUser(func(w http.ResponseWriter, r *http.R
 		}
 
 		entries = append(entries, RecursiveEntry{
-			Path:    fPath,
+			// afero.Walk joins paths with the OS separator, so on Windows fPath
+			// uses backslashes. The web API contract is forward slashes, so
+			// normalize it here (mirrors search/search.go).
+			Path:    filepath.ToSlash(fPath),
 			Name:    info.Name(),
 			Size:    info.Size(),
 			ModTime: info.ModTime(),

@@ -62,9 +62,10 @@ export async function checkConflict(
   const normBase = removePrefix(basePath).replace(/\/+$/, "");
   const serverMap = new Map<string, RecursiveEntry>();
   for (const entry of serverEntries) {
-    const rel = entry.path.startsWith(normBase)
-      ? entry.path.slice(normBase.length)
-      : entry.path;
+    // A Windows server may return OS-native backslash separators; normalize to
+    // forward slashes so the prefix strip and key lookup line up.
+    const path = entry.path.replace(/\\/g, "/");
+    const rel = path.startsWith(normBase) ? path.slice(normBase.length) : path;
     serverMap.set(rel.replace(/^\/+/, ""), entry);
   }
 
