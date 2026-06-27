@@ -2,13 +2,17 @@ package fbhttp
 
 import (
 	"bytes"
+	"io"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"github.com/asticode/go-astisub"
 
 	"github.com/filebrowser/filebrowser/v2/files"
 )
+
+var srtLineBreakTag = regexp.MustCompile(`(?i)<br(?:\s+[^>]*)?\s*/?>`)
 
 var subtitleHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	if !d.user.Perm.Download {
@@ -49,7 +53,11 @@ func subtitleFileHandler(w http.ResponseWriter, r *http.Request, file *files.Fil
 	// load subtitle for conversion to vtt
 	var sub *astisub.Subtitles
 	if strings.HasSuffix(file.Name, ".srt") {
-		sub, err = astisub.ReadFromSRT(fd)
+		content, readErr := io.ReadAll(fd)
+		if readErr != nil {
+			return http.StatusInternalServerError, readErr
+		}
+		sub, err = astisub.ReadFromSRT(bytes.NewReader(normalizeSRTLineBreaks(content)))
 	} else if strings.HasSuffix(file.Name, ".ass") || strings.HasSuffix(file.Name, ".ssa") {
 		sub, err = astisub.ReadFromSSA(fd)
 	}
@@ -77,4 +85,8 @@ func subtitleFileHandler(w http.ResponseWriter, r *http.Request, file *files.Fil
 	}
 	http.ServeContent(w, r, file.Name, file.ModTime, bytes.NewReader(buf.Bytes()))
 	return 0, nil
+}
+
+func normalizeSRTLineBreaks(content []byte) []byte {
+	return srtLineBreakTag.ReplaceAll(content, []byte("\n"))
 }
