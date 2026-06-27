@@ -2,6 +2,7 @@ package fbhttp
 
 import (
 	"errors"
+	"fmt"
 	"io/fs"
 	"log"
 	"net/http"
@@ -125,12 +126,19 @@ func getFiles(d *data, path, commonPath string) ([]archives.FileInfo, error) {
 		nameInArchive := strings.TrimPrefix(path, commonPath)
 		nameInArchive = strings.TrimPrefix(nameInArchive, string(filepath.Separator))
 		nameInArchive = filepath.ToSlash(nameInArchive)
-		// filepath.ToSlash only rewrites the host separator, so on a Linux
-		// host a stored backslash survives and is emitted verbatim into the
-		// archive. Windows extractors then treat "\" as a path separator,
-		// allowing the entry to escape the extraction directory (zip-slip).
-		// Strip Windows separators regardless of host OS.
-		nameInArchive = strings.ReplaceAll(nameInArchive, "\\", "/")
+		// A backslash is a legal filename character on POSIX hosts, so it can
+		// reach here verbatim. Rewriting it to the path separator "/" would
+		// manufacture a traversal sequence (e.g. "..\..\x" -> "../../x") that
+		// escapes the extraction directory on the victim's machine, while
+		// leaving it as "\" lets Windows extractors treat it as a separator.
+		// Neutralize it to an inert character instead of turning it into one.
+		nameInArchive = strings.ReplaceAll(nameInArchive, "\\", "_")
+
+		// Defense in depth: never emit an archive entry whose path escapes the
+		// archive root, regardless of how the name was produced.
+		if cleaned := gopath.Clean("/" + nameInArchive); cleaned != "/"+nameInArchive {
+			return nil, fmt.Errorf("refusing unsafe archive entry name: %q", nameInArchive)
+		}
 
 		archiveFiles = append(archiveFiles, archives.FileInfo{
 			FileInfo:      info,
