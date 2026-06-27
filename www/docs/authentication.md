@@ -46,6 +46,10 @@ The Hook Authentication method in FileBrowser allows developers to delegate user
 
 The hook’s output controls user permissions, scope, locale, and other attributes, making it a powerful and extensible authentication mechanism.
 
+> [!WARNING]
+>
+> The submitted username and password are attacker-controlled and are handed to your hook command as the `USERNAME` and `PASSWORD` environment variables. File Browser runs the command directly, without a shell, so the values themselves are inert. However, your script must treat them as untrusted: always quote them (`"$USERNAME"`, `"$PASSWORD"`) and never pass them unquoted to a shell, `eval`, `bash -c`, command substitution, or backticks. A hook script that shell-evaluates these values turns any login request into remote code execution.
+
 For example, the following code delegates filebrowser authentication to a PowerShell script on Windows. You can configure any command (for example, a script in Python, Node.js, etc.).
 
 ```sh
