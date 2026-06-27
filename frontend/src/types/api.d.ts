@@ -25,7 +25,7 @@ interface Share {
   path: string;
   expire?: any;
   userID?: number;
-  token?: string;
+  hasPassword?: boolean;
   username?: string;
 }
 

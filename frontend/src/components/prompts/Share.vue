@@ -38,7 +38,7 @@
                 class="action"
                 :aria-label="$t('buttons.copyDownloadLinkToClipboard')"
                 :title="$t('buttons.copyDownloadLinkToClipboard')"
-                :disabled="!!link.password_hash"
+                :disabled="!!link.hasPassword"
                 @click="copyToClipboard(buildDownloadLink(link))"
               >
                 <i class="material-icons">content_paste_go</i>
