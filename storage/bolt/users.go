@@ -6,6 +6,7 @@ import (
 	"reflect"
 
 	"github.com/asdine/storm/v3"
+	"github.com/asdine/storm/v3/q"
 	bolt "go.etcd.io/bbolt"
 
 	fberrors "github.com/filebrowser/filebrowser/v2/errors"
@@ -39,6 +40,19 @@ func (st usersBackend) GetBy(i interface{}) (user *users.User, err error) {
 	}
 
 	return
+}
+
+func (st usersBackend) GetByScope(scope string) (*users.User, error) {
+	user := &users.User{}
+	err := st.db.Select(q.Eq("Scope", scope)).First(user)
+	if err != nil {
+		if errors.Is(err, storm.ErrNotFound) {
+			return nil, fberrors.ErrNotExist
+		}
+		return nil, err
+	}
+
+	return user, nil
 }
 
 func (st usersBackend) Gets() ([]*users.User, error) {

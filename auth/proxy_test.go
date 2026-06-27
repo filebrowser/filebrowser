@@ -22,6 +22,7 @@ func (m *mockUserStore) Get(_ string, _ bool, id interface{}) (*users.User, erro
 	return nil, fberrors.ErrNotExist
 }
 
+func (m *mockUserStore) GetByScope(_ string) (*users.User, error)     { return nil, fberrors.ErrNotExist }
 func (m *mockUserStore) Gets(_ string, _ bool) ([]*users.User, error) { return nil, nil }
 func (m *mockUserStore) Update(_ *users.User, _ ...string) error      { return nil }
 func (m *mockUserStore) Save(user *users.User) error {

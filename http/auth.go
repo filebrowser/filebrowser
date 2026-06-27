@@ -201,6 +201,22 @@ var signupHandler = func(w http.ResponseWriter, r *http.Request, d *data) (int, 
 		return http.StatusInternalServerError, err
 	}
 	user.Scope = userHome
+
+	// When home directories are created from the username, distinct usernames
+	// can normalize to the same scope (cleanUsername is many-to-one), which would
+	// silently hand the new user another user's home directory. Reject the signup
+	// if the derived scope is already taken. When CreateUserDir is off, all
+	// signups intentionally share the configured default scope, so this check
+	// does not apply.
+	if d.settings.CreateUserDir {
+		switch _, err := d.store.Users.GetByScope(user.Scope); {
+		case err == nil:
+			return http.StatusConflict, fberrors.ErrExist
+		case !errors.Is(err, fberrors.ErrNotExist):
+			return http.StatusInternalServerError, err
+		}
+	}
+
 	log.Printf("new user: %s, home dir: [%s].", user.Username, userHome)
 
 	err = d.store.Users.Save(user)

@@ -10,6 +10,7 @@ import (
 // StorageBackend is the interface to implement for a users storage.
 type StorageBackend interface {
 	GetBy(interface{}) (*User, error)
+	GetByScope(scope string) (*User, error)
 	Gets() ([]*User, error)
 	Save(u *User) error
 	Update(u *User, fields ...string) error
@@ -20,6 +21,7 @@ type StorageBackend interface {
 
 type Store interface {
 	Get(baseScope string, followExternalSymlinks bool, id interface{}) (user *User, err error)
+	GetByScope(scope string) (*User, error)
 	Gets(baseScope string, followExternalSymlinks bool) ([]*User, error)
 	Update(user *User, fields ...string) error
 	Save(user *User) error
@@ -54,6 +56,13 @@ func (s *Storage) Get(baseScope string, followExternalSymlinks bool, id interfac
 		return nil, err
 	}
 	return
+}
+
+// GetByScope returns the first user whose scope matches the given one, or
+// ErrNotExist if none does. The user is returned as stored, without setting up
+// its filesystem, as it is meant for existence checks rather than serving.
+func (s *Storage) GetByScope(scope string) (*User, error) {
+	return s.back.GetByScope(scope)
 }
 
 // Gets gets a list of all users.
