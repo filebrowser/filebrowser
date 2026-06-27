@@ -36,6 +36,7 @@ type User struct {
 	HideDotfiles          bool          `json:"hideDotfiles"`
 	DateFormat            bool          `json:"dateFormat"`
 	AceEditorTheme        string        `json:"aceEditorTheme"`
+	Favorites             []string      `json:"favorites"`
 }
 
 // GetRules implements rules.Provider.
@@ -51,6 +52,7 @@ var checkableFields = []string{
 	"Commands",
 	"Sorting",
 	"Rules",
+	"Favorites",
 }
 
 // Clean cleans up a user and verifies if all its fields
@@ -85,6 +87,10 @@ func (u *User) Clean(baseScope string, followExternalSymlinks bool, fields ...st
 		case "Rules":
 			if u.Rules == nil {
 				u.Rules = []rules.Rule{}
+			}
+		case "Favorites":
+			if u.Favorites == nil {
+				u.Favorites = []string{}
 			}
 		}
 	}
