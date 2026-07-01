@@ -29,6 +29,13 @@
 
 .epub-reader .tocButton {
   color: var(--text);
+  /*
+   * vue-reader positions the TOC toggle at top: 10px, which lands under the
+   * fixed 4em header bar (see .header) — so clicks hit the header's Close
+   * button instead of opening the table of contents. Push it just below the
+   * header, tracking the header's height so it stays clear if that changes.
+   */
+  top: calc(4em + 10px);
 }
 
 .epub-reader .tocButton.tocButtonExpanded {
