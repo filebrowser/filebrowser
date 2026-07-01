@@ -71,7 +71,9 @@ const event = {
 describe("copy and move conflict prompts", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(checkConflict).mockResolvedValue(conflict);
+    vi.mocked(checkConflict).mockResolvedValue(
+      conflict as ConflictingResource[]
+    );
   });
 
   it("waits for copy conflict detection before calling the copy API", async () => {

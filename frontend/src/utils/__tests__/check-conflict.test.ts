@@ -4,6 +4,7 @@ import { files as api } from "@/api";
 
 vi.mock("@/api", () => ({
   files: {
+    fetch: vi.fn(),
     fetchAll: vi.fn(),
   },
 }));
@@ -19,8 +20,8 @@ vi.mock("@/stores/layout", () => ({ useLayoutStore: vi.fn() }));
 vi.mock("@/stores/upload", () => ({ useUploadStore: vi.fn() }));
 vi.mock("@/utils/url", () => ({ default: {} }));
 
-// A move/copy/drag item carries `name` (raw) and `to` (URL-encoded) but no
-// `fullPath` — mirroring what Move.vue / Copy.vue / ListingItem.vue build.
+// A move/copy/drag item carries name (raw) and to (URL-encoded) but no
+// fullPath - mirroring what Move.vue / Copy.vue / ListingItem.vue build.
 function moveItem(name: string, dest: string, size = 12) {
   return {
     from: `/files/source/${encodeURIComponent(name)}`,
@@ -167,29 +168,46 @@ describe("checkConflict", () => {
     expect(conflicts[0].name).toBe("/target/folder/deep/file.txt");
   });
 
-  // Copy/move stats the whole destination, so a same-named directory is a
-  // conflict in its own right (regression for the directory case of #5957).
-  it("reports a directory conflict for copy/move (includeDirectories)", async () => {
-    vi.mocked(api.fetchAll).mockResolvedValue([
-      {
-        path: "/target/folder",
-        name: "folder",
-        size: 0,
-        modified: "2026-06-04T00:00:00Z",
-        isDir: true,
-      },
-    ]);
+  // Copy/move only needs the target directory's direct children. A recursive
+  // walk can make the UI look frozen on large destinations (regression #6005).
+  it("checks only the direct destination listing for copy/move", async () => {
+    vi.mocked(api.fetch).mockResolvedValue({
+      items: [
+        {
+          path: "/target/file.txt",
+          name: "file.txt",
+          size: 10,
+          modified: "2026-06-04T00:00:00Z",
+          isDir: false,
+        },
+        {
+          path: "/target/folder",
+          name: "folder",
+          size: 0,
+          modified: "2026-06-04T00:00:00Z",
+          isDir: true,
+        },
+      ],
+    } as Resource);
 
-    const items = [{ ...moveItem("folder", "/files/target/", 0), isDir: true }];
+    const items = [
+      moveItem("file.txt", "/files/target/"),
+      { ...moveItem("folder", "/files/target/", 0), isDir: true },
+    ];
 
     const conflicts = await checkConflict(items, "/files/target/", true);
 
-    expect(conflicts).toHaveLength(1);
-    expect(conflicts[0].name).toBe("/target/folder");
+    expect(api.fetch).toHaveBeenCalledWith("/files/target/");
+    expect(api.fetchAll).not.toHaveBeenCalled();
+    expect(conflicts).toHaveLength(2);
+    expect(conflicts.map((conflict) => conflict.name)).toEqual([
+      "/target/file.txt",
+      "/target/folder",
+    ]);
   });
 
   // Uploads merge into an existing folder, so the directory itself must not be
-  // reported — only the files inside it can conflict.
+  // reported - only the files inside it can conflict.
   it("ignores a directory conflict for uploads (default)", async () => {
     vi.mocked(api.fetchAll).mockResolvedValue([
       {
