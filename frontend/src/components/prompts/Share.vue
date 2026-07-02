@@ -115,6 +115,8 @@
           :placeholder="$t('prompts.shareKeyHelp')"
           tabindex="3"
           autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
         />
         <p>{{ $t("prompts.shareKeyHelp") }}</p>
         <p>{{ $t("prompts.optionalPassword") }}</p>
@@ -123,6 +125,7 @@
           type="password"
           v-model.trim="password"
           tabindex="4"
+          autocomplete="new-password"
         />
       </div>
 
