@@ -107,12 +107,25 @@
             <option value="days">{{ $t("time.days") }}</option>
           </select>
         </div>
+        <p>{{ $t("prompts.optionalShareKey") }}</p>
+        <input
+          class="input input--block"
+          type="text"
+          v-model.trim="hash"
+          :placeholder="$t('prompts.shareKeyHelp')"
+          tabindex="3"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+        />
+        <p>{{ $t("prompts.shareKeyHelp") }}</p>
         <p>{{ $t("prompts.optionalPassword") }}</p>
         <input
           class="input input--block"
           type="password"
           v-model.trim="password"
-          tabindex="3"
+          tabindex="4"
+          autocomplete="new-password"
         />
       </div>
 
@@ -122,7 +135,7 @@
           @click="() => switchListing()"
           :aria-label="$t('buttons.cancel')"
           :title="$t('buttons.cancel')"
-          tabindex="5"
+          tabindex="6"
         >
           {{ $t("buttons.cancel") }}
         </button>
@@ -132,7 +145,7 @@
           @click="submit"
           :aria-label="$t('buttons.share')"
           :title="$t('buttons.share')"
-          tabindex="4"
+          tabindex="5"
         >
           {{ $t("buttons.share") }}
         </button>
@@ -157,6 +170,7 @@ export default {
       unit: "hours",
       links: [],
       clip: null,
+      hash: "",
       password: "",
       listing: true,
     };
@@ -223,10 +237,11 @@ export default {
         let res = null;
 
         if (!this.time) {
-          res = await api.share.create(this.url, this.password);
+          res = await api.share.create(this.url, this.hash, this.password);
         } else {
           res = await api.share.create(
             this.url,
+            this.hash,
             this.password,
             this.time,
             this.unit
@@ -238,6 +253,7 @@ export default {
 
         this.time = 0;
         this.unit = "hours";
+        this.hash = "";
         this.password = "";
 
         this.listing = true;
