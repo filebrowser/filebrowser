@@ -2,12 +2,61 @@ package fileutils
 
 import (
 	"os"
+	"path"
 	"path/filepath"
 	"testing"
 
 	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/spf13/afero"
 )
+
+// failingOpenFs wraps an afero.Fs and makes Open fail for one specific path,
+// while every other operation (including Stat) is delegated unchanged. It
+// simulates a directory that can be stat-ed but not opened/read — for example
+// an unreadable sub-directory, or one whose permissions changed or that was
+// removed after its parent was listed (a TOCTOU race) — encountered during a
+// recursive copy.
+type failingOpenFs struct {
+	afero.Fs
+	failOpen string
+}
+
+func (f *failingOpenFs) Open(name string) (afero.File, error) {
+	if path.Clean(name) == path.Clean(f.failOpen) {
+		return nil, os.ErrPermission
+	}
+	return f.Fs.Open(name)
+}
+
+// CopyDir is documented to keep going when it hits an error and to report the
+// error afterwards. A sub-directory that cannot be opened must therefore yield
+// an error (and leave the other, readable entries copied) rather than
+// panicking on a nil directory handle.
+func TestCopyDirUnreadableSubdirReturnsError(t *testing.T) {
+	mem := afero.NewMemMapFs()
+	if err := mem.MkdirAll("/srcdir/sub", 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := afero.WriteFile(mem, "/srcdir/ok.txt", []byte("readable"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	afs := &failingOpenFs{Fs: mem, failOpen: "/srcdir/sub"}
+
+	err := Copy(afs, "/srcdir", "/dstdir", 0o644, 0o755)
+	if err == nil {
+		t.Fatal("expected an error when a sub-directory cannot be opened")
+	}
+
+	// The readable sibling must still have been copied (continue-on-error).
+	data, readErr := afero.ReadFile(afs, "/dstdir/ok.txt")
+	if readErr != nil {
+		t.Fatalf("readable sibling was not copied: %v", readErr)
+	}
+	if string(data) != "readable" {
+		t.Fatalf("unexpected copied content: %q", string(data))
+	}
+}
 
 // Copying an in-scope directory that contains a symlink whose target escapes
 // the user's scope must not dereference that symlink into the destination.

@@ -23,7 +23,12 @@ func CopyDir(afs afero.Fs, source, dest string, fileMode, dirMode fs.FileMode) e
 		return err
 	}
 
-	dir, _ := afs.Open(source)
+	dir, err := afs.Open(source)
+	if err != nil {
+		return err
+	}
+	defer dir.Close()
+
 	obs, err := dir.Readdir(-1)
 	if err != nil {
 		return err
