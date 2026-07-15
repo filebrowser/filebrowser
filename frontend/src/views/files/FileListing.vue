@@ -59,6 +59,12 @@
           @action="switchView"
         />
         <action
+          id="refresh-folder-button"
+          icon="refresh"
+          :label="t('buttons.refresh')"
+          @action="refreshFolder()"
+        />
+        <action
           v-if="headerButtons.download"
           icon="file_download"
           :label="t('buttons.download')"
@@ -1026,6 +1032,10 @@ const switchView = async () => {
 
   setItemWeight();
   fillWindow();
+};
+
+const refreshFolder = () => {
+  fileStore.reload = true;
 };
 
 const uploadFunc = () => {
