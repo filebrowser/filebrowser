@@ -222,3 +222,38 @@ func TestResourcePostCleanupDoesNotDeleteThroughSymlink(t *testing.T) {
 		t.Fatalf("VULNERABLE: out-of-scope victim.txt deleted by cleanup RemoveAll (status=%d): %v", rec.Code, statErr)
 	}
 }
+
+func TestResourcePostRunsUploadHooksForDirectories(t *testing.T) {
+	root := t.TempDir()
+	userScope := filepath.Join(root, "user")
+	if err := os.MkdirAll(userScope, 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	key := []byte("test-signing-key")
+	perm := users.Permissions{Create: true}
+	st := scopedUserStorage(t, userScope, perm, key)
+	if err := st.Settings.Save(&settings.Settings{
+		Key: key,
+		Commands: map[string][]string{
+			"after_upload": {"filebrowser-hook-command-that-does-not-exist"},
+		},
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	req, _ := http.NewRequest(http.MethodPost, "/created/", http.NoBody)
+	req.Header.Set("X-Auth", signToken(t, perm, key))
+	rec := httptest.NewRecorder()
+	handle(resourcePostHandler(diskcache.NewNoOp()), "", st, &settings.Server{EnableExec: true}).ServeHTTP(rec, req)
+
+	// A missing after_upload command makes the request fail only if the hook ran.
+	// It avoids a platform-specific helper executable while still exercising the
+	// same path the web UI uses for directory uploads.
+	if rec.Code != http.StatusInternalServerError {
+		t.Fatalf("expected directory upload hook failure to return 500, got %d body=%q", rec.Code, rec.Body.String())
+	}
+	if _, err := os.Stat(filepath.Join(userScope, "created")); err != nil {
+		t.Fatalf("expected directory to be created before its after hook, got %v", err)
+	}
+}
