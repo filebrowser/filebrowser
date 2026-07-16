@@ -13,6 +13,13 @@
       <template #actions>
         <template v-if="!isMobile">
           <action
+            v-if="headerButtons.open"
+            id="open-button"
+            icon="open_in_browser"
+            :label="t('buttons.open')"
+            @action="openSelected"
+          />
+          <action
             v-if="headerButtons.share"
             icon="share"
             :label="t('buttons.share')"
@@ -91,6 +98,12 @@
       <span v-if="fileStore.selectedCount > 0">
         {{ t("prompts.filesSelected", fileStore.selectedCount) }}
       </span>
+      <action
+        v-if="headerButtons.open"
+        icon="open_in_browser"
+        :label="t('buttons.open')"
+        @action="openSelected"
+      />
       <action
         v-if="headerButtons.share"
         icon="share"
@@ -263,6 +276,12 @@
           @hide="hideContextMenu"
         >
           <action
+            v-if="fileStore.selectedCount === 1"
+            icon="open_in_browser"
+            :label="t('buttons.open')"
+            @action="openSelected"
+          />
+          <action
             v-if="headerButtons.share"
             icon="share"
             :label="t('buttons.share')"
@@ -366,7 +385,7 @@ import {
   ref,
   watch,
 } from "vue";
-import { useRoute, onBeforeRouteUpdate } from "vue-router";
+import { useRoute, useRouter, onBeforeRouteUpdate } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
 import { removePrefix } from "@/api/utils";
@@ -389,6 +408,7 @@ const layoutStore = useLayoutStore();
 const { req } = storeToRefs(fileStore);
 
 const route = useRoute();
+const router = useRouter();
 onBeforeRouteUpdate(() => {
   hideContextMenu();
 });
@@ -475,6 +495,7 @@ const viewIcon = computed(() => {
 
 const headerButtons = computed(() => {
   return {
+    open: fileStore.selectedCount === 1,
     upload: authStore.user?.perm.create,
     download: authStore.user?.perm.download,
     shell: authStore.user?.perm.execute && enableExec,
@@ -1100,6 +1121,12 @@ const showContextMenu = (event: MouseEvent) => {
 
 const hideContextMenu = () => {
   isContextMenuVisible.value = false;
+};
+
+const openSelected = () => {
+  if (fileStore.selectedCount !== 1 || fileStore.req === null) return;
+  const item = fileStore.req.items[fileStore.selected[0]];
+  router.push({ path: item.url });
 };
 
 const handleEmptyAreaClick = (e: MouseEvent) => {
