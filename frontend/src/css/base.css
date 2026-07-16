@@ -56,6 +56,8 @@ nav {
   position: fixed;
   top: 4em;
   left: 0;
+  height: calc(100vh - 4em);
+  overflow-y: auto;
 }
 
 html[dir="rtl"] nav {
