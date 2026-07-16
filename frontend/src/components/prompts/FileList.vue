@@ -8,7 +8,7 @@
         role="button"
         tabindex="0"
         :aria-label="item.name"
-        :aria-selected="selected == item.url"
+        :aria-pressed="selected == item.url"
         :key="item.name"
         v-for="item in items"
         :data-url="item.url"

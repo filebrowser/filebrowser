@@ -180,7 +180,7 @@ const router = createRouter({
   routes,
 });
 
-router.beforeResolve(async (to, from, next) => {
+router.beforeResolve(async (to, from) => {
   const title = i18n.global.t(titles[to.name as keyof typeof titles]);
   document.title = title + " - " + name;
 
@@ -196,29 +196,25 @@ router.beforeResolve(async (to, from, next) => {
   }
 
   if (to.path.endsWith("/login") && authStore.isLoggedIn) {
-    next({ path: "/files/" });
-    return;
+    return { path: "/files/" };
   }
 
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (!authStore.isLoggedIn) {
-      next({
+      return {
         path: "/login",
         query: { redirect: to.fullPath },
-      });
-
-      return;
+      };
     }
 
     if (to.matched.some((record) => record.meta.requiresAdmin)) {
       if (authStore.user === null || !authStore.user.perm.admin) {
-        next({ path: "/403" });
-        return;
+        return { path: "/403" };
       }
     }
   }
 
-  next();
+  return;
 });
 
 export { router, router as default };

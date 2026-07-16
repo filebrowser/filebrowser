@@ -110,6 +110,7 @@ func getStaticHandlers(store *storage.Storage, server *settings.Server, assetsFs
 		}
 
 		w.Header().Set("x-xss-protection", "1; mode=block")
+		w.Header().Set("X-Content-Type-Options", "nosniff")
 		return handleWithStaticData(w, r, d, assetsFs, "public/index.html", "text/html; charset=utf-8")
 	}, "", store, server)
 
@@ -124,6 +125,7 @@ func getStaticHandlers(store *storage.Storage, server *settings.Server, assetsFs
 
 		const maxAge = 86400 // 1 day
 		w.Header().Set("Cache-Control", fmt.Sprintf("public, max-age=%v", maxAge))
+		w.Header().Set("X-Content-Type-Options", "nosniff")
 
 		if d.settings.Branding.Files != "" {
 			if strings.HasPrefix(r.URL.Path, "img/") {

@@ -57,6 +57,9 @@ const container = ref<HTMLDivElement | null>(null);
 onMounted(() => {
   if (!decodeUTIF() && imgex.value !== null) {
     imgex.value.src = props.src;
+    imgex.value.alt = decodeURIComponent(
+      props.src.split("/").pop() || "preview"
+    );
   }
 
   props.classList.forEach((className) =>
@@ -88,6 +91,9 @@ watch(
   () => {
     if (!decodeUTIF() && imgex.value !== null) {
       imgex.value.src = props.src;
+      imgex.value.alt = decodeURIComponent(
+        props.src.split("/").pop() || "preview"
+      );
     }
 
     scale.value = 1;

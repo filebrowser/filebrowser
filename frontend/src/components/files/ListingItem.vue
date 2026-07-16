@@ -18,7 +18,7 @@
     :data-dir="isDir"
     :data-type="type"
     :aria-label="name"
-    :aria-selected="isSelected"
+    :aria-pressed="isSelected"
     :data-ext="getExtension(name).toLowerCase()"
     @contextmenu="contextMenu"
   >
@@ -26,6 +26,7 @@
       <img
         v-if="!readOnly && type === 'image' && isThumbsEnabled"
         v-lazy="thumbnailUrl"
+        :alt="name"
       />
       <i v-else class="material-icons"></i>
     </div>

@@ -32,6 +32,7 @@ html[dir="rtl"] #listing {
     0.1s ease opacity;
   align-items: center;
   cursor: pointer;
+  -webkit-user-select: none;
   user-select: none;
 }
 

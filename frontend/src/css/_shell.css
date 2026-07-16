@@ -10,6 +10,7 @@
   transition: 0.2s ease background;
   cursor: ns-resize;
   touch-action: none;
+  -webkit-user-select: none;
   user-select: none;
   width: 100%;
 }
