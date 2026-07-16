@@ -30,6 +30,12 @@
         @action="preview()"
         v-show="isMarkdownFile"
       />
+      <action
+        id="refresh-button"
+        icon="refresh"
+        :label="t('buttons.refresh')"
+        @action="refresh()"
+      />
     </header-bar>
 
     <!-- preview container -->
@@ -323,6 +329,39 @@ const finishClose = () => {
 
 const preview = () => {
   isPreview.value = !isPreview.value;
+};
+
+const refresh = () => {
+  if (editor.value && !editor.value.session.getUndoManager().isClean()) {
+    // Reuse the existing discard-changes confirmation flow.
+    layoutStore.showHover({
+      prompt: "discardEditorChanges",
+      confirm: () => {
+        doRefresh();
+      },
+    });
+    return;
+  }
+  doRefresh();
+};
+
+const doRefresh = async () => {
+  buttons.loading("refresh");
+  try {
+    const res = await api.fetch(route.path);
+    const newContent = res.content ?? "";
+    editor.value?.session.setValue(newContent);
+    editor.value?.session.getUndoManager().markClean();
+    if (isPreview.value && isMarkdownFile) {
+      // The preview is rendered from a buffer snapshot and only re-renders on
+      // toggle, so refresh it manually after reloading the content.
+      previewContent.value = DOMPurify.sanitize(await marked(newContent));
+    }
+  } catch (e: any) {
+    $showError(e);
+  } finally {
+    buttons.done("refresh");
+  }
 };
 </script>
 
