@@ -116,7 +116,6 @@ header .menu-button {
 #search #input > .action,
 #search #input > i {
   margin-right: 0.3em;
-  -webkit-user-select: none;
   user-select: none;
 }
 

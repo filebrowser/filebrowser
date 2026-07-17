@@ -353,7 +353,6 @@ body.rtl .card .card-action {
 
 .file-list li {
   width: 100%;
-  -webkit-user-select: none;
   user-select: none;
   border-radius: 0.2em;
   padding: 0.3em;
@@ -437,7 +436,6 @@ body.rtl .card .card-action {
 
 .collapsible > label i {
   transition: 0.2s ease transform;
-  -webkit-user-select: none;
   user-select: none;
 }
 
