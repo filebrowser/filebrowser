@@ -241,6 +241,19 @@ main .spinner .bounce2 {
   margin-top: 40%;
 }
 
+/* video.js sizes the control bar and its buttons in em units off this
+   font-size (default 10px => a 30px-tall bar), which is too small to
+   comfortably tap on touch devices. */
+#previewer .video-js .vjs-control-bar {
+  font-size: 16px;
+}
+
+@media (pointer: coarse) {
+  #previewer .video-js .vjs-control-bar {
+    font-size: 20px;
+  }
+}
+
 #previewer .preview .info {
   position: absolute;
   top: 50%;
