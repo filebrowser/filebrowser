@@ -44,13 +44,26 @@ function conflictPath(entry: ServerConflictEntry): string {
   return entry.path.replace(/\\/g, "/");
 }
 
+function decodePath(path: string): string {
+  return path
+    .split("/")
+    .map((segment) => {
+      try {
+        return decodeURIComponent(segment);
+      } catch {
+        return segment;
+      }
+    })
+    .join("/");
+}
+
 function buildConflictMap(
   serverEntries: ServerConflictEntry[],
   basePath: string,
   includeDirectories: boolean
 ): Map<string, ServerConflictEntry> {
   const serverMap = new Map<string, ServerConflictEntry>();
-  const normBase = removePrefix(basePath).replace(/\/+$/, "");
+  const normBase = decodePath(removePrefix(basePath)).replace(/\/+$/, "");
   for (const entry of serverEntries) {
     // A Windows server may return OS-native backslash separators; normalize to
     // forward slashes so the prefix strip and key lookup line up.

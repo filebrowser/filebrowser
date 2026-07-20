@@ -286,4 +286,102 @@ describe("checkConflict", () => {
 
     expect(conflicts).toHaveLength(1);
   });
+
+  it.each([
+    ["forward slashes", "/target/My SubDir/file.txt"],
+    ["Windows backslashes", "\\target\\My SubDir\\file.txt"],
+  ])(
+    "detects conflicts below an encoded destination path with %s",
+    async (_label, serverPath) => {
+      vi.mocked(api.fetchAll).mockResolvedValue([
+        {
+          path: serverPath,
+          name: "file.txt",
+          size: 10,
+          modified: "2026-06-04T00:00:00Z",
+          isDir: false,
+        },
+      ]);
+
+      const conflicts = await checkConflict(
+        [moveItem("file.txt", "/files/target/My%20SubDir/")],
+        "/files/target/My%20SubDir/"
+      );
+
+      expect(conflicts).toHaveLength(1);
+      expect(conflicts[0].name).toBe("/target/My SubDir/file.txt");
+    }
+  );
+
+  it("detects nested folder-upload conflicts below an encoded destination path", async () => {
+    vi.mocked(api.fetchAll).mockResolvedValue([
+      {
+        path: "\\target\\My SubDir\\folder\\nested file.txt",
+        name: "nested file.txt",
+        size: 10,
+        modified: "2026-06-04T00:00:00Z",
+        isDir: false,
+      },
+    ]);
+
+    const conflicts = await checkConflict(
+      [
+        {
+          name: "nested file.txt",
+          size: 12,
+          isDir: false,
+          fullPath: "folder/nested file.txt",
+        },
+      ],
+      "/files/target/My%20SubDir/"
+    );
+
+    expect(conflicts).toHaveLength(1);
+    expect(conflicts[0].name).toBe("/target/My SubDir/folder/nested file.txt");
+  });
+
+  it("leaves malformed destination path segments unchanged", async () => {
+    vi.mocked(api.fetchAll).mockResolvedValue([
+      {
+        path: "/target/bad%ZZ/file.txt",
+        name: "file.txt",
+        size: 10,
+        modified: "2026-06-04T00:00:00Z",
+        isDir: false,
+      },
+    ]);
+
+    const conflicts = await checkConflict(
+      [moveItem("file.txt", "/files/target/bad%ZZ/")],
+      "/files/target/bad%ZZ/"
+    );
+
+    expect(conflicts).toHaveLength(1);
+  });
+
+  it("does not match files outside the decoded destination path", async () => {
+    vi.mocked(api.fetchAll).mockResolvedValue([
+      {
+        path: "/target/My SubDir/other.txt",
+        name: "other.txt",
+        size: 10,
+        modified: "2026-06-04T00:00:00Z",
+        isDir: false,
+      },
+      {
+        path: "/target/My Other SubDir/file.txt",
+        name: "file.txt",
+        size: 10,
+        modified: "2026-06-04T00:00:00Z",
+        isDir: false,
+      },
+    ]);
+
+    const conflicts = await checkConflict(
+      [moveItem("file.txt", "/files/target/My%20SubDir/")],
+      "/files/target/My%20SubDir/"
+    );
+
+    expect(conflicts).toHaveLength(0);
+  });
 });
