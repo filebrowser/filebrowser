@@ -100,11 +100,16 @@ gh api -X PATCH .../security-advisories/GHSA-xxxx-xxxx-xxxx \
 ## 7. Set affected & patched versions
 
 The package is always `{ecosystem: "go", name: "github.com/filebrowser/filebrowser/v2"}`.
-`patched_versions` must be the release that will actually ship the fix (cut it — it does not exist just
-because the branch does).
+
+- `vulnerable_version_range` — `<= <latest released version>` (the newest tag; find it with
+  `git tag --list 'v2.*' --sort=-version:refname | head -1`).
+- `patched_versions` — the **next** release that will actually ship the fix. It doesn't exist just
+  because the branch does; it still has to be cut. **When unsure which version that will be, ask.**
+
+Replace the placeholder versions below before sending:
 
 ```bash
-printf '%s' '{"vulnerabilities":[{"package":{"ecosystem":"go","name":"github.com/filebrowser/filebrowser/v2"},"vulnerable_version_range":"<= 2.63.18","patched_versions":"2.63.19","vulnerable_functions":[]}]}' \
+printf '%s' '{"vulnerabilities":[{"package":{"ecosystem":"go","name":"github.com/filebrowser/filebrowser/v2"},"vulnerable_version_range":"<= <latest>","patched_versions":"<next>","vulnerable_functions":[]}]}' \
   | gh api -X PATCH .../security-advisories/GHSA-xxxx-xxxx-xxxx --input -
 ```
 
