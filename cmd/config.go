@@ -314,6 +314,8 @@ func getSettings(flags *pflag.FlagSet, set *settings.Settings, ser *settings.Ser
 		case "disableImageResolutionCalc":
 			ser.ImageResolutionCal, err = flags.GetBool(flag.Name)
 			ser.ImageResolutionCal = !ser.ImageResolutionCal
+		case "followExternalSymlinks":
+			ser.FollowExternalSymlinks, err = flags.GetBool(flag.Name)
 
 		// Settings flags from [addConfigFlags]
 		case "signup":
