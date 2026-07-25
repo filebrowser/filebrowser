@@ -3,7 +3,6 @@ package fbhttp
 import (
 	"context"
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/jellydator/ttlcache/v3"
@@ -15,8 +14,11 @@ const uploadCacheTTL = 3 * time.Minute
 // Allows for different backends (e.g. in-memory or redis)
 // to support both single instance and multi replica deployments.
 type UploadCache interface {
-	// Register stores an upload with its expected file size
-	Register(filePath string, fileSize int64)
+	// Register stores an upload with its expected file size. remove is called if
+	// the upload expires before completion, to delete the partial file; it must
+	// route through the uploading user's scoped filesystem so that eviction
+	// cannot follow a symlink out of the user's scope.
+	Register(filePath string, fileSize int64, remove func() error)
 
 	// Complete removes an upload from the cache
 	Complete(filePath string)
@@ -31,17 +33,31 @@ type UploadCache interface {
 	Close()
 }
 
+// memoryUploadEntry is the value stored for each active upload.
+type memoryUploadEntry struct {
+	size   int64
+	remove func() error
+}
+
 // memoryUploadCache is an upload cache for single replica deployments
 type memoryUploadCache struct {
-	cache *ttlcache.Cache[string, int64]
+	cache *ttlcache.Cache[string, memoryUploadEntry]
 }
 
 func newMemoryUploadCache() *memoryUploadCache {
-	cache := ttlcache.New[string, int64]()
-	cache.OnEviction(func(_ context.Context, reason ttlcache.EvictionReason, item *ttlcache.Item[string, int64]) {
+	cache := ttlcache.New[string, memoryUploadEntry]()
+	cache.OnEviction(func(_ context.Context, reason ttlcache.EvictionReason, item *ttlcache.Item[string, memoryUploadEntry]) {
 		if reason == ttlcache.EvictionReasonExpired {
 			fmt.Printf("deleting incomplete upload file: \"%s\"\n", item.Key())
-			os.Remove(item.Key())
+			// Delete through the scoped removal callback rather than a raw
+			// os.Remove on the cached path, so an ancestor directory swapped for
+			// a symlink during the TTL window cannot redirect the delete outside
+			// the user's scope.
+			if remove := item.Value().remove; remove != nil {
+				if err := remove(); err != nil {
+					fmt.Printf("failed to delete incomplete upload file %q: %v\n", item.Key(), err)
+				}
+			}
 		}
 	})
 	go cache.Start()
@@ -49,8 +65,8 @@ func newMemoryUploadCache() *memoryUploadCache {
 	return &memoryUploadCache{cache: cache}
 }
 
-func (c *memoryUploadCache) Register(filePath string, fileSize int64) {
-	c.cache.Set(filePath, fileSize, uploadCacheTTL)
+func (c *memoryUploadCache) Register(filePath string, fileSize int64, remove func() error) {
+	c.cache.Set(filePath, memoryUploadEntry{size: fileSize, remove: remove}, uploadCacheTTL)
 }
 
 func (c *memoryUploadCache) Complete(filePath string) {
@@ -62,7 +78,7 @@ func (c *memoryUploadCache) GetLength(filePath string) (int64, error) {
 	if item == nil {
 		return 0, fmt.Errorf("no active upload found for the given path")
 	}
-	return item.Value(), nil
+	return item.Value().size, nil
 }
 
 func (c *memoryUploadCache) Touch(filePath string) {

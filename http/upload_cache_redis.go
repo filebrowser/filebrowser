@@ -39,7 +39,9 @@ func (c *redisUploadCache) filePathKey(filePath string) string {
 	return "filebrowser:upload:" + filePath
 }
 
-func (c *redisUploadCache) Register(filePath string, fileSize int64) {
+// Register stores the upload length. The scoped removal callback is unused by
+// the redis backend, which does not delete partial files on eviction.
+func (c *redisUploadCache) Register(filePath string, fileSize int64, _ func() error) {
 	err := c.client.Set(context.Background(), c.filePathKey(filePath), fileSize, uploadCacheTTL).Err()
 	if err != nil {
 		log.Printf("failed to register upload in redis cache: %v", err)
