@@ -97,7 +97,35 @@ gh api -X PATCH .../security-advisories/GHSA-xxxx-xxxx-xxxx \
   -f summary='Proxy-auth auto-provisioning ignores createUserDir and grants the server root scope'
 ```
 
-## 7. Set affected & patched versions
+## 7. Rewrite the body into the standard structure
+
+Reporter reports arrive in whatever shape the reporter used. Before drafting, rewrite the
+`description` into the sections below — **reusing the reporter's own wording wherever it is
+accurate**, rather than paraphrasing it. Drop the greeting, the offer to help, and any claim the
+verification in step 2 disproved. Keep sections in this order and omit the ones that don't apply:
+
+| Section | Contents |
+| --- | --- |
+| `## Summary` | What the defect is, in two or three sentences. Note the version it was reported against and the range it was verified over. |
+| `## Details` | Root cause, naming `file.go`, the function, and a short quote of the **pre-fix** code. |
+| `## PoC` | The reporter's reproduction steps and observed result, trimmed to the essentials. |
+| `## Impact` | Who can exploit it (privilege level, preconditions) and what they get. |
+| `## Patches` | Fixed version plus a link to the fix commit, and one sentence on what the fix does. Mention it if the reporter re-tested and confirmed. |
+| `## Workarounds` | Real mitigations, or `None. Upgrade to vX.Y.Z.` |
+| `## Out of scope` | Anything in the original report deliberately **not** treated as a vulnerability, with the reasoning. Needed whenever the advisory is narrower than the report. |
+| `## References` | Fix and regression-test commit links. |
+
+Use `##` headings (matching the published advisories) and keep the body in the maintainer's voice —
+first person ("I reproduced…") belongs only inside quoted PoC steps.
+
+Send it as a file so the Markdown survives shell quoting:
+
+```bash
+jq -Rs '{description: .}' desc.md \
+  | gh api -X PATCH .../security-advisories/GHSA-xxxx-xxxx-xxxx --input -
+```
+
+## 8. Set affected & patched versions
 
 The package is always `{ecosystem: "go", name: "github.com/filebrowser/filebrowser/v2"}`.
 
@@ -113,7 +141,7 @@ printf '%s' '{"vulnerabilities":[{"package":{"ecosystem":"go","name":"github.com
   | gh api -X PATCH .../security-advisories/GHSA-xxxx-xxxx-xxxx --input -
 ```
 
-## 8. Move state / close, by disposition
+## 9. Move state / close, by disposition
 
 ```bash
 gh api -X PATCH .../security-advisories/GHSA-xxxx-xxxx-xxxx -f state=draft    # fixed, awaiting release
@@ -126,7 +154,7 @@ gh api -X PATCH .../security-advisories/GHSA-xxxx-xxxx-xxxx -f state=closed   # 
 - The REST API **cannot post advisory comments** — replies to reporters (dup notice, evidence, links to
   the relevant tracking issue) must be posted manually in the advisory UI. Draft the text for the maintainer.
 
-## 9. Release & publish
+## 10. Release & publish
 
 Push the branch, open a PR, merge, tag/release the `patched_versions` you set, then publish the drafts.
 Confirm outward-facing/irreversible advisory actions (close, publish) with the maintainer before doing them.
