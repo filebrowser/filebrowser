@@ -846,7 +846,7 @@ const drop = async (event: DragEvent) => {
           }
         }
         if (files.length > 0) {
-          upload.handleFiles(files, path, true);
+          upload.handleFiles(files, path);
           fileStore.preselect = preselect;
         }
       },
@@ -902,7 +902,7 @@ const uploadInput = async (event: Event) => {
           }
         }
         if (uploadFiles.length > 0) {
-          upload.handleFiles(uploadFiles, path, true);
+          upload.handleFiles(uploadFiles, path);
         }
       },
     });
