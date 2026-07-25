@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.63.20](https://github.com/filebrowser/filebrowser/compare/v2.63.19...v2.63.20) (2026-07-25)
+
+### Bug Fixes
+
+* use aria-selected ([67e893e](https://github.com/filebrowser/filebrowser/commit/67e893eee7ee411e166d3fcd759a87b6f0971277))
+* **users:** make the provisioned scope check atomic with the save ([fb6aeba](https://github.com/filebrowser/filebrowser/commit/fb6aeba9eae7b8eb401e0db325973781e1ffd08b))
 ## [2.63.19](https://github.com/filebrowser/filebrowser/compare/v2.63.18...v2.63.19) (2026-07-25)
 
 ### Bug Fixes
