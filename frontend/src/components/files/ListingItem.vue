@@ -18,7 +18,7 @@
     :data-dir="isDir"
     :data-type="type"
     :aria-label="name"
-    :aria-pressed="isSelected"
+    :aria-selected="isSelected"
     :data-ext="getExtension(name).toLowerCase()"
     @contextmenu="contextMenu"
   >
