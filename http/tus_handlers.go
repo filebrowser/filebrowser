@@ -193,6 +193,10 @@ func tusPatchHandler(cache UploadCache) handleFunc {
 			return http.StatusNotFound, err
 		}
 
+		if uploadOffset > uploadLength {
+			return http.StatusBadRequest, fmt.Errorf("upload offset %d exceeds declared length %d", uploadOffset, uploadLength)
+		}
+
 		// Prevent the upload from being evicted during the transfer
 		stop := keepUploadActive(cache, file.RealPath())
 		defer stop()
@@ -220,9 +224,23 @@ func tusPatchHandler(cache UploadCache) handleFunc {
 		}
 
 		defer r.Body.Close()
-		bytesWritten, err := io.Copy(openFile, r.Body)
+		// Enforce the declared Upload-Length: never write more than the bytes
+		// still expected for this upload. Reading one byte past the remainder
+		// lets an over-length body be detected and rejected. Without this bound a
+		// PATCH could stream arbitrary data to disk regardless of the length the
+		// client declared when the upload was created.
+		remaining := uploadLength - uploadOffset
+		bytesWritten, err := io.Copy(openFile, io.LimitReader(r.Body, remaining+1))
 		if err != nil {
 			return http.StatusInternalServerError, fmt.Errorf("could not write to file: %w", err)
+		}
+		if bytesWritten > remaining {
+			// The client sent more than it declared; roll this chunk back so the
+			// file stays consistent with the tracked offset, and reject it.
+			if truncErr := openFile.Truncate(uploadOffset); truncErr != nil {
+				return http.StatusInternalServerError, fmt.Errorf("could not truncate file: %w", truncErr)
+			}
+			return http.StatusRequestEntityTooLarge, fmt.Errorf("upload exceeds declared length of %d bytes", uploadLength)
 		}
 
 		// Sync the file to ensure all data is written to storage
