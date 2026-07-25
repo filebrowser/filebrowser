@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.63.19](https://github.com/filebrowser/filebrowser/compare/v2.63.18...v2.63.19) (2026-07-25)
+
+### Bug Fixes
+
+* accessibility and security improvements ([#6033](https://github.com/filebrowser/filebrowser/issues/6033)) ([b21b124](https://github.com/filebrowser/filebrowser/commit/b21b1245ae1b57f031b2f5d787f32a17532402c0))
+* **auth:** isolate auto-provisioned proxy and hook users to their own home ([8ddd3d1](https://github.com/filebrowser/filebrowser/commit/8ddd3d1db9b9f5727d0bf96ea0e7d9a25a8692b4))
+* **http:** delete abandoned TUS uploads through the scoped filesystem ([9bd79c3](https://github.com/filebrowser/filebrowser/commit/9bd79c3aaeb4a55b0e69cf8976c4a258db2f5e06))
+* **http:** enforce declared Upload-Length on TUS uploads ([4daddec](https://github.com/filebrowser/filebrowser/commit/4daddec6f200b03a721197d8c0b4b652c994894e))
+* **http:** enforce download permission on the checksum branch ([6c69b5c](https://github.com/filebrowser/filebrowser/commit/6c69b5cd895e15b29e563200a9a6dfc27b06525e))
+* **http:** run upload hooks for directories ([#6034](https://github.com/filebrowser/filebrowser/issues/6034)) ([9b78324](https://github.com/filebrowser/filebrowser/commit/9b78324d773c790951cc6a97840c4b55f66b5f3d))
+* process --FollowExternalSymlinks ([c05c668](https://github.com/filebrowser/filebrowser/commit/c05c66814891c3cccef394162e428444b53394e4))
+* return error instead of panicking on an unreadable directory during copy ([#6020](https://github.com/filebrowser/filebrowser/issues/6020)) ([ac46cf0](https://github.com/filebrowser/filebrowser/commit/ac46cf06719575477d5125e7472037c204b3702d))
+* **storage:** reject case-folded home directory collisions ([4b8a8d7](https://github.com/filebrowser/filebrowser/commit/4b8a8d72ce554dde378b5091da74aa930ea18327))
+* **upload:** handle encoded path conflicts safely ([#6040](https://github.com/filebrowser/filebrowser/issues/6040)) ([7361d91](https://github.com/filebrowser/filebrowser/commit/7361d91ea2e8cc200a0f40ac84adcd02aedc9ed2))
 ## [2.63.18](https://github.com/filebrowser/filebrowser/compare/v2.63.17...v2.63.18) (2026-07-04)
 
 
