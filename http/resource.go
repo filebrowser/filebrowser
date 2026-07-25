@@ -67,6 +67,10 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 	}
 
 	if checksum := r.URL.Query().Get("checksum"); checksum != "" {
+		if !d.user.Perm.Download {
+			return http.StatusAccepted, nil
+		}
+
 		err := file.Checksum(checksum)
 		if errors.Is(err, fberrors.ErrInvalidOption) {
 			return http.StatusBadRequest, nil
