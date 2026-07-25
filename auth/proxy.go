@@ -50,11 +50,12 @@ func (a ProxyAuth) createUser(usr users.Store, setting *settings.Settings, srv *
 	user.Perm.Execute = false
 	user.Commands = []string{}
 
-	if err = setting.CreateUserHome(user, usr, srv.Root, false); err != nil {
+	var derivedScope bool
+	if derivedScope, err = setting.CreateUserHome(user, srv.Root, false); err != nil {
 		return nil, err
 	}
 
-	if err = usr.Save(user); err != nil {
+	if err = usr.SaveProvisioned(user, derivedScope); err != nil {
 		return nil, err
 	}
 

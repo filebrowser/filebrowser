@@ -2,6 +2,7 @@ package auth
 
 import (
 	"net/http"
+	"strings"
 	"testing"
 
 	fberrors "github.com/filebrowser/filebrowser/v2/errors"
@@ -22,13 +23,31 @@ func (m *mockUserStore) Get(_ string, _ bool, id interface{}) (*users.User, erro
 	return nil, fberrors.ErrNotExist
 }
 
-func (m *mockUserStore) GetByScope(_ string) (*users.User, error)     { return nil, fberrors.ErrNotExist }
+func (m *mockUserStore) GetByScope(scope string) (*users.User, error) {
+	for _, u := range m.users {
+		if strings.EqualFold(u.Scope, scope) {
+			return u, nil
+		}
+	}
+	return nil, fberrors.ErrNotExist
+}
+
 func (m *mockUserStore) Gets(_ string, _ bool) ([]*users.User, error) { return nil, nil }
 func (m *mockUserStore) Update(_ *users.User, _ ...string) error      { return nil }
 func (m *mockUserStore) Save(user *users.User) error {
 	m.users[user.Username] = user
 	return nil
 }
+
+func (m *mockUserStore) SaveProvisioned(user *users.User, derivedScope bool) error {
+	if derivedScope {
+		if _, err := m.GetByScope(user.Scope); err == nil {
+			return fberrors.ErrExist
+		}
+	}
+	return m.Save(user)
+}
+
 func (m *mockUserStore) Delete(_ interface{}) error { return nil }
 func (m *mockUserStore) LastUpdate(_ uint) int64    { return 0 }
 

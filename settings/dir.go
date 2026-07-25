@@ -11,7 +11,6 @@ import (
 
 	"github.com/spf13/afero"
 
-	fberrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/users"
 )
 
@@ -48,31 +47,25 @@ func (s *Settings) MakeUserDir(username, userScope, serverRoot string) (string, 
 // supply an explicit scope, the scope is cleared so that MakeUserDir derives a
 // per-user home from the username instead of falling back to the default scope
 // (which normalizes to the server root, leaving every provisioned user sharing
-// it). When a home directory is derived, it also rejects a scope already owned
-// by another user, so that distinct usernames cannot silently share one home
-// directory.
-func (s *Settings) CreateUserHome(user *users.User, store users.Store, serverRoot string, explicitScope bool) error {
-	derived := s.CreateUserDir && !explicitScope
+// it).
+//
+// It reports whether the scope was derived from the username. A derived scope
+// must be persisted with users.Storage.SaveProvisioned, which rejects a scope
+// already owned by another user so that distinct usernames cannot silently
+// share one home directory.
+func (s *Settings) CreateUserHome(user *users.User, serverRoot string, explicitScope bool) (derived bool, err error) {
+	derived = s.CreateUserDir && !explicitScope
 	if derived {
 		user.Scope = ""
 	}
 
 	userHome, err := s.MakeUserDir(user.Username, user.Scope, serverRoot)
 	if err != nil {
-		return err
+		return false, err
 	}
 	user.Scope = userHome
 
-	if derived {
-		switch _, err := store.GetByScope(user.Scope); {
-		case err == nil:
-			return fberrors.ErrExist
-		case !errors.Is(err, fberrors.ErrNotExist):
-			return err
-		}
-	}
-
-	return nil
+	return derived, nil
 }
 
 func cleanUsername(s string) string {
