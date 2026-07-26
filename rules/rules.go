@@ -25,17 +25,29 @@ func MatchHidden(path string) bool {
 	return path != "" && strings.HasPrefix(filepath.Base(path), ".")
 }
 
-// Matches matches a path against a rule.
-func (r *Rule) Matches(path string) bool {
+// Matches matches a path against a rule. When fold is true the comparison is
+// case-insensitive: on a case-insensitive filesystem two paths differing only
+// in case name the same file, so a rule written for one spelling has to cover
+// the others or it can be trivially evaded.
+//
+// Regex rules are never folded. An admin-authored pattern means what it says,
+// and lowering its input would silently change it; use (?i) for those.
+func (r *Rule) Matches(path string, fold bool) bool {
 	if r.Regex {
 		return r.Regexp.MatchString(path)
 	}
 
-	if path == r.Path {
+	rulePath := r.Path
+	if fold {
+		path = strings.ToLower(path)
+		rulePath = strings.ToLower(rulePath)
+	}
+
+	if path == rulePath {
 		return true
 	}
 
-	prefix := r.Path
+	prefix := rulePath
 	if prefix != "/" && !strings.HasSuffix(prefix, "/") {
 		prefix += "/"
 	}

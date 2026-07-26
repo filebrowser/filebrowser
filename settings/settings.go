@@ -63,6 +63,11 @@ type Server struct {
 	AuthHook               string `json:"authHook"`
 	TokenExpirationTime    string `json:"tokenExpirationTime"`
 	FollowExternalSymlinks bool   `json:"followExternalSymlinks"`
+
+	// CaseInsensitiveFs is detected from Root at startup rather than
+	// configured, and tells the rule checker to match paths case-insensitively.
+	// It is never persisted.
+	CaseInsensitiveFs bool `json:"-"`
 }
 
 // Clean cleans any variables that might need cleaning.

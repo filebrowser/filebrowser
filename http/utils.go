@@ -6,11 +6,55 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	gopath "path"
+	"path/filepath"
 	"strings"
 
 	libErrors "github.com/filebrowser/filebrowser/v2/errors"
 	imgErrors "github.com/filebrowser/filebrowser/v2/img"
 )
+
+// slashClean canonicalizes a virtual path to the absolute, "/"-separated,
+// lexically cleaned form that both the rule checker and the scoped filesystem
+// expect.
+//
+// Paths reach us either verbatim from a request or built by the OS — afero.Walk
+// and filepath.Join use "\" on Windows. There the filesystem resolves "\" as a
+// separator while the rule checker treated it as an ordinary character, so
+// "/allow\..\Secret.txt" evaded a rule for "/Secret.txt" and still opened it.
+// Normalizing with the host's own separator makes both layers agree on which
+// file a path names, and is a no-op on POSIX, where "\" is a legal character in
+// a filename and must stay one.
+func slashClean(name string) string {
+	return cleanSeparators(name, string(filepath.Separator))
+}
+
+// canonicalizeRequestPath rewrites the request path to its canonical virtual
+// form, so that the filesystem operation, the hook, the stored share record and
+// the thumbnail cache key all use the same string the rule check approved.
+//
+// A trailing separator is preserved: handlers distinguish "/dir/" from "/dir"
+// to decide whether to create a directory, and gopath.Clean would drop it.
+func canonicalizeRequestPath(r *http.Request) {
+	p := slashClean(r.URL.Path)
+	trailing := strings.HasSuffix(r.URL.Path, "/") || strings.HasSuffix(r.URL.Path, string(filepath.Separator))
+	if p != "/" && trailing {
+		p += "/"
+	}
+	r.URL.Path = p
+}
+
+// cleanSeparators is slashClean with the host separator passed in explicitly,
+// so the Windows behaviour can be exercised on any platform.
+func cleanSeparators(name, sep string) string {
+	if sep != "/" {
+		name = strings.ReplaceAll(name, sep, "/")
+	}
+	if name == "" || name[0] != '/' {
+		name = "/" + name
+	}
+	return gopath.Clean(name)
+}
 
 func renderJSON(w http.ResponseWriter, _ *http.Request, data interface{}) (int, error) {
 	marsh, err := json.Marshal(data)
