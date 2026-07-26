@@ -68,7 +68,7 @@ Record, per advisory: verdict, the `file:line` evidence, exploitability precondi
 ## 4. Add a regression test per fix
 
 - Reuse the existing harnesses; add a focused test asserting the fixed behavior (and that the legitimate
-  path still works). Commit tests alongside or right after the fixes (`test(scope): …`, `Refs GHSA-…`).
+  path still works). Commit tests alongside the fixes (`test(scope): …`, `Refs GHSA-…`).
 - Run `go test ./... && go vet ./...` before finishing.
 
 ## 5. Severity — set a CVSS vector, don't hand-assert
