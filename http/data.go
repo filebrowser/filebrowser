@@ -35,6 +35,13 @@ type data struct {
 
 // Check implements rules.Checker.
 func (d *data) Check(path string) bool {
+	// Rules are written as "/"-separated virtual paths, but callers hand us
+	// paths built by the OS as well as ones taken from the request: afero.Walk
+	// and filepath.Join use "\" on Windows, where the filesystem also treats it
+	// as a separator. Canonicalize first so the authorization decision does not
+	// depend on which separator the caller happened to use.
+	path = slashClean(path)
+
 	// When the filesystem has been rebased (e.g. a public share rooted at a
 	// subdirectory), the incoming path is relative to that root. Resolve it
 	// back to the user's original scope before matching rules, otherwise rules
@@ -49,13 +56,13 @@ func (d *data) Check(path string) bool {
 
 	allow := true
 	for _, rule := range d.settings.Rules {
-		if rule.Matches(path) {
+		if rule.Matches(path, d.server.CaseInsensitiveFs) {
 			allow = rule.Allow
 		}
 	}
 
 	for _, rule := range d.user.Rules {
-		if rule.Matches(path) {
+		if rule.Matches(path, d.server.CaseInsensitiveFs) {
 			allow = rule.Allow
 		}
 	}

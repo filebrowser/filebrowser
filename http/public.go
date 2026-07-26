@@ -52,14 +52,15 @@ var withHashFile = func(fn handleFunc) handleFunc {
 			return errToStatus(err), err
 		}
 
-		// share base path
-		basePath := link.Path
+		// share base path. Canonicalized because it roots both the rebased
+		// filesystem and checkerPrefix below, and a stored path that is not
+		// "/"-separated would make the two disagree on Windows.
+		basePath := slashClean(link.Path)
 
 		// file relative path
 		filePath := ""
 
 		if file.IsDir {
-			basePath = filepath.Clean(link.Path)
 			filePath = ifPath
 		}
 
@@ -109,7 +110,9 @@ func ifPathWithName(r *http.Request) (id, filePath string) {
 	case 1:
 		return r.URL.Path, "/"
 	default:
-		return pathElements[0], path.Join("/", path.Join(pathElements[1:]...))
+		// Public share routes do not pass through withUser, so canonicalize the
+		// share-relative path here instead.
+		return pathElements[0], slashClean(path.Join(pathElements[1:]...))
 	}
 }
 

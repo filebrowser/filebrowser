@@ -106,6 +106,8 @@ func withUser(fn handleFunc) handleFunc {
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
+
+		canonicalizeRequestPath(r)
 		return fn(w, r, d)
 	}
 }
