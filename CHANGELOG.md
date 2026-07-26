@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.63.21](https://github.com/filebrowser/filebrowser/compare/v2.63.20...v2.63.21) (2026-07-26)
+
+### Bug Fixes
+
+* **http:** canonicalize paths before checking access rules ([#6045](https://github.com/filebrowser/filebrowser/issues/6045)) ([e6d70cf](https://github.com/filebrowser/filebrowser/commit/e6d70cf24c0cd79a1787601dc99104ec7e7ca3ef))
+
+### Reverts
+
+* Revert "chore(deps): update all non-major dependencies (#5946)" ([0dd8905](https://github.com/filebrowser/filebrowser/commit/0dd89058867f87a7bc04aa7517d21528a280e27c)), references [#5946](https://github.com/filebrowser/filebrowser/issues/5946)
 ## [2.63.20](https://github.com/filebrowser/filebrowser/compare/v2.63.19...v2.63.20) (2026-07-25)
 
 ### Bug Fixes
