@@ -1,7 +1,7 @@
 # Contributing
 
 > [!WARNING]
-> File Browser is being archived on **2026-09-01**. New features are not being accepted. Bug-fix pull requests are still looked at until that date, but there is no guarantee they will be merged.
+> File Browser is being archived on **2026-09-01**. Issue creation is limited to collaborators; if you have found a bug, open a pull request with the fix rather than an issue. Pull requests are still looked at until that date, but there is no guarantee they will be merged. New features are not being accepted.
 >
 > The instructions below are kept because they remain useful to anyone building the project from source.
 

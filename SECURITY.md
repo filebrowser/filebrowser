@@ -22,7 +22,7 @@ This project is in maintenance-only mode and is being wound down. To avoid dupli
 Until 2026-09-01:
 
 - **Critical:** report privately via the [Security](https://github.com/filebrowser/filebrowser/security) page.
-- **Non-critical:** open a public issue so the community can help; we'll label it as a security issue.
+- **Non-critical:** issue creation is limited to collaborators, so report these privately via the same page, or open a pull request with the fix.
 
 Please include, where possible:
 

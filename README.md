@@ -44,7 +44,7 @@ If you keep running File Browser after the archive date, treat it as unmaintaine
 
 ## Contributing
 
-New features are not being accepted. Bug reports and bug-fix pull requests are still looked at until 2026-09-01, but there is no guarantee that they will be merged.
+Issue creation is limited to collaborators. If you have found a bug, open a pull request with the fix rather than an issue. Pull requests are still looked at until 2026-09-01, but there is no guarantee that they will be merged. New features are not being accepted.
 
 [CONTRIBUTING.md](CONTRIBUTING.md) documents how to build and develop the project, which remains useful to anyone forking it.
 
