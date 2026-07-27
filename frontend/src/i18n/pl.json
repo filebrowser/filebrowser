@@ -264,9 +264,9 @@
     "shareManagement": "Zarządzanie udostępnianiem",
     "shareDeleted": "Udostępnienie usunięte!",
     "singleClick": "Używaj pojedynczych kliknięć, aby otwierać pliki i foldery",
-    "sunsetBody": "This project is being wound down. It is archived on 2026-09-01, after which there will be no further releases, bug fixes, or security fixes. Existing releases and Docker images stay online. Do not expose this instance directly to the internet without authentication in front of it.",
-    "sunsetLink": "Read the project status, known unfixed security issues, and hardening guidance",
-    "sunsetTitle": "File Browser is being archived",
+    "sunsetBody": "Ten projekt jest w trakcie zamykania. Zostanie zarchiwizowany 1 września 2026 r., po czym nie będzie żadnych kolejnych wydań, poprawek błędów ani poprawek zabezpieczeń. Istniejące wydania i obrazy Dockera pozostaną online. Nie udostępniaj tej instancji bezpośrednio w internecie bez uwierzytelnienia.",
+    "sunsetLink": "Przeczytaj stan projektu, znane nierozwiązane problemy bezpieczeństwa i wskazówki dotyczące wzmacniania zabezpieczeń",
+    "sunsetTitle": "File Browser jest archiwizowany",
     "themes": {
       "default": "Domyślny systemowy",
       "dark": "Ciemny",
