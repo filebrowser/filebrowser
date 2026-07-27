@@ -1,13 +1,13 @@
 # Security Policy
 
 > [!WARNING]
-> File Browser is being archived on **2026-10-01**. Security reports are not accepted after that date, and no further security fixes will be released. The known unfixed issues, and hardening guidance for anyone who keeps running File Browser, are listed under [Security](README.md#security) in the README.
+> File Browser is being archived on **2026-09-01**. Security reports are not accepted after that date, and no further security fixes will be released. The known unfixed issues, and hardening guidance for anyone who keeps running File Browser, are listed under [Security](README.md#security) in the README.
 
 ## Supported Versions
 
 | Version | Supported           |
 | ------- | ------------------- |
-| 2.x     | ✅ until 2026-10-01 |
+| 2.x     | ✅ until 2026-09-01 |
 | < 2.0   | ❌                  |
 
 ## Before Reporting
@@ -19,7 +19,7 @@ This project is in maintenance-only mode and is being wound down. To avoid dupli
 
 ## Reporting a Vulnerability
 
-Until 2026-10-01:
+Until 2026-09-01:
 
 - **Critical:** report privately via the [Security](https://github.com/filebrowser/filebrowser/security) page.
 - **Non-critical:** open a public issue so the community can help; we'll label it as a security issue.
@@ -33,4 +33,4 @@ Please include, where possible:
 
 We're a volunteer effort, so responses can take a while, and we may reach out for clarification. A report being accepted does not guarantee a fix will ship before the archive date.
 
-After 2026-10-01 this repository is read-only and reports can no longer be submitted or acted on.
+After 2026-09-01 this repository is read-only and reports can no longer be submitted or acted on.

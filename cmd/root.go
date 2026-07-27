@@ -193,7 +193,7 @@ user created with the credentials from options "username" and "password".`,
 		setupLog(server.Log)
 
 		log.Println("NOTICE: File Browser is being wound down.")
-		log.Println("NOTICE: The project is archived on 2026-10-01, after which there will be no")
+		log.Println("NOTICE: The project is archived on 2026-09-01, after which there will be no")
 		log.Println("NOTICE: further releases and no security fixes. Known unfixed issues are at")
 		log.Println("NOTICE: https://github.com/filebrowser/filebrowser/security/advisories")
 
