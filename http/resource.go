@@ -103,6 +103,10 @@ func resourceDeleteHandler(fileCache FileCache) handleFunc {
 			return errToStatus(err), err
 		}
 
+		if err = checkDescendants(d, r.URL.Path, ""); err != nil {
+			return errToStatus(err), err
+		}
+
 		err = d.store.Share.DeleteWithPathPrefix(file.Path, d.user.ID)
 		if err != nil {
 			log.Printf("WARNING: Error(s) occurred while deleting associated shares with file: %s", err)
@@ -259,11 +263,51 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 			}
 		}
 
+		if err = checkDescendants(d, src, dst); err != nil {
+			return errToStatus(err), err
+		}
+
 		err = d.RunHook(func() error {
 			return patchAction(r.Context(), action, src, dst, d, fileCache)
 		}, action, src, dst, d.user)
 
 		return errToStatus(err), err
+	})
+}
+
+// checkDescendants reports an error if the rules deny any path inside the src
+// tree or, when dst is not empty, the location that tree would land on. The
+// handlers only authorize the root of the operation, but copy, rename and
+// delete then recurse through the whole subtree, so a rule denying a descendant
+// of an allowed directory would be bypassed by operating on the parent instead.
+func checkDescendants(d *data, src, dst string) error {
+	if len(d.settings.Rules) == 0 && len(d.user.Rules) == 0 {
+		return nil
+	}
+
+	return afero.Walk(d.user.Fs, src, func(fPath string, _ os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if !d.CheckRules(fPath) {
+			return fberrors.ErrPermissionDenied
+		}
+
+		if dst == "" {
+			return nil
+		}
+
+		rel, err := filepath.Rel(src, fPath)
+		if err != nil {
+			return err
+		}
+
+		if !d.CheckRules(filepath.Join(dst, rel)) {
+			return fberrors.ErrPermissionDenied
+		}
+
+		return nil
 	})
 }
 
