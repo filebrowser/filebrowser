@@ -264,6 +264,9 @@
     "shareManagement": "공유 내역 관리",
     "shareDeleted": "공유 삭제됨!",
     "singleClick": "단일 클릭으로 파일 및 디렉터리 열기",
+    "sunsetBody": "This project is being wound down. It is archived on 2026-09-01, after which there will be no further releases, bug fixes, or security fixes. Existing releases and Docker images stay online. Do not expose this instance directly to the internet without authentication in front of it.",
+    "sunsetLink": "Read the project status, known unfixed security issues, and hardening guidance",
+    "sunsetTitle": "File Browser is being archived",
     "themes": {
       "default": "시스템 기본값",
       "dark": "어두운 테마",
