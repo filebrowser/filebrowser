@@ -264,6 +264,9 @@
     "shareManagement": "Gestão de Partilhas",
     "shareDeleted": "Partilha eliminada!",
     "singleClick": "Utilizar cliques únicos para abrir ficheiros e pastas",
+    "sunsetBody": "This project is being wound down. It is archived on 2026-09-01, after which there will be no further releases, bug fixes, or security fixes. Existing releases and Docker images stay online. Do not expose this instance directly to the internet without authentication in front of it.",
+    "sunsetLink": "Read the project status, known unfixed security issues, and hardening guidance",
+    "sunsetTitle": "File Browser is being archived",
     "themes": {
       "default": "Predefinição do sistema",
       "dark": "Escuro",
