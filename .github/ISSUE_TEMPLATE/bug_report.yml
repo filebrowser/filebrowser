@@ -2,6 +2,14 @@ name: Bug Report
 description: Report a bug in FileBrowser.
 labels: [bug, 'waiting: triage']
 body:
+  - type: markdown
+    attributes:
+      value: |
+        **File Browser is being archived on 2026-10-01.** Bug reports are still read
+        until then, but fixes are not guaranteed, and no further security fixes will
+        be released. See the
+        [README](https://github.com/filebrowser/filebrowser/blob/master/README.md)
+        for the known unfixed issues and hardening guidance.
   - type: checkboxes
     attributes:
       label: Checklist

@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Project sunset
+    url: https://github.com/filebrowser/filebrowser/blob/master/README.md#project-status
+    about: File Browser is archived on 2026-10-01. Please read this before opening an issue.
   - name: GitHub Discussions
     url: https://github.com/filebrowser/filebrowser/discussions
     about: Please ask questions and discuss features here.

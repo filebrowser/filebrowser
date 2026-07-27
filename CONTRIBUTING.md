@@ -1,5 +1,10 @@
 # Contributing
 
+> [!WARNING]
+> File Browser is being archived on **2026-10-01**. New features are not being accepted. Bug-fix pull requests are still looked at until that date, but there is no guarantee they will be merged.
+>
+> The instructions below are kept because they remain useful to anyone building the project from source.
+
 If you're interested in contributing to this project, this is the best place to start. Before contributing to this project, please take a bit of time to read our [Code of Conduct](code-of-conduct.md). Also, note that this project is open-source and licensed under [Apache License 2.0](LICENSE).
 
 ## Project Structure
@@ -98,6 +103,8 @@ task release
 ```
 
 ## Translations
+
+Translations are synced from Transifex until 2026-10-01; after that the integration stops and translations submitted there will no longer reach this repository.
 
 Translations are managed on Transifex, which is an online website where everyone can contribute and translate strings for our project. It automatically syncs with the main language file \(in English\) and,, for you to contribute, you just need to:
 

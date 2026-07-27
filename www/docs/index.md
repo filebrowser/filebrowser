@@ -10,7 +10,7 @@
 
 > [!WARNING]
 >
-> This project is on **maintenance-only** mode. For more information, read the information on [GitHub](https://github.com/filebrowser/filebrowser#project-status).
+> **File Browser is being archived on 2026-10-01.** There will be no further releases and no security fixes. Existing releases and Docker images stay online. For the project status, the known unfixed security issues, and hardening guidance, read the [README on GitHub](https://github.com/filebrowser/filebrowser#project-status).
 
 ![Preview](static/example.gif)
 

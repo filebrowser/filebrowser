@@ -34,6 +34,24 @@
       </div>
     </div>
 
+    <div class="card" v-if="user?.perm.admin">
+      <div class="card-title">
+        <h2>{{ t("settings.sunsetTitle") }}</h2>
+      </div>
+
+      <div class="card-content">
+        <p>{{ t("settings.sunsetBody") }}</p>
+        <p>
+          <a
+            href="https://github.com/filebrowser/filebrowser#security"
+            target="_blank"
+            rel="noopener noreferrer"
+            >{{ t("settings.sunsetLink") }}</a
+          >
+        </p>
+      </div>
+    </div>
+
     <div v-if="loading">
       <h2 class="message delayed">
         <div class="spinner">
