@@ -2,10 +2,10 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended",
+    "security:only-security-updates",
     "group:allNonMajor",
     "group:allDigest",
     ":disableDependencyDashboard",
-    "security:only-security-updates",
     ":semanticCommitTypeAll(chore)"
   ],
   "postUpdateOptions": [
