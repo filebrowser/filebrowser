@@ -66,7 +66,7 @@ func (e extractor) ExtractToken(r *http.Request) (string, error) {
 	return "", request.ErrNoTokenInRequest
 }
 
-func renewableErr(err error, d *data) bool {
+func renewableErr(err error, r *http.Request, d *data, tk *authToken) bool {
 	if d.settings.AuthMethod != fbAuth.MethodProxyAuth || err == nil {
 		return false
 	}
@@ -79,7 +79,38 @@ func renewableErr(err error, d *data) bool {
 		return false
 	}
 
-	return true
+	// The expiration is only waived because the trusted proxy, not the token,
+	// decides when the session ends. Require the proxy to still assert the same
+	// identity on this request, otherwise a token that leaked before it expired
+	// would authenticate on its own forever.
+	return proxyAsserts(r, d, tk.User.ID)
+}
+
+// proxyAsserts reports whether the proxy-auth header on r identifies the user
+// the token was issued for. The username is resolved through the user store, so
+// that it is matched exactly as a regular proxy login would match it.
+func proxyAsserts(r *http.Request, d *data, id uint) bool {
+	auther, err := d.store.Auth.Get(fbAuth.MethodProxyAuth)
+	if err != nil {
+		return false
+	}
+
+	proxy, ok := auther.(*fbAuth.ProxyAuth)
+	if !ok || proxy.Header == "" {
+		return false
+	}
+
+	username := r.Header.Get(proxy.Header)
+	if username == "" {
+		return false
+	}
+
+	user, err := d.store.Users.Get(d.server.Root, d.server.FollowExternalSymlinks, username)
+	if err != nil {
+		return false
+	}
+
+	return user.ID == id
 }
 
 func withUser(fn handleFunc) handleFunc {
@@ -91,7 +122,7 @@ func withUser(fn handleFunc) handleFunc {
 		var tk authToken
 		p := jwt.NewParser(jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Alg()}), jwt.WithExpirationRequired())
 		token, err := request.ParseFromRequest(r, &extractor{}, keyFunc, request.WithClaims(&tk), request.WithParser(p))
-		if (err != nil || !token.Valid) && !renewableErr(err, d) {
+		if (err != nil || !token.Valid) && !renewableErr(err, r, d, &tk) {
 			return http.StatusUnauthorized, nil
 		}
 
