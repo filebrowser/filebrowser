@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.63.22](https://github.com/filebrowser/filebrowser/compare/v2.63.21...v2.63.22) (2026-07-27)
+
+### Bug Fixes
+
+* enforce rules on recursive operations and expired proxy tokens ([#6053](https://github.com/filebrowser/filebrowser/issues/6053)) ([72faf6d](https://github.com/filebrowser/filebrowser/commit/72faf6dd3c85628e332d3e567124b86708ce2695))
+* make the sidebar scrollable when content overflows ([#6031](https://github.com/filebrowser/filebrowser/issues/6031)) ([a789f29](https://github.com/filebrowser/filebrowser/commit/a789f29ceec4734e7471592921d1ce67f1a10a7e))
+* unblock stalled and frozen uploads ([0b925cb](https://github.com/filebrowser/filebrowser/commit/0b925cbca940fe0b2726827cf66783da05c64f5e)), closes [#6006](https://github.com/filebrowser/filebrowser/issues/6006), references [#5987](https://github.com/filebrowser/filebrowser/issues/5987)
+* use absolute URLs for the PWA manifest icon sources ([#6032](https://github.com/filebrowser/filebrowser/issues/6032)) ([cfff843](https://github.com/filebrowser/filebrowser/commit/cfff84306af66deedfdc9248300919b3ddd9a7f0))
 ## [2.63.21](https://github.com/filebrowser/filebrowser/compare/v2.63.20...v2.63.21) (2026-07-26)
 
 ### Bug Fixes
