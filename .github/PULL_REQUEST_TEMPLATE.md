@@ -10,7 +10,7 @@
 
 Before submitting your PR, please indicate which issues are either fixed or closed by this PR. See [GitHub Help: Closing issues using keywords](https://help.github.com/articles/closing-issues-via-commit-messages/).
 
-- [ ] I am aware this project is being **archived on 2026-09-01**, that new features aren't accepted, and that bug fixes are looked at but not guaranteed to be merged. See [README](https://github.com/filebrowser/filebrowser/blob/master/README.md)
+- [ ] I am aware this project is being **archived on 2026-09-01** and that no further changes will be merged, including bug fixes. See [README](https://github.com/filebrowser/filebrowser/blob/master/README.md)
 - [ ] I am aware that translations MUST be made through [Transifex](https://app.transifex.com/file-browser/file-browser/) and that this PR is NOT a translation update
 - [ ] I am making a PR against the `master` branch.
 - [ ] I am sure File Browser can be successfully built. See [CONTRIBUTING.md](https://github.com/filebrowser/filebrowser/blob/master/CONTRIBUTING.md).

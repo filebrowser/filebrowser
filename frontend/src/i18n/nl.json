@@ -264,9 +264,9 @@
     "shareManagement": "Beheer van gedeelde mappen en bestanden",
     "shareDeleted": "Delen opheffen!",
     "singleClick": "Bestanden en mappen met een enkele klik openen",
-    "sunsetBody": "This project is being wound down. It is archived on 2026-09-01, after which there will be no further releases, bug fixes, or security fixes. Existing releases and Docker images stay online. Do not expose this instance directly to the internet without authentication in front of it.",
-    "sunsetLink": "Read the project status, known unfixed security issues, and hardening guidance",
-    "sunsetTitle": "File Browser is being archived",
+    "sunsetBody": "Dit project wordt afgebouwd. Het wordt gearchiveerd op 01-09-2026, waarna er geen releases, bugfixes of beveiligingsoplossingen meer zullen worden uitgegeven. Bestaande releases en Docker-afbeeldingen blijven online. Stel deze instantie niet rechtstreeks bloot aan internet zonder authenticatie ervoor.",
+    "sunsetLink": "Lees de projectstatus, bekende niet-gefixeerde beveiligingsproblemen en verhardingsrichtlijnen",
+    "sunsetTitle": "File Browser wordt gearchiveerd",
     "themes": {
       "default": "Systeem standaard",
       "dark": "Donker",

@@ -1,11 +1,6 @@
-# Contributing
+# Building File Browser
 
-> [!WARNING]
-> File Browser is being archived on **2026-09-01**. New features are not being accepted. Bug-fix pull requests are still looked at until that date, but there is no guarantee they will be merged.
->
-> The instructions below are kept because they remain useful to anyone building the project from source.
-
-If you're interested in contributing to this project, this is the best place to start. Before contributing to this project, please take a bit of time to read our [Code of Conduct](code-of-conduct.md). Also, note that this project is open-source and licensed under [Apache License 2.0](LICENSE).
+This project is archived on 2026-09-01. Pull requests are not accepted and no further changes are merged. This document is kept as build documentation for anyone wishing to build the project from source.
 
 ## Project Structure
 
@@ -80,18 +75,10 @@ go run .
 
 ## Documentation
 
-We rely on Docker to abstract all the dependencies required for building the documentation.
-
-To build the documentation to `www/public`:
+Documentation lives in [`docs`](docs) as plain Markdown and is no longer built into a site. The command line reference in [`docs/cli`](docs/cli) is generated from the commands themselves:
 
 ```bash
-task docs
-```
-
-To start a local server on port `8000` to view the built documentation:
-
-```bash
-task docs:serve
+task docs:cli:generate
 ```
 
 ## Release
@@ -104,14 +91,7 @@ task release
 
 ## Translations
 
-Translations are synced from Transifex until 2026-09-01; after that the integration stops and translations submitted there will no longer reach this repository.
-
-Translations are managed on Transifex, which is an online website where everyone can contribute and translate strings for our project. It automatically syncs with the main language file \(in English\) and,, for you to contribute, you just need to:
-
-1. Go to our Transifex web page: [app.transifex.com/file-browser/file-browser](https://app.transifex.com/file-browser/file-browser/)
-2. Click on **Join the project** and pick your language. We'll accept you as soon as possible. If you're language is not on the list, please request it via the interface.
-
-Translations are automatically pushed to GitHub via an integration.
+The Transifex integration stopped on 2026-09-01 and translations submitted there no longer reach this repository. Locale files live in [`frontend/src/i18n`](frontend/src/i18n) and can be edited directly.
 
 ## Authentication Provider
 

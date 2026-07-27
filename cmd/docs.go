@@ -14,7 +14,7 @@ import (
 
 func init() {
 	rootCmd.AddCommand(docsCmd)
-	docsCmd.Flags().String("out", "www/docs/cli", "directory to write the docs to")
+	docsCmd.Flags().String("out", "docs/cli", "directory to write the docs to")
 }
 
 var docsCmd = &cobra.Command{

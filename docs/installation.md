@@ -6,29 +6,29 @@ File Browser is a single binary and can be used as standalone executable. Howeve
 
 The quickest and easiest way to install File Browser is to use a package manager, or our download script, which automatically fetches the latest version of File Browser for your platform. Alternatively, you can manually download the binary from the [releases page](https://github.com/filebrowser/filebrowser/releases).
 
-=== "Brew"
+### Brew
 
-    ```sh
-    brew tap filebrowser/tap
-    brew install filebrowser
-    filebrowser -r /path/to/your/files
-    ```
+```sh
+brew tap filebrowser/tap
+brew install filebrowser
+filebrowser -r /path/to/your/files
+```
 
-=== "Unix"
+### Unix
 
-    ```sh
-    curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bash
-    filebrowser -r /path/to/your/files
-    ```
+```sh
+curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bash
+filebrowser -r /path/to/your/files
+```
 
-=== "Windows"
+### Windows
 
-    ```sh
-    iwr -useb https://raw.githubusercontent.com/filebrowser/get/master/get.ps1 | iex
-    filebrowser -r /path/to/your/files
-    ```
+```sh
+iwr -useb https://raw.githubusercontent.com/filebrowser/get/master/get.ps1 | iex
+filebrowser -r /path/to/your/files
+```
 
-File Browser is now up and running. Read some [first boot](#first-boot) for more information.
+File Browser is now up and running. Read the ["First Boot"](#first-boot) section for more information.
 
 ## Docker
 
