@@ -15,6 +15,24 @@ import (
 	"github.com/spf13/afero"
 )
 
+// maxPatchDrainBytes bounds how much of a rejected PATCH body is discarded to
+// keep the connection reusable. It comfortably covers a default-sized chunk;
+// beyond that the body is not worth reading just to throw away.
+const maxPatchDrainBytes = 32 << 20 // 32MB
+
+// drainRequestBody discards what the client already put on the wire for a
+// request the handler answered without reading. net/http only drains 256KiB on
+// its own before giving up and closing the connection, and a connection closed
+// while the client is still streaming a chunk reaches the browser as a transport
+// error instead of the status we replied with. The client then cannot tell a
+// conflict from a network fault, retries blindly, and the upload stalls.
+func drainRequestBody(r *http.Request) {
+	if r.Body == nil {
+		return
+	}
+	_, _ = io.Copy(io.Discard, io.LimitReader(r.Body, maxPatchDrainBytes))
+}
+
 // keepUploadActive periodically touches the cache entry to prevent eviction during transfer
 func keepUploadActive(cache UploadCache, filePath string) func() {
 	stop := make(chan bool)
@@ -160,105 +178,119 @@ func tusHeadHandler(cache UploadCache) handleFunc {
 
 func tusPatchHandler(cache UploadCache) handleFunc {
 	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-		if !d.user.Perm.Create || !d.Check(r.URL.Path) {
-			return http.StatusForbidden, nil
+		status, err := tusPatchUpload(w, r, d, cache)
+		// A rejected chunk is still a chunk the client is streaming: read what is
+		// left of it so the answer reaches the client on a connection that stays
+		// usable, instead of being lost to a reset.
+		if status >= 400 {
+			drainRequestBody(r)
 		}
-		if r.Header.Get("Content-Type") != "application/offset+octet-stream" {
-			return http.StatusUnsupportedMediaType, nil
-		}
-
-		uploadOffset, err := getUploadOffset(r)
-		if err != nil {
-			return http.StatusBadRequest, fmt.Errorf("invalid upload offset")
-		}
-
-		file, err := files.NewFileInfo(&files.FileOptions{
-			Fs:         d.user.Fs,
-			Path:       r.URL.Path,
-			Modify:     d.user.Perm.Modify,
-			Expand:     false,
-			ReadHeader: d.server.TypeDetectionByHeader,
-			Checker:    d,
-		})
-
-		switch {
-		case errors.Is(err, afero.ErrFileNotFound):
-			return http.StatusNotFound, nil
-		case err != nil:
-			return errToStatus(err), err
-		}
-
-		uploadLength, err := cache.GetLength(file.RealPath())
-		if err != nil {
-			return http.StatusNotFound, err
-		}
-
-		if uploadOffset > uploadLength {
-			return http.StatusBadRequest, fmt.Errorf("upload offset %d exceeds declared length %d", uploadOffset, uploadLength)
-		}
-
-		// Prevent the upload from being evicted during the transfer
-		stop := keepUploadActive(cache, file.RealPath())
-		defer stop()
-
-		switch {
-		case file.IsDir:
-			return http.StatusBadRequest, fmt.Errorf("cannot upload to a directory %s", file.RealPath())
-		case file.Size != uploadOffset:
-			return http.StatusConflict, fmt.Errorf(
-				"%s file size doesn't match the provided offset: %d",
-				file.RealPath(),
-				uploadOffset,
-			)
-		}
-
-		openFile, err := d.user.Fs.OpenFile(r.URL.Path, os.O_WRONLY|os.O_APPEND, d.settings.FileMode)
-		if err != nil {
-			return http.StatusInternalServerError, fmt.Errorf("could not open file: %w", err)
-		}
-		defer openFile.Close()
-
-		_, err = openFile.Seek(uploadOffset, 0)
-		if err != nil {
-			return http.StatusInternalServerError, fmt.Errorf("could not seek file: %w", err)
-		}
-
-		defer r.Body.Close()
-		// Enforce the declared Upload-Length: never write more than the bytes
-		// still expected for this upload. Reading one byte past the remainder
-		// lets an over-length body be detected and rejected. Without this bound a
-		// PATCH could stream arbitrary data to disk regardless of the length the
-		// client declared when the upload was created.
-		remaining := uploadLength - uploadOffset
-		bytesWritten, err := io.Copy(openFile, io.LimitReader(r.Body, remaining+1))
-		if err != nil {
-			return http.StatusInternalServerError, fmt.Errorf("could not write to file: %w", err)
-		}
-		if bytesWritten > remaining {
-			// The client sent more than it declared; roll this chunk back so the
-			// file stays consistent with the tracked offset, and reject it.
-			if truncErr := openFile.Truncate(uploadOffset); truncErr != nil {
-				return http.StatusInternalServerError, fmt.Errorf("could not truncate file: %w", truncErr)
-			}
-			return http.StatusRequestEntityTooLarge, fmt.Errorf("upload exceeds declared length of %d bytes", uploadLength)
-		}
-
-		// Sync the file to ensure all data is written to storage
-		// to prevent file corruption.
-		if err := openFile.Sync(); err != nil {
-			return http.StatusInternalServerError, fmt.Errorf("could not sync file: %w", err)
-		}
-
-		newOffset := uploadOffset + bytesWritten
-		w.Header().Set("Upload-Offset", strconv.FormatInt(newOffset, 10))
-
-		if newOffset >= uploadLength {
-			cache.Complete(file.RealPath())
-			_ = d.RunHook(func() error { return nil }, "upload", r.URL.Path, "", d.user)
-		}
-
-		return http.StatusNoContent, nil
+		return status, err
 	})
+}
+
+func tusPatchUpload(w http.ResponseWriter, r *http.Request, d *data, cache UploadCache) (int, error) {
+	if !d.user.Perm.Create || !d.Check(r.URL.Path) {
+		return http.StatusForbidden, nil
+	}
+	if r.Header.Get("Content-Type") != "application/offset+octet-stream" {
+		return http.StatusUnsupportedMediaType, nil
+	}
+
+	uploadOffset, err := getUploadOffset(r)
+	if err != nil {
+		return http.StatusBadRequest, fmt.Errorf("invalid upload offset")
+	}
+
+	file, err := files.NewFileInfo(&files.FileOptions{
+		Fs:         d.user.Fs,
+		Path:       r.URL.Path,
+		Modify:     d.user.Perm.Modify,
+		Expand:     false,
+		ReadHeader: d.server.TypeDetectionByHeader,
+		Checker:    d,
+	})
+
+	switch {
+	case errors.Is(err, afero.ErrFileNotFound):
+		return http.StatusNotFound, nil
+	case err != nil:
+		return errToStatus(err), err
+	}
+
+	uploadLength, err := cache.GetLength(file.RealPath())
+	if err != nil {
+		return http.StatusNotFound, err
+	}
+
+	if uploadOffset > uploadLength {
+		return http.StatusBadRequest, fmt.Errorf("upload offset %d exceeds declared length %d", uploadOffset, uploadLength)
+	}
+
+	// Prevent the upload from being evicted during the transfer
+	stop := keepUploadActive(cache, file.RealPath())
+	defer stop()
+
+	switch {
+	case file.IsDir:
+		return http.StatusBadRequest, fmt.Errorf("cannot upload to a directory %s", file.RealPath())
+	case file.Size != uploadOffset:
+		return http.StatusConflict, fmt.Errorf(
+			"%s file size doesn't match the provided offset: %d",
+			file.RealPath(),
+			uploadOffset,
+		)
+	}
+
+	openFile, err := d.user.Fs.OpenFile(r.URL.Path, os.O_WRONLY|os.O_APPEND, d.settings.FileMode)
+	if err != nil {
+		return http.StatusInternalServerError, fmt.Errorf("could not open file: %w", err)
+	}
+	defer openFile.Close()
+
+	_, err = openFile.Seek(uploadOffset, 0)
+	if err != nil {
+		return http.StatusInternalServerError, fmt.Errorf("could not seek file: %w", err)
+	}
+
+	// The server closes the request body once the handler returns; closing it
+	// here would run before the caller gets to drain a rejected chunk, so every
+	// status raised below this point would still cost the connection.
+	//
+	// Enforce the declared Upload-Length: never write more than the bytes
+	// still expected for this upload. Reading one byte past the remainder
+	// lets an over-length body be detected and rejected. Without this bound a
+	// PATCH could stream arbitrary data to disk regardless of the length the
+	// client declared when the upload was created.
+	remaining := uploadLength - uploadOffset
+	bytesWritten, err := io.Copy(openFile, io.LimitReader(r.Body, remaining+1))
+	if err != nil {
+		return http.StatusInternalServerError, fmt.Errorf("could not write to file: %w", err)
+	}
+	if bytesWritten > remaining {
+		// The client sent more than it declared; roll this chunk back so the
+		// file stays consistent with the tracked offset, and reject it.
+		if truncErr := openFile.Truncate(uploadOffset); truncErr != nil {
+			return http.StatusInternalServerError, fmt.Errorf("could not truncate file: %w", truncErr)
+		}
+		return http.StatusRequestEntityTooLarge, fmt.Errorf("upload exceeds declared length of %d bytes", uploadLength)
+	}
+
+	// Sync the file to ensure all data is written to storage
+	// to prevent file corruption.
+	if err := openFile.Sync(); err != nil {
+		return http.StatusInternalServerError, fmt.Errorf("could not sync file: %w", err)
+	}
+
+	newOffset := uploadOffset + bytesWritten
+	w.Header().Set("Upload-Offset", strconv.FormatInt(newOffset, 10))
+
+	if newOffset >= uploadLength {
+		cache.Complete(file.RealPath())
+		_ = d.RunHook(func() error { return nil }, "upload", r.URL.Path, "", d.user)
+	}
+
+	return http.StatusNoContent, nil
 }
 
 func tusDeleteHandler(cache UploadCache) handleFunc {

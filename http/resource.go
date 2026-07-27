@@ -412,6 +412,13 @@ var resourceGetRecursiveHandler = withUser(func(w http.ResponseWriter, r *http.R
 	entries := make([]RecursiveEntry, 0)
 
 	err = afero.Walk(d.user.Fs, rootPath, func(fPath string, info os.FileInfo, err error) error {
+		// Walking a large tree is expensive, and every entry is stat'ed through
+		// the scoped filesystem. Stop as soon as nobody is waiting for the
+		// answer instead of finishing the walk for a client that has gone.
+		if ctxErr := r.Context().Err(); ctxErr != nil {
+			return ctxErr
+		}
+
 		if err != nil {
 			return nil // skip entries we cannot read
 		}
@@ -442,6 +449,12 @@ var resourceGetRecursiveHandler = withUser(func(w http.ResponseWriter, r *http.R
 		return nil
 	})
 	if err != nil {
+		// Once the request is done there is nobody left to answer, whatever the
+		// walk reported. Asking for a status here only produces a second header
+		// write on a connection that is already gone.
+		if r.Context().Err() != nil {
+			return 0, err
+		}
 		return http.StatusInternalServerError, err
 	}
 

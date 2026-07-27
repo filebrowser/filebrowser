@@ -51,6 +51,10 @@ vi.mock("@/utils/upload", () => ({
   handleFiles: harness.handleFiles,
 }));
 vi.mock("@/utils/css", () => ({ default: vi.fn() }));
+// Reaches document.querySelector, which the node test environment lacks.
+vi.mock("@/utils/buttons", () => ({
+  default: { loading: vi.fn(), done: vi.fn(), success: vi.fn() },
+}));
 vi.mock("@/components/header/HeaderBar.vue", () => ({ default: {} }));
 vi.mock("@/components/header/Action.vue", () => ({ default: {} }));
 vi.mock("@/components/Search.vue", () => ({ default: {} }));

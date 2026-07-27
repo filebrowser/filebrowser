@@ -262,6 +262,7 @@ const error = ref<StatusError | null>(null);
 const originalSettings = ref<ISettings | null>(null);
 const settings = ref<ISettings | null>(null);
 const debounceTimeout = ref<number | null>(null);
+const pendingChunkSize = ref<string | null>(null);
 
 const commandObject = ref<{
   [key: string]: string[] | string;
@@ -289,12 +290,29 @@ const formattedChunkSize = computed({
       clearTimeout(debounceTimeout.value);
     }
 
+    pendingChunkSize.value = value;
+
     // Set a new timeout to apply the format after a short delay
-    debounceTimeout.value = window.setTimeout(() => {
-      if (settings.value) settings.value.tus.chunkSize = parseBytes(value);
-    }, 1500);
+    debounceTimeout.value = window.setTimeout(applyChunkSize, 1500);
   },
 });
+
+// applyChunkSize commits what the user typed. Saving must flush it first:
+// otherwise submitting within the debounce window persists the previous value,
+// and the setting appears to refuse the change.
+const applyChunkSize = () => {
+  if (debounceTimeout.value) {
+    clearTimeout(debounceTimeout.value);
+    debounceTimeout.value = null;
+  }
+
+  if (pendingChunkSize.value === null) return;
+
+  if (settings.value) {
+    settings.value.tus.chunkSize = parseBytes(pendingChunkSize.value);
+  }
+  pendingChunkSize.value = null;
+};
 
 // Define funcs
 const capitalize = (name: string, where: string | RegExp = "_") => {
@@ -311,6 +329,7 @@ const capitalize = (name: string, where: string | RegExp = "_") => {
 
 const save = async () => {
   if (settings.value === null) return false;
+  applyChunkSize();
   const newSettings: ISettings = {
     ...settings.value,
     shell:
@@ -362,8 +381,12 @@ const parseBytes = (input: string) => {
   const matches = input.match(regex);
   if (matches) {
     const size = parseFloat(matches[1].concat(matches[2] || ""));
-    let unit: keyof SettingsUnit =
-      matches[3].toUpperCase() as keyof SettingsUnit;
+    // The unit is optional: a bare number is already a count of bytes. Reading
+    // it unguarded throws, and the throw happens inside the debounce callback,
+    // so the setting is silently never updated.
+    let unit: keyof SettingsUnit = (
+      matches[3] ?? "B"
+    ).toUpperCase() as keyof SettingsUnit;
     if (!unit.endsWith("B")) {
       unit += "B";
     }

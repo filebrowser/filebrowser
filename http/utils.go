@@ -65,7 +65,10 @@ func renderJSON(w http.ResponseWriter, _ *http.Request, data interface{}) (int, 
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	if _, err := w.Write(marsh); err != nil {
-		return http.StatusInternalServerError, err
+		// The status line is already on the wire, so there is no error status
+		// left to send: a failed write here means the client hung up. Report it
+		// for the log without asking the caller to write a second header.
+		return 0, err
 	}
 
 	return 0, nil

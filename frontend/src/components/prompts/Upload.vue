@@ -38,6 +38,7 @@ import { useRoute } from "vue-router";
 import { useLayoutStore } from "@/stores/layout";
 
 import * as upload from "@/utils/upload";
+import buttons from "@/utils/buttons";
 
 const { t } = useI18n();
 const route = useRoute();
@@ -66,9 +67,13 @@ const uploadInput = async (event: Event) => {
 
   const path = route.path.endsWith("/") ? route.path : route.path + "/";
 
+  // Checking the destination hits the server, so show it is working rather
+  // than leaving the action looking inert until the upload starts.
+  buttons.loading("upload");
   const conflict = await upload.checkConflict(uploadFiles, path);
 
   if (conflict.length > 0) {
+    buttons.done("upload");
     layoutStore.showHover({
       prompt: "resolve-conflict",
       props: {

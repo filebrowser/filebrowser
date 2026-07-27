@@ -103,15 +103,21 @@ export const useUploadStore = defineStore("upload", () => {
     }
 
     if (isActiveUploadsOnLimit() && hasPendingUploads()) {
-      if (!hasActiveUploads()) {
-        // Update the state in a fixed time interval
+      if (progressInterval === null) {
+        // Update the state in a fixed time interval. Guard on the handle, not
+        // on the active count: this runs again every time the queue drains to
+        // zero with work still pending, and reassigning would leak the timer.
         progressInterval = window.setInterval(syncState, 1000);
       }
 
       const upload = nextUpload();
+      let succeeded = true;
 
       if (upload.type === "dir") {
-        await api.post(upload.path).catch($showError);
+        await api.post(upload.path).catch((err) => {
+          succeeded = false;
+          $showError(err);
+        });
       } else {
         const onUpload = (event: ProgressEvent) => {
           upload.rawProgress.sentBytes = event.loaded;
@@ -119,10 +125,13 @@ export const useUploadStore = defineStore("upload", () => {
 
         await api
           .post(upload.path, upload.file!, upload.overwrite, onUpload)
-          .catch((err) => err.message !== "Upload aborted" && $showError(err));
+          .catch((err) => {
+            succeeded = false;
+            if (err.message !== "Upload aborted") $showError(err);
+          });
       }
 
-      finishUpload(upload);
+      finishUpload(upload, succeeded);
     }
   };
 
@@ -135,9 +144,18 @@ export const useUploadStore = defineStore("upload", () => {
     return upload;
   };
 
-  const finishUpload = (upload: Upload) => {
-    sentBytes.value += upload.totalBytes - upload.sentBytes;
-    upload.sentBytes = upload.totalBytes;
+  const finishUpload = (upload: Upload, succeeded: boolean) => {
+    if (succeeded) {
+      sentBytes.value += upload.totalBytes - upload.sentBytes;
+      upload.sentBytes = upload.totalBytes;
+    } else {
+      // Credit only what actually reached the server and drop the rest from the
+      // total. Counting a failed upload as fully sent makes the bar report 100%
+      // while nothing was written, which reads as success.
+      sentBytes.value += upload.rawProgress.sentBytes - upload.sentBytes;
+      totalBytes.value -= upload.totalBytes - upload.rawProgress.sentBytes;
+      upload.sentBytes = upload.rawProgress.sentBytes;
+    }
     upload.file = null;
 
     activeUploads.value.delete(upload);
