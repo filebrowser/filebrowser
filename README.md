@@ -8,7 +8,7 @@
 
 File Browser provides a file managing interface within a specified directory and it can be used to upload, delete, preview and edit your files. It is a **create-your-own-cloud**-kind of software where you can just install it on your server, direct it to a path and access your files through a nice web interface.
 
-**Background:** [Update On File Browser](https://hacdias.com/2026/03/11/filebrowser/), March 2026.
+**Background:** [Goodbye File Browser, for Real This Time](https://hacdias.com/2026/07/28/filebrowser/), July 2026.
 
 ## Security
 
