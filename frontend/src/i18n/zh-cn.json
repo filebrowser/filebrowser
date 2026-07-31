@@ -264,9 +264,9 @@
     "shareManagement": "分享管理",
     "shareDeleted": "分享已删除！",
     "singleClick": "单击打开文件/文件夹",
-    "sunsetBody": "This project is being wound down. It is archived on 2026-09-01, after which there will be no further releases, bug fixes, or security fixes. Existing releases and Docker images stay online. Do not expose this instance directly to the internet without authentication in front of it.",
-    "sunsetLink": "Read the project status, known unfixed security issues, and hardening guidance",
-    "sunsetTitle": "File Browser is being archived",
+    "sunsetBody": "本项目即将停止维护，定于 2026 年 9 月 1 日正式归档。归档之后，项目将不再发布新版本、不再修复程序漏洞，也不再提供安全补丁。已发布的程序版本与对应的 Docker 镜像会继续保留可访问状态。若未配置前置身份验证机制，严禁将本服务实例直接暴露至公网。",
+    "sunsetLink": "部署前，请务必阅读项目状态说明、现存未修复安全隐患与安全加固方案。",
+    "sunsetTitle": "File Browser 项目即将归档封存",
     "themes": {
       "default": "系统默认",
       "dark": "深色",
